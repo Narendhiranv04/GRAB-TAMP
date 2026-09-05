@@ -6,14 +6,16 @@ from mujoco_scenes.final_paper_variant_labels import (
 )
 from mujoco_scenes.run_kitchen_ground_truth_execution import discover_variant_names
 from mujoco_scenes.run_living_room_execution import EXPECTED_VARIANTS
+from mujoco_scenes.workshop_ground_truth_planner import load_variant_specs
 
 
 def test_short_labels_follow_active_execution_order():
     active = {
         "kitchen": tuple(discover_variant_names()),
         "living_room": tuple(EXPECTED_VARIANTS),
+        "workshop": tuple(load_variant_specs()),
     }
-    expected_sizes = {"kitchen": 12, "living_room": 10}
+    expected_sizes = {"kitchen": 12, "living_room": 10, "workshop": 10}
     for environment, variants in active.items():
         assert VARIANT_LABELS[environment] == variants
         assert len(variant_mapping(environment)) == expected_sizes[environment]

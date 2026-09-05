@@ -22,9 +22,6 @@ from mujoco_scenes.functional_tamp_pipeline.errors import (
     UnsupportedCheckerCapabilityError,
     VLMSpecificationError,
 )
-from mujoco_scenes.functional_tamp_pipeline.system_context_registry import (
-    get_domain_system_fixed_anchors,
-)
 from .workshop_phase1.fm_adapter import FMAdapter
 
 
@@ -555,11 +552,6 @@ def canonicalize_living_room_relation(
     2. (PERSONAL_CUP_SAUCER_REGION, NEAR_SEAT, SEATING_POSITION)
     3. (SHARED_REMOTE_REGION, FITS_ON, REMOTE)
     4. (SHARED_REMOTE_REGION, ACCESSIBLE_FROM_BOTH_SEATS, SEATING_PAIR)
-
-    Signatures 2 and 4 end at a system-fixed anchor.  The FM is instructed not
-    to redeclare fixed contextual entities as selectable roles, so a relation
-    it writes against its own region role supplies that anchor endpoint here
-    rather than being rejected as malformed.
     """
     norm = _phrase(relation_text)
     if not norm:
@@ -617,12 +609,6 @@ def canonicalize_living_room_relation(
         return (exp_s, predicate, exp_o, "PRESERVED")
     elif subject_role == exp_o and object_role == exp_s:
         return (exp_s, predicate, exp_o, "NORMALIZED_TO_CANONICAL_SIGNATURE")
-    elif (
-        subject_role == exp_s
-        and object_role == exp_s
-        and exp_o in get_domain_system_fixed_anchors("living_room")
-    ):
-        return (exp_s, predicate, exp_o, "NORMALIZED_SYSTEM_ANCHOR_ENDPOINT")
     else:
         raise MalformedVLMSpecificationError(
             f"Relation {relation_text!r} mapped to predicate {predicate!r} expects endpoints ({exp_s}, {exp_o}), "

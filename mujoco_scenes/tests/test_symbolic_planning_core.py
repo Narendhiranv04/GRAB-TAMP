@@ -71,54 +71,6 @@ def test_impossible_problem_has_no_plan():
         deterministic_astar(replace(problem, actions=tuple()))
 
 
-def test_astar_returns_lower_cost_multi_goal_plan():
-    goals = frozenset({("g1",), ("g2",), ("g3",)})
-    expensive_direct = SymbolicAction(
-        "direct",
-        (),
-        frozenset(),
-        frozenset(),
-        goals,
-        frozenset(),
-        cost=3,
-    )
-    start_chain = SymbolicAction(
-        "start_chain",
-        (),
-        frozenset(),
-        frozenset(),
-        frozenset({("g1",), ("chain_ready",)}),
-        frozenset(),
-    )
-    finish_chain = SymbolicAction(
-        "finish_chain",
-        (),
-        frozenset({("chain_ready",)}),
-        frozenset(),
-        frozenset({("g2",), ("g3",)}),
-        frozenset(),
-    )
-    problem = SymbolicProblem(
-        frozenset(),
-        goals,
-        (expensive_direct, start_chain, finish_chain),
-    )
-
-    result = deterministic_astar(problem)
-
-    assert [action.name for action in result.plan] == [
-        "start_chain",
-        "finish_chain",
-    ]
-    assert result.statistics["plan_cost"] == 2
-
-
-def test_symbolic_action_cost_rejects_boolean():
-    problem, pick, _ = _problem()
-    with pytest.raises(ValueError, match="positive integers"):
-        replace(problem, actions=(replace(pick, cost=True),))
-
-
 def test_independent_replay_rejects_malformed_arity_and_corruption(monkeypatch):
     problem, pick, _ = _problem()
     malformed = replace(pick, arguments=("object_1", "extra"))

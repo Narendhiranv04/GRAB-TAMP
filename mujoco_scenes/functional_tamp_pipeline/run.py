@@ -18,27 +18,28 @@ from typing import Any, Callable
 from mujoco_scenes.final_paper_variant_labels import resolve_variant_name
 
 try:
-    from .errors import PipelineError, VLMSpecificationError, ReplaySpecificationError
-    from .models import FunctionalRequirementGraph, PipelineResult
+    from .errors import PipelineError, VLMSpecificationError, ReplaySpecificationError, SearchRegionContractError
+    from .models import FunctionalRequirementGraph, PipelineResult, SearchRegionContract, freeze_search_region_contract
     from .planning import plan_with_common_astar
     from .search import search_until_satisfied
     from .search_order import resolve_search_order, validate_search_order_preflight
     from .spec_provider import provider_for_mode
-    from .grounding import resolve_evidence_components
 except ImportError:
     from mujoco_scenes.functional_tamp_pipeline.errors import (
-        PipelineError, VLMSpecificationError, ReplaySpecificationError
+        PipelineError, VLMSpecificationError, ReplaySpecificationError, SearchRegionContractError
     )
-    from mujoco_scenes.functional_tamp_pipeline.models import FunctionalRequirementGraph, PipelineResult
+    from mujoco_scenes.functional_tamp_pipeline.models import (
+        FunctionalRequirementGraph, PipelineResult, SearchRegionContract, freeze_search_region_contract
+    )
     from mujoco_scenes.functional_tamp_pipeline.planning import plan_with_common_astar
     from mujoco_scenes.functional_tamp_pipeline.search import search_until_satisfied
     from mujoco_scenes.functional_tamp_pipeline.search_order import resolve_search_order, validate_search_order_preflight
     from mujoco_scenes.functional_tamp_pipeline.spec_provider import provider_for_mode
-    from mujoco_scenes.functional_tamp_pipeline.grounding import resolve_evidence_components
 
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT = ROOT / "runs" / "functional_tamp_pipeline"
+
 
 EventCallback = Callable[[str, dict[str, Any]], None]
 
@@ -56,12 +57,11 @@ class _RunState:
     specification_sha256: str | None = None
     provider_model: str | None = None
     search_order: str = "auto"
-    evidence_mode: str = "joint"
-    evidence_components: tuple[str, ...] = ("semantic", "unary", "binary")
     search_order_source_effective: str | None = None
     search_seed_requested: int | None = None
     search_seed_effective: int | None = None
     resolved_search_order: tuple[str, ...] = ()
+    search_contract: SearchRegionContract | None = None
     exploration_actuation: str = "unknown"
     visualization_requested: bool = False
     git_commit: str | None = None
@@ -284,13 +284,13 @@ def _write_run_manifest(state: _RunState) -> None:
         "specification_input": state.specification_input,
         "provider_model": state.provider_model,
         "search_order_source_requested": state.search_order,
-        "evidence_mode": state.evidence_mode,
-        "evidence_components": list(state.evidence_components),
         "search_order_source_effective": state.search_order_source_effective,
         "search_seed_requested": state.search_seed_requested,
         "search_seed_effective": state.search_seed_effective,
         "provider_region_ranking": list(state.specification.region_ranking) if state.specification else [],
         "region_order_used": list(state.resolved_search_order),
+        "search_policy_version": state.search_contract.policy_version if state.search_contract else None,
+        "search_contract": state.search_contract.to_dict() if state.search_contract else None,
         "exploration_actuation": state.exploration_actuation,
         "execution_state": "planning_only",
         "visualization_requested": state.visualization_requested,
@@ -322,7 +322,7 @@ def _safe_write_run_manifest(state: _RunState) -> Exception | None:
 
 
 def _capture_workshop_vlm_inputs(scene: Any, output_dir: Path) -> list[Path]:
-    import cv2
+    from PIL import Image
     from mujoco_scenes.workshop_phase1.capture import MultiViewCameraRig
 
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -332,8 +332,7 @@ def _capture_workshop_vlm_inputs(scene: Any, output_dir: Path) -> list[Path]:
     paths = []
     for observation in observations:
         path = output_dir / f"initial_{observation.camera_id.lower()}.png"
-        if not cv2.imwrite(str(path), cv2.cvtColor(observation.rgb, cv2.COLOR_RGB2BGR)):
-            raise RuntimeError(f"Could not write VLM input image {path}")
+        Image.fromarray(observation.rgb).save(path)
         paths.append(path)
     return paths
 
@@ -368,22 +367,30 @@ def _run_pipeline_impl(
         )
         if fail_res is not None:
             return fail_res
-        state.specification.metadata["evidence_mode"] = state.evidence_mode
-        state.specification.metadata["evidence_components"] = list(state.evidence_components)
         _write_json(state.run_dir / "functional_specification.json", state.specification.to_dict())
         _write_json(state.run_dir / "functional_requirement_graph.json", state.specification.to_dict())
         state.specification_sha256 = _compute_file_sha256(state.run_dir / "functional_specification.json")
 
-        state.resolved_search_order, state.search_order_source_effective, state.search_seed_effective = (
-            resolve_search_order(
-                state.specification,
-                state.domain,
-                state.search_order,
-                mode=state.mode,
-                variant=state.variant,
-                seed=state.search_seed_requested,
-            )
+        state.search_contract = freeze_search_region_contract(
+            state.specification,
+            domain=state.domain,
+            source=state.search_order,
+            mode=state.mode,
+            variant=state.variant,
+            seed=state.search_seed_requested,
         )
+        state.resolved_search_order = state.search_contract.canonical_region_ids
+        if state.search_contract.no_search_required:
+            state.search_order_source_effective = "not_applicable"
+        elif state.search_contract.source == "PRIVILEGED_GT_ORACLE_DIAGNOSTIC":
+            state.search_order_source_effective = "oracle"
+        elif "RANDOM" in state.search_contract.source:
+            state.search_order_source_effective = "random"
+        elif state.search_contract.source == "GT_SYSTEM_SEARCH_POLICY":
+            state.search_order_source_effective = "gt_system" if state.search_order == "auto" else "provider"
+        else:
+            state.search_order_source_effective = "provider"
+        state.search_seed_effective = state.search_contract.search_seed
         _emit_event(guarded_observer, "spec_ready", {
             "graph": state.specification.to_dict(),
             "source": state.specification.source,
@@ -404,7 +411,7 @@ def _run_pipeline_impl(
             specification=state.specification,
             output_dir=state.run_dir,
             scene=scene,
-            search_order=state.resolved_search_order,
+            search_contract=state.search_contract,
             observer=guarded_observer,
         )
         if result.assignment:
@@ -452,22 +459,21 @@ def _run_pipeline_impl(
         )
         if fail_res is not None:
             return fail_res
-        state.specification.metadata["evidence_mode"] = state.evidence_mode
-        state.specification.metadata["evidence_components"] = list(state.evidence_components)
         _write_json(state.run_dir / "functional_specification.json", state.specification.to_dict())
         _write_json(state.run_dir / "functional_requirement_graph.json", state.specification.to_dict())
         state.specification_sha256 = _compute_file_sha256(state.run_dir / "functional_specification.json")
 
-        state.resolved_search_order, state.search_order_source_effective, state.search_seed_effective = (
-            resolve_search_order(
-                state.specification,
-                state.domain,
-                state.search_order,
-                mode=state.mode,
-                variant=state.variant,
-                seed=state.search_seed_requested,
-            )
+        state.search_contract = freeze_search_region_contract(
+            state.specification,
+            domain=state.domain,
+            source=state.search_order,
+            mode=state.mode,
+            variant=state.variant,
+            seed=state.search_seed_requested,
         )
+        state.resolved_search_order = state.search_contract.canonical_region_ids
+        state.search_order_source_effective = "not_applicable"
+        state.search_seed_effective = state.search_contract.search_seed
         _emit_event(guarded_observer, "spec_ready", {
             "graph": state.specification.to_dict(),
             "source": state.specification.source,
@@ -528,22 +534,30 @@ def _run_pipeline_impl(
     )
     if fail_res is not None:
         return fail_res
-    state.specification.metadata["evidence_mode"] = state.evidence_mode
-    state.specification.metadata["evidence_components"] = list(state.evidence_components)
     _write_json(state.run_dir / "functional_specification.json", state.specification.to_dict())
     _write_json(state.run_dir / "functional_requirement_graph.json", state.specification.to_dict())
     state.specification_sha256 = _compute_file_sha256(state.run_dir / "functional_specification.json")
 
-    state.resolved_search_order, state.search_order_source_effective, state.search_seed_effective = (
-        resolve_search_order(
-            state.specification,
-            state.domain,
-            state.search_order,
-            mode=state.mode,
-            variant=state.variant,
-            seed=state.search_seed_requested,
-        )
+    state.search_contract = freeze_search_region_contract(
+        state.specification,
+        domain=state.domain,
+        source=state.search_order,
+        mode=state.mode,
+        variant=state.variant,
+        seed=state.search_seed_requested,
     )
+    state.resolved_search_order = state.search_contract.canonical_region_ids
+    if state.search_contract.no_search_required:
+        state.search_order_source_effective = "not_applicable"
+    elif state.search_contract.source == "PRIVILEGED_GT_ORACLE_DIAGNOSTIC":
+        state.search_order_source_effective = "oracle"
+    elif "RANDOM" in state.search_contract.source:
+        state.search_order_source_effective = "random"
+    elif state.search_contract.source == "GT_SYSTEM_SEARCH_POLICY":
+        state.search_order_source_effective = "gt_system" if state.search_order == "auto" else "provider"
+    else:
+        state.search_order_source_effective = "provider"
+    state.search_seed_effective = state.search_contract.search_seed
     _emit_event(guarded_observer, "spec_ready", {
         "graph": state.specification.to_dict(),
         "source": state.specification.source,
@@ -569,7 +583,7 @@ def _run_pipeline_impl(
     satisfaction, inspected = search_until_satisfied(
         adapter,
         state.specification,
-        search_order=state.resolved_search_order,
+        search_contract=state.search_contract,
         observer=guarded_observer,
     )
     _write_json(state.run_dir / "observed_scene_graph.json", adapter.graph.to_dict())
@@ -599,8 +613,8 @@ def _run_pipeline_impl(
 
     print("[4/5] Role assignment", flush=True)
     print("ROLE ASSIGNMENT", flush=True)
-    for role in ("driver", "fastener", "work_surface"):
-        print(f"{role} -> {satisfaction.assignment[role]}", flush=True)
+    for role, assigned_val in sorted(satisfaction.assignment.items()):
+        print(f"{role} -> {assigned_val}", flush=True)
 
     print("[5/5] A* planning", flush=True)
     _emit_event(guarded_observer, "stage_changed", {"stage": "planning"})
@@ -615,8 +629,7 @@ def _run_pipeline_impl(
     })
     from .audit import audit_plan_grounding
     plan_audit = audit_plan_grounding(
-        state.specification, adapter.graph, satisfaction, planned.actions,
-        home_region=SURFACE,
+        state.specification, adapter.graph, satisfaction, planned.actions, home_region=SURFACE
     )
     _write_json(state.run_dir / "plan_grounding_audit.json", plan_audit)
     _emit_event(guarded_observer, "plan_ready", {
@@ -652,8 +665,6 @@ def run_pipeline(
     mode: str,
     search_order: str = "auto",
     search_seed: int | None = None,
-    evidence_mode: str = "joint",
-    evidence_components: tuple[str, ...] | list[str] | str | None = None,
     specification_json: Path | str | None = None,
     visualize: bool = False,
     observer: EventCallback | None = None,
@@ -664,9 +675,6 @@ def run_pipeline(
 ) -> PipelineResult:
     # Early preflight validation before any expensive provider / simulator work
     validate_search_order_preflight(domain, search_order, mode=mode, seed=search_seed)
-    resolved_evidence_components = tuple(sorted(
-        resolve_evidence_components(evidence_mode, evidence_components)
-    ))
 
     started_at_utc = datetime.now(timezone.utc).isoformat()
     start_t = time.perf_counter()
@@ -690,8 +698,6 @@ def run_pipeline(
         specification_input=specification_input,
         provider_model=provider_model,
         search_order=search_order,
-        evidence_mode=evidence_mode,
-        evidence_components=resolved_evidence_components,
         search_seed_requested=search_seed,
         exploration_actuation=exploration_actuation,
         visualization_requested=visualize,
@@ -706,8 +712,6 @@ def run_pipeline(
         "variant": state.variant,
         "spec_mode": state.mode,
         "search_order_source_requested": state.search_order,
-        "evidence_mode": state.evidence_mode,
-        "evidence_components": list(state.evidence_components),
         "search_seed_requested": state.search_seed_requested,
         "exploration_actuation": state.exploration_actuation,
         "run_dir": str(state.run_dir),
@@ -768,20 +772,6 @@ def main() -> int:
         help="Random seed for '--search-order random'. Must be a non-negative integer.",
     )
     parser.add_argument(
-        "--evidence-mode",
-        choices=("semantic_only", "geometric_only", "joint"),
-        default="joint",
-        help="Grounding ablation: semantic-only, geometric-only, or both.",
-    )
-    parser.add_argument(
-        "--evidence-components",
-        default=None,
-        help=(
-            "Optional comma-separated fine-grained mask from semantic,unary,binary. "
-            "Overrides --evidence-mode; e.g. semantic,binary removes unary geometry."
-        ),
-    )
-    parser.add_argument(
         "--specification-json",
         type=Path,
         default=None,
@@ -824,8 +814,6 @@ def main() -> int:
             mode=args.mode,
             search_order=args.search_order,
             search_seed=args.search_seed,
-            evidence_mode=args.evidence_mode,
-            evidence_components=args.evidence_components,
             specification_json=args.specification_json,
             visualize=args.visualize,
             observer=visualizer,

@@ -26,6 +26,10 @@ from mujoco_scenes.functional_tamp_pipeline.search_order import (
     ORACLE_SEARCH_ORDERS,
     resolve_search_order,
 )
+from mujoco_scenes.functional_tamp_pipeline.search_contract import (
+    SearchRegionContract,
+    freeze_search_region_contract,
+)
 
 
 def _make_dummy_spec(
@@ -138,8 +142,9 @@ def test_workshop_search_explicit_order_and_early_stopping():
         events.append((event, payload))
 
     custom_order = ("TOOL_CABINET", "LEFT_DRAWER", "RIGHT_DRAWER")
+    contract = SearchRegionContract(domain="workshop", canonical_region_ids=custom_order, source="TEST_POLICY")
     result, inspected = search_until_satisfied(
-        domain, spec, search_order=custom_order, observer=observer
+        domain, spec, search_contract=contract, observer=observer
     )
     assert result.satisfied is True
     # Should stop immediately after TOOL_CABINET
@@ -168,9 +173,10 @@ def test_observer_does_not_change_computation():
         candidate_regions=("LEFT_DRAWER", "RIGHT_DRAWER", "TOOL_CABINET"),
         region_ranking=("LEFT_DRAWER", "RIGHT_DRAWER", "TOOL_CABINET"),
     )
+    contract = freeze_search_region_contract(spec)
     domain_no_obs = FakeWorkshopDomain(satisfy_at_region="RIGHT_DRAWER")
     res_no_obs, insp_no_obs = search_until_satisfied(
-        domain_no_obs, spec, search_order=spec.region_ranking, observer=None
+        domain_no_obs, spec, search_contract=contract, observer=None
     )
 
     domain_with_obs = FakeWorkshopDomain(satisfy_at_region="RIGHT_DRAWER")
@@ -179,7 +185,7 @@ def test_observer_does_not_change_computation():
         events.append((event, payload))
 
     res_with_obs, insp_with_obs = search_until_satisfied(
-        domain_with_obs, spec, search_order=spec.region_ranking, observer=observer
+        domain_with_obs, spec, search_contract=contract, observer=observer
     )
 
     # Identical call history and result
@@ -325,7 +331,7 @@ def test_central_search_event_enrichment(tmp_path: Path):
             complete=True,
             assignment={"driver": "d1", "fastener": "f1", "work_surface": "w1"},
         )
-        def fake_search(adapter, spec, search_order=None, observer=None):
+        def fake_search(adapter, spec, search_order=None, observer=None, **kwargs):
             if observer is not None:
                 observer("search_region_selected", {"region": "LEFT_DRAWER", "index": 0, "total_regions": 3})
                 observer("search_region_opened", {"region": "LEFT_DRAWER", "success": True, "exploratory": True})
@@ -615,7 +621,8 @@ def test_workshop_camera_plumbing_copies_rgb_array():
 
     domain = FakeWorkshopDomain()
     spec = _make_dummy_spec(domain="workshop")
-    search_until_satisfied(domain, spec, observer=observer)
+    contract = freeze_search_region_contract(spec)
+    search_until_satisfied(domain, spec, search_contract=contract, observer=observer)
 
     obs_events = [p for e, p in events if e == "observation_updated"]
     assert len(obs_events) > 0

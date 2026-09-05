@@ -60,3 +60,11 @@ class GroundingError(PipelineError):
 
 class PlanningCompilationError(PipelineError):
     """Raised when compiling the grounded observed state into a symbolic problem fails."""
+
+
+class SearchRegionContractError(PipelineError, ValueError):
+    """Raised when search region resolution, validation, or contract freezing encounters an error."""
+
+
+class SemanticOntologyConfigurationError(PipelineError, ValueError):
+    """Raised when a reviewed declarative system semantic ontology is missing, malformed, or incomplete."""

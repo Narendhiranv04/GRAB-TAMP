@@ -99,7 +99,7 @@ def run_workshop_pointcloud(
     output_dir: str | Path,
     *,
     robot: str = "google",
-    variant: str = "F0_MANUAL_FIRST_ONE_REGION",
+    variant: str = "F0_BASE",
     width: int = 640,
     height: int = 480,
     segmentation: str = "oracle",

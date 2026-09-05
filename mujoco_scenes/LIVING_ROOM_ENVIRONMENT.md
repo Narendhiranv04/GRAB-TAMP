@@ -46,6 +46,25 @@ controlled simulator layouts, no learned free-space decomposition, and no
 placement/manipulation feasibility. The redesign provides realistic textured
 household assets and coherent furniture-scale simulation, not photorealism.
 
+## Integrated REGION-function benchmark environment
+
+The authoritative `L2_integrated_living_room_region_function_*` family uses a
+separate sparse, furniture-scale layout. Two identical Poly Haven lounge
+chairs are the seating targets; exactly two fixed individual side tables and
+one fixed shared coffee table are the exhaustive neutral candidate regions. A
+media console and TV establish the viewing context. A separate south staging
+console holds the five payloads: two cups, two saucers, and one TV remote.
+
+The external visual furniture is documented with exact hashes and dimensions
+in `assets/living_room_realistic/manifest.json`. Independent invisible box
+proxies provide contact, instance masks, and stage-local RGB-D evidence. The
+visual meshes and catalogue dimensions never enter production compatibility.
+All ten variants retain the same task requirements and fixed furniture poses.
+The six feasible variants alter only initial cup/saucer region membership. The
+four infeasible variants remove the shared table, one personal table, both
+personal tables, or all three tables. There is no alternate support or game
+controller in this integrated family.
+
 The `L1_living_room` scene is a separate, rigid-only MuJoCo environment for
 Google Robot navigation and manipulation experiments. It does not replace or
 modify the S1 kitchen. The room contains a fixed L-shaped couch along the west
@@ -904,3 +923,44 @@ Requirements remain a manual future-FM contract. No FM is called; no search
 order, navigation, placement, manipulation, or TAMP execution is generated.
 The successful output is a verified drink-target-region allocation for future
 TAMP.
+
+## Integrated Phase 3: Mobile Manipulation & Physical Execution
+
+The integrated living-room execution pipeline executes the frozen Phase-2
+`PICK`/`PLACE` symbolic plan using the mobile Google Robot in MuJoCo.
+
+### Key Architectural Boundaries
+
+1. **Frozen Inputs**: Physical execution consumes only frozen Phase-1
+   observed registries (`payload_registry.json`, `region_registry.json`,
+   `region_assignments.json`) and the frozen Phase-2 plan (`plan.json`).
+2. **Simulation Adapter**: Resolves generic IDs (`object_XXXX`, `region_XXXX`)
+   to physical MuJoCo bodies/geoms strictly at the simulation boundary by
+   semantic consistency and nearest observed centroid.
+3. **No Action Order Rewrite**: The frozen Phase-2 `PICK`/`PLACE` order is
+   strictly preserved. `MOVE` actions are conditionally inserted only when the
+   robot's current base pose cannot achieve collision-free IK reachability.
+4. **Clean Infeasible Termination**: Infeasible variants (I0–I3) terminate
+   cleanly as `INFEASIBLE_CONFIRMED` without initiating fake manipulation.
+5. **Synchronized 5-Camera Recording**: Continuously captures all 5 living-room
+   project cameras (`l2_camera_left`, `l2_camera_right`, `l2_camera_top`,
+   `l2_camera_front`, `l2_camera_close`) composed into a 3x2 mosaic with an
+   interactive status panel into `<variant>_5cam.mp4`.
+
+### Usage
+
+```bash
+# List all registered variants and plan availability
+python -m mujoco_scenes.run_living_room_execution --list-variants
+
+# Execute a single variant with 5-camera continuous recording
+MUJOCO_GL=egl PYOPENGL_PLATFORM=egl python -m mujoco_scenes.run_living_room_execution \
+  --variant F0_ALL_OBJECTS_IN_STAGING --record
+
+# Execute all variants (feasible and infeasible)
+MUJOCO_GL=egl PYOPENGL_PLATFORM=egl python -m mujoco_scenes.run_living_room_execution \
+  --variant all --record
+
+# Dry-run reachability check without physics stepping
+python -m mujoco_scenes.run_living_room_execution --variant all --dry-run
+```

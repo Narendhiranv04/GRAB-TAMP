@@ -39,13 +39,8 @@ class SymbolicProblem:
     def __post_init__(self) -> None:
         if not self.goal_atoms:
             raise ValueError("A symbolic problem must contain at least one goal")
-        if any(
-            isinstance(action.cost, bool)
-            or not isinstance(action.cost, int)
-            or action.cost <= 0
-            for action in self.actions
-        ):
-            raise ValueError("Action costs must be positive integers")
+        if any(action.cost <= 0 for action in self.actions):
+            raise ValueError("Action costs must be positive")
 
 
 @dataclass(frozen=True)

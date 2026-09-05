@@ -4,11 +4,14 @@ from __future__ import annotations
 
 from typing import Any, Protocol
 
+from .errors import SearchRegionContractError
 from .models import (
     FunctionalRequirementGraph,
     FunctionalSpecification,
     GraphGroundingResult,
     SatisfactionResult,
+    SearchRegionContract,
+    freeze_search_region_contract,
 )
 
 
@@ -30,11 +33,15 @@ def search_until_satisfied(
     domain: SearchDomain,
     specification: FunctionalSpecification,
     *,
-    search_order: tuple[str, ...] | None = None,
+    search_contract: SearchRegionContract,
     observer: Any = None,
     emit=print,
 ) -> tuple[SatisfactionResult, tuple[str, ...]]:
-    order = tuple(search_order) if search_order is not None else tuple(specification.region_ranking)
+    if not isinstance(search_contract, SearchRegionContract):
+        raise SearchRegionContractError(
+            f"search_contract must be an instance of SearchRegionContract, got {type(search_contract).__name__}"
+        )
+    order = tuple(search_contract.canonical_region_ids)
     domain.observe_initial()
     if observer is not None:
         sg_dict = _extract_scene_graph_dict(domain)

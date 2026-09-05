@@ -12,6 +12,11 @@ from .models import (
     NumericConstraint,
     OperationGroup,
 )
+from . import role_semantic_ontology as semantic_ontology
+from .role_semantic_ontology import (
+    PHASE3_ROLE_SEMANTIC_ONTOLOGY_VERSION,
+    get_system_role_semantic_categories,
+)
 from .spec_provider import FunctionalSpecProvider
 
 
@@ -49,7 +54,7 @@ class GTSpecProvider(FunctionalSpecProvider):
             name="driver",
             entity_kind="OBJECT",
             count=1,
-            semantic_categories=("screwdriver", "power_driver", "power_drill", "Phillips screwdriver", "cordless power drill"),
+            semantic_categories=semantic_ontology.get_system_role_semantic_categories("workshop", "driver"),
             unary_predicates=(),
             binding_policy="DISTINCT",
             verification_mode="SEMANTIC_AND_GEOMETRIC",
@@ -59,7 +64,7 @@ class GTSpecProvider(FunctionalSpecProvider):
             name="fastener",
             entity_kind="OBJECT",
             count=1,
-            semantic_categories=("screw", "Phillips screw", "Phillips head screw"),
+            semantic_categories=semantic_ontology.get_system_role_semantic_categories("workshop", "fastener"),
             unary_predicates=(),
             binding_policy="DISTINCT",
             verification_mode="SEMANTIC_AND_GEOMETRIC",
@@ -70,7 +75,7 @@ class GTSpecProvider(FunctionalSpecProvider):
             name="repair_target",
             entity_kind="FIXED_TARGET",
             count=1,
-            semantic_categories=("repair_target", "workshop_frame_joint", "recess"),
+            semantic_categories=semantic_ontology.get_system_role_semantic_categories("workshop", "repair_target"),
             binding_policy="DISTINCT",
             verification_mode="GEOMETRIC_ONLY",
             description="Target repair hole on the workpiece",
@@ -113,6 +118,8 @@ class GTSpecProvider(FunctionalSpecProvider):
             source="GT_FUNCTIONAL_SPEC_ONLY",
             raw_requirements=requirements,
             metadata={
+                "role_semantic_ontology_version": PHASE3_ROLE_SEMANTIC_ONTOLOGY_VERSION,
+                "semantic_acceptance_source": "SYSTEM_ROLE_SEMANTIC_ONTOLOGY",
                 "detector_label_to_canonical": provider.get_detector_label_to_canonical_map(),
                 "alias_to_canonical": provider.get_alias_to_canonical_map(),
             },
@@ -141,9 +148,7 @@ class GTSpecProvider(FunctionalSpecProvider):
             max_count = cardinality.get("maximum_distinct_physical_objects")
             preferred = cardinality.get("preferred")
             count = int(raw.get("count", max_count or min_count or 1))
-            categories = tuple(
-                item["canonical_label"] for item in raw.get("semantic_preferences", [])
-            )
+            categories = semantic_ontology.get_system_role_semantic_categories("kitchen", name)
             for item in raw.get("semantic_preferences", []):
                 vocabulary.extend([item["canonical_label"], *item.get("detector_aliases", [])])
 
@@ -176,7 +181,7 @@ class GTSpecProvider(FunctionalSpecProvider):
             )
 
         for name, raw in contract.get("symbolic_task", {}).get("source_roles", {}).items():
-            labels = tuple(raw["accepted_semantic_labels"])
+            labels = semantic_ontology.get_system_role_semantic_categories("kitchen", name)
             vocabulary.extend(labels)
             nodes[name] = FunctionalRole(
                 name=name,
@@ -205,7 +210,7 @@ class GTSpecProvider(FunctionalSpecProvider):
                 required_relations=tuple(map(str, grp.get("relations", ()))),
                 distinct_within_group=bool(policy.get("distinct_within_group", True)),
                 same_tool_must_cover_all_targets=bool(policy.get("same_tool_must_cover_all_targets", False)),
-                selection_preference=str(policy.get("selection_preference", "")),
+                selection_preference=str(policy.get("selection_preference", "deterministic_rank" if usage_policy == "DEDICATED_PER_TARGET" else "minimize_distinct_tools")),
             ))
 
         regions = ("D1", "D2", "C2", "B1", "C1")
@@ -222,6 +227,8 @@ class GTSpecProvider(FunctionalSpecProvider):
             source="GT_FUNCTIONAL_SPEC_ONLY",
             raw_requirements=(contract,),
             metadata={
+                "role_semantic_ontology_version": PHASE3_ROLE_SEMANTIC_ONTOLOGY_VERSION,
+                "semantic_acceptance_source": "SYSTEM_ROLE_SEMANTIC_ONTOLOGY",
                 "semantic_vocabulary_path": str(root / "configs" / "semantic_vocabulary.yaml"),
                 "contract_path": str(contract_path),
                 "symbolic_task": contract.get("symbolic_task", {}),
@@ -239,11 +246,9 @@ class GTSpecProvider(FunctionalSpecProvider):
 
         # Region support roles
         for group in contract["function_groups"].values():
-            role_name = group["region_role"]
-            semantic = contract["semantic_requirements"]["region_roles"][role_name]
-            categories = tuple(semantic["accepted_categories"])
-            vocabulary.extend(categories)
             func_id = group["function_id"]
+            categories = semantic_ontology.get_system_role_semantic_categories("living_room", func_id)
+            vocabulary.extend(categories)
             binding = "SHARED" if group["usage_policy"] == "SHARED_REGION_REQUIRED" else "DISTINCT"
             nodes[func_id] = FunctionalRole(
                 name=func_id,
@@ -260,7 +265,7 @@ class GTSpecProvider(FunctionalSpecProvider):
             name="CUP_SAUCER_SET",
             entity_kind="OBJECT",
             count=2,
-            semantic_categories=("cup_saucer_set", "cup", "saucer"),
+            semantic_categories=semantic_ontology.get_system_role_semantic_categories("living_room", "CUP_SAUCER_SET"),
             binding_policy="DISTINCT",
             verification_mode="SEMANTIC_ONLY",
         )
@@ -268,7 +273,7 @@ class GTSpecProvider(FunctionalSpecProvider):
             name="REMOTE",
             entity_kind="OBJECT",
             count=1,
-            semantic_categories=("remote_control", "tv_remote"),
+            semantic_categories=semantic_ontology.get_system_role_semantic_categories("living_room", "REMOTE"),
             binding_policy="DISTINCT",
             verification_mode="SEMANTIC_ONLY",
         )
@@ -276,7 +281,7 @@ class GTSpecProvider(FunctionalSpecProvider):
             name="SEATING_POSITION",
             entity_kind="FIXED_TARGET",
             count=2,
-            semantic_categories=("armchair", "chair", "sofa", "seating_position"),
+            semantic_categories=semantic_ontology.get_system_role_semantic_categories("living_room", "SEATING_POSITION"),
             binding_policy="DISTINCT",
             verification_mode="SEMANTIC_ONLY",
         )
@@ -284,7 +289,7 @@ class GTSpecProvider(FunctionalSpecProvider):
             name="SEATING_PAIR",
             entity_kind="FIXED_TARGET",
             count=1,
-            semantic_categories=("armchair", "chair", "sofa", "seating_pair"),
+            semantic_categories=semantic_ontology.get_system_role_semantic_categories("living_room", "SEATING_PAIR"),
             binding_policy="SHARED",
             verification_mode="SEMANTIC_ONLY",
         )
@@ -335,9 +340,13 @@ class GTSpecProvider(FunctionalSpecProvider):
             source="GT_FUNCTIONAL_SPEC_ONLY",
             raw_requirements=(contract,),
             metadata={
+                "role_semantic_ontology_version": PHASE3_ROLE_SEMANTIC_ONTOLOGY_VERSION,
+                "semantic_acceptance_source": "SYSTEM_ROLE_SEMANTIC_ONTOLOGY",
                 "contract_path": str(contract_path),
                 "semantic_vocabulary_path": str(
                     root / "configs" / "l2_integrated_region_function_semantic_vocabulary.yaml"
                 ),
             },
         )
+
+

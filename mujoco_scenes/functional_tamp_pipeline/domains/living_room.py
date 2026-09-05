@@ -4,8 +4,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
-
 import yaml
 
 from mujoco_scenes.living_room_region_function import (
@@ -17,9 +15,7 @@ from mujoco_scenes.living_room_variants import scene_name
 from mujoco_scenes.region_ablation import create_region_semantic_detector
 from mujoco_scenes.region_ablation2 import DEFAULT_EVALUATION_CONFIG
 
-from ..models import (
-    FunctionalRequirementGraph, FunctionalSpecification, PipelineResult,
-)
+from ..models import FunctionalSpecification, PipelineResult
 from ..scene_graph import ObservedNode, ObservedObject, ObservedRelation, ObservedSceneGraph
 
 
@@ -192,20 +188,29 @@ def build_living_room_observed_scene_graph(run: Any) -> ObservedSceneGraph:
         )
         graph_o.add_node(node)
 
-    # Add payload bundle nodes and seat nodes from personal_rows
+    # Add payload bundle nodes, individual object nodes, and seat nodes from personal_rows
     personal_rows = getattr(run, "personal_rows", [])
     seen_slots: set[str] = set()
     seen_seats: set[str] = set()
     for row in personal_rows:
         slot_id = row["slot_id"]
         seat_id = row.get("seating_target_id")
+        p_ids = list(row.get("payload_ids", []))
+        for pid in p_ids:
+            if pid not in graph_o.nodes:
+                graph_o.add_node(ObservedNode(
+                    instance_id=pid,
+                    entity_kind="OBJECT",
+                    canonical_category="cup_or_saucer",
+                    source_region="staging_tray",
+                ))
         if slot_id not in seen_slots:
             seen_slots.add(slot_id)
             graph_o.add_node(ObservedNode(
                 instance_id=slot_id,
                 entity_kind="OBJECT",
                 canonical_category="cup_saucer_set",
-                unary_properties={"payload_ids": list(row.get("payload_ids", []))},
+                unary_properties={"payload_ids": p_ids},
             ))
         if seat_id and seat_id not in seen_seats:
             seen_seats.add(seat_id)
@@ -222,14 +227,24 @@ def build_living_room_observed_scene_graph(run: Any) -> ObservedSceneGraph:
     remote_ids: list[str] = []
     for row in shared_rows:
         p_ids = row.get("payload_ids", [])
+        for pid in p_ids:
+            if pid not in graph_o.nodes:
+                graph_o.add_node(ObservedNode(
+                    instance_id=pid,
+                    entity_kind="OBJECT",
+                    canonical_category="tv_remote",
+                    source_region="staging_tray",
+                ))
         if p_ids:
             remote_ids.extend(p_ids)
     remote_id = remote_ids[0] if remote_ids else "tv_remote"
-    graph_o.add_node(ObservedNode(
-        instance_id=remote_id,
-        entity_kind="OBJECT",
-        canonical_category="tv_remote",
-    ))
+    if remote_id not in graph_o.nodes:
+        graph_o.add_node(ObservedNode(
+            instance_id=remote_id,
+            entity_kind="OBJECT",
+            canonical_category="tv_remote",
+            source_region="staging_tray",
+        ))
     graph_o.add_node(ObservedNode(
         instance_id="SEATING_PAIR",
         entity_kind="FIXED_TARGET",
@@ -517,7 +532,7 @@ def run_to_plan(
             },
         })
 
-    # Overwrite phase1 artifacts with canonical phi before invoking symbolic planner
+    # Write deterministic compiler/planner projection artifacts before invoking symbolic planner (note: these are compiler projections, not canonical phi*)
     (phase1 / "region_assignments.json").write_text(
         json.dumps({"assignments": canonical_assignments}, indent=2), encoding="utf-8"
     )
@@ -536,11 +551,14 @@ def run_to_plan(
         "operator": row["operator"],
         "arguments": list(row["arguments"].values()),
     } for index, row in enumerate(plan_payload["actions"]))
-    assignment = {row["slot_id"]: row["region_id"] for row in canonical_assignments}
+    planner_projection = {row["slot_id"]: row["region_id"] for row in canonical_assignments}
+    (output_dir / "planner_projection.json").write_text(
+        json.dumps(planner_projection, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
     from ..audit import audit_plan_grounding
     plan_audit = audit_plan_grounding(
-        specification, graph_o, ground_result, list(actions),
-        home_region="staging_tray",
+        specification, graph_o, ground_result, list(actions), home_region="staging_tray"
     )
     (output_dir / "plan_grounding_audit.json").write_text(
         json.dumps(plan_audit, indent=2, sort_keys=True) + "\n",
@@ -548,6 +566,6 @@ def run_to_plan(
     )
     return PipelineResult(
         domain="living_room", variant=variant_label, mode=mode,
-        status="ACTION_SEQUENCE_READY", assignment=assignment, plan=actions,
+        status="ACTION_SEQUENCE_READY", assignment=ground_result.assignment, plan=actions,
         search_statistics=planning.get("search_statistics", {}),
     )

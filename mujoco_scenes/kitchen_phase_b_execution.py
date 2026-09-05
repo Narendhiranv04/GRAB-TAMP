@@ -26,10 +26,6 @@ class KitchenPhaseBExecutionDispatcher:
     """
 
     def __init__(self, scene, inventory: dict[str, Any], resolution: dict[str, Any], *, step_callback=None):
-        if not isinstance(inventory, dict) or not isinstance(inventory.get("objects"), list):
-            raise ValueError("Inventory must contain an objects array")
-        if not isinstance(resolution, dict) or not isinstance(resolution.get("accepted"), list):
-            raise ValueError("Resolution must contain an accepted array")
         self.scene = scene
         self.inventory = inventory
         self.resolution = resolution
@@ -41,29 +37,12 @@ class KitchenPhaseBExecutionDispatcher:
             held_object_getter=lambda: self.manipulation.executor.held_object,
             step_callback=step_callback,
         )
-        self.inventory_by_id = self._index_rows(inventory["objects"], "inventory")
-        self.binding_by_id = self._index_rows(resolution["accepted"], "resolution")
-        self.live_object_locations: dict[str, str | None] = {
-            object_id: str(
-                row.get("source_context", {}).get("observed_source_region")
-                or "countertop"
-            )
-            for object_id, row in self.inventory_by_id.items()
+        self.inventory_by_id = {
+            row["generic_object_id"]: row for row in inventory["objects"]
         }
-
-    @staticmethod
-    def _index_rows(rows: list[Any], label: str) -> dict[str, dict[str, Any]]:
-        indexed: dict[str, dict[str, Any]] = {}
-        for row in rows:
-            if not isinstance(row, dict) or not isinstance(
-                row.get("generic_object_id"), str
-            ) or not row["generic_object_id"]:
-                raise ValueError(f"{label.capitalize()} contains a malformed object")
-            object_id = row["generic_object_id"]
-            if object_id in indexed:
-                raise ValueError(f"Duplicate {label} object id: {object_id}")
-            indexed[object_id] = row
-        return indexed
+        self.binding_by_id = {
+            row["generic_object_id"]: row for row in resolution["accepted"]
+        }
 
     @property
     def current_workspace(self) -> KitchenWorkspace:
@@ -77,9 +56,7 @@ class KitchenPhaseBExecutionDispatcher:
         }
 
     def _held_state(self, object_id: str) -> dict[str, Any]:
-        binding = self.binding_by_id.get(object_id)
-        if binding is None:
-            raise ValueError(f"Unknown resolved object: {object_id}")
+        binding = self.binding_by_id[object_id]
         state = inspect_held_object_state(
             self.scene.model,
             self.scene.data,
@@ -113,15 +90,29 @@ class KitchenPhaseBExecutionDispatcher:
         try:
             record = self.phase_a._move(workspace)
         except RuntimeError as error:
-            if carrying_object_id and "compact navigation pose" in str(error):
+            if "compact navigation pose" in str(error):
                 try:
-                    preparation = (
-                        self.manipulation.executor.fold_held_payload_for_navigation(
-                            step_callback=self.manipulation.step_callback
+                    if carrying_object_id:
+                        preparation = (
+                            self.manipulation.executor.fold_held_payload_for_navigation(
+                                step_callback=self.manipulation.step_callback
+                            )
                         )
-                    )
+                    else:
+                        preparation = {
+                            "performed": True,
+                            "physics_steps": (
+                                self.manipulation._settle_navigation_posture()
+                            ),
+                            "empty_gripper_navigation_fold": True,
+                            "direct_object_qpos_write": False,
+                        }
                     record = self.phase_a._move(workspace)
-                    record["held_navigation_preparation"] = preparation
+                    record[
+                        "held_navigation_preparation"
+                        if carrying_object_id
+                        else "empty_navigation_preparation"
+                    ] = preparation
                 except RuntimeError as retry_error:
                     return {
                         "action": "MOVE",
@@ -197,6 +188,33 @@ class KitchenPhaseBExecutionDispatcher:
             self.manipulation.sync_workspace(workspace)
         return record
 
+    def _prepare_open_storage_container(
+        self, container: str, record: dict[str, Any]
+    ) -> None:
+        # Most fixtures preserve authored storage poses only through
+        # opening.  C2 retains presentation support through collision/IK
+        # approach, then the low-level executor releases it immediately
+        # before Cartesian pre-close and live bilateral contact.
+        # Keep storage support active while planning a tight aperture
+        # grasp. The manipulation executor releases the matching fixture
+        # immediately before live pre-close/contact, so drawer utensils
+        # do not drift for 120 physics steps before the robot reaches the
+        # pose that was planned from their observed location.
+        defer_fixture_release = container in {"C2", "D1", "D2"}
+        record["storage_fixture_release_deferred_to_manipulation_stance"] = (
+            defer_fixture_release
+        )
+        record["storage_fixture_released"] = bool(
+            False if defer_fixture_release
+            else self.scene.release_storage_fixture(container)
+        )
+        record["storage_fixture_active_before_grasp_planning"] = bool(
+            defer_fixture_release
+        )
+        if record["storage_fixture_released"]:
+            for _ in range(120):
+                mujoco.mj_step(self.scene.model, self.scene.data)
+
     def pick(self, object_id: str) -> dict[str, Any]:
         started = time.perf_counter()
         record: dict[str, Any] = {
@@ -225,26 +243,10 @@ class KitchenPhaseBExecutionDispatcher:
             if not opened["success"]:
                 record.update(success=False, status="CONTAINER_OPEN_FAILED")
                 return record
-            # Most fixtures preserve authored storage poses only through
-            # opening.  C2 retains presentation support through collision/IK
-            # approach, then the low-level executor releases it immediately
-            # before Cartesian pre-close and live bilateral contact.
-            defer_fixture_release = container == "C2"
-            record["storage_fixture_release_deferred_to_manipulation_stance"] = (
-                defer_fixture_release
-            )
-            record["storage_fixture_released"] = bool(
-                False if defer_fixture_release
-                else self.scene.release_storage_fixture(container)
-            )
-            record["storage_fixture_active_before_grasp_planning"] = bool(
-                defer_fixture_release
-            )
-            if record["storage_fixture_released"]:
-                for _ in range(120):
-                    mujoco.mj_step(self.scene.model, self.scene.data)
+            self._prepare_open_storage_container(container, record)
         elif container:
             record["redundant_open_omitted"] = True
+            self._prepare_open_storage_container(container, record)
         result = self.manipulation.pick(
             object_id, self.current_workspace, self.physically_open_containers()
         )
@@ -253,7 +255,6 @@ class KitchenPhaseBExecutionDispatcher:
             success=result.success,
             status=result.status,
             failure_code=result.failure_code,
-            message=result.message,
             duration_s=time.perf_counter() - started,
             post_pick=asdict(result),
         )
@@ -274,8 +275,6 @@ class KitchenPhaseBExecutionDispatcher:
             record["remaining_region_fixture_released_after_pick"] = bool(
                 self.scene.release_storage_fixture(container)
             )
-        if record["success"]:
-            self.live_object_locations[object_id] = None
         return record
 
     def place(self, object_id: str, destination: str) -> dict[str, Any]:
@@ -315,24 +314,11 @@ class KitchenPhaseBExecutionDispatcher:
             held_state_before_place=held_before,
             post_place=asdict(result),
         )
-        if record["success"]:
-            self.live_object_locations[object_id] = destination
         return record
 
     def execute_phase2_action(self, action: dict[str, Any]) -> dict[str, Any]:
-        if not isinstance(action, dict) or not isinstance(action.get("action"), str):
-            return {"request": action, "success": False, "status": "MALFORMED_ACTION", "symbolic_effects_applied": False}
-        operator = action["action"].upper()
-        raw_arguments = action.get("arguments", [])
-        if not isinstance(raw_arguments, list) or any(
-            not isinstance(argument, str) or not argument
-            for argument in raw_arguments
-        ):
-            return {"request": {"action": operator, "arguments": raw_arguments}, "success": False, "status": "MALFORMED_ACTION", "symbolic_effects_applied": False}
-        arguments = list(raw_arguments)
-        expected_arity = {"PICK": {1}, "PLACE": {2}, "POUR": {2, 3}, "STIR": {2}}
-        if operator in expected_arity and len(arguments) not in expected_arity[operator]:
-            return {"request": {"action": operator, "arguments": arguments}, "success": False, "status": "MALFORMED_ACTION", "symbolic_effects_applied": False}
+        operator = str(action["action"]).upper()
+        arguments = list(action.get("arguments", []))
         if operator == "PICK":
             return self.pick(arguments[0])
         if operator == "PLACE":

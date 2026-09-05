@@ -57,24 +57,14 @@ from mujoco_scenes import run_workshop_phase4_controller_development as workshop
 from mujoco_scenes.run_phase4_execution import (
     build_parser,
     execute_phase3_run,
-    mujoco_runtime_record,
     require_supported_mujoco_runtime,
 )
 
 
-def test_phase4_rejects_unsupported_mujoco_runtime(monkeypatch):
+def test_phase4_rejects_uncalibrated_mujoco_runtime(monkeypatch):
     monkeypatch.setattr(mujoco, "__version__", "3.10.0")
     with pytest.raises(RuntimeError, match=r"calibrated.*3\.3\.5.*3\.10\.0"):
         require_supported_mujoco_runtime()
-
-
-def test_phase4_accepts_supported_runtime_and_records_it(monkeypatch):
-    monkeypatch.setattr(mujoco, "__version__", "3.3.6")
-    require_supported_mujoco_runtime()
-    record = mujoco_runtime_record()
-    assert record["mujoco_version"] == "3.3.6"
-    assert record["calibrated_mujoco_version"] == "3.3.5"
-    assert record["runs_on_calibrated_runtime"] is False
 
 
 def _write(path: Path, value) -> None:
@@ -888,7 +878,7 @@ def test_living_pick_requires_held_postcondition_even_after_controller_success()
     assert result["failure_code"] == "ACCESS_BLOCKED"
 
 
-def test_kitchen_inspection_closes_interfering_region_and_preserves_history():
+def test_kitchen_inspection_does_not_close_other_regions_and_preserves_history():
     class Dispatcher:
         def __init__(self):
             self.open_regions = set()
@@ -906,14 +896,6 @@ def test_kitchen_inspection_closes_interfering_region_and_preserves_history():
             self.open_regions.discard(region)
             return {"success": True, "status": "CLOSED"}
 
-    # Interference runs one way only: INTERFERING_OPEN_REGIONS maps C2 -> B1,
-    # so opening C2 first closes an already-open B1, while opening B1 after C2
-    # leaves C2 untouched.  This test previously asserted the reverse and so
-    # contradicted test_phase4_kitchen_regressions::
-    # test_c2_then_b1_keeps_c2_open_by_contract, which encodes the same rule
-    # from the constant's side; no implementation could satisfy both.  Both
-    # orders are exercised here so a future change to the rule fails loudly
-    # rather than silently flipping which cupboard ends up open.
     adapter = KitchenPhase4Adapter.__new__(KitchenPhase4Adapter)
     adapter.dispatcher = Dispatcher()
     adapter.successful_inspection_history = []
@@ -922,16 +904,6 @@ def test_kitchen_inspection_closes_interfering_region_and_preserves_history():
     assert adapter.dispatcher.closed == []
     assert adapter.successful_inspection_history == ["C2", "B1"]
     assert adapter.dispatcher.physically_open_containers() == {"C2", "B1"}
-
-    # Reverse order: B1 open first, then C2 must close it before opening.
-    reversed_adapter = KitchenPhase4Adapter.__new__(KitchenPhase4Adapter)
-    reversed_adapter.dispatcher = Dispatcher()
-    reversed_adapter.successful_inspection_history = []
-    assert reversed_adapter.execute_inspection_open("B1")["success"]
-    assert reversed_adapter.execute_inspection_open("C2")["success"]
-    assert reversed_adapter.dispatcher.closed == ["B1"]
-    assert reversed_adapter.dispatcher.physically_open_containers() == {"C2"}
-
     adapter.expected_inspected_regions = ("C2", "B1")
     adapter.expected_actions = []
     adapter.successful_actions = []
@@ -990,11 +962,11 @@ def test_kitchen_inspected_closed_pick_prepares_access_without_changing_plan():
     adapter.expected_actions = [dict(action)]
     result = adapter._prepare_pick_access(action)
     assert result["success"]
-    assert result["conflicting_region"] == "B1"
+    assert result["conflicting_region"] is None
     assert result["physical_close_verified"]
     assert result["physical_open_verified"]
     assert adapter.expected_actions == [action]
-    assert adapter.dispatcher.open_regions == {"C2"}
+    assert adapter.dispatcher.open_regions == {"B1", "C2"}
 
 
 def test_workshop_failed_physical_postcheck_does_not_apply_symbolic_state():

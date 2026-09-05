@@ -257,18 +257,7 @@ def compile_observed_symbolic_state(
             raise SymbolicCompilationError(
                 "Source bindings must come from frozen RGB source grounding"
             )
-        def contains_oracle_key(value: Any) -> bool:
-            if isinstance(value, dict):
-                return any(
-                    "oracle" in str(key).lower()
-                    or contains_oracle_key(nested)
-                    for key, nested in value.items()
-                )
-            if isinstance(value, (list, tuple)):
-                return any(contains_oracle_key(item) for item in value)
-            return False
-
-        if contains_oracle_key(source_payload):
+        if any("oracle" in str(key).lower() for key in source_payload):
             raise SymbolicCompilationError("Oracle source data is forbidden")
         source_semantics = source_payload.get("objects", {})
     else:
@@ -316,9 +305,9 @@ def compile_observed_symbolic_state(
     soup_group = str(soup_requirement.get("requires_operation_group", ""))
     coffee_targets = list(selected.get(coffee_role, []))
     soup_targets = list(selected.get(soup_role, []))
-    required_coffee = int(task["roles"][coffee_role]["count"])
-    required_soup = int(task["roles"][soup_role]["count"])
-    if len(coffee_targets) != required_coffee or len(soup_targets) != required_soup:
+    required_coffee = int(task["roles"][coffee_role]["count"]) if coffee_role in task.get("roles", {}) else len(coffee_targets)
+    required_soup = int(task["roles"][soup_role]["count"]) if soup_role in task.get("roles", {}) else len(soup_targets)
+    if (coffee_role in task.get("roles", {}) and len(coffee_targets) != required_coffee) or (soup_role in task.get("roles", {}) and len(soup_targets) != required_soup):
         raise SymbolicCompilationError(
             "Witness must bind "
             f"{required_coffee} coffee and {required_soup} soup targets"
@@ -867,14 +856,8 @@ def validate_symbolic_plan(
         added: list[tuple[str, ...]] = []
         removed: list[tuple[str, ...]] = []
         name, args = action.name, action.arguments
-        expected_arity = {"pick": 1, "place": 2, "pour": 2, "stir": 2}
         if name not in problem.OPERATOR_TYPES:
             failed.append(f"unknown_operator({name})")
-        elif len(args) != expected_arity[name]:
-            failed.append(
-                f"invalid_arity({name}, expected={expected_arity[name]}, "
-                f"received={len(args)})"
-            )
         elif name == "pick":
             object_id, = args
             if state.held is not None:

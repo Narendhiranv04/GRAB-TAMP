@@ -5,9 +5,11 @@ from mujoco_scenes.kitchen_execution_entities import (
     ExecutionCandidate,
     KitchenExecutionEntityResolver,
     SourceKind,
-    apply_within_region_execution_calibration,
     build_phase_b_inventory,
     source_context,
+)
+from mujoco_scenes.run_kitchen_phase_b_freeze_evidence import (
+    apply_approved_within_region_execution_calibration,
 )
 
 
@@ -15,12 +17,8 @@ def _record(label, xyz, region="countertop"):
     return {
         "source_region": region,
         "first_seen_stage": 0,
-        "last_evidence_source_region": region,
-        "last_evidence_stage": 0,
         "centroid_world_m": {
             "value": xyz,
-            "source_region": region,
-            "source_stage": 0,
             "measurement_cloud_path": "stages/000/evidence/fused.ply",
         },
         "semantics": {"validated": {"canonical_label": label}},
@@ -47,7 +45,7 @@ def test_approved_region_calibration_matches_semantics_and_dimensions_not_ids():
         "fresh_right": _measured_record("spoon", [1.0, 0.0, 0.0], [0.201, 0.041, 0.02]),
     }}
 
-    calibrated, audit = apply_within_region_execution_calibration(
+    calibrated, audit = apply_approved_within_region_execution_calibration(
         deepcopy(frozen), current, region="B1"
     )
 
@@ -70,16 +68,6 @@ def test_source_context_uses_observation_region_not_backend_name():
     assert context.source_container == "C1"
     assert context.required_workspace.value == "left_side"
     assert context.container_must_be_open
-
-
-def test_source_context_ignores_legacy_privileged_region_key():
-    record = _record("spoon", [0, 0, 0], "C1")
-    record["source_region"] = "PRIVILEGED_WRONG_REGION"
-
-    context = source_context("renamed_object", record)
-
-    assert context.observed_source_region == "C1"
-    assert context.source_container == "C1"
 
 
 def test_inventory_is_driven_by_roles_and_plan_without_backend_binding():

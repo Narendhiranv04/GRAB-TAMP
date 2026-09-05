@@ -1,15 +1,8 @@
 schema_version: 2
 task_id: s1_integrated_prepare_and_serve_coffee_and_soup
 specification_source: manual_s1_integrated_kitchen_v1
-goal_instruction: "Prepare and serve coffee and soup for two people using the available kitchenware. Stir both coffees and provide each soup bowl with a suitable utensil."
+goal_instruction: "Prepare and serve coffee and soup for two people using the available kitchenware. Stir both coffees and provide each soup bowl with a suitable utensil. Search the closed kitchen storage for anything still required."
 target_assignment_ablation: true
-
-# The live goal runner fails closed unless the typed goal selects this exact
-# benchmark contract and the FM returns these functional requirements. This
-# prevents a one-coffee or unrelated goal from silently executing the larger
-# two-person coffee-and-soup plan below.
-execution_goal_contract:
-  required_functions: [can_hold_liquid, can_stir]
 
 pairing:
   strategy: semantic_role_scoped

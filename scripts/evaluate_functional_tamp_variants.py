@@ -217,7 +217,6 @@ def build_runner_command(
     runner_output_root: str,
     search_order: Optional[str] = None,
     search_seed: Optional[int] = None,
-    evidence_mode: str = "joint",
     specification_json: Optional[str] = None,
 ) -> List[str]:
     """
@@ -237,8 +236,6 @@ def build_runner_command(
         cmd.extend(["--search-order", search_order])
     if search_seed is not None:
         cmd.extend(["--search-seed", str(search_seed)])
-    if evidence_mode != "joint":
-        cmd.extend(["--evidence-mode", evidence_mode])
     if specification_json is not None:
         cmd.extend(["--specification-json", specification_json])
     return cmd
@@ -252,7 +249,6 @@ def evaluate_variant(
     mode: str = "gt",
     search_order: Optional[str] = None,
     search_seed: Optional[int] = None,
-    evidence_mode: str = "joint",
     specification_json: Optional[str] = None,
     source_specification_sha256: Optional[str] = None,
     trial_output_root: Optional[str] = None,
@@ -282,7 +278,6 @@ def evaluate_variant(
         runner_output_root=actual_runner_output_root,
         search_order=search_order,
         search_seed=search_seed,
-        evidence_mode=evidence_mode,
         specification_json=specification_json,
     )
 
@@ -329,7 +324,6 @@ def evaluate_variant(
     evaluator_mode_requested = mode
     evaluator_search_order_requested = search_order or "auto"
     evaluator_search_seed_requested = search_seed
-    evaluator_evidence_mode_requested = evidence_mode
     expected_spec_acquisition = "replayed_provider_output" if specification_json is not None else "live_provider"
 
     manifest_spec_mode = manifest.get("spec_mode") if manifest else None
@@ -339,14 +333,6 @@ def evaluate_variant(
     manifest_search_seed_requested = manifest.get("search_seed_requested") if manifest else None
     manifest_search_seed_effective = manifest.get("search_seed_effective") if manifest else None
     manifest_terminal_status = manifest.get("terminal_status") if manifest else None
-    # ``evidence_mode`` was added after the first reproducible GT manifests.
-    # Those manifests used the only available condition at the time: joint
-    # semantic-and-geometric evidence.  Preserve that unambiguous legacy
-    # meaning so old completed trials remain comparable, while new manifests
-    # still record the field explicitly.
-    manifest_evidence_mode = (
-        manifest.get("evidence_mode", "joint") if manifest else None
-    )
 
     provider_region_ranking: List[str] = list(manifest.get("provider_region_ranking", [])) if manifest else []
     region_order_used: List[str] = list(manifest.get("region_order_used", [])) if manifest else []
@@ -377,8 +363,6 @@ def evaluate_variant(
             provenance_mismatches.append(f"search_order_requested: evaluator='{evaluator_search_order_requested}' != manifest='{manifest_search_order_requested}'")
         if manifest_search_seed_requested != evaluator_search_seed_requested:
             provenance_mismatches.append(f"search_seed: evaluator={evaluator_search_seed_requested} != manifest={manifest_search_seed_requested}")
-        if manifest_evidence_mode != evaluator_evidence_mode_requested:
-            provenance_mismatches.append(f"evidence_mode: evaluator='{evaluator_evidence_mode_requested}' != manifest='{manifest_evidence_mode}'")
         if is_completed and actual in {"ACTION_SEQUENCE_READY", "INFEASIBLE"} and manifest_terminal_status != actual:
             provenance_mismatches.append(f"terminal_status: result.json='{actual}' != manifest='{manifest_terminal_status}'")
         provenance_match = (len(provenance_mismatches) == 0)
@@ -508,8 +492,6 @@ def evaluate_variant(
         "evaluator_mode_requested": evaluator_mode_requested,
         "evaluator_search_order_requested": evaluator_search_order_requested,
         "evaluator_search_seed_requested": evaluator_search_seed_requested,
-        "evidence_mode": manifest_evidence_mode or evidence_mode,
-        "evaluator_evidence_mode_requested": evaluator_evidence_mode_requested,
         "expected_spec_acquisition": expected_spec_acquisition,
         "manifest_spec_mode": manifest_spec_mode,
         "manifest_spec_acquisition": manifest_spec_acquisition,
@@ -791,12 +773,6 @@ def main() -> None:
         help="Specification acquisition mode: 'gt' (ground truth specification) or 'vlm' (visual language model specification). Default: gt.",
     )
     parser.add_argument(
-        "--evidence-mode",
-        choices=["semantic_only", "geometric_only", "joint"],
-        default="joint",
-        help="Grounding evidence ablation. Default: joint.",
-    )
-    parser.add_argument(
         "--search-order",
         type=str,
         choices=["auto", "oracle", "provider", "random"],
@@ -976,7 +952,6 @@ def main() -> None:
                 mode=args.mode,
                 search_order=search_order,
                 search_seed=seed_val,
-                evidence_mode=args.evidence_mode,
                 specification_json=spec_json_path,
                 source_specification_sha256=spec_sha256_pre,
                 trial_output_root=trial_output_root,
@@ -1011,7 +986,6 @@ def main() -> None:
         "schema_version": 2,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "evaluation_mode": args.mode,
-        "evidence_mode": args.evidence_mode,
         "requested_search_order": search_order,
         "requested_search_seeds": [s for s in seeds_list if s is not None],
         "specification_root": args.specification_root,

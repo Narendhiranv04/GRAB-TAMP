@@ -10,6 +10,7 @@ MUJOCO_LOG.TXT
 # Generated perception runs and visualization exports
 point_cloud_runs/
 runs/
+outputs/
 reports/*
 graph_growth.mp4
 
@@ -26,5 +27,32 @@ mujoco_scenes/weights/
 # PDDLStream's pinned research fork writes these relative runtime artifacts.
 statistics/
 temp/
+tmp/
 visualizations/
 txt_file.txt
+
+# Reproducible third-party source bundles; processed redistributable assets
+# and their provenance manifest remain tracked.
+mujoco_scenes/assets/.cache/
+
+# Large local execution recordings
+FINAL_PAPER_GT_EXECUTIONS/
+FINAL_PAPER_GT_EXECUTIONS.zip
+EXPECTED_GT_ACTIONS.zip
+
+# Generated run output and scratch trees.  tmp/ in particular: a full VLM
+# matrix run (9082 files, 1.2 GB) was committed under it once because only
+# temp/ was listed here.
+outputs/
+captures/
+GT_everything/
+mujoco_scenes/captures/
+
+# Local environments / model caches
+.venv/
+semantic_model_cache/
+weights/
+
+# Large locally downloaded models
+mujoco_scenes/weights/clip/ViT-B-32.pt
+yolov8x-worldv2.pt

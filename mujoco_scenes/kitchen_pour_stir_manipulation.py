@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 import math
 from typing import Any
 
@@ -12,7 +12,6 @@ import numpy as np
 
 EVIDENCE_MODE = "KINEMATIC_ACTION_PROXY_NO_FLUID_DYNAMICS"
 PHASE_C_OPERATOR_ELIGIBLE_TARGET_REGIONS = frozenset(("countertop", "B1"))
-INITIAL_TABLE_REGIONS = frozenset(("INITIAL", "TABLE", "TABLETOP"))
 
 
 def phase_c_execution_plan(
@@ -22,81 +21,19 @@ def phase_c_execution_plan(
 
     B1 is the scene's BOX region.  All non-Phase-C operators, including
     cupboard PICK/PLACE, retain their original order and object identities.
-    Eligibility is evaluated at the relevant plan step, rather than from an
-    object's original observation region.
     """
-    if not isinstance(frozen_registry, dict):
-        raise ValueError("Frozen registry must be an object")
-    raw_objects = frozen_registry.get("objects")
-    if isinstance(raw_objects, dict):
-        objects = raw_objects
-    elif isinstance(raw_objects, list):
-        objects = {}
-        for row in raw_objects:
-            if not isinstance(row, dict) or not isinstance(
-                row.get("generic_object_id"), str
-            ):
-                raise ValueError("Frozen registry contains a malformed object")
-            object_id = row["generic_object_id"]
-            if object_id in objects:
-                raise ValueError(f"Duplicate frozen object id: {object_id}")
-            objects[object_id] = row
-    else:
-        raise ValueError("Frozen registry objects must be an object or array")
-
-    locations: dict[str, str] = {}
-    for object_id, record in objects.items():
-        if not isinstance(object_id, str) or not isinstance(record, dict):
-            raise ValueError("Frozen registry contains a malformed object")
-        # ``source_region`` is the registry's canonical observed location.
-        # Raw stage-000 evidence uses ``INITIAL`` for tabletop objects and
-        # must not override that canonical location.
-        region = record.get("source_region") or record.get(
-            "last_evidence_source_region"
-        )
-        if isinstance(region, str) and region:
-            locations[object_id] = (
-                "countertop"
-                if region.upper() in INITIAL_TABLE_REGIONS
-                else region
-            )
-
-    if not isinstance(frozen_plan, list):
-        raise ValueError("Frozen plan must be an array")
-    result: list[dict[str, Any]] = []
-    held: str | None = None
+    objects = frozen_registry["objects"]
+    result = []
     for row in frozen_plan:
-        if not isinstance(row, dict) or not isinstance(row.get("action"), str):
-            raise ValueError("Frozen plan contains a malformed action")
         operator = row["action"].upper()
         arguments = list(row.get("arguments", []))
-        if any(not isinstance(argument, str) or not argument for argument in arguments):
-            raise ValueError("Frozen action arguments must be non-empty strings")
         if operator in {"POUR", "STIR"}:
-            if len(arguments) < 2:
-                raise ValueError(f"{operator} requires a source/tool and target")
             target_id = arguments[1]
-            if target_id not in objects:
-                raise ValueError(f"Unknown Phase-C target: {target_id}")
-            if locations.get(target_id) not in PHASE_C_OPERATOR_ELIGIBLE_TARGET_REGIONS:
+            if objects[target_id].get("source_region") not in (
+                PHASE_C_OPERATOR_ELIGIBLE_TARGET_REGIONS
+            ):
                 continue
         result.append(row)
-        if operator == "PICK":
-            if len(arguments) != 1:
-                raise ValueError("PICK requires exactly one object")
-            held = arguments[0]
-            locations.pop(held, None)
-        elif operator == "PLACE":
-            if len(arguments) != 2:
-                raise ValueError("PLACE requires an object and destination")
-            object_id, destination = arguments
-            locations[object_id] = destination
-            if held == object_id:
-                held = None
-        elif operator in {"SERVE_COFFEE", "SERVE_SOUP"}:
-            if len(arguments) < 1:
-                raise ValueError(f"{operator} requires a target")
-            locations[arguments[0]] = "serving_area"
     return result
 
 
@@ -133,13 +70,7 @@ class ToolTipGeometry:
 def _value(properties: dict[str, Any], key: str) -> float | None:
     row = properties.get(key, {})
     value = row.get("value") if isinstance(row, dict) else None
-    if value is None or isinstance(value, bool):
-        return None
-    try:
-        numeric = float(value)
-    except (TypeError, ValueError):
-        return None
-    return numeric if math.isfinite(numeric) else None
+    return None if value is None else float(value)
 
 
 def _body_collision_rim_z(model: mujoco.MjModel, body_id: int) -> float:
@@ -173,10 +104,6 @@ def derive_target_opening(
     *,
     safety_margin_m: float = 0.006,
 ) -> TargetOpening:
-    if isinstance(safety_margin_m, bool) or not math.isfinite(safety_margin_m):
-        raise ValueError("Safety margin must be a finite positive number")
-    if safety_margin_m <= 0.0:
-        raise ValueError("Safety margin must be a finite positive number")
     properties = registry_object.get("geometric_properties", {})
     width = _value(properties, "opening_width_m")
     length = _value(properties, "opening_length_m")
@@ -252,11 +179,7 @@ def derive_pour_spec(scene, backend_body: str, family: str) -> PourSpec:
         rim = max(wall_centres, key=lambda point: (float(point[0]), -abs(float(point[1]))))
         outlet[:2] = rim[:2]
         provenance = "AUTHORED_PHYSICAL_MOUTH_SITE_PLUS_COLLISION_DERIVED_RIM_EDGE"
-        # An open cylindrical jar needs to pass a visibly meaningful tipping
-        # angle before the kinematic proxy can represent fluid leaving its
-        # rim. The first value is the execution default; the remaining values
-        # are retained as bounded lower-angle calibration alternatives.
-        tilts = tuple(math.radians(value) for value in (55.0, 50.0, 45.0))
+        tilts = tuple(math.radians(value) for value in (35.0, 45.0, 55.0))
     elif family == "KETTLE":
         outlet = _visual_mesh_outlet_local(scene.model, body_id)
         provenance = "PHYSICAL_VISUAL_MESH_UPPER_RADIAL_EXTREMUM"
@@ -316,24 +239,14 @@ class PhaseCExecutionLedger:
     """Exact-event ledger; records effects only from verified physical motion."""
 
     def __init__(self, frozen_plan: list[dict[str, Any]]):
-        self.expected: dict[int, dict[str, Any]] = {}
-        for row in frozen_plan:
-            operator = row["action"].upper()
-            if operator not in {"POUR", "STIR"}:
-                continue
-            raw_step = row.get("step")
-            if isinstance(raw_step, bool):
-                raise ValueError("Phase-C plan step must be an integer")
-            try:
-                step = int(raw_step)
-            except (TypeError, ValueError) as error:
-                raise ValueError("Phase-C plan step must be an integer") from error
-            if step in self.expected:
-                raise ValueError(f"Duplicate Phase-C plan step: {step}")
-            self.expected[step] = {
-                "operator": operator,
+        self.expected = {
+            int(row["step"]): {
+                "operator": row["action"].upper(),
                 "arguments": list(row.get("arguments", [])),
             }
+            for row in frozen_plan
+            if row["action"].upper() in {"POUR", "STIR"}
+        }
         self.events: dict[int, dict[str, Any]] = {}
 
     def commit(self, step: int, result: dict[str, Any]) -> bool:

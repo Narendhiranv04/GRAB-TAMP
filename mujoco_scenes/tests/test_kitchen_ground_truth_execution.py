@@ -310,10 +310,8 @@ def test_every_feasible_variant_uses_the_same_serving_layout(variant, code):
     assert dispatcher.phase_b.manipulation.placement_resolver.serving_slot_by_id == {
         "ab3_narrow_deep_cup": (-0.15, -0.48),
         "ab3_medium_deep_mug": (0.15, -0.48),
-        # Centred by phase4 commit 74cbdfc to maximise serving-table edge
-        # margins; upstream changed the source without updating this literal.
-        "ab3_deep_bowl": (0.08, -0.54),
-        "ab3_shallow_bowl": (-0.08, -0.54),
+        "ab3_deep_bowl": (-0.15, -0.64),
+        "ab3_shallow_bowl": (0.15, -0.64),
     }
 
 

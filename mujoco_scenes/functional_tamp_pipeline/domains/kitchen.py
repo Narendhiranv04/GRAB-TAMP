@@ -15,12 +15,8 @@ from mujoco_scenes.symbolic_planning import (
 )
 from mujoco_scenes.symbolic_planning_core import SymbolicAction, SymbolicProblem
 
-from ..models import (
-    FunctionalRequirementGraph, FunctionalSpecification, GraphGroundingResult,
-    PipelineResult,
-)
+from ..models import FunctionalSpecification, PipelineResult
 from ..planning import plan_with_common_astar
-from ..scene_graph import ObservedSceneGraph
 
 
 TASK = (
@@ -75,10 +71,13 @@ class KitchenPlanningCompiler:
                     {("holding", obj)},
                     {("hand_empty",), ("at", obj, region)},
                 ))
+            initial_locations = dict(legacy.initial.locations)
             for destination in sorted(destinations):
                 preconditions = {("holding", obj)}
                 if (obj, destination) in legacy.soup_assignments:
                     preconditions.add(("contains", destination, "soup"))
+                    if initial_locations.get(destination) == "B1":
+                        preconditions.add(("at", destination, legacy.serving_destination))
                 if destination == legacy.serving_destination:
                     if obj in legacy.coffee_targets:
                         preconditions.add(("contains", obj, "coffee"))
@@ -86,9 +85,10 @@ class KitchenPlanningCompiler:
                         preconditions.add(("stirred", obj))
                     elif obj in legacy.soup_targets:
                         preconditions.add(("contains", obj, "soup"))
-                        for tool, assigned_target in legacy.soup_assignments:
-                            if assigned_target == obj:
-                                preconditions.add(("at", tool, obj))
+                        if initial_locations.get(obj) != "B1":
+                            for tool, assigned_target in legacy.soup_assignments:
+                                if assigned_target == obj:
+                                    preconditions.add(("at", tool, obj))
                 actions.append(_action(
                     "PLACE", (obj, destination), preconditions,
                     {("hand_empty",), ("at", obj, destination)},
@@ -169,6 +169,7 @@ def compile_kitchen_contract_from_graph(graph: FunctionalRequirementGraph) -> di
             "binding_cardinality": cardinality,
             "semantic_preferences": pref,
             "unary_geometry": unary,
+            "allow_empty_geometry": not bool(unary),
         }
 
     relations_list = [
@@ -179,10 +180,13 @@ def compile_kitchen_contract_from_graph(graph: FunctionalRequirementGraph) -> di
             "expected": r.expected,
         }
         for r in graph.relations
+        if r.subject_role in roles_dict and r.object_role in roles_dict
     ]
 
     op_groups_dict = {}
     for grp in graph.operation_groups:
+        if grp.tool_role not in roles_dict or grp.target_role not in roles_dict:
+            continue
         distinct = (
             grp.distinct_within_group
             if grp.distinct_within_group is not None
@@ -195,7 +199,7 @@ def compile_kitchen_contract_from_graph(graph: FunctionalRequirementGraph) -> di
         )
         pref = grp.selection_preference or (
             "minimize_distinct_tools"
-            if grp.usage_policy == "SHARED_ACROSS_ALL_TARGETS"
+            if grp.usage_policy in {"SEQUENTIAL_REUSE_ALLOWED", "SHARED_ACROSS_ALL_TARGETS"}
             else "deterministic_rank"
         )
         op_groups_dict[grp.id] = {
@@ -246,17 +250,19 @@ def compile_kitchen_contract_from_graph(graph: FunctionalRequirementGraph) -> di
             ],
         }
 
-    return {
+    contract_result = {
         "schema_version": 2,
         "task_id": "s1_integrated_prepare_and_serve_coffee_and_soup",
         "specification_source": graph.source,
         "goal_instruction": graph.task_instruction,
         "roles": roles_dict,
         "relations": relations_list,
-        "operation_groups": op_groups_dict,
         "cross_group_reuse": {"allowed": graph.cross_group_reuse_allowed},
         "symbolic_task": symbolic_task,
     }
+    if op_groups_dict:
+        contract_result["operation_groups"] = op_groups_dict
+    return contract_result
 
 
 def build_kitchen_observed_scene_graph(session: Any) -> ObservedSceneGraph:
@@ -412,7 +418,8 @@ def run_to_plan(
     specification: FunctionalSpecification,
     output_dir: Path,
     scene: KitchenScene | None = None,
-    search_order: tuple[str, ...] | None = None,
+    search_contract: SearchRegionContract | None = None,
+    search_order: tuple[str, ...] | SearchRegionContract | None = None,
     observer: Any = None,
 ) -> PipelineResult:
     from ..grounding import ground_graph
@@ -421,45 +428,50 @@ def run_to_plan(
 
     scene = scene or scene_for_variant(internal_variant)
     contract = compile_kitchen_contract_from_graph(specification)
-    vocabulary_path = output_dir / "kitchen_vocabulary.yaml"
-    canonical_labels: dict[str, list[str]] = {}
+
+    phase1_dir = output_dir / "observed_search" / "phase1"
+    # Dump task-scoped vocabulary for perception
     root = Path(__file__).resolve().parents[2]
     base_vocab_path = Path(specification.metadata.get("semantic_vocabulary_path", root / "configs" / "semantic_vocabulary.yaml"))
-    base_canon: dict[str, list[str]] = {}
-    alias_to_base_canon: dict[str, str] = {}
+    base_vocab: dict[str, Any] = {}
     if base_vocab_path.is_file():
-        base_vocab = yaml.safe_load(base_vocab_path.read_text(encoding="utf-8"))
-        base_canon = dict(base_vocab.get("canonical_labels", {}))
-        for canon_k, aliases in base_canon.items():
-            for a in aliases:
-                alias_to_base_canon[a.strip().lower()] = canon_k
+        base_vocab = yaml.safe_load(base_vocab_path.read_text(encoding="utf-8")) or {}
 
+    all_system_role_cats: set[str] = set()
     for role in specification.nodes.values():
-        for cat in role.semantic_categories:
-            norm_cat = cat.strip().lower()
-            if norm_cat in base_canon:
-                if norm_cat not in canonical_labels:
-                    canonical_labels[norm_cat] = list(base_canon[norm_cat])
-            elif norm_cat in alias_to_base_canon:
-                resolved_canon = alias_to_base_canon[norm_cat]
-                if resolved_canon not in canonical_labels:
-                    canonical_labels[resolved_canon] = list(base_canon[resolved_canon])
-            else:
-                if norm_cat not in canonical_labels:
-                    canonical_labels[norm_cat] = [norm_cat]
+        all_system_role_cats.update(role.semantic_categories)
+
+    raw_candidates = list(specification.detector_vocabulary)
+    from ..role_semantic_ontology import build_task_detector_vocabulary
+    canonical_labels = build_task_detector_vocabulary(
+        system_role_categories=all_system_role_cats,
+        raw_vlm_candidate_categories=raw_candidates,
+        base_semantic_ontology=base_vocab,
+    )
     vocab_dict = {
         "schema_version": 1,
         "canonical_labels": canonical_labels,
     }
+    vocab_text = yaml.safe_dump(vocab_dict, sort_keys=False)
+    vocabulary_path = phase1_dir / "yolo_world_dynamic_vocabulary.yaml"
     vocabulary_path.parent.mkdir(parents=True, exist_ok=True)
-    vocabulary_path.write_text(yaml.safe_dump(vocab_dict, sort_keys=False), encoding="utf-8")
+    vocabulary_path.write_text(vocab_text, encoding="utf-8")
+    output_dir.mkdir(parents=True, exist_ok=True)
+    (output_dir / "kitchen_vocabulary.yaml").write_text(vocab_text, encoding="utf-8")
+    from ..search_contract import SearchRegionContract, freeze_search_region_contract
 
-    phase1_dir = output_dir / "observed_search" / "phase1"
-    if phase1_dir.exists():
-        import shutil
-        shutil.rmtree(phase1_dir, ignore_errors=True)
+    if search_contract is None:
+        if isinstance(search_order, SearchRegionContract):
+            search_contract = search_order
+        else:
+            search_contract = freeze_search_region_contract(
+                specification,
+                domain="kitchen",
+                mode=mode,
+                variant=variant_label,
+            )
 
-    order = tuple(search_order) if search_order is not None else tuple(specification.region_ranking)
+    order = tuple(search_contract.canonical_region_ids)
 
     def kitchen_completion_predicate(current: Any) -> bool:
         current_go = build_kitchen_observed_scene_graph(current)
@@ -543,36 +555,43 @@ def run_to_plan(
         json.dumps(witness_payload, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
-    compiled = compile_observed_symbolic_state(session.run_dir, contract)
-    assignments = ground_result.assignment
+    try:
+        compiled = compile_observed_symbolic_state(session.run_dir, contract)
+        assignments = ground_result.assignment
 
-    planned = plan_with_common_astar(
-        KitchenPlanningCompiler(), assignments,
-        {"compiled_observed_state": compiled},
-    )
-    plan_dir = output_dir / "action_sequence"
-    plan_dir.mkdir(parents=True, exist_ok=True)
-    (plan_dir / "action_plan.json").write_text(
-        json.dumps({
-            "planner": planned.search.statistics,
-            "actions": list(planned.actions),
-            "validation": planned.validation,
-            "exploratory_open_actions_excluded": True,
-        }, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
-    from ..audit import audit_plan_grounding
+        planned = plan_with_common_astar(
+            KitchenPlanningCompiler(), assignments,
+            {"compiled_observed_state": compiled},
+        )
+        plan_dir = output_dir / "action_sequence"
+        plan_dir.mkdir(parents=True, exist_ok=True)
+        (plan_dir / "action_plan.json").write_text(
+            json.dumps({
+                "planner": planned.search.statistics,
+                "actions": list(planned.actions),
+                "validation": planned.validation,
+                "exploratory_open_actions_excluded": True,
+            }, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        from ..audit import audit_plan_grounding
 
-    audit = audit_plan_grounding(
-        specification, graph_o, ground_result, planned.actions, home_region=contract["symbolic_task"].get("home_region", "countertop")
-    )
-    (output_dir / "plan_grounding_audit.json").write_text(
-        json.dumps(audit, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
-    return PipelineResult(
-        domain="kitchen", variant=variant_label, mode=mode,
-        status="ACTION_SEQUENCE_READY", inspected_regions=opened,
-        assignment=assignments, plan=planned.actions,
-        search_statistics=planned.search.statistics,
-    )
+        audit = audit_plan_grounding(
+            specification, graph_o, ground_result, planned.actions, home_region=contract["symbolic_task"].get("home_region", "countertop")
+        )
+        (output_dir / "plan_grounding_audit.json").write_text(
+            json.dumps(audit, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        return PipelineResult(
+            domain="kitchen", variant=variant_label, mode=mode,
+            status="ACTION_SEQUENCE_READY", inspected_regions=opened,
+            assignment=assignments, plan=planned.actions,
+            search_statistics=planned.search.statistics,
+        )
+    except Exception as exc:
+        return PipelineResult(
+            domain="kitchen", variant=variant_label, mode=mode,
+            status="INFEASIBLE", inspected_regions=opened,
+            failure_reason=str(exc),
+        )

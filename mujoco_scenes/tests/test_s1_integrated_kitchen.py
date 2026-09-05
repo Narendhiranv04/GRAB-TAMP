@@ -1,6 +1,18 @@
 from pathlib import Path
+import xml.etree.ElementTree as ET
 
-from mujoco_scenes.scene_loader import load_all_configs
+import mujoco
+import numpy as np
+
+from mujoco_scenes.scene_loader import (
+    COUNTER_SPOTS,
+    INTEGRATED_TARGET_VESSELS,
+    KitchenScene,
+    SCENE_OBJECT_VARIANTS,
+    configure_integrated_target_layout,
+    validate_integrated_countertop_clearance,
+    load_all_configs,
+)
 from mujoco_scenes.task_witness import (
     evaluate_usage_policy_task_witness,
     load_task_requirements,
@@ -9,6 +21,12 @@ from mujoco_scenes.task_witness import (
 
 CONFIG_DIR = Path(__file__).resolve().parents[1] / "configs"
 TASK_PATH = CONFIG_DIR / "s1_integrated_kitchen_object_function.yaml"
+OBJECT_LIBRARY = (
+    Path(__file__).resolve().parents[1]
+    / "assets"
+    / "objects"
+    / "object_library.xml"
+)
 COFFEE = ("coffee_1", "coffee_2", "coffee_3")
 SOUP = ("soup_1", "soup_2", "soup_3")
 TARGETS = COFFEE + SOUP
@@ -153,12 +171,106 @@ def test_integrated_scene_family_has_three_visible_and_three_stored_targets():
     assert names <= configs.keys()
     primary = configs["S1_integrated_kitchen_object_function_primary"]
     assert len(primary.countertop_objects) == 10
+    assert {
+        "s1i_compact_kettle",
+        "s1i_compact_coffee_jar",
+    } <= set(
+        primary.countertop_objects.values()
+    )
+    assert "pot_with_soup" not in primary.countertop_objects.values()
     assert sum(map(len, primary.container_contents.values())) == 10
     assert "s1i_final_long_narrow_spoon" not in (
         primary.countertop_objects.values()
     )
     assert "s1i_final_long_narrow_spoon" in primary.container_contents["C1"]
     assert "marker" in primary.countertop_objects.values()
+    assert len(
+        set(INTEGRATED_TARGET_VESSELS)
+        & set(primary.countertop_objects.values())
+    ) == 3
+    assert all(len(items) <= 2 for items in primary.container_contents.values())
+    assert all(
+        sum(
+            item in INTEGRATED_TARGET_VESSELS
+            for item in primary.container_contents[region]
+        ) == 1
+        for region in ("C2", "B1", "C1")
+    )
+    positions = [COUNTER_SPOTS[spot] for spot in primary.countertop_objects]
+    assert all(-0.70 <= x <= 0.60 for x, _y, _z in positions)
+    assert all(-0.40 <= y <= -0.05 for _x, y, _z in positions)
+
+
+def test_f3_hidden_mug_uses_c2_upper_shelf_only():
+    configs = load_all_configs()
+    f3 = configs["S1_integrated_kitchen_object_function_feasibility_F3"]
+    f1 = configs["S1_integrated_kitchen_object_function_feasibility_F1"]
+
+    assert f3.container_slot_overrides == {
+        "C2": {"ab3_medium_deep_mug": [-0.10, 0.0, -0.032]}
+    }
+    assert f1.container_slot_overrides == {}
+
+    scene = KitchenScene(
+        "S1_integrated_kitchen_object_function_feasibility_F3",
+        include_robot=False,
+        robot="none",
+    )
+    mug_id = mujoco.mj_name2id(
+        scene.model, mujoco.mjtObj.mjOBJ_BODY, "ab3_medium_deep_mug"
+    )
+    cabinet_id = mujoco.mj_name2id(
+        scene.model, mujoco.mjtObj.mjOBJ_BODY, "cabinet_C2"
+    )
+    shelf_id = mujoco.mj_name2id(
+        scene.model, mujoco.mjtObj.mjOBJ_GEOM, "C2_shelf"
+    )
+    relative_z = float(scene.data.xpos[mug_id, 2] - scene.data.xpos[cabinet_id, 2])
+    shelf_top_relative_z = float(
+        scene.data.geom_xpos[shelf_id, 2]
+        + scene.model.geom_size[shelf_id, 2]
+        - scene.data.xpos[cabinet_id, 2]
+    )
+    assert np.isclose(
+        relative_z - shelf_top_relative_z,
+        0.05488,
+        atol=0.005,
+    )
+
+
+def test_seeded_integrated_layout_is_deterministic_capacity_safe_and_varied():
+    configs = load_all_configs()
+    first = load_all_configs()[
+        "S1_integrated_kitchen_object_function_primary"
+    ]
+    second = load_all_configs()[
+        "S1_integrated_kitchen_object_function_primary"
+    ]
+    other = load_all_configs()[
+        "S1_integrated_kitchen_object_function_primary"
+    ]
+    manifest_a = configure_integrated_target_layout(first, 17)
+    manifest_b = configure_integrated_target_layout(second, 17)
+    manifest_c = configure_integrated_target_layout(other, 19)
+    assert manifest_a == manifest_b
+    assert manifest_a["target_locations"] != manifest_c["target_locations"]
+    assert all(len(items) <= 2 for items in first.container_contents.values())
+    assert all(
+        sum(
+            item in INTEGRATED_TARGET_VESSELS
+            for item in first.container_contents[region]
+        ) == 1
+        for region in ("C2", "B1", "C1")
+    )
+
+    # Assignment identity changes with the seed, but all visible vessel/tool
+    # combinations retain the scene's conservative 15 mm footprint buffer.
+    for seed in range(100):
+        seeded = load_all_configs()[
+            "S1_integrated_kitchen_object_function_primary"
+        ]
+        configure_integrated_target_layout(seeded, seed)
+        validate_integrated_countertop_clearance(seeded)
 
     initial_complete = configs[
         "S1_integrated_kitchen_object_function_initial_complete"
@@ -180,19 +292,158 @@ def test_integrated_scene_family_has_three_visible_and_three_stored_targets():
     }
 
 
+def test_variant_visual_and_proxy_scales_remain_identical():
+    root = ET.parse(OBJECT_LIBRARY).getroot()
+    mesh_scales = {
+        mesh.get("name"): tuple(
+            float(value)
+            for value in mesh.get("scale", "1 1 1").split()
+        )
+        for mesh in root.findall("./asset/mesh")
+    }
+    for name, variant in SCENE_OBJECT_VARIANTS.items():
+        assert mesh_scales[variant["mesh"]] == tuple(variant["scale"]), name
+
+
+def test_primary_vessels_use_clean_nonstretched_materials():
+    expected = {
+        "ab3_narrow_deep_cup": "mat_s1i_cup_cream",
+        "ab3_medium_deep_mug": "mat_s1i_mug_blue",
+        "s1i_wide_shallow_cup": "mat_s1i_cup_sage",
+        "ab3_shallow_bowl": "mat_s1i_bowl_ivory",
+        "ab3_deep_bowl": "mat_s1i_bowl_blue",
+        "s1i_narrow_deep_bowl": "mat_s1i_bowl_sage",
+    }
+    assert {
+        name: SCENE_OBJECT_VARIANTS[name].get("material")
+        for name in expected
+    } == expected
+
+
+def test_primary_sources_use_scanned_compact_visuals_without_redundant_pot():
+    assert SCENE_OBJECT_VARIANTS["s1i_compact_kettle"] == {
+        "base": "kettle",
+        "scale": (0.78, 0.78, 0.78),
+        "mesh": "mesh_s1i_compact_kettle",
+    }
+    assert SCENE_OBJECT_VARIANTS["s1i_compact_coffee_jar"] == {
+        "base": "coffee_jar",
+        "scale": (0.78, 0.78, 0.78),
+        "mesh": "mesh_s1i_compact_coffee_jar",
+    }
+    primary = load_all_configs()[
+        "S1_integrated_kitchen_object_function_primary"
+    ]
+    assert "pot_with_soup" not in primary.countertop_objects.values()
+
+
+def test_bowls_sources_visibly_expose_soup_powder_and_hot_water():
+    root = ET.parse(OBJECT_LIBRARY).getroot()
+    assert root.find(
+        "./body[@name='bowl']/geom[@name='bowl_soup_surface']"
+    ).get("material") == "mat_tomato_soup"
+    assert root.find(
+        "./body[@name='coffee_jar']/geom[@name='coffee_powder_surface']"
+    ).get("material") == "mat_coffee_powder"
+    assert root.find(
+        "./body[@name='kettle']/geom[@name='kettle_hot_water']"
+    ).get("material") == "mat_hot_water"
+
+
+def test_d2_drawer_and_all_contents_remain_open_after_fixture_release():
+    scene = KitchenScene(
+        "S1_integrated_kitchen_object_function_primary",
+        include_robot=False,
+        robot="none",
+    )
+    scene.open_container("D2", steps=200)
+    assert scene.release_storage_fixture("D2")
+    for _ in range(80):
+        mujoco.mj_step(scene.model, scene.data)
+    state = scene.get_region_observation_states()["D2"]
+    assert state["open"]
+    assert state["open_fraction"] > 0.95
+    for body_name in ("ab3_partial_spoon", "tongs"):
+        body_id = mujoco.mj_name2id(
+            scene.model, mujoco.mjtObj.mjOBJ_BODY, body_name
+        )
+        assert scene.data.xpos[body_id][1] < -0.48
+
+
+def test_c2_spoon_stands_above_shelf_with_bowl_up_and_wall_clearance():
+    scene = KitchenScene(
+        "S1_integrated_kitchen_object_function_primary",
+        include_robot=False,
+        robot="none",
+    )
+    scene.open_container("C2", steps=200)
+    body_id = mujoco.mj_name2id(
+        scene.model, mujoco.mjtObj.mjOBJ_BODY, "s1i_c2_soup_spoon"
+    )
+    handle_id = mujoco.mj_name2id(
+        scene.model, mujoco.mjtObj.mjOBJ_GEOM,
+        "s1i_c2_soup_spoon_handle_collision",
+    )
+    bowl_id = mujoco.mj_name2id(
+        scene.model, mujoco.mjtObj.mjOBJ_GEOM,
+        "s1i_c2_soup_spoon_bowl_collision",
+    )
+    shelf_id = mujoco.mj_name2id(
+        scene.model, mujoco.mjtObj.mjOBJ_GEOM, "C2_shelf"
+    )
+    right_id = mujoco.mj_name2id(
+        scene.model, mujoco.mjtObj.mjOBJ_GEOM, "C2_right"
+    )
+    shelf_top = (
+        scene.data.geom_xpos[shelf_id, 2] + scene.model.geom_size[shelf_id, 2]
+    )
+    minimum_z = float("inf")
+    maximum_x = float("-inf")
+    for geom_id in (handle_id, bowl_id):
+        centre = scene.data.geom_xpos[geom_id]
+        rotation = scene.data.geom_xmat[geom_id].reshape(3, 3)
+        size = scene.model.geom_size[geom_id]
+        if scene.model.geom_type[geom_id] == mujoco.mjtGeom.mjGEOM_CAPSULE:
+            first = centre - rotation[:, 2] * size[1]
+            second = centre + rotation[:, 2] * size[1]
+            lower = np.minimum(first, second) - size[0]
+            upper = np.maximum(first, second) + size[0]
+        else:
+            half_extent = np.sqrt(np.sum((rotation * size[None, :]) ** 2, axis=1))
+            lower, upper = centre - half_extent, centre + half_extent
+        minimum_z = min(minimum_z, float(lower[2]))
+        maximum_x = max(maximum_x, float(upper[0]))
+    right_inner_face = (
+        scene.data.geom_xpos[right_id, 0] - scene.model.geom_size[right_id, 0]
+    )
+    assert scene.data.geom_xpos[bowl_id, 2] > scene.data.geom_xpos[handle_id, 2]
+    assert minimum_z >= shelf_top
+    assert maximum_x < right_inner_face
+    assert right_inner_face - maximum_x <= 0.001
+    assert scene.data.eq_active[
+        mujoco.mj_name2id(
+            scene.model, mujoco.mjtObj.mjOBJ_EQUALITY,
+            "storage_fixture_C2_upright_spoon",
+        )
+    ]
+
+
 def test_integrated_manual_specification_has_function_scoped_usage():
     task = load_task_requirements(TASK_PATH)
     assert task["goal_instruction"] == (
         "Prepare and serve coffee and soup for two people using the "
         "available kitchenware. Stir both coffees and provide each "
-        "soup bowl with a suitable utensil."
+        "soup bowl with a suitable utensil. Search the closed kitchen "
+        "storage for anything still required."
     )
     assert task["roles"]["coffee_container"]["count"] == 2
     assert task["roles"]["soup_container"]["count"] == 2
     coffee = task["operation_groups"]["coffee_stirring"]
     soup = task["operation_groups"]["soup_serving"]
     assert not coffee["usage_policy"]["same_tool_must_cover_all_targets"]
-    assert coffee["usage_policy"]["selection_preference"] == "minimize_distinct_tools"
+    assert coffee["usage_policy"]["selection_preference"] == (
+        "minimize_distinct_tools"
+    )
     assert soup["usage_policy"]["distinct_within_group"]
     assert not task["cross_group_reuse"]["allowed"]
     soup_labels = {

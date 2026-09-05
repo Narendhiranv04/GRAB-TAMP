@@ -506,3 +506,4 @@ def evaluate_gf_against_reference(
         operation_group_recall=operation_group_identity_recall,
         operation_group_precision=operation_group_identity_precision,
     )
+

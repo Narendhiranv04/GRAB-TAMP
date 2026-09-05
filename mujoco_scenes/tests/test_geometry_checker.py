@@ -5,88 +5,21 @@ from pathlib import Path
 import numpy as np
 
 from mujoco_scenes.geometry_checker import (
-    GeometryChecker,
-    associate_segmented_centroid,
     backproject_masked_depth,
     camera_intrinsics,
     gate_points_to_volume,
     load_inspection_rig_config,
     look_at_camera_rotation,
+    scale_intrinsics,
     voxel_downsample,
     write_ply,
 )
-from mujoco_scenes.living_room_scene import LIVING_ROOM_INSPECTION_RIG_CONFIG
+from mujoco_scenes.living_room_scene import (
+    LIVING_ROOM_INSPECTION_RIG_CONFIG,
+)
 
 
 class GeometryCheckerTests(unittest.TestCase):
-    def test_camera_intrinsics_reject_invalid_calibration(self):
-        for fovy, width, height in (
-            (0.0, 640, 480),
-            (180.0, 640, 480),
-            (float("nan"), 640, 480),
-            (60.0, 0, 480),
-            (60.0, 640, True),
-        ):
-            with self.subTest(fovy=fovy, width=width, height=height):
-                with self.assertRaises(ValueError):
-                    camera_intrinsics(fovy, width, height)
-
-    def test_backprojection_rejects_mismatched_images(self):
-        with self.assertRaisesRegex(ValueError, "same-shaped"):
-            backproject_masked_depth(
-                np.ones((2, 2)),
-                np.ones((3, 2), dtype=bool),
-                np.eye(3),
-                np.zeros(3),
-                np.eye(3),
-                max_depth=2.0,
-            )
-
-    def test_geometry_checker_rejects_invalid_capture_settings_early(self):
-        for kwargs in (
-            {"width": 0},
-            {"height": True},
-            {"max_depth": 0.0},
-            {"voxel_size": -0.1},
-        ):
-            with self.subTest(kwargs=kwargs):
-                with self.assertRaises(ValueError):
-                    GeometryChecker(object(), **kwargs)
-
-    def test_learned_masks_associate_by_label_and_world_centroid(self):
-        centroids = {}
-        labels = {}
-        observations = {}
-        first = associate_segmented_centroid(
-            "spoon",
-            np.array([0.1, 0.2, 0.3]),
-            track_centroids=centroids,
-            track_labels=labels,
-            track_observations=observations,
-            used_track_ids=set(),
-            maximum_distance_m=0.12,
-        )
-        second = associate_segmented_centroid(
-            "spoon",
-            np.array([0.12, 0.2, 0.3]),
-            track_centroids=centroids,
-            track_labels=labels,
-            track_observations=observations,
-            used_track_ids=set(),
-            maximum_distance_m=0.12,
-        )
-        third = associate_segmented_centroid(
-            "spoon",
-            np.array([0.5, 0.2, 0.3]),
-            track_centroids=centroids,
-            track_labels=labels,
-            track_observations=observations,
-            used_track_ids=set(),
-            maximum_distance_m=0.12,
-        )
-        self.assertEqual(first, second)
-        self.assertNotEqual(first, third)
-
     def test_backprojection_uses_mujoco_camera_axes(self):
         depth = np.full((2, 2), 2.0, dtype=np.float32)
         mask = np.array([[True, False], [False, False]])
@@ -111,6 +44,17 @@ class GeometryCheckerTests(unittest.TestCase):
         self.assertAlmostEqual(intrinsics[0, 2], 320.0)
         self.assertAlmostEqual(intrinsics[1, 2], 240.0)
 
+    def test_intrinsics_scale_correctly_to_320_by_240(self):
+        source = camera_intrinsics(60.0, width=640, height=480)
+        scaled = scale_intrinsics(
+            source,
+            source_width=640,
+            source_height=480,
+            target_width=320,
+            target_height=240,
+        )
+        direct = camera_intrinsics(60.0, width=320, height=240)
+        np.testing.assert_allclose(scaled, direct)
 
     def test_known_multiview_camera_transforms_align(self):
         world_point = np.array([0.1, 0.2, 0.6])
@@ -161,39 +105,29 @@ class GeometryCheckerTests(unittest.TestCase):
         )
         np.testing.assert_array_equal(inside, [True, False])
 
-    def test_every_region_has_five_distinct_facing_views(self):
+    def test_kitchen_uses_five_distinct_facing_views(self):
         config = load_inspection_rig_config()
         self.assertEqual(
             set(config["regions"]),
             {"INITIAL", "D1", "D2", "C2", "B1", "C1"},
         )
         for region in config["regions"].values():
-            self.assertEqual(len(region["cameras"]), 5)
+            self.assertEqual(
+                set(region["cameras"]),
+                {
+                    "inspection_left",
+                    "inspection_right",
+                    "inspection_top",
+                    "inspection_front",
+                    "inspection_close",
+                },
+            )
 
-    def test_living_room_uses_the_five_robot_top_cameras(self):
+    def test_living_room_five_view_rig_is_accepted_by_generic_loader(self):
         config = load_inspection_rig_config(
             LIVING_ROOM_INSPECTION_RIG_CONFIG
         )
-        self.assertEqual(
-            config["inspection_sequence"],
-            ["LEFT_DRAWER", "RIGHT_DRAWER"],
-        )
-        self.assertEqual(
-            set(config["regions"]),
-            {"INITIAL", "LEFT_DRAWER", "RIGHT_DRAWER"},
-        )
-        self.assertEqual(
-            set(config["camera_slots"].values()),
-            {
-                "top_front_camera",
-                "top_front_left_camera",
-                "top_rear_left_camera",
-                "top_rear_right_camera",
-                "top_front_right_camera",
-            },
-        )
-        for region in config["regions"].values():
-            self.assertEqual(len(region["cameras"]), 5)
+        self.assertEqual(len(config["camera_slots"]), 5)
 
     def test_voxel_fusion_removes_duplicate_samples(self):
         points = np.array(

@@ -21,172 +21,6 @@ from .kitchen_execution_policy import CONTAINER_WORKSPACES, KitchenWorkspace
 
 CONFIG_PATH = Path(__file__).parent / "configs/kitchen_execution_semantics.json"
 
-_CURRENT_MEASUREMENT_FIELDS = (
-    "centroid_world_m",
-    "dimensions_m",
-    "principal_axis_world",
-    "property_status",
-    "point_count",
-    "contributing_camera_count",
-    "geometric_properties",
-    "geometric_predicates",
-    "measurement_quality",
-    "measurement_cloud_path",
-    "geometry",
-    "last_evidence_stage",
-    "last_evidence_source_region",
-    "last_property_update_stage",
-    "last_property_source_region",
-)
-
-
-def _semantic_label(record: dict[str, Any]) -> str | None:
-    return (
-        record.get("semantics", {})
-        .get("validated", {})
-        .get("canonical_label")
-    )
-
-
-def _dimension_vector(record: dict[str, Any]) -> np.ndarray:
-    return np.asarray(
-        [
-            record.get("dimensions_m", {})
-            .get(axis, {})
-            .get("value", np.nan)
-            for axis in ("length", "width", "height")
-        ],
-        dtype=float,
-    )
-
-
-def _physical_family(record: dict[str, Any]) -> str | None:
-    label = _semantic_label(record)
-    if label in {"bowl", "cup", "mug", "glass"}:
-        return "OPEN_VESSEL"
-    if label in {"spoon", "fork", "knife", "stirrer", "utensil"}:
-        return "ELONGATED_UTENSIL"
-    dimensions = _dimension_vector(record)
-    finite = dimensions[np.isfinite(dimensions) & (dimensions > 0.0)]
-    if len(finite) >= 2:
-        ratio = float(np.max(finite) / np.partition(finite, -2)[-2])
-        if ratio >= 2.0:
-            return "ELONGATED_UTENSIL"
-    return None
-
-
-def _observed_source_region(record: dict[str, Any]) -> str:
-    region = record.get("last_evidence_source_region")
-    if not isinstance(region, str) or not region:
-        region = record.get("centroid_world_m", {}).get("source_region")
-    if not isinstance(region, str) or not region:
-        raise ValueError(
-            "Execution object lacks stage-local source-region evidence"
-        )
-    return region
-
-
-def apply_within_region_execution_calibration(
-    frozen_registry: dict[str, Any],
-    current_registry: dict[str, Any],
-    *,
-    region: str,
-) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-    """Update physical measurements using observed same-region association."""
-    result = deepcopy(frozen_registry)
-    frozen_rows = [
-        (object_id, row)
-        for object_id, row in result["objects"].items()
-        if _observed_source_region(row) == region
-    ]
-    current_rows = [
-        (object_id, row)
-        for object_id, row in current_registry["objects"].items()
-        if _observed_source_region(row) == region
-    ]
-    edges = []
-    rejected = []
-    for frozen_id, frozen_row in frozen_rows:
-        frozen_label = _semantic_label(frozen_row)
-        frozen_family = _physical_family(frozen_row)
-        frozen_dimensions = _dimension_vector(frozen_row)
-        for current_id, current_row in current_rows:
-            current_label = _semantic_label(current_row)
-            current_family = _physical_family(current_row)
-            semantic_ok = frozen_label is not None and frozen_label == current_label
-            family_ok = frozen_family is not None and frozen_family == current_family
-            current_dimensions = _dimension_vector(current_row)
-            finite = np.isfinite(frozen_dimensions) & np.isfinite(current_dimensions)
-            dimension_error = (
-                float(
-                    np.linalg.norm(
-                        frozen_dimensions[finite] - current_dimensions[finite]
-                    )
-                )
-                if np.any(finite)
-                else float("inf")
-            )
-            edge = {
-                "frozen_generic_id": frozen_id,
-                "current_observation_generic_id": current_id,
-                "source_region": region,
-                "frozen_semantic_label": frozen_label,
-                "current_semantic_label": current_label,
-                "semantic_consistent": semantic_ok,
-                "frozen_physical_family": frozen_family,
-                "current_physical_family": current_family,
-                "physical_family_consistent": family_ok,
-                "dimension_error_m": dimension_error,
-            }
-            if (semantic_ok or family_ok) and np.isfinite(dimension_error):
-                edges.append(
-                    (dimension_error, frozen_id, current_id, current_row, edge)
-                )
-            else:
-                rejected.append(edge)
-    assigned_frozen: set[str] = set()
-    assigned_current: set[str] = set()
-    accepted = []
-    for _, frozen_id, current_id, current_row, edge in sorted(
-        edges, key=lambda item: (item[0], item[1], item[2])
-    ):
-        if frozen_id in assigned_frozen or current_id in assigned_current:
-            continue
-        assigned_frozen.add(frozen_id)
-        assigned_current.add(current_id)
-        target = result["objects"][frozen_id]
-        for field in _CURRENT_MEASUREMENT_FIELDS:
-            if field in current_row:
-                target[field] = deepcopy(current_row[field])
-        target["execution_scene_calibration"] = {
-            "classification": "APPROVED_WITHIN_REGION_EXECUTION_CALIBRATION",
-            "region": region,
-            "association_inputs": [
-                "observed_source_region",
-                "frozen_semantic_or_shape_family",
-                "current_observed_semantic_or_shape_family",
-                "observed_dimensions",
-            ],
-            "instance_token_used": False,
-            "backend_body_name_used": False,
-            "current_observation_generic_id_not_planner_visible": current_id,
-            "current_observed_semantic_label": edge["current_semantic_label"],
-            "frozen_physical_family": edge["frozen_physical_family"],
-            "current_physical_family": edge["current_physical_family"],
-            "dimension_error_m": edge["dimension_error_m"],
-        }
-        accepted.append({**edge, "accepted": True})
-    if len(assigned_frozen) != len(frozen_rows):
-        missing = sorted(
-            {object_id for object_id, _ in frozen_rows} - assigned_frozen
-        )
-        raise RuntimeError(
-            f"Approved {region} calibration did not resolve frozen IDs: {missing}"
-        )
-    return result, accepted + [
-        {**row, "accepted": False} for row in rejected
-    ]
-
 
 class SourceKind(str, Enum):
     TABLE = "TABLE"
@@ -222,7 +56,7 @@ def load_execution_semantics(path: Path = CONFIG_PATH) -> dict[str, Any]:
 
 
 def source_context(object_id: str, record: dict[str, Any]) -> ObjectSourceContext:
-    region = _observed_source_region(record)
+    region = str(record.get("source_region") or "UNKNOWN")
     if region in {"INITIAL", "countertop", "table"}:
         kind, container, workspace = SourceKind.TABLE, None, KitchenWorkspace.HOME
     elif region in {"D1", "D2"}:
@@ -234,14 +68,6 @@ def source_context(object_id: str, record: dict[str, Any]) -> ObjectSourceContex
     else:
         kind, container, workspace = SourceKind.SUPPORT, None, KitchenWorkspace.HOME
     centroid = record.get("centroid_world_m", {})
-    stage = record.get("last_evidence_stage", centroid.get("source_stage"))
-    if isinstance(stage, bool) or not isinstance(stage, int) or stage < 0:
-        raise ValueError(
-            f"Execution object {object_id!r} lacks a valid evidence stage"
-        )
-    cloud_path = record.get("measurement_cloud_path") or centroid.get(
-        "measurement_cloud_path"
-    )
     return ObjectSourceContext(
         object_id=object_id,
         source_kind=kind,
@@ -249,10 +75,8 @@ def source_context(object_id: str, record: dict[str, Any]) -> ObjectSourceContex
         required_workspace=workspace,
         container_must_be_open=container is not None,
         observed_source_region=region,
-        observed_source_stage=stage,
-        observed_measurement_cloud_path=(
-            str(cloud_path) if cloud_path is not None else None
-        ),
+        observed_source_stage=int(record.get("first_seen_stage", 0)),
+        observed_measurement_cloud_path=centroid.get("measurement_cloud_path"),
     )
 
 
@@ -323,8 +147,6 @@ def build_phase_b_inventory(
     registry: dict[str, Any],
     assignments: dict[str, Any],
     plan: list[dict[str, Any]],
-    *,
-    include_all_observed_objects: bool = False,
 ) -> dict[str, Any]:
     config = load_execution_semantics()
     roles, forced_semantics = _selected_roles(
@@ -341,17 +163,7 @@ def build_phase_b_inventory(
         object_id for object_id, record in registry["objects"].items()
         if record.get("execution_scene_calibration") is not None
     }
-    relevant_ids = set(roles) | set(usage) | calibrated
-    if include_all_observed_objects:
-        supported_labels = set(config["semantic_compatibility"])
-        for object_id, record in registry["objects"].items():
-            semantics = record.get("semantics", {})
-            validated = semantics.get("validated") or semantics.get(
-                "latest_observation"
-            ) or {}
-            if validated.get("canonical_label") in supported_labels:
-                relevant_ids.add(object_id)
-    relevant = sorted(relevant_ids)
+    relevant = sorted(set(roles) | set(usage) | calibrated)
     rows = []
     for object_id in relevant:
         record = registry["objects"][object_id]
@@ -392,11 +204,7 @@ def build_phase_b_inventory(
     return {
         "schema_version": 1,
         "scene_name": registry["scene_name"],
-        "inference_boundary": (
-            "FROZEN_COMPLETE_OBSERVED_REGISTRY"
-            if include_all_observed_objects
-            else "FROZEN_OBSERVED_STATE_AND_WITNESS_ONLY"
-        ),
+        "inference_boundary": "FROZEN_OBSERVED_STATE_AND_WITNESS_ONLY",
         "planner_received_backend_names": False,
         "evaluation_instance_tokens_excluded": True,
         "objects": rows,
@@ -407,7 +215,7 @@ class KitchenExecutionEntityResolver:
     """Deterministic one-to-one centroid matching after semantic/source gates."""
 
     def __init__(self, config: dict[str, Any] | None = None):
-        self.config = load_execution_semantics() if config is None else config
+        self.config = config or load_execution_semantics()
 
     def classify_backend_kind(self, kind: str) -> tuple[str, str] | None:
         lowered = kind.lower()

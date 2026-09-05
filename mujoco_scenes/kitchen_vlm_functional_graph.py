@@ -540,10 +540,134 @@ def compile_vlm_functional_graph(
                 "detector_aliases": phrases,
             })
 
-        roles[canon_role_name] = {
+        raw_card = row.get("binding_cardinality")
+        direct_min = row.get("min_count")
+        direct_max = row.get("max_count")
+        direct_pref = row.get("preference")
+
+        if raw_card is not None:
+            if not isinstance(raw_card, dict):
+                raise MalformedVLMSpecificationError(f"Role {raw_role_id!r} binding_cardinality must be a dict")
+            allowed_card_keys = {
+                "minimum_distinct_physical_objects",
+                "maximum_distinct_physical_objects",
+                "preferred",
+                "preference",
+                "mode",
+            }
+            unexpected_keys = set(raw_card) - allowed_card_keys
+            if unexpected_keys:
+                raise MalformedVLMSpecificationError(
+                    f"Role {raw_role_id!r} binding_cardinality has unexpected keys: {sorted(unexpected_keys)}"
+                )
+            if "minimum_distinct_physical_objects" not in raw_card or "maximum_distinct_physical_objects" not in raw_card:
+                raise MalformedVLMSpecificationError(
+                    f"Role {raw_role_id!r} binding_cardinality missing required minimum/maximum fields"
+                )
+            c_min = raw_card["minimum_distinct_physical_objects"]
+            c_max = raw_card["maximum_distinct_physical_objects"]
+            if isinstance(c_min, bool) or not isinstance(c_min, int) or c_min < 1:
+                raise MalformedVLMSpecificationError(
+                    f"Role {raw_role_id!r} binding_cardinality minimum_distinct_physical_objects must be integer >= 1"
+                )
+            if isinstance(c_max, bool) or not isinstance(c_max, int) or c_max < 1:
+                raise MalformedVLMSpecificationError(
+                    f"Role {raw_role_id!r} binding_cardinality maximum_distinct_physical_objects must be integer >= 1"
+                )
+            if c_min > c_max:
+                raise MalformedVLMSpecificationError(
+                    f"Role {raw_role_id!r} binding_cardinality minimum ({c_min}) > maximum ({c_max})"
+                )
+            if c_max > required_count:
+                raise MalformedVLMSpecificationError(
+                    f"Role {raw_role_id!r} binding_cardinality maximum ({c_max}) > required_count ({required_count})"
+                )
+            if "preferred" in raw_card and "preference" in raw_card:
+                if raw_card["preferred"] != raw_card["preference"]:
+                    raise MalformedVLMSpecificationError(
+                        f"Role {raw_role_id!r} binding_cardinality conflicting preferred ({raw_card['preferred']!r}) and preference ({raw_card['preference']!r})"
+                    )
+            c_pref = raw_card.get("preferred") if "preferred" in raw_card else raw_card.get("preference")
+            if c_pref is not None and c_pref not in {"minimize_distinct", "maximize_distinct", "deterministic_rank"}:
+                raise MalformedVLMSpecificationError(
+                    f"Role {raw_role_id!r} binding_cardinality invalid preference: {c_pref!r}"
+                )
+            if binding_policy == "DISTINCT":
+                if c_min != required_count or c_max != required_count:
+                    raise MalformedVLMSpecificationError(
+                        f"Role {raw_role_id!r} has DISTINCT binding_policy but cardinality range [{c_min}, {c_max}] != required_count {required_count}"
+                    )
+            if direct_min is not None:
+                if isinstance(direct_min, bool) or not isinstance(direct_min, int) or direct_min != c_min:
+                    raise MalformedVLMSpecificationError(
+                        f"Role {raw_role_id!r} min_count ({direct_min}) contradicts binding_cardinality minimum ({c_min})"
+                    )
+            if direct_max is not None:
+                if isinstance(direct_max, bool) or not isinstance(direct_max, int) or direct_max != c_max:
+                    raise MalformedVLMSpecificationError(
+                        f"Role {raw_role_id!r} max_count ({direct_max}) contradicts binding_cardinality maximum ({c_max})"
+                    )
+            if direct_pref is not None:
+                if direct_pref not in {"minimize_distinct", "maximize_distinct", "deterministic_rank"}:
+                    raise MalformedVLMSpecificationError(
+                        f"Role {raw_role_id!r} preference invalid: {direct_pref!r}"
+                    )
+                if c_pref is not None and direct_pref != c_pref:
+                    raise MalformedVLMSpecificationError(
+                        f"Role {raw_role_id!r} preference ({direct_pref!r}) contradicts binding_cardinality preference ({c_pref!r})"
+                    )
+            cardinality_data: dict[str, Any] | None = dict(raw_card)
+            cardinality_data.setdefault("mode", "assignment_driven")
+            min_count = c_min
+            max_count = c_max
+            preferred = c_pref
+        else:
+            cardinality_data = None
+            if direct_min is not None or direct_max is not None:
+                if direct_min is None or direct_max is None:
+                    raise MalformedVLMSpecificationError(
+                        f"Role {raw_role_id!r} must provide both min_count and max_count"
+                    )
+                if isinstance(direct_min, bool) or not isinstance(direct_min, int) or direct_min < 1:
+                    raise MalformedVLMSpecificationError(f"Role {raw_role_id!r} min_count must be integer >= 1")
+                if isinstance(direct_max, bool) or not isinstance(direct_max, int) or direct_max < 1:
+                    raise MalformedVLMSpecificationError(f"Role {raw_role_id!r} max_count must be integer >= 1")
+                if direct_min > direct_max:
+                    raise MalformedVLMSpecificationError(
+                        f"Role {raw_role_id!r} min_count ({direct_min}) > max_count ({direct_max})"
+                    )
+                if direct_max > required_count:
+                    raise MalformedVLMSpecificationError(
+                        f"Role {raw_role_id!r} max_count ({direct_max}) > required_count ({required_count})"
+                    )
+                if binding_policy == "DISTINCT":
+                    if direct_min != required_count or direct_max != required_count:
+                        raise MalformedVLMSpecificationError(
+                            f"Role {raw_role_id!r} has DISTINCT binding_policy but cardinality range [{direct_min}, {direct_max}] != required_count {required_count}"
+                        )
+                min_count = direct_min
+                max_count = direct_max
+            else:
+                min_count = None
+                max_count = None
+
+            if direct_pref is not None:
+                if direct_pref not in {"minimize_distinct", "maximize_distinct", "deterministic_rank"}:
+                    raise MalformedVLMSpecificationError(f"Role {raw_role_id!r} preference invalid: {direct_pref!r}")
+                preferred = direct_pref
+            else:
+                preferred = None
+
+        if preferred is None and binding_policy == "REUSABLE":
+            preferred = "minimize_distinct"
+
+        role_entry: dict[str, Any] = {
             "raw_vlm_role_id": raw_role_id,
             "entity_kind": "OBJECT",
             "count": required_count,
+            "min_count": min_count,
+            "max_count": max_count,
+            "preference": preferred,
             "assignment_order": order,
             "vlm_function": str(row.get("function", "")),
             "vlm_binding_policy": binding_policy,
@@ -553,9 +677,15 @@ def compile_vlm_functional_graph(
             "unary_geometry": unary,
             "visible_candidates": list(row.get("visible_candidates", [])),
         }
+        if cardinality_data is not None:
+            role_entry["binding_cardinality"] = cardinality_data
+        roles[canon_role_name] = role_entry
         concept_accounting["roles"][raw_role_id] = {
             "canonical_role": canon_role_name,
             "count": required_count,
+            "min_count": min_count,
+            "max_count": max_count,
+            "preference": preferred,
             "binding_policy": binding_policy,
             "unary_predicates": list(seen_predicates_on_role),
             "role_semantic_source": "FUNCTION_AND_DESCRIPTION",
@@ -749,9 +879,12 @@ def compile_vlm_functional_graph(
         if policy not in {"SEQUENTIAL_REUSE_ALLOWED", "DEDICATED_PER_TARGET"}:
             raise MalformedVLMSpecificationError(f"Operation group {raw_group_id!r} has unknown usage_policy: {policy!r}")
 
+        canon_fn = "STIR_COFFEE" if fn_group == "coffee_stirring" else "PROVIDE_SOUP_EATING_UTENSIL"
         operations[canon_group_id] = {
             "raw_vlm_group_id": raw_group_id,
-            "function": str(raw_fn),
+            "function": canon_fn,
+            "canonical_function": canon_fn,
+            "raw_function": str(raw_fn),
             "tool_role": tool_role,
             "target_role": target_role,
             "required_target_count": req_target_count,
@@ -770,7 +903,7 @@ def compile_vlm_functional_graph(
             "raw_group_id": raw_group_id,
             "canonical_group": canon_group_id,
             "raw_function": str(raw_fn),
-            "canonical_function": fn_group,
+            "canonical_function": canon_fn,
             "function_mapping_status": "PRESERVED",
             "tool_role": tool_role,
             "target_role": target_role,
@@ -780,17 +913,66 @@ def compile_vlm_functional_graph(
             "status": "PRESERVED",
         })
 
+    # Reconcile role cardinality with operation groups if not explicitly set
+    for canon_gid, op_info in operations.items():
+        t_role = op_info["tool_role"]
+        if t_role in roles:
+            r_entry = roles[t_role]
+            t_req_count = op_info["required_target_count"]
+            if op_info["usage_policy"]["mode"] == "sequential_reuse_allowed":
+                if r_entry.get("min_count") is None:
+                    r_entry["min_count"] = 1
+                if r_entry.get("max_count") is None:
+                    r_entry["max_count"] = t_req_count
+                if r_entry.get("preference") is None:
+                    r_entry["preference"] = "minimize_distinct"
+            elif op_info["usage_policy"]["mode"] == "dedicated_per_target":
+                if r_entry.get("min_count") is None:
+                    r_entry["min_count"] = t_req_count
+                if r_entry.get("max_count") is None:
+                    r_entry["max_count"] = t_req_count
+
     # Deterministic Region Resolution: resolve ONLY through label/visual_description (ignore VLM local ID)
     local_id_to_canonical: dict[str, str] = {}
-    unresolved_proposals: list[dict[str, Any]] = []
+    region_proposal_trace: list[dict[str, Any]] = []
+    canonical_to_raw_ids: dict[str, str] = {}
     raw_regions = valid_doc.get("inspectable_regions", [])
-    for prop in raw_regions:
-        prop_id = str(prop.get("id") or "")
-        canon_reg = resolve_kitchen_region_proposal(prop)
-        if canon_reg is not None and canon_reg in observable_regions:
-            local_id_to_canonical[prop_id] = canon_reg
+    for idx, prop in enumerate(raw_regions):
+        if isinstance(prop, dict):
+            prop_id = str(prop.get("id") or "")
+            raw_label = str(prop.get("label") or "")
+            raw_desc = str(prop.get("visual_description") or "")
         else:
-            unresolved_proposals.append(prop)
+            prop_id = str(prop)
+            raw_label = str(prop)
+            raw_desc = ""
+
+        canon_reg = resolve_kitchen_region_proposal(prop)
+        if canon_reg is None or canon_reg not in observable_regions:
+            raise UnmappedFunctionalConceptError(
+                f"Kitchen inspectable region proposal {prop_id!r} (label={raw_label!r}, "
+                f"visual_description={raw_desc!r}) cannot be mapped to any known system search region "
+                f"(available: {sorted(observable_regions)})"
+            )
+
+        if canon_reg in canonical_to_raw_ids:
+            prev_raw_id = canonical_to_raw_ids[canon_reg]
+            raise AmbiguousCanonicalizationError(
+                f"Multiple raw region proposals ({prev_raw_id!r} and {prop_id!r}) map to the same "
+                f"canonical search region {canon_reg!r}. Duplicate search region proposal collision fails closed."
+            )
+
+        canonical_to_raw_ids[canon_reg] = prop_id
+        local_id_to_canonical[prop_id] = canon_reg
+        region_proposal_trace.append({
+            "raw_index": idx,
+            "raw_id": prop_id,
+            "raw_label": raw_label,
+            "raw_visual_description": raw_desc,
+            "canonical_region_id": canon_reg,
+            "resolution_status": "RESOLVED",
+            "reason": "Deterministic label/visual_description match",
+        })
 
     resolved_candidate_regions = tuple(dict.fromkeys(local_id_to_canonical.values()))
 
@@ -845,7 +1027,7 @@ def compile_vlm_functional_graph(
         "canonical_predicates_dispatched": canonical_predicates,
         "concept_accounting": concept_accounting,
         "resolved_regions": local_id_to_canonical,
-        "unresolved_proposals": unresolved_proposals,
+        "region_proposal_trace": region_proposal_trace,
         "candidate_regions": list(resolved_candidate_regions),
         "inspection_order": resolved_order,
         "task_contract": {
@@ -854,3 +1036,4 @@ def compile_vlm_functional_graph(
         "detector_vocabulary": detector_vocabulary,
     }
     return contract, {"object": detector_vocabulary}, trace
+

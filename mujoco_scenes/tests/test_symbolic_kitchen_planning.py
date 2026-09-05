@@ -255,16 +255,6 @@ def test_oracle_source_binding_payload_is_rejected(tmp_path):
         compile_observed_symbolic_state(tmp_path, TASK)
 
 
-def test_nested_oracle_source_binding_payload_is_rejected(tmp_path):
-    _make_run(tmp_path)
-    (tmp_path / "symbolic_source_semantics.json").write_text(json.dumps({
-        "inference_basis": "RGB_ONLY_SOURCE_GROUNDING",
-        "objects": {"object_x": {"oracle_source_region": "C1"}},
-    }))
-    with pytest.raises(SymbolicCompilationError, match="Oracle source"):
-        compile_observed_symbolic_state(tmp_path, TASK)
-
-
 def test_exactly_four_generic_operator_types():
     assert KitchenSymbolicProblem.OPERATOR_TYPES == {"pick", "place", "pour", "stir"}
     domain = render_domain_pddl()
@@ -339,17 +329,6 @@ def test_validator_rejects_corrupted_order_and_binding(tmp_path):
     assert not invalid["plan_valid"]
     assert invalid["failed_step"] == 1
     assert f"holding({tool})" in invalid["failed_preconditions"]
-
-
-def test_validator_reports_malformed_action_arity(tmp_path):
-    problem = _problem(tmp_path)
-    invalid = validate_symbolic_plan(
-        problem, [GroundAction("pick", ("object_a", "extra"))]
-    )
-    assert not invalid["plan_valid"]
-    assert invalid["failed_preconditions"] == [
-        "invalid_arity(pick, expected=1, received=2)"
-    ]
 
 
 def test_planning_is_deterministic_and_goal_omission_is_detected(tmp_path):

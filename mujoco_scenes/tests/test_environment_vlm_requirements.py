@@ -9,7 +9,6 @@ import pytest
 import yaml
 
 from mujoco_scenes.environment_vlm_requirements import EnvironmentVLMRequirementProvider
-from mujoco_scenes.living_room_region_function import load_integrated_task
 from mujoco_scenes.run_environment_vlm_requirements import (
     DIRECT_SCENE_CAMERAS,
     available_variants,
@@ -164,17 +163,39 @@ def living_room_decomposition() -> dict:
                 ],
                 "required_properties": ["planar support"],
             },
+            {
+                "id": "viewer_seating_position",
+                "entity_kind": "FIXED_TARGET",
+                "function": "viewer seating position",
+                "description": "individual seated viewer location for personal drink access",
+                "required_count": 2,
+                "binding_policy": "DISTINCT",
+                "candidate_categories": ["armchair", "chair"],
+                "visible_candidates": [],
+                "required_properties": [],
+            },
+            {
+                "id": "paired_seating_area",
+                "entity_kind": "FIXED_TARGET",
+                "function": "paired viewer seating area",
+                "description": "both viewer seating positions collectively for shared item accessibility",
+                "required_count": 1,
+                "binding_policy": "SHARED",
+                "candidate_categories": ["armchairs", "seating area"],
+                "visible_candidates": [],
+                "required_properties": [],
+            },
         ],
         "functional_relations": [
             {
                 "subject_role": "central_control_surface",
                 "relation": "accessible from both seats",
-                "object_role": "central_control_surface",
+                "object_role": "paired_seating_area",
             },
             {
                 "subject_role": "individual_drink_surface",
                 "relation": "near the assigned seat",
-                "object_role": "individual_drink_surface",
+                "object_role": "viewer_seating_position",
             },
         ],
         "interaction_groups": [],
@@ -255,7 +276,7 @@ def test_prompt_contains_only_goal_generic_request_and_images(observation_image)
     assert set(request) == {"task_instruction", "request"}
     assert "role_envelopes" not in content[0]["text"]
     leaked_answers = (
-        "coffee_container", "soup_container", "coffee_stirrer", "open cavity",
+        "coffee_container", "soup_container", "coffee_stirrer",
         "insert into the target", "reach the bottom", "PLANAR_SUPPORT", "side table",
     )
     assert not any(answer in content[0]["text"] for answer in leaked_answers)
@@ -292,7 +313,7 @@ def test_living_contract_remains_accepted_by_existing_loader(tmp_path, observati
     result = provider.generate_canonical(
         "Prepare living room", observation_images=[observation_image]
     )
-    assert len(result["normalized_requirements"]) == 2
+    assert len([r for r in result["normalized_requirements"] if r["entity_kind"] == "REGION"]) == 2
 
 
 def test_custom_instruction_is_the_only_task_content_sent(observation_image):
@@ -434,22 +455,55 @@ def test_living_room_canonical_role_consolidation(observation_image):
                 ],
                 "required_properties": ["planar support"],
             },
+            {
+                "id": "viewer_1_seat",
+                "entity_kind": "FIXED_TARGET",
+                "function": "viewer seating position",
+                "description": "left viewer seating position",
+                "required_count": 1,
+                "binding_policy": "DISTINCT",
+                "candidate_categories": ["armchair"],
+                "visible_candidates": [],
+                "required_properties": [],
+            },
+            {
+                "id": "viewer_2_seat",
+                "entity_kind": "FIXED_TARGET",
+                "function": "viewer seating position",
+                "description": "right viewer seating position",
+                "required_count": 1,
+                "binding_policy": "DISTINCT",
+                "candidate_categories": ["armchair"],
+                "visible_candidates": [],
+                "required_properties": [],
+            },
+            {
+                "id": "paired_seats",
+                "entity_kind": "FIXED_TARGET",
+                "function": "paired viewer seating area",
+                "description": "paired seating positions",
+                "required_count": 1,
+                "binding_policy": "SHARED",
+                "candidate_categories": ["armchairs"],
+                "visible_candidates": [],
+                "required_properties": [],
+            },
         ],
         "functional_relations": [
             {
                 "subject_role": "viewer_1_side_table",
                 "relation": "within reach of one seated person",
-                "object_role": "viewer_1_side_table",
+                "object_role": "viewer_1_seat",
             },
             {
                 "subject_role": "viewer_2_side_table",
                 "relation": "within reach of one seated person",
-                "object_role": "viewer_2_side_table",
+                "object_role": "viewer_2_seat",
             },
             {
                 "subject_role": "shared_coffee_table",
                 "relation": "accessible from both seats",
-                "object_role": "shared_coffee_table",
+                "object_role": "paired_seats",
             },
         ],
         "interaction_groups": [],
@@ -463,8 +517,9 @@ def test_living_room_canonical_role_consolidation(observation_image):
         observation_images=[observation_image],
     )
     reqs = result["normalized_requirements"]
-    # Exactly 2 consolidated canonical roles: personal_cup_saucer (count 2) and shared_remote (count 1)
-    assert len(reqs) == 2
+    # Exactly 2 consolidated canonical region roles: personal_cup_saucer (count 2) and shared_remote (count 1)
+    region_reqs = [r for r in reqs if r["entity_kind"] == "REGION"]
+    assert len(region_reqs) == 2
     personal_req = next(r for r in reqs if r["role_id"] == "personal_cup_saucer")
     assert personal_req["vlm_required_count"] == 2
     assert personal_req["raw_vlm_role_ids"] == ["viewer_1_side_table", "viewer_2_side_table"]
@@ -474,6 +529,10 @@ def test_living_room_canonical_role_consolidation(observation_image):
     assert shared_req["vlm_required_count"] == 1
     assert shared_req["raw_vlm_role_ids"] == ["shared_coffee_table"]
     assert shared_req["function"] == "SHARED_REMOTE_REGION"
+
+    seating_req = next(r for r in reqs if r["role_id"] == "seating_position")
+    assert seating_req["vlm_required_count"] == 2
+    assert seating_req["raw_vlm_role_ids"] == ["viewer_1_seat", "viewer_2_seat"]
 
     # Now verify FunctionalRequirementGraph construction and validation
     from mujoco_scenes.functional_tamp_pipeline.vlm_spec_provider import VLMSpecProvider

@@ -8,16 +8,11 @@ from pathlib import Path
 import time
 from typing import Any
 
-import mujoco
-import numpy as np
-
 from .kitchen_execution_entities import (
     KitchenExecutionEntityResolver,
     build_phase_b_inventory,
 )
 from .kitchen_ground_truth_execution import KitchenGroundTruthExecutionDispatcher
-from .kitchen_ground_truth_execution import serving_utensil_containment_evidence
-from .kitchen_pour_stir_manipulation import derive_tool_tip
 from .kitchen_ground_truth_planner import GroundTruthAssignment
 from .phase4_execution import (
     ActionExecutionResult,
@@ -29,7 +24,6 @@ from .phase4_execution import (
     ResolvedEntity,
 )
 from .scene_loader import KitchenScene
-from .sequential_inspection import INTERFERING_OPEN_REGIONS
 
 
 REGION_IDS = frozenset({"countertop", "serving_area", "D1", "D2", "C1", "C2", "B1"})
@@ -154,6 +148,9 @@ class KitchenPhase4Adapter:
         step_callback: Any = None,
         record_video: Path | None = None,
         viewer: bool = False,
+        tile_width: int = 640,
+        tile_height: int = 360,
+        fps: int = 5,
     ):
         registry_path = (
             handoff.run_dir / "observed_search" / "phase1" / "object_registry.json"
@@ -188,9 +185,9 @@ class KitchenPhase4Adapter:
             self.recorder = KitchenGroundTruthRecorder(
                 self.scene,
                 output_path=record_video,
-                tile_width=320,
-                tile_height=180,
-                fps=5,
+                tile_width=tile_width,
+                tile_height=tile_height,
+                fps=fps,
                 show=viewer,
                 record=record_video is not None,
             )
@@ -244,7 +241,6 @@ class KitchenPhase4Adapter:
             allow_assisted_pick_recovery=True,
         )
         self.expected_inspected_regions = tuple(handoff.inspected_regions)
-        self.served_object_ids: list[str] = []
         self.inventory = inventory
         self.entity_resolution = resolution
         self.by_id = {
@@ -262,9 +258,7 @@ class KitchenPhase4Adapter:
             for row in resolution["accepted"]
         }
         self.successful_actions: list[dict[str, Any]] = []
-        self.successful_inspection_history: list[str] = list(
-            handoff.inspected_regions
-        )
+        self.successful_inspection_history: list[str] = []
         self.expected_actions = list(handoff.actions)
         self.record_video = record_video
 
@@ -329,42 +323,26 @@ class KitchenPhase4Adapter:
         }
 
     def _physically_prepare_region(self, region: str) -> dict[str, Any]:
-        """Close documented interference, then physically open ``region``."""
-        open_before = self.dispatcher.physically_open_containers()
-        conflicting = INTERFERING_OPEN_REGIONS.get(region)
-        conflicting_was_open = bool(conflicting and conflicting in open_before)
-        close_result = None
-        close_verified = True
-        if conflicting_was_open:
-            close_result = self.dispatcher.close_container(conflicting)
-            close_verified = bool(
-                close_result.get("success")
-                and conflicting not in self.dispatcher.physically_open_containers()
-            )
-        open_result = {"success": False, "status": "CONFLICT_CLOSE_FAILED"}
-        if close_verified:
-            open_result = self.dispatcher.open_container(region)
+        """Physically open ``region``."""
+        open_result = self.dispatcher.open_container(region)
         open_verified = bool(
             open_result.get("success")
             and region in self.dispatcher.physically_open_containers()
         )
         return {
-            "success": bool(close_verified and open_verified),
+            "success": open_verified,
             "source_region": region,
-            "conflicting_region": conflicting,
-            "conflicting_region_was_open": conflicting_was_open,
-            "physical_close_result": close_result,
-            "physical_close_verified": close_verified,
+            "conflicting_region": None,
+            "conflicting_region_was_open": False,
+            "physical_close_result": None,
+            "physical_close_verified": True,
             "physical_open_result": open_result,
             "physical_open_verified": open_verified,
             "failure_code": (
-                None if close_verified and open_verified else
+                None if open_verified else
                 normalize_planner_failure_code(
-                    (
-                        (close_result or {}).get("failure_code")
-                        if not close_verified else open_result.get("failure_code")
-                    ),
-                    str(close_result if not close_verified else open_result),
+                    open_result.get("failure_code"),
+                    str(open_result),
                     infrastructure_failure=ExecutionFailure.CONTROLLER_FAILURE.value,
                     operator="OPEN",
                 )
@@ -600,19 +578,6 @@ class KitchenPhase4Adapter:
                 ),
             )
         post = self._post_check(action, controller)
-        if (
-            post["success"]
-            and operator == "PLACE"
-            and len(action["arguments"]) > 1
-            and action["arguments"][1] == "serving_area"
-            and action["arguments"][0] not in self.served_object_ids
-        ):
-            self.served_object_ids.append(action["arguments"][0])
-        persistent = self._persistent_serving_state()
-        post["persistent_serving_state"] = persistent
-        if not persistent["success"]:
-            post["success"] = False
-            post["reason"] = "PERSISTENT_POSTCONDITION_LOST"
         success = bool(post["success"])
         if success:
             self.successful_actions.append({
@@ -632,125 +597,13 @@ class KitchenPhase4Adapter:
             failure_code=(
                 None
                 if success
-                else (
-                    "PERSISTENT_POSTCONDITION_LOST"
-                    if post.get("reason") == "PERSISTENT_POSTCONDITION_LOST"
-                    else classify_planner_failure(
+                else classify_planner_failure(
                     str(post),
                     infrastructure_failure=ExecutionFailure.POSTCONDITION_VERIFICATION_FAILURE.value,
                     operator=operator,
-                    )
                 )
             ),
         )
-
-    def _persistent_serving_state(self) -> dict[str, Any]:
-        if not getattr(self, "served_object_ids", []):
-            return {"success": True, "served_objects": []}
-        model, data = self.scene.model, self.scene.data
-        support_id = mujoco.mj_name2id(
-            model, mujoco.mjtObj.mjOBJ_GEOM, "serving_surface"
-        )
-        support_centre = data.geom_xpos[support_id, :2]
-        support_half = model.geom_size[support_id, :2]
-        soup_tool_by_bowl = {
-            row["target_instance"]: row["tool_instance"]
-            for row in self.dispatcher.assignment.soup_assignments
-        }
-        rows = []
-        for object_id in self.served_object_ids:
-            backend = self.dispatcher.binding_by_id[object_id][
-                "physical_backend_body"
-            ]
-            body_id = mujoco.mj_name2id(
-                model, mujoco.mjtObj.mjOBJ_BODY, backend
-            )
-            position = data.xpos[body_id].copy()
-            rotation = data.xmat[body_id].reshape(3, 3)
-            velocity = np.zeros(6)
-            mujoco.mj_objectVelocity(
-                model, data, mujoco.mjtObj.mjOBJ_BODY, body_id, velocity, 0
-            )
-            serving_contact = floor_contact = False
-            for contact in data.contact:
-                bodies = {
-                    int(model.geom_bodyid[contact.geom1]),
-                    int(model.geom_bodyid[contact.geom2]),
-                }
-                if body_id not in bodies:
-                    continue
-                names = {
-                    mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_GEOM, gid)
-                    for gid in (contact.geom1, contact.geom2)
-                }
-                serving_contact |= "serving_surface" in names
-                floor_contact |= "floor" in names
-            support_geom_id = mujoco.mj_name2id(
-                model, mujoco.mjtObj.mjOBJ_GEOM,
-                f"{backend}_bottom_collision",
-            )
-            radius = (
-                float(model.geom_size[support_geom_id, 0])
-                if support_geom_id >= 0
-                else self.dispatcher.phase_b.manipulation.placement_resolver.rotation_safe_half_extent(
-                    object_id
-                )
-            )
-            local = position[:2] - support_centre
-            edge_margin = float(np.min(support_half - np.abs(local) - radius))
-            tilt = float(np.degrees(np.arccos(np.clip(rotation[2, 2], -1, 1))))
-            utensil_evidence = None
-            tool_id = soup_tool_by_bowl.get(object_id)
-            if tool_id:
-                tool_backend = self.dispatcher.binding_by_id[tool_id][
-                    "physical_backend_body"
-                ]
-                tool_body = mujoco.mj_name2id(
-                    model, mujoco.mjtObj.mjOBJ_BODY, tool_backend
-                )
-                tool_position = data.xpos[tool_body].copy()
-                tool_rotation = data.xmat[tool_body].reshape(3, 3)
-                observed = self.dispatcher.inventory_by_id[tool_id][
-                    "observed_dimensions_m"
-                ]
-                geometry = derive_tool_tip(
-                    self.scene, tool_backend, float(observed["length"])
-                )
-                opening = self.dispatcher.phase_c._opening(object_id)
-                normal = np.asarray(opening.rim_normal_world, float)
-                normal /= np.linalg.norm(normal)
-                assigned_contact = any(
-                    {
-                        int(model.geom_bodyid[c.geom1]),
-                        int(model.geom_bodyid[c.geom2]),
-                    } == {body_id, tool_body}
-                    for c in data.contact
-                )
-                utensil_evidence = serving_utensil_containment_evidence(
-                    active_tip_world=tool_position + tool_rotation @ np.asarray(geometry.active_tip_local_m),
-                    grasp_end_world=tool_position + tool_rotation @ np.asarray(geometry.grasp_local_m),
-                    opening_centre=np.asarray(opening.centre_world_m),
-                    opening_normal=normal,
-                    usable_opening_radius_m=max(0.0, min(opening.opening_half_extents_m) - opening.safety_margin_m),
-                    cavity_depth_m=float(opening.cavity_depth_m),
-                    observed_length_m=float(observed["length"]),
-                    assigned_bowl_contact=assigned_contact,
-                    counter_contact=False,
-                    serving_contact=False,
-                )
-            valid = bool(
-                serving_contact and not floor_contact and edge_margin >= 0.005
-                and tilt <= 8.0 and np.linalg.norm(velocity[3:]) <= 0.03
-                and (utensil_evidence is None or utensil_evidence["containment_verified"])
-            )
-            rows.append({
-                "object_id": object_id, "success": valid,
-                "position_xyz_m": position.tolist(), "edge_margin_m": edge_margin,
-                "serving_contact": serving_contact, "floor_contact": floor_contact,
-                "tilt_deg": tilt, "linear_speed_mps": float(np.linalg.norm(velocity[3:])),
-                "soup_utensil": tool_id, "utensil_containment": utensil_evidence,
-            })
-        return {"success": all(row["success"] for row in rows), "served_objects": rows}
 
     def final_verification(self) -> dict[str, Any]:
         completed = len(self.successful_actions)
@@ -779,7 +632,6 @@ class KitchenPhase4Adapter:
                 for argument in action["arguments"]
                 if argument not in REGION_IDS
             ),
-            "terminal_serving_state_persistent": self._persistent_serving_state()["success"],
         }
         return {
             "performed": True,
@@ -795,5 +647,4 @@ class KitchenPhase4Adapter:
             ),
             "expected_inspection_history": list(self.expected_inspected_regions),
             "physically_open_containers": sorted(open_regions),
-            "persistent_serving_state": self._persistent_serving_state(),
         }

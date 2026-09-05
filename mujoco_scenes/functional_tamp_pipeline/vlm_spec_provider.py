@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 from .models import (
     FunctionalRelation,
@@ -12,15 +11,12 @@ from .models import (
     NumericConstraint,
     OperationGroup,
 )
+from . import role_semantic_ontology as semantic_ontology
+from .role_semantic_ontology import (
+    PHASE3_ROLE_SEMANTIC_ONTOLOGY_VERSION,
+    get_system_role_semantic_categories,
+)
 from .spec_provider import FunctionalSpecProvider
-from .system_context_registry import get_domain_system_fixed_anchors
-
-if TYPE_CHECKING:  # provider modules are imported lazily to avoid import cycles
-    from mujoco_scenes.environment_vlm_requirements import (
-        EnvironmentVLMRequirementProvider,
-    )
-    from mujoco_scenes.workshop_phase1.fm_adapter import FMAdapter
-    from mujoco_scenes.workshop_phase1.requirements import FMRequirementProvider
 
 VLM_CANONICALIZATION_VERSION = "phase3_6a7_2_1_v1"
 
@@ -82,17 +78,18 @@ class VLMSpecProvider(FunctionalSpecProvider):
                     raise MalformedVLMSpecificationError(
                         f"Workshop functional role {role_id!r} must have non-empty candidate_categories"
                     )
+            system_cats = semantic_ontology.get_system_role_semantic_categories("workshop", role_id)
             nodes[role_id] = FunctionalRole(
                 name=role_id,
                 entity_kind=role.entity_kind,
                 count=role.required_count,
-                semantic_categories=role.run_local_categories,
+                semantic_categories=system_cats,
                 unary_predicates=role.unary_predicates,
                 binding_policy=role.binding_policy,
                 verification_mode=(
                     "GEOMETRIC_ONLY"
                     if role.entity_kind == "FIXED_TARGET"
-                    else ("SEMANTIC_AND_GEOMETRIC" if role.unary_predicates else "SEMANTIC_ONLY")
+                    else "SEMANTIC_AND_GEOMETRIC"
                 ),
                 description=role.description,
                 semantic_hints=role.semantic_hints,
@@ -126,10 +123,16 @@ class VLMSpecProvider(FunctionalSpecProvider):
             metadata={
                 "schema_version": 2,
                 "vlm_canonicalization_version": trace.get("vlm_canonicalization_version", WORKSHOP_VLM_CANONICALIZATION_VERSION),
+                "role_semantic_ontology_version": PHASE3_ROLE_SEMANTIC_ONTOLOGY_VERSION,
+                "semantic_acceptance_source": "SYSTEM_ROLE_SEMANTIC_ONTOLOGY",
+                "detector_vocabulary_source": "VLM_CANDIDATES_PLUS_RELEVANT_SYSTEM_ALIASES",
+                "candidate_categories_used_for_role_identity": False,
+                "candidate_categories_used_for_grounding_acceptance": False,
+                "candidate_categories_used_for_detector_vocabulary": True,
                 "transformation": "LOSSLESS_CANONICAL_G_F_CONSTRUCTION",
-                "raw_roles_count": len(provider.normalized_roles),
-                "raw_relations_count": len(provider.normalized_relations),
-                "raw_operation_groups_count": len(provider.normalized_operation_groups),
+                "raw_roles_count": trace.get("raw_roles_count", len(provider.normalized_roles)),
+                "raw_relations_count": trace.get("raw_relations_count", len(provider.normalized_relations)),
+                "raw_operation_groups_count": trace.get("raw_operation_groups_count", len(provider.normalized_operation_groups)),
                 "vlm_derived_detector_prompts": list(provider.vlm_derived_detector_prompts),
                 "evaluation_negative_control_prompts": list(provider.evaluation_negative_control_prompts),
                 "detector_label_to_canonical": provider.get_detector_label_to_canonical_map(),
@@ -177,9 +180,7 @@ class VLMSpecProvider(FunctionalSpecProvider):
             ))
 
         for name, role in contract["roles"].items():
-            categories = tuple(
-                item["canonical_label"] for item in role.get("semantic_preferences", [])
-            )
+            system_cats = semantic_ontology.get_system_role_semantic_categories("kitchen", name)
             unary_preds = []
             numeric_reqs = []
             for item in role.get("unary_geometry", []):
@@ -199,16 +200,33 @@ class VLMSpecProvider(FunctionalSpecProvider):
 
             binding = str(role.get("vlm_binding_policy") or "DISTINCT")
             raw_count = int(role["count"])
+            min_count = role.get("min_count")
+            max_count = role.get("max_count")
+            preferred = role.get("preference")
 
             nodes[name] = FunctionalRole(
                 name=name,
                 entity_kind=raw_entity_kind,
                 count=raw_count,
-                semantic_categories=categories,
+                min_count=min_count,
+                max_count=max_count,
+                preference=preferred,
+                semantic_categories=system_cats,
                 unary_predicates=tuple(unary_preds),
                 numeric_constraints=tuple(numeric_reqs),
                 binding_policy=binding,
                 verification_mode=str(role.get("vlm_verification_mode", "SEMANTIC_AND_GEOMETRIC")),
+            )
+
+        for name, raw in contract.get("symbolic_task", {}).get("source_roles", {}).items():
+            system_cats = semantic_ontology.get_system_role_semantic_categories("kitchen", name)
+            nodes[name] = FunctionalRole(
+                name=name,
+                entity_kind="OBJECT",
+                count=int(raw.get("count", 1)),
+                semantic_categories=system_cats,
+                binding_policy="DISTINCT",
+                verification_mode="SEMANTIC_ONLY",
             )
 
         operation_groups: list[OperationGroup] = []
@@ -217,14 +235,17 @@ class VLMSpecProvider(FunctionalSpecProvider):
             mode_str = str(policy.get("mode", "sequential_reuse_allowed")).upper()
             if mode_str == "SEQUENTIAL_REUSE_ALLOWED":
                 usage_policy = "SEQUENTIAL_REUSE_ALLOWED"
+                sel_pref = "minimize_distinct_tools"
             else:
                 usage_policy = "DEDICATED_PER_TARGET"
+                sel_pref = ""
             distinct_within = bool(policy.get("distinct_within_group", policy.get("distinct_tools_within_group", usage_policy == "DEDICATED_PER_TARGET")))
             same_tool_covers_all = bool(policy.get("same_tool_must_cover_all_targets", False))
-            selection_pref = policy.get("selection_preference")
+            if "selection_preference" in policy:
+                sel_pref = str(policy["selection_preference"])
             operation_groups.append(OperationGroup(
                 id=gid,
-                function=str(grp["function"]),
+                function=str(grp.get("canonical_function") or grp["function"]),
                 tool_role=str(grp["tool_role"]),
                 target_role=str(grp["target_role"]),
                 required_target_count=int(grp["required_target_count"]),
@@ -232,7 +253,7 @@ class VLMSpecProvider(FunctionalSpecProvider):
                 required_relations=tuple(map(str, grp.get("relations", ()))),
                 distinct_within_group=distinct_within,
                 same_tool_must_cover_all_targets=same_tool_covers_all,
-                selection_preference=str(selection_pref) if selection_pref is not None else None,
+                selection_preference=sel_pref,
             ))
 
         resolved_order = tuple(trace.get("inspection_order", ()))
@@ -257,6 +278,12 @@ class VLMSpecProvider(FunctionalSpecProvider):
             raw_requirements=(contract,),
             metadata={
                 "vlm_canonicalization_version": trace.get("vlm_canonicalization_version", VLM_CANONICALIZATION_VERSION),
+                "role_semantic_ontology_version": PHASE3_ROLE_SEMANTIC_ONTOLOGY_VERSION,
+                "semantic_acceptance_source": "SYSTEM_ROLE_SEMANTIC_ONTOLOGY",
+                "detector_vocabulary_source": "VLM_CANDIDATES_PLUS_RELEVANT_SYSTEM_ALIASES",
+                "candidate_categories_used_for_role_identity": False,
+                "candidate_categories_used_for_grounding_acceptance": False,
+                "candidate_categories_used_for_detector_vocabulary": True,
                 "object_vocabulary": object_vocab,
                 "raw_vlm_response": raw_resp,
                 "validated_vlm_specification": valid_spec,
@@ -298,19 +325,13 @@ class VLMSpecProvider(FunctionalSpecProvider):
             binding = row["binding_policy"]
             count = int(row["vlm_required_count"])
             entity_kind = row["entity_kind"]
-            cats = tuple(row["accepted_categories"])
-            if entity_kind in ("OBJECT", "REGION") and func_id in ("PERSONAL_CUP_SAUCER_REGION", "SHARED_REMOTE_REGION"):
-                if not cats:
-                    from mujoco_scenes.functional_tamp_pipeline.errors import MalformedVLMSpecificationError
-                    raise MalformedVLMSpecificationError(
-                        f"Living Room discoverable functional role {func_id!r} must have non-empty candidate_categories"
-                    )
+            system_cats = semantic_ontology.get_system_role_semantic_categories("living_room", func_id)
             unary = tuple(row.get("required_properties", []))
             nodes[func_id] = FunctionalRole(
                 name=func_id,
                 entity_kind=entity_kind,
                 count=count,
-                semantic_categories=cats,
+                semantic_categories=system_cats,
                 unary_predicates=unary,
                 binding_policy=binding,
                 verification_mode="SEMANTIC_AND_GEOMETRIC" if unary else "SEMANTIC_ONLY",
@@ -342,42 +363,6 @@ class VLMSpecProvider(FunctionalSpecProvider):
                 same_tool_must_cover_all_targets=bool(og_data.get("same_tool_must_cover_all_targets", False)),
             ))
 
-        # Seating anchors are system-fixed context, not selectable roles: the FM
-        # is instructed never to redeclare them, so the canonicalizer resolves
-        # relations onto them and the graph supplies the nodes here.  These
-        # definitions mirror the GT provider in gt_spec_provider.py.
-        anchor_specs = {
-            "SEATING_POSITION": FunctionalRole(
-                name="SEATING_POSITION",
-                entity_kind="FIXED_TARGET",
-                count=2,
-                semantic_categories=("armchair", "chair", "sofa", "seating_position"),
-                binding_policy="DISTINCT",
-                verification_mode="SEMANTIC_ONLY",
-            ),
-            "SEATING_PAIR": FunctionalRole(
-                name="SEATING_PAIR",
-                entity_kind="FIXED_TARGET",
-                count=1,
-                semantic_categories=("armchair", "chair", "sofa", "seating_pair"),
-                binding_policy="SHARED",
-                verification_mode="SEMANTIC_ONLY",
-            ),
-        }
-        referenced_roles: set[str] = set()
-        for relation in relations:
-            referenced_roles.update((relation.subject_role, relation.object_role))
-        for group in operation_groups:
-            referenced_roles.update((group.tool_role, group.target_role))
-            if group.context_role:
-                referenced_roles.add(group.context_role)
-        for anchor in sorted(
-            referenced_roles
-            & get_domain_system_fixed_anchors("living_room")
-            - set(nodes)
-        ):
-            nodes[anchor] = anchor_specs[anchor]
-
         vlm_prompts = list(provider.vlm_derived_role_vocabulary)
         context_prompts = list(provider.task_explicit_context_vocabulary)
         vocabulary = tuple(dict.fromkeys(vlm_prompts + context_prompts))
@@ -397,6 +382,12 @@ class VLMSpecProvider(FunctionalSpecProvider):
             raw_requirements=(result.get("normalized_task_contract") or result["raw_vlm_decomposition"],),
             metadata={
                 "vlm_canonicalization_version": canon_trace.get("vlm_canonicalization_version", LIVING_ROOM_VLM_CANONICALIZATION_VERSION),
+                "role_semantic_ontology_version": PHASE3_ROLE_SEMANTIC_ONTOLOGY_VERSION,
+                "semantic_acceptance_source": "SYSTEM_ROLE_SEMANTIC_ONTOLOGY",
+                "detector_vocabulary_source": "SYSTEM_REVIEWED_ENVIRONMENT_CONTRACT",
+                "candidate_categories_used_for_role_identity": False,
+                "candidate_categories_used_for_grounding_acceptance": False,
+                "candidate_categories_used_for_detector_vocabulary": True,
                 "semantic_vocabulary_path": str(provider.vocabulary_path),
                 "vlm_derived_role_vocabulary": vlm_prompts,
                 "task_explicit_context_vocabulary": context_prompts,
@@ -407,4 +398,5 @@ class VLMSpecProvider(FunctionalSpecProvider):
                 "normalization_audit": result["reviewed_ontology_audit"],
             },
         )
+
 

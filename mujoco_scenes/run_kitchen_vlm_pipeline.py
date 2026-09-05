@@ -158,8 +158,8 @@ def run_pipeline(
     output_root: Path,
     semantic_backend: str = "yolo_world",
     semantic_model: str | None = None,
-    width: int = 640,
-    height: int = 480,
+    width: int = 1280,
+    height: int = 960,
     fm_adapter: FMAdapter | None = None,
 ) -> dict[str, Any]:
     internal_variant = resolve_variant_name("kitchen", variant)
@@ -179,11 +179,10 @@ def run_pipeline(
     task_instruction = str(getattr(scene.config, "goal", "")) or (
         "Prepare and serve coffee and soup for two people using the available "
         "kitchenware. Stir both coffees and provide each soup bowl with a "
-        "suitable utensil."
+        "suitable utensil. Search the closed kitchen storage for anything still required."
     )
     raw_graph = adapter.generate_kitchen_functional_graph(
         task_instruction,
-        KITCHEN_OBSERVABLE_REGIONS,
         observation_images=image_paths,
     )
     fm_calls_for_run = adapter.metrics.total_calls - fm_calls_before
@@ -198,7 +197,7 @@ def run_pipeline(
             observable_regions=tuple(KITCHEN_OBSERVABLE_REGIONS),
         )
     )
-    order = list(raw_graph["inspection_order"])
+    order = list(transformation_trace.get("inspection_order", []))
     requirements_path = run_root / "vlm_task_requirements.yaml"
     _atomic_json(
         run_root / "01_raw_vlm_functional_graph.json", raw_graph
@@ -304,9 +303,9 @@ def run_pipeline(
             if planning_error
             else "INFEASIBLE_AFTER_SEARCH"
         ),
-        "vlm_initial_satisfaction_decision": raw_graph[
+        "vlm_initial_satisfaction_decision": raw_graph.get(
             "initial_satisfaction_assessment"
-        ],
+        ),
         "evidence_initial_satisfaction_decision": (
             witness.get("stage") == 0 and complete
         ),

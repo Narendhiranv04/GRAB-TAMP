@@ -135,3 +135,51 @@ remote visual meshes in `assets/movie_night/`. These assets are original to
 this repository. MuJoCo physics continues to use simpler independent analytic
 collision proxies; the generated multi-part meshes are never collision
 geometry.
+
+## Poly Haven living-room furniture
+
+The authoritative integrated REGION-function benchmark uses processed visual
+derivatives of these Poly Haven assets, downloaded on 2026-08-09 under
+[CC0 1.0](https://polyhaven.com/license):
+
+| Asset | Author | Benchmark use |
+|---|---|---|
+| [Modern Arm Chair 01](https://polyhaven.com/a/modern_arm_chair_01) | Vibrant Nordic | two identical seating targets |
+| [Side Table 01](https://polyhaven.com/a/side_table_01) | James Ray Cock | side/flexible destination regions |
+| [Coffee Table 01](https://polyhaven.com/a/CoffeeTable_01) | Fernando Quinn | shared coffee-table destination |
+| [Wooden Table 02](https://polyhaven.com/a/WoodenTable_02) | Fran Calvente | natural isotropic accent and compact shared-fit-failure tables |
+| [Chinese Console Table](https://polyhaven.com/a/chinese_console_table) | Kirill Sannikov | media and staging consoles |
+
+`assets/living_room_realistic/manifest.json` records source URLs, authors,
+download dates, canonical and final dimensions, coordinate conversion,
+per-file SHA-256 hashes, and scene roles. The preparation script converts the
+1k glTF bundles from Y-up to MuJoCo Z-up and exports textured OBJ visual parts.
+Production collision and measurement geometry remains independent analytic
+geometry; the visual meshes are never used as measured functional evidence.
+
+## Poly Haven workshop assets
+
+The authoritative integrated WORKSHOP (W1) benchmark uses processed visual
+derivatives of these Poly Haven assets, downloaded on 2026-08-18 under
+[CC0 1.0 Universal Public Domain](https://polyhaven.com/license):
+
+| Asset | Author | Benchmark use |
+|---|---|---|
+| [Screwdrivers 02](https://polyhaven.com/a/screwdrivers_02) | Martin Klekner | Long Phillips driver, stubby Phillips driver, short/medium/long screws, hex bolt |
+| [Screwdriver](https://polyhaven.com/a/screwdriver) | Martin Klekner | Flathead slotted screwdriver |
+| [Drill 01](https://polyhaven.com/a/Drill_01) | Mike van der Valk | Cordless power drill/driver |
+| [Pliers](https://polyhaven.com/a/pliers) | Martin Klekner | Combination pliers decoy |
+| [Combination Wrench](https://polyhaven.com/a/combination_wrench) | Martin Klekner | Combination wrench decoy |
+| [Ratchet Wrench](https://polyhaven.com/a/ratchet_wrench) | Martin Klekner | Ratchet wrench decoy |
+| [Wooden Hammer 01](https://polyhaven.com/a/wooden_hammer_01) | Martin Klekner | Wooden mallet decoy |
+| [Tool Cart](https://polyhaven.com/a/tool_cart) | Mike van der Valk | Industrial rolling tool cart / alternative work surface |
+| [Seedling Tray 01](https://polyhaven.com/a/seeding_tray_01) | Mike van der Valk | Shallow parts staging tray |
+| [Plastic Container](https://polyhaven.com/a/plastic_container) | Mike van der Valk | Small hardware storage bin |
+| [Metal Toolbox](https://polyhaven.com/a/metal_toolbox) | Martin Klekner | Metal tool box compartment |
+| [Wooden Table 02](https://polyhaven.com/a/wooden_table_02) | Fran Calvente | Heavy-duty wooden workbench |
+
+`assets/workshop_realistic/manifest.json` records source URLs, authors, download dates,
+canonical and final dimensions, coordinate conversion, per-file SHA-256 hashes,
+and benchmark roles. `scripts/prepare_workshop_assets.py` reproduces all asset
+transformations idempotently.
+

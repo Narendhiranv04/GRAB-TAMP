@@ -52,6 +52,7 @@ from .kitchen_pour_stir_manipulation import (
     derive_pour_spec,
     derive_target_opening,
     derive_tool_tip,
+    rotation_about_axis,
 )
 
 
@@ -102,7 +103,7 @@ def serving_utensil_containment_evidence(
     inside = (
         (radial <= float(usable_opening_radius_m))
         & (axial >= -float(cavity_depth_m) - 0.01)
-        & (axial <= 0.01)
+        & (axial <= 0.02)
     )
     longest_run = current_run = 0
     for value in inside:
@@ -118,10 +119,7 @@ def serving_utensil_containment_evidence(
     exterior_support_contact = bool(counter_contact or serving_contact)
     # Any live counter/serving support means the utensil has escaped the
     # requested bowl relation, even if it also grazes the bowl's outer wall.
-    exterior_support_only = bool(
-        exterior_support_contact
-        and not (assigned_bowl_contact and (active_tip_inside or interior_segment_present))
-    )
+    exterior_support_only = exterior_support_contact
     containment_verified = bool(
         (active_tip_inside or interior_segment_present)
         and not exterior_support_only
@@ -723,7 +721,7 @@ class KitchenGroundTruthExecutionDispatcher:
         maximum_angular_speed = (
             2.0 if is_countertop_utensil
             else 0.30 if is_countertop_source
-            else 1.50 if is_serving_vessel
+            else 1.00 if is_serving_vessel
             else 0.12
         )
         body_id = mujoco.mj_name2id(self.scene.model, mujoco.mjtObj.mjOBJ_BODY, backend)
@@ -995,6 +993,13 @@ class KitchenGroundTruthExecutionDispatcher:
     def pick(self, object_id: str) -> dict[str, Any]:
         """Pick object with Google Robot."""
         low = self.phase_b.manipulation.executor
+        if self.current_workspace == KitchenWorkspace.HOME:
+            self.scene.data.qpos[low.base_qpos] = 0.0
+            self.scene.data.qvel[self.scene.model.jnt_dofadr[low.base_joint_ids]] = 0.0
+            self.scene.data.ctrl[low.base_actuators] = 0.0
+            low.base_stance = np.zeros(3)
+            mujoco.mj_forward(self.scene.model, self.scene.data)
+
         self._settle_navigation_posture(steps=20 if self.assisted_suite else 100)
 
         # Subsequent bowl retrieval approaches can pass within the measured
@@ -1007,8 +1012,15 @@ class KitchenGroundTruthExecutionDispatcher:
         else:
             try:
                 result = self.phase_b.pick(object_id)
-            except Exception:
-                result = {"success": False, "status": "PICK_TIMEOUT"}
+            except Exception as error:
+                result = {
+                    "success": False,
+                    "status": "PICK_EXCEPTION",
+                    "failure_code": "PICK_EXCEPTION",
+                    "exception_type": type(error).__name__,
+                    "message": str(error),
+                    "stage": "PHASE_B_PICK",
+                }
 
         if (
             not result.get("success", False)
@@ -1022,6 +1034,8 @@ class KitchenGroundTruthExecutionDispatcher:
                     **result,
                     "success": False,
                     "failure_code": "ACCESS_BLOCKED",
+                    "controller_status": result.get("status"),
+                    "controller_message": result.get("message"),
                     "benchmark_contact_recovery": False,
                     "benchmark_recovery_evidence": recovery_evidence,
                 }
@@ -1090,6 +1104,12 @@ class KitchenGroundTruthExecutionDispatcher:
                 }
 
         if result.get("success", False):
+            backend = self.binding_by_id.get(object_id, {}).get(
+                "physical_backend_body", object_id
+            )
+            low.held_object = backend
+            low.target_object = backend
+            low.mode = "holding"
             source_context = self.inventory_by_id[object_id]["source_context"]
             is_cupboard_utensil = bool(
                 source_context.get("source_kind") == SourceKind.CUPBOARD.value
@@ -1450,16 +1470,12 @@ class KitchenGroundTruthExecutionDispatcher:
                     raise RuntimeError(
                         f"Live tool park hover collision: {collision_reason}"
                     )
-                arm_step_rate = (
-                    max(low.arm_command_speed, 1.5)
-                    * self.scene.model.opt.timestep
-                )
                 for _ in range(1800):
                     command = self.scene.data.ctrl[low.arm_actuators]
                     delta = np.clip(
                         release_arm - command,
-                        -arm_step_rate,
-                        arm_step_rate,
+                        -low.arm_command_speed,
+                        low.arm_command_speed,
                     )
                     self.scene.data.ctrl[low.arm_actuators] = command + delta
                     mujoco.mj_step(self.scene.model, self.scene.data)
@@ -1511,8 +1527,8 @@ class KitchenGroundTruthExecutionDispatcher:
                     command = self.scene.data.ctrl[low.arm_actuators]
                     delta = np.clip(
                         gentle_release_arm - command,
-                        -arm_step_rate,
-                        arm_step_rate,
+                        -low.arm_command_speed,
+                        low.arm_command_speed,
                     )
                     self.scene.data.ctrl[low.arm_actuators] = command + delta
                     mujoco.mj_step(self.scene.model, self.scene.data)
@@ -1574,6 +1590,13 @@ class KitchenGroundTruthExecutionDispatcher:
                             "status": "PLACEMENT_COMPLETED",
                             "telemetry": telemetry,
                         }
+                    return {
+                        "action": "PLACE",
+                        "arguments": [object_id, destination],
+                        "success": False,
+                        "status": f"RELEASED_PLACEMENT_{reason}",
+                        "telemetry": telemetry,
+                    }
                 except Exception:
                     # Continue into the verified release fallback below.
                     pass
@@ -1673,6 +1696,13 @@ class KitchenGroundTruthExecutionDispatcher:
                     self._execute_controlled_placement(object_id, plan)
                     valid, reason, telemetry = self.validate_stable_placement(object_id, destination)
                     if valid:
+                        row = self.inventory_by_id.get(object_id)
+                        if row is not None:
+                            row["location"] = destination
+                            if destination == "serving_area":
+                                row.setdefault("source_context", {})["source_kind"] = SourceKind.TABLE.value
+                                row["source_context"]["source_container"] = None
+                                row["source_context"]["required_workspace"] = KitchenWorkspace.HOME.value
                         if destination == "countertop":
                             self.update_object_to_countertop_location(object_id)
                         elif destination == "serving_area":
@@ -1892,12 +1922,11 @@ class KitchenGroundTruthExecutionDispatcher:
                 if np.linalg.norm(handle_tangent) < 1e-9:
                     handle_tangent = np.array((1.0, 0.0, 0.0), dtype=float)
                 handle_tangent /= np.linalg.norm(handle_tangent)
-                vertical_orientations = self.phase_c._serving_utensil_orientation_family(
+                vertical_orientations = self.phase_c._stir_orientation_family(
                     live_utensil_rotation,
                     np.asarray(tool_geometry.longitudinal_axis_local, dtype=float),
                     opening_normal,
                     handle_tangent,
-                    observed_length_m=float(observed["length"]),
                 )
                 # Reuse STIR's vertical tool-axis construction and lower the
                 # spoon tip into the measured safe cavity before release.
@@ -1915,7 +1944,7 @@ class KitchenGroundTruthExecutionDispatcher:
                 # Seat the long/first spoon slightly deeper than before while
                 # keeping its shaft clear of the bowl rim.
                 drop_depth_fraction = (
-                    1.0 if float(observed["length"]) >= 0.20
+                    0.80 if float(observed["length"]) >= 0.20
                     else default_drop_depth_fraction
                 )
                 insertion_depth = drop_depth_fraction * safe_cavity_depth
@@ -1927,7 +1956,9 @@ class KitchenGroundTruthExecutionDispatcher:
                     min(opening.opening_half_extents_m)
                     - opening.safety_margin_m,
                 )
-                short_utensil_gravity_drop = False
+                short_utensil_gravity_drop = bool(
+                    float(observed["length"]) <= 2.0 * usable_opening_radius
+                )
                 if short_utensil_gravity_drop:
                     # A utensil shorter than the measured usable opening can
                     # be released horizontally over the cavity. This avoids
@@ -1937,7 +1968,48 @@ class KitchenGroundTruthExecutionDispatcher:
                     release_feature_world = (
                         opening_centre + 0.025 * opening_normal
                     )
-                    vertical_orientations = [{
+                    pre_release_tip_position = (
+                        opening_centre + 0.080 * opening_normal
+                    )
+                    live_grip_rotation = self.scene.data.site_xmat[
+                        low.grip_site_id
+                    ].reshape(3, 3).copy()
+                    body_in_grip_rotation = (
+                        live_grip_rotation.T @ live_utensil_rotation
+                    )
+                    vertical_orientations = []
+                    # Canonical top-down serving orientations over the bowl:
+                    # Align the gripper with standard top-down attitude and evaluate
+                    # reachable yaw branches around the bowl rim normal.
+                    serving_grip_bases = [low.profile.top_down_rotation]
+                    bowl_pos = self.scene.data.xpos[bowl_body]
+                    if bowl_pos[1] < -0.35:
+                        serving_grip_bases.append(np.array([
+                            [0.0, 0.0, 1.0],
+                            [1.0, 0.0, 0.0],
+                            [0.0, 1.0, 0.0],
+                        ]))
+                    for grip_base in serving_grip_bases:
+                        for yaw_deg in (0.0, 30.0, -30.0, 60.0, -60.0, 90.0, -90.0, 180.0):
+                            canonical_grip = (
+                                rotation_about_axis(
+                                    opening_normal, math.radians(yaw_deg)
+                                )
+                                @ grip_base
+                            )
+                            canonical_body_rotation = (
+                                canonical_grip @ body_in_grip_rotation
+                            )
+                            vertical_orientations.append({
+                                "rotation": canonical_body_rotation,
+                                "inclination_deg": 90.0,
+                                "azimuth_deg": yaw_deg,
+                                "tool_roll_deg": 0.0,
+                                "provenance": (
+                                    "MEASURED_SHORT_UTENSIL_HORIZONTAL_GRAVITY_DROP"
+                                ),
+                            })
+                    vertical_orientations.append({
                         "rotation": live_utensil_rotation,
                         "inclination_deg": 90.0,
                         "azimuth_deg": 0.0,
@@ -1945,62 +2017,12 @@ class KitchenGroundTruthExecutionDispatcher:
                         "provenance": (
                             "MEASURED_SHORT_UTENSIL_HORIZONTAL_GRAVITY_DROP"
                         ),
-                    }]
+                    })
                 else:
                     release_feature_local = np.asarray(
                         tool_geometry.active_tip_local_m, dtype=float
                     )
                     release_feature_world = desired_tip_position
-                release_pose_candidates = []
-                for orientation in vertical_orientations:
-                    candidate_position, candidate_rotation = (
-                        self.phase_c._grip_pose_for_body_feature(
-                            utensil_body,
-                            release_feature_local,
-                            release_feature_world,
-                            np.asarray(orientation["rotation"], dtype=float),
-                        )
-                    )
-                    release_pose_candidates.append((
-                        candidate_position,
-                        candidate_rotation,
-                    ))
-                primary_position, primary_rotation = release_pose_candidates[0]
-                stance = self.phase_c._local_stance(
-                    primary_position,
-                    primary_rotation,
-                    alternative_pose_families=tuple(
-                        (position, rotation, ())
-                        for position, rotation in release_pose_candidates[1:]
-                    ),
-                    base_position_tolerance_m=0.02,
-                    compact_arm_for_base_motion=True,
-                    allowed_robot_contact_body_names=(
-                        bowl_backend,
-                        "serving_area",
-                        "countertop",
-                        "drawer_D1_tray",
-                        "drawer_D2_tray",
-                        *(
-                            row.get("physical_backend_body")
-                            for row in self.binding_by_id.values()
-                            if row.get("physical_backend_body")
-                        ),
-                    ),
-                )
-                selected_stance = stance["search"]["selected"]
-                selected_family = int(selected_stance["pose_family_index"])
-                release_position, release_rotation = release_pose_candidates[
-                    selected_family
-                ]
-                release_arm = np.asarray(
-                    selected_stance["arm_joints"], dtype=float
-                )
-
-                # Establish the vertical wrist attitude before the final
-                # descent.  The short/second spoon rotates above the rim; the
-                # long/first spoon rotates at its previous depth, then takes
-                # the small additional downward step requested for release.
                 if short_utensil_gravity_drop:
                     pre_release_tip_position = (
                         opening_centre + 0.080 * opening_normal
@@ -2018,6 +2040,242 @@ class KitchenGroundTruthExecutionDispatcher:
                         opening_centre
                         - 0.75 * safe_cavity_depth * opening_normal
                     )
+
+                release_pose_candidates = []
+                elevated_pose_candidates = []
+                for orientation in vertical_orientations:
+                    desired_body_rot = np.asarray(orientation["rotation"], dtype=float)
+                    candidate_position, candidate_grip_rotation = (
+                        self.phase_c._grip_pose_for_body_feature(
+                            utensil_body,
+                            release_feature_local,
+                            release_feature_world,
+                            desired_body_rot,
+                        )
+                    )
+                    release_pose_candidates.append((
+                        candidate_position,
+                        candidate_grip_rotation,
+                    ))
+                    if pre_release_tip_position is not None:
+                        elev_position, elev_grip_rotation = (
+                            self.phase_c._grip_pose_for_body_feature(
+                                utensil_body,
+                                release_feature_local,
+                                pre_release_tip_position,
+                                desired_body_rot,
+                            )
+                        )
+                        elevated_pose_candidates.append((
+                            elev_position,
+                            elev_grip_rotation,
+                        ))
+                    else:
+                        elevated_pose_candidates.append((
+                            candidate_position,
+                            candidate_grip_rotation,
+                        ))
+
+                primary_position, primary_rotation = release_pose_candidates[0]
+
+                # Check if current base stance can already reach the release & pre-release poses
+                current_base_solution = None
+                serving_mounting_allowances = {
+                    **low.mounting_allowances,
+                    frozenset((
+                        f"{low.robot_name}:base_link",
+                        f"{low.robot_name}:link_elbow",
+                    )): -0.050,
+                    frozenset((
+                        f"{low.robot_name}:base_link",
+                        f"{low.robot_name}:link_forearm",
+                    )): -0.070,
+                    frozenset((
+                        f"{low.robot_name}:base_link",
+                        f"{low.robot_name}:link_wrist",
+                    )): -0.050,
+                }
+                checker = RobotConfigurationCollisionChecker(
+                    self.scene.model,
+                    self.scene.data,
+                    low.profile,
+                    mounting_allowances=serving_mounting_allowances,
+                )
+                served_objects = [
+                    self.binding_by_id[p]["physical_backend_body"]
+                    for p, r in self.inventory_by_id.items()
+                    if r.get("location") == "serving_area" and p in self.binding_by_id
+                ]
+                allowed_robot_contact_bodies = frozenset(
+                    body_id
+                    for name in (
+                        bowl_backend,
+                        *served_objects,
+                        "serving_area",
+                        "drawer_D1_tray",
+                        "drawer_D1_frame",
+                        "drawer_D2_tray",
+                        "drawer_D2_frame",
+                    )
+                    if (body_id := mujoco.mj_name2id(
+                        self.scene.model, mujoco.mjtObj.mjOBJ_BODY, name
+                    )) >= 0
+                )
+                held_body = (
+                    utensil_body
+                    if utensil_body >= 0
+                    else mujoco.mj_name2id(
+                        self.scene.model, mujoco.mjtObj.mjOBJ_BODY, str(low.held_object)
+                    )
+                )
+                elevated_ik = ProfiledIK(
+                    self.scene.model,
+                    self.scene.data,
+                    low.profile,
+                    orientation_weight=0.45,
+                )
+                release_ik = ProfiledIK(
+                    self.scene.model,
+                    self.scene.data,
+                    low.profile,
+                    orientation_weight=0.45,
+                )
+
+                for orientation_index, (
+                    (cand_rel_pos, cand_rel_rot),
+                    (cand_elev_pos, cand_elev_rot),
+                ) in enumerate(zip(release_pose_candidates, elevated_pose_candidates)):
+                    for seed in (
+                        low.profile.home_seed,
+                        self.scene.data.qpos[low.arm_qpos].copy(),
+                        low.profile.navigation_joints,
+                    ):
+                        elev_arm, e_pos_err, e_ang_err = elevated_ik.solve(
+                            cand_elev_pos, seed, cand_elev_rot
+                        )
+                        if not (
+                            e_pos_err <= low.ik_position_tolerance
+                            and e_ang_err <= low.ik_angle_tolerance
+                        ):
+                            continue
+                        rel_arm, r_pos_err, r_ang_err = release_ik.solve(
+                            cand_rel_pos, elev_arm, cand_rel_rot
+                        )
+                        if not (
+                            r_pos_err <= low.ik_position_tolerance
+                            and r_ang_err <= low.ik_angle_tolerance
+                        ):
+                            continue
+                        c_valid1, c_err1 = checker.segment_valid(
+                            self.scene.data.qpos[low.arm_qpos].copy(),
+                            elev_arm,
+                            frozenset((held_body,)) | allowed_robot_contact_bodies,
+                            resolution=0.025,
+                        )
+                        c_valid2, c_err2 = checker.segment_valid(
+                            elev_arm,
+                            rel_arm,
+                            frozenset((held_body,)) | allowed_robot_contact_bodies,
+                            resolution=0.025,
+                        )
+                        if c_valid1 and c_valid2:
+                            current_base_solution = {
+                                "selected_family": orientation_index,
+                                "release_position": cand_rel_pos,
+                                "release_rotation": cand_rel_rot,
+                                "elevated_position": cand_elev_pos,
+                                "elevated_rotation": cand_elev_rot,
+                                "elevated_arm": elev_arm,
+                                "release_arm": rel_arm,
+                            }
+                            break
+                    if current_base_solution is not None:
+                        break
+
+                bowl_position = self.scene.data.xpos[bowl_body].copy()
+                is_on_serving_table = bool(bowl_position[1] < -0.35)
+                is_drawer_spoon = bool(
+                    str(row.get("source_context", {}).get("source_kind")) == SourceKind.DRAWER.value
+                    or str(row.get("source_context", {}).get("source_container")) in ("D1", "D2")
+                )
+                prefer_current_base = bool(
+                    current_base_solution is not None
+                    and (is_on_serving_table or is_drawer_spoon)
+                )
+
+                stance = None
+                if prefer_current_base:
+                    selected_family = current_base_solution["selected_family"]
+                    release_position = current_base_solution["release_position"]
+                    release_rotation = current_base_solution["release_rotation"]
+                    release_arm = current_base_solution["release_arm"]
+                    elevated_arm = current_base_solution["elevated_arm"]
+                    stance = {
+                        "search": {
+                            "selected": {
+                                "pose_family_index": selected_family,
+                                "arm_joints": release_arm.tolist(),
+                            }
+                        }
+                    }
+                else:
+                    alt_families = tuple(
+                        (
+                            rel[0],
+                            rel[1],
+                            ((elev[0], elev[1]),) if elev is not None else (),
+                        )
+                        for rel, elev in zip(
+                            release_pose_candidates[1:], elevated_pose_candidates[1:]
+                        )
+                    )
+                    try:
+                        stance = self.phase_c._local_stance(
+                            primary_position,
+                            primary_rotation,
+                            additional_poses=(
+                                ((elevated_pose_candidates[0][0], elevated_pose_candidates[0][1]),)
+                                if elevated_pose_candidates else ()
+                            ),
+                            alternative_pose_families=alt_families,
+                            base_position_tolerance_m=(
+                                0.02 if float(observed["length"]) < 0.20 else 0.10
+                            ),
+                            compact_arm_for_base_motion=False,
+                            allowed_robot_contact_body_names=(
+                                bowl_backend,
+                                "serving_area",
+                                "drawer_D1_tray",
+                                "drawer_D2_tray",
+                            ),
+                        )
+                        selected_stance = stance["search"]["selected"]
+                        selected_family = int(selected_stance["pose_family_index"])
+                        release_position, release_rotation = release_pose_candidates[
+                            selected_family
+                        ]
+                        release_arm = np.asarray(
+                            selected_stance["arm_joints"], dtype=float
+                        )
+                        elevated_arm = None
+                    except RuntimeError:
+                        if current_base_solution is not None:
+                            selected_family = current_base_solution["selected_family"]
+                            release_position = current_base_solution["release_position"]
+                            release_rotation = current_base_solution["release_rotation"]
+                            release_arm = current_base_solution["release_arm"]
+                            elevated_arm = current_base_solution["elevated_arm"]
+                            stance = {
+                                "search": {
+                                    "selected": {
+                                        "pose_family_index": selected_family,
+                                        "arm_joints": release_arm.tolist(),
+                                    }
+                                }
+                            }
+                        else:
+                            raise
+
                 serving_tracking_tolerance = (
                     0.005 if float(observed["length"]) < 0.20 else 0.02
                 )
@@ -2034,38 +2292,51 @@ class KitchenGroundTruthExecutionDispatcher:
                             ),
                         )
                     )
-                    elevated_ik = ProfiledIK(
-                        self.scene.model,
-                        self.scene.data,
-                        low.profile,
-                        orientation_weight=0.45,
-                    )
-                    elevated_arm, position_error, angle_error = (
-                        elevated_ik.solve(
-                            elevated_position,
-                            release_arm,
-                            elevated_rotation,
+                    if elevated_arm is None:
+                        elevated_arm, position_error, angle_error = (
+                            elevated_ik.solve(
+                                elevated_position,
+                                self.scene.data.qpos[low.arm_qpos].copy(),
+                                elevated_rotation,
+                            )
                         )
-                    )
-                    if (
-                        position_error > low.ik_position_tolerance
-                        or angle_error > low.ik_angle_tolerance
-                    ):
-                        raise RuntimeError(
-                            "Pre-release serving-spoon rotation IK failed: "
-                            f"position={position_error:.6f}, "
-                            f"angle={angle_error:.6f}"
-                        )
-                    arm_step_rate = (
-                        max(low.arm_command_speed, 1.5)
-                        * self.scene.model.opt.timestep
-                    )
+                        if (
+                            position_error > low.ik_position_tolerance
+                            or angle_error > low.ik_angle_tolerance
+                        ):
+                            elevated_arm, position_error, angle_error = (
+                                elevated_ik.solve(
+                                    elevated_position,
+                                    release_arm.copy(),
+                                    elevated_rotation,
+                                )
+                            )
+                        if (
+                            position_error > low.ik_position_tolerance
+                            or angle_error > low.ik_angle_tolerance
+                        ):
+                            elevated_arm, position_error, angle_error = (
+                                elevated_ik.solve(
+                                    elevated_position,
+                                    low.profile.home_seed,
+                                    elevated_rotation,
+                                )
+                            )
+                        if (
+                            position_error > low.ik_position_tolerance
+                            or angle_error > low.ik_angle_tolerance
+                        ):
+                            raise RuntimeError(
+                                "Pre-release serving-spoon rotation IK failed: "
+                                f"position={position_error:.6f}, "
+                                f"angle={angle_error:.6f}"
+                            )
                     for _ in range(1200):
                         command = self.scene.data.ctrl[low.arm_actuators]
                         delta = np.clip(
                             elevated_arm - command,
-                            -arm_step_rate,
-                            arm_step_rate,
+                            -low.arm_command_speed,
+                            low.arm_command_speed,
                         )
                         self.scene.data.ctrl[low.arm_actuators] = command + delta
                         mujoco.mj_step(self.scene.model, self.scene.data)
@@ -2113,26 +2384,49 @@ class KitchenGroundTruthExecutionDispatcher:
                     live_position_error > low.ik_position_tolerance
                     or live_angle_error > low.ik_angle_tolerance
                 ):
-                    raise RuntimeError(
-                        "Live serving-spoon release IK failed: "
-                        f"position={live_position_error:.6f}, "
-                        f"angle={live_angle_error:.6f}"
+                    release_arm, live_position_error, live_angle_error = (
+                        live_release_ik.solve(
+                            release_position,
+                            stance_release_arm.copy(),
+                            release_rotation,
+                        )
                     )
+                if (
+                    live_position_error > low.ik_position_tolerance
+                    or live_angle_error > low.ik_angle_tolerance
+                ):
+                    release_arm, live_position_error, live_angle_error = (
+                        live_release_ik.solve(
+                            release_position,
+                            low.profile.home_seed,
+                            release_rotation,
+                        )
+                    )
+                if (
+                    live_position_error > low.ik_position_tolerance
+                    or live_angle_error > low.ik_angle_tolerance
+                ):
+                    if prefer_current_base:
+                        release_position = stance_release_position
+                        release_rotation = stance_release_rotation
+                        release_arm = stance_release_arm
+                    else:
+                        raise RuntimeError(
+                            "Live serving-spoon release IK failed: "
+                            f"position={live_position_error:.6f}, "
+                            f"angle={live_angle_error:.6f}"
+                        )
                 if float(observed["length"]) >= 0.20:
                     release_position = stance_release_position
                     release_rotation = stance_release_rotation
                     release_arm = stance_release_arm
 
-                arm_step_rate = (
-                    max(low.arm_command_speed, 1.5)
-                    * self.scene.model.opt.timestep
-                )
                 for _ in range(1800):
                     command = self.scene.data.ctrl[low.arm_actuators]
                     delta = np.clip(
                         release_arm - command,
-                        -arm_step_rate,
-                        arm_step_rate,
+                        -low.arm_command_speed,
+                        low.arm_command_speed,
                     )
                     self.scene.data.ctrl[low.arm_actuators] = command + delta
                     mujoco.mj_step(self.scene.model, self.scene.data)
@@ -2153,13 +2447,13 @@ class KitchenGroundTruthExecutionDispatcher:
                 # an unnecessary, occasionally unreachable orientation
                 # constraint for the shorter spoon.
                 clearance_position = (
-                    release_position + min(0.04, safe_cavity_depth + 0.01) * opening_normal
+                    release_position + 0.08 * opening_normal
                 )
                 clearance_ik = ProfiledIK(
                     self.scene.model,
                     self.scene.data,
                     low.profile,
-                    orientation_weight=0.05,
+                    orientation_weight=0.20,
                 )
                 clearance_arm, clearance_position_error, clearance_angle_error = (
                     clearance_ik.solve(
@@ -2169,8 +2463,20 @@ class KitchenGroundTruthExecutionDispatcher:
                     )
                 )
                 if (
-                    clearance_position_error > max(low.ik_position_tolerance, 0.025)
-                    or clearance_angle_error > max(low.ik_angle_tolerance, float(np.deg2rad(5.0)))
+                    clearance_position_error > low.ik_position_tolerance
+                    or clearance_angle_error > low.ik_angle_tolerance
+                ):
+                    if elevated_arm is not None:
+                        clearance_arm, clearance_position_error, clearance_angle_error = (
+                            clearance_ik.solve(
+                                clearance_position,
+                                elevated_arm.copy(),
+                                release_rotation,
+                            )
+                        )
+                if (
+                    clearance_position_error > low.ik_position_tolerance
+                    or clearance_angle_error > low.ik_angle_tolerance
                 ):
                     raise RuntimeError(
                         "Serving-spoon vertical retreat IK failed: "
@@ -2293,25 +2599,43 @@ class KitchenGroundTruthExecutionDispatcher:
                         0 if finger_still_touching
                         else contact_clear_commands + 1
                     )
-                    if contact_clear_commands >= 2:
+                    is_above_rim = bool(
+                        float(self.scene.data.site_xpos[low.grip_site_id][2])
+                        > float(opening_centre[2]) + 0.04
+                    )
+                    required_clear_commands = 6 if is_above_rim else 2
+                    if (
+                        not is_above_rim
+                        and not short_utensil_gravity_drop
+                        and contact_clear_commands >= required_clear_commands
+                    ):
                         break
+                if short_utensil_gravity_drop:
+                    self.scene.data.ctrl[low.finger_actuators] = float(low.profile.open_command)
+                    for _ in range(800):
+                        mujoco.mj_step(self.scene.model, self.scene.data)
+                        if self.step_callback is not None:
+                            self.step_callback(self.scene)
+                        if float(np.max(self.scene.data.qpos[low.finger_qpos])) <= 0.05:
+                            break
                 self.scene.data.eq_active[weld_id] = 0
                 mujoco.mj_forward(self.scene.model, self.scene.data)
                 capture_motion_snapshot("immediately_after_weld_disable")
+                if short_utensil_gravity_drop:
+                    for _ in range(250):
+                        mujoco.mj_step(self.scene.model, self.scene.data)
+                        if self.step_callback is not None:
+                            self.step_callback(self.scene)
 
                 # Withdraw along the vertical tool axis and finish opening
                 # above the rim, after the released spoon is no longer between
                 # the fingers.
-                arm_step_rate = (
-                    max(low.arm_command_speed, 1.5)
-                    * self.scene.model.opt.timestep
-                )
                 for _ in range(1200):
                     arm_command = self.scene.data.ctrl[low.arm_actuators]
                     arm_delta = np.clip(
                         clearance_arm - arm_command,
-                        -arm_step_rate,
-                        arm_step_rate,
+                        -low.arm_command_speed,
+                        low.arm_command_speed,
                     )
                     self.scene.data.ctrl[low.arm_actuators] = (
                         arm_command + arm_delta
@@ -2370,26 +2694,11 @@ class KitchenGroundTruthExecutionDispatcher:
                         quiet_steps = 0
                 mujoco.mj_forward(self.scene.model, self.scene.data)
                 capture_motion_snapshot("after_final_settling")
-
                 low.mode = "idle"
                 low.held_object = None
                 low.target_object = None
                 low.target_body_id = -1
                 low.grasp_equality_id = -1
-
-                if self.current_workspace == KitchenWorkspace.HOME:
-                    for _ in range(1500):
-                        low.data.ctrl[low.arm_actuators] = clearance_arm
-                        low._command_base(np.zeros(3))
-                        mujoco.mj_step(self.scene.model, self.scene.data)
-                        if self.step_callback is not None:
-                            self.step_callback(self.scene)
-                        if low._base_at_target(np.zeros(3)):
-                            break
-                    low._restore_navigation_base_damping()
-                    low.base_stance = np.zeros(3)
-                    low.base_manipulation_target = np.zeros(3)
-
                 _, _, telemetry = self.validate_stable_placement(
                     object_id, destination
                 )
@@ -2573,8 +2882,7 @@ class KitchenGroundTruthExecutionDispatcher:
                     # active tip is inside (or the utensil is physically
                     # contained by) its assigned bowl. A light spoon may spin
                     # in place without translating or leaving the container.
-                    and telemetry.get("angular_speed_radps", 3.0)
-                    <= 2.0
+                    and telemetry.get("angular_speed_radps", 3.0) <= 2.0
                     and (tip_inside_bowl or physically_contained_by_bowl)
                 )
                 record = {
@@ -2744,6 +3052,9 @@ class KitchenGroundTruthExecutionDispatcher:
                 }
 
         if record.get("success", False):
+            row = self.inventory_by_id.get(object_id)
+            if row is not None:
+                row["location"] = destination
             if is_soup_serving_pair:
                 nested_backend = self.binding_by_id[object_id][
                     "physical_backend_body"
@@ -2817,7 +3128,7 @@ class KitchenGroundTruthExecutionDispatcher:
         if not record.get("success", False) and record.get("status") == "POUR_ALIGNMENT_FAILED":
             margin = float(record.get("minimum_outlet_interior_margin_m", -1.0))
             held = record.get("held_state_after", {}).get("validation_status") == "TRUE"
-            if margin >= -0.025 and (held or record.get("source_still_held")):
+            if margin >= -0.015 and held:
                 record["success"] = True
                 record["status"] = "POUR_MOTION_VERIFIED"
                 record["pour_motion_verified"] = True

@@ -73,7 +73,6 @@ PLANNER_FAILURE_CODES = frozenset({
     "REGION_CLOSED", "OBJECT_NOT_VISIBLE", "ACCESS_BLOCKED",
     "TARGET_OCCUPIED", "WRONG_TOOL", "INCOMPATIBLE_TARGET",
     "MOTION_INFEASIBLE", "LOGICAL_PRECONDITION_FAILED", "EXECUTION_ERROR",
-    "PERSISTENT_POSTCONDITION_LOST",
 })
 
 
@@ -87,8 +86,6 @@ def classify_planner_failure(
     if infrastructure_failure == ExecutionFailure.NONE.value:
         return None
     normalized = str(message or "").upper()
-    if "PERSISTENT_POSTCONDITION_LOST" in normalized:
-        return "PERSISTENT_POSTCONDITION_LOST"
     if "CLOSED" in normalized or "NOT OPEN" in normalized:
         return "REGION_CLOSED"
     if any(token in normalized for token in (
@@ -171,6 +168,8 @@ def emit_phase4_progress(
     success: bool | None = None,
     controller_status: str | None = None,
     failure_code: str | None = None,
+    controller_message: str | None = None,
+    exception_type: str | None = None,
 ) -> None:
     """Print stable 1-based progress without changing structured results."""
     rendered = f"{operator}({', '.join(arguments)})"
@@ -183,6 +182,10 @@ def emit_phase4_progress(
     if not success:
         if controller_status:
             print(f"  controller_status={controller_status}", flush=True)
+        if controller_message:
+            print(f"  controller_message={controller_message}", flush=True)
+        if exception_type:
+            print(f"  exception_type={exception_type}", flush=True)
         if failure_code:
             print(f"  failure_code={failure_code}", flush=True)
 
@@ -398,7 +401,14 @@ def _validate_replay_evidence(
 def load_phase3_handoff(run_dir: Path) -> Phase3Handoff:
     """Load and fail-closed validate the immutable Phase-3 execution handoff."""
     run_dir = run_dir.resolve()
-    manifest = _read_json(run_dir / "run_manifest.json")
+    manifest_file = run_dir / "run_manifest.json"
+    if not manifest_file.is_file():
+        raise UpstreamPhase3Blocked(
+            f"Required Phase-3 handoff is missing at {run_dir}.\n\n"
+            "Generate it deterministically before Phase-4 execution with:\n"
+            "  python -m mujoco_scenes.prepare_phase4_handoff --domain <domain> --variant <variant> --mode <mode>"
+        )
+    manifest = _read_json(manifest_file)
     if manifest.get("terminal_status") != "ACTION_SEQUENCE_READY":
         raise UpstreamPhase3Blocked(
             "CURRENT_UPSTREAM_PHASE3_BLOCKED: Phase-3 terminal_status="
@@ -544,14 +554,15 @@ class Phase4Executor:
                     ),
                 }
             inspection_records.append(record)
+            controller_res = record.get("controller_result") or {}
             emit_phase4_progress(
                 "INSPECTION", inspection_index, inspection_total,
                 "OPEN", [region],
                 success=bool(record.get("success")),
-                controller_status=(
-                    (record.get("controller_result") or {}).get("status")
-                ),
+                controller_status=controller_res.get("status"),
                 failure_code=record.get("failure_code"),
+                controller_message=controller_res.get("controller_message") or controller_res.get("message"),
+                exception_type=controller_res.get("exception_type"),
             )
             if not record.get("success"):
                 break
@@ -603,14 +614,15 @@ class Phase4Executor:
                         ),
                     )
                 records.append(record.to_dict())
+                controller_res = record.controller_result or {}
                 emit_phase4_progress(
                     "TASK", record.action_index, len(self.handoff.actions),
                     record.operator, record.arguments,
                     success=record.success,
-                    controller_status=(
-                        (record.controller_result or {}).get("status")
-                    ),
+                    controller_status=controller_res.get("status"),
                     failure_code=record.failure_code,
+                    controller_message=controller_res.get("controller_message") or controller_res.get("message"),
+                    exception_type=controller_res.get("exception_type"),
                 )
                 if not record.success:
                     break
@@ -731,3 +743,8 @@ class Phase4Executor:
             "wall_duration_s": time.perf_counter() - started,
             "success": success,
         }
+
+
+if __name__ == "__main__":
+    from .run_phase4_execution import main
+    raise SystemExit(main())
