@@ -906,14 +906,32 @@ def test_kitchen_inspection_closes_interfering_region_and_preserves_history():
             self.open_regions.discard(region)
             return {"success": True, "status": "CLOSED"}
 
+    # Interference runs one way only: INTERFERING_OPEN_REGIONS maps C2 -> B1,
+    # so opening C2 first closes an already-open B1, while opening B1 after C2
+    # leaves C2 untouched.  This test previously asserted the reverse and so
+    # contradicted test_phase4_kitchen_regressions::
+    # test_c2_then_b1_keeps_c2_open_by_contract, which encodes the same rule
+    # from the constant's side; no implementation could satisfy both.  Both
+    # orders are exercised here so a future change to the rule fails loudly
+    # rather than silently flipping which cupboard ends up open.
     adapter = KitchenPhase4Adapter.__new__(KitchenPhase4Adapter)
     adapter.dispatcher = Dispatcher()
     adapter.successful_inspection_history = []
     assert adapter.execute_inspection_open("C2")["success"]
     assert adapter.execute_inspection_open("B1")["success"]
-    assert adapter.dispatcher.closed == ["C2"]
+    assert adapter.dispatcher.closed == []
     assert adapter.successful_inspection_history == ["C2", "B1"]
-    assert adapter.dispatcher.physically_open_containers() == {"B1"}
+    assert adapter.dispatcher.physically_open_containers() == {"C2", "B1"}
+
+    # Reverse order: B1 open first, then C2 must close it before opening.
+    reversed_adapter = KitchenPhase4Adapter.__new__(KitchenPhase4Adapter)
+    reversed_adapter.dispatcher = Dispatcher()
+    reversed_adapter.successful_inspection_history = []
+    assert reversed_adapter.execute_inspection_open("B1")["success"]
+    assert reversed_adapter.execute_inspection_open("C2")["success"]
+    assert reversed_adapter.dispatcher.closed == ["B1"]
+    assert reversed_adapter.dispatcher.physically_open_containers() == {"C2"}
+
     adapter.expected_inspected_regions = ("C2", "B1")
     adapter.expected_actions = []
     adapter.successful_actions = []

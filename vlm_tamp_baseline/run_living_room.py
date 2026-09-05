@@ -1,4 +1,12 @@
-"""Run planning-only VLM-TAMP on one Living Room variant and compare GT."""
+"""Run VLM-TAMP on one Living Room variant and compare against GT.
+
+Physical execution is the default reported condition and is selected with
+``--physical-execution``: the refined plan is driven through the calibrated
+Google-robot skills and success is physical goal satisfaction verified on the
+final simulator state. Without that flag the run stops after the symbolic
+rollout and writes no ``benchmark_execution_result.json``, so a planning-only
+run can never be mistaken for an executed one.
+"""
 
 from __future__ import annotations
 

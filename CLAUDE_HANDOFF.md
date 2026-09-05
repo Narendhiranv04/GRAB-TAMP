@@ -67,6 +67,30 @@ measurements that justify it.
   every ablated condition, so all discrimination is in rejecting infeasible
   tasks. Kitchen needs semantics alone; workshop is undiscriminating; Living
   Room is the only domain requiring the semantic+binary conjunction.
+  **Caveat added 2026-09-05: the ablated-condition completion rates are
+  confounded and should not be reported as they stand.** Grounding is
+  first-fit over candidates sorted by instance id, so a condition with too
+  little evidence to discriminate still returns an assignment -- chosen by that
+  ordering rather than by the evidence. Counting the alternatives
+  (`run_gt_evidence_ablation --count-valid-assignments`) on Living Room gives:
+
+  | condition | completed | valid assignments | ambiguous |
+  |---|---|---|---|
+  | `full` | 6 | 1 | 0/6 |
+  | `no_unary` | 6 | 1 | 0/6 |
+  | `no_semantic` | 7 | 1--3 | 6/7 |
+  | `binary_only` | 7 | 1--3 | 6/7 |
+  | `no_binary` | 7 | 2--3 | 7/7 |
+  | `semantic_only` | 7 | 2--3 | 7/7 |
+  | `unary_only` | 8 | 54--243 | 8/8 |
+
+  So `full` and `no_unary` genuinely determine the assignment and their 100%
+  is real, while `semantic_only`, `no_binary` and especially `unary_only`
+  (which picks one of up to 243 admissible assignments) complete by tie-break.
+  The infeasible-rejection results are unaffected: those turn on
+  `missing_roles_definitive` and never reach the tie-break. Before publishing
+  the ablated completion figures, either report the assignment count alongside
+  them or re-run under permuted instance ids to show the rate is stable.
 - **No runs of the proposed framework exist.** Only baselines have executed.
 - **Kitchen and Workshop have no execution data.**
 
@@ -74,10 +98,13 @@ measurements that justify it.
 
 - **Run pytest with `env -u PYTHONPATH`.** With ROS sourced, its pytest plugin
   hijacks collection and the suite **exits 0 having tested nothing**.
-- **Expect exactly 7 test failures** (Kitchen serving allocator, kitchen GT
-  execution, phase-4 kitchen inspection, robot-profile self-overlap). Any
-  other failure is a real problem. Do not "fix" the 7 without reading
-  `MACHINE_HANDOFF.md`.
+- **Expect exactly 5 test failures** (3x Kitchen serving allocator, 2x Kitchen
+  GT execution). Any other failure is a real problem. Do not "fix" the 5
+  without reading `MACHINE_HANDOFF.md`: they are unfinished Kitchen work, not
+  environment faults. The count was 7 until 2026-09-05, when the phase-4
+  inspection and robot-profile self-overlap tests were updated -- both
+  asserted contracts the code had deliberately moved away from, and the
+  inspection one directly contradicted a passing test.
 - **`[L2RegionScene]` and the `L2_` scene prefix are not variant L2.** Paper
   labels map positionally to internal names: L1 to F0, L3 to F2, L7 to I0.
 - **Only one tunnel can bind port 18000.** A stale `ssh -N` silently blocks a
@@ -396,8 +423,9 @@ separate `inference_failed` transport failures.
 Physical execution status:
 
 - Kitchen: adapter exists for K1-K12; only one real K1 VLM episode is retained.
-- Living Room: planning-only baseline adapter.
-- Workshop: planning-only baseline adapter.
+- Living Room: physically executed baseline adapter. A full L1--L6 x 3 methods
+  x 10 seeds execution grid completed 2026-09-05; see section 0.
+- Workshop: planning-only baseline adapter (manipulation is not implemented).
 
 The retained K1 physical smoke is:
 

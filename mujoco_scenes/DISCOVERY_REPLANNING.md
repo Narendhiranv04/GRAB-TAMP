@@ -62,8 +62,9 @@ normal discovery-replanning method.
 
 ## Living Room
 
-The Living Room runner uses the same five fixed cameras, persistent anonymous
-IDs, live VLM replanning, and prompt tracing. L1-L6 are feasible variants. The
+The Living Room runner uses the same camera rig (count configurable, 1/3/5
+nested subsets, recorded per episode), persistent IDs **carrying unique
+semantic aliases**, live VLM replanning, and prompt tracing. L1-L6 are feasible variants. The
 current benchmark has no closed or hidden Living Room regions, so its action
 vocabulary correctly contains only `PICK` and `PLACE`; the model is not told to
 inspect.

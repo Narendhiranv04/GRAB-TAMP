@@ -17,9 +17,20 @@ from mujoco_scenes.generic_manipulation import (
     SPOON_REGRASP_SQUEEZE,
     WAYPOINT_HOLD_TICKS,
 )
+from mujoco_scenes.generic_manipulation import (
+    ARM_COMMAND_TOLERANCE as MANIPULATION_ARM_COMMAND_TOLERANCE,
+    BASE_COMMAND_TOLERANCE as MANIPULATION_BASE_COMMAND_TOLERANCE,
+    COLLISION_GUARD_INTERVAL as MANIPULATION_COLLISION_GUARD_INTERVAL,
+)
 from mujoco_scenes.mobile_motion import (
+    BASE_COMMAND_TOLERANCE as NAVIGATION_BASE_COMMAND_TOLERANCE,
     BASE_LINEAR_COMMAND_SPEED as NAVIGATION_BASE_LINEAR_COMMAND_SPEED,
     BASE_YAW_COMMAND_SPEED as NAVIGATION_BASE_YAW_COMMAND_SPEED,
+)
+from mujoco_scenes.living_room_dusting import (
+    ARM_COMMAND_TOLERANCE as DUSTING_ARM_COMMAND_TOLERANCE,
+    BASE_COMMAND_TOLERANCE as DUSTING_BASE_COMMAND_TOLERANCE,
+    COLLISION_GUARD_INTERVAL as DUSTING_COLLISION_GUARD_INTERVAL,
 )
 from mujoco_scenes.kitchen_object_manipulation import KITCHEN_ARM_COMMAND_SPEED
 from mujoco_scenes.robot_profiles import (
@@ -45,14 +56,54 @@ class RobotProfileTests(unittest.TestCase):
         self.assertAlmostEqual(np.linalg.det(rotation), 1.0)
         np.testing.assert_allclose(rotation[:, 2], (0.0, 0.0, -1.0))
 
-    def test_only_the_physical_shoulder_mount_has_a_self_overlap_allowance(self):
+    def test_self_overlap_allowances_cover_only_the_base_link_mounts(self):
+        # The phase-4 port widened this from the original two pairs to five;
+        # the widening is intended and is recorded in BASELINE_FIDELITY.md
+        # under "Physical execution controls", because it relaxes a physical
+        # validity criterion on the robot used in every Living Room episode.
+        # The set is pinned here so a further widening cannot pass unnoticed:
+        # every allowance is a pose the collision guard will stop rejecting.
         self.assertEqual(
             SELF_COLLISION_MOUNT_ALLOWANCES,
             {
                 frozenset(("google:base_link", "google:link_shoulder")): -0.100,
                 frozenset(("google:base_link", "google:link_bicep")): -0.050,
+                frozenset(("google:base_link", "google:link_forearm")): -0.030,
+                frozenset(("google:base_link", "google:link_wrist")): -0.030,
+                frozenset(("google:base_link", "google:link_gripper")): -0.030,
             },
         )
+
+    def test_controller_tolerances_agree_across_the_modules_that_redefine_them(self):
+        # generic_manipulation, mobile_motion and living_room_dusting each
+        # declare these independently rather than importing one source: no
+        # circular-import forces it, they simply grew that way.  Consolidating
+        # them touches the physics modules every episode runs through, so the
+        # divergence is caught here instead.  If this test fails, the copies
+        # have drifted -- decide which value is correct rather than editing the
+        # assertion, because these govern when a commanded pose counts as
+        # reached and a drift changes physical outcomes.
+        self.assertEqual(
+            MANIPULATION_BASE_COMMAND_TOLERANCE, NAVIGATION_BASE_COMMAND_TOLERANCE
+        )
+        self.assertEqual(
+            MANIPULATION_BASE_COMMAND_TOLERANCE, DUSTING_BASE_COMMAND_TOLERANCE
+        )
+        self.assertEqual(
+            MANIPULATION_ARM_COMMAND_TOLERANCE, DUSTING_ARM_COMMAND_TOLERANCE
+        )
+        self.assertEqual(
+            MANIPULATION_COLLISION_GUARD_INTERVAL, DUSTING_COLLISION_GUARD_INTERVAL
+        )
+
+    def test_self_overlap_allowances_are_confined_to_the_base_link(self):
+        # No allowance may exist between two moving links: those are genuine
+        # self-collisions, not a mounting-interface mesh artefact.
+        for pair in SELF_COLLISION_MOUNT_ALLOWANCES:
+            self.assertIn(
+                "google:base_link", pair,
+                f"{sorted(pair)} allows overlap between two moving links",
+            )
 
     def test_google_gripper_closes_by_increasing_angular_commands(self):
         profile = manipulation_profile("google")

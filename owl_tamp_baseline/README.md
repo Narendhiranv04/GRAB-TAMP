@@ -36,8 +36,11 @@ must be named and reported separately.
 
 Generated constraints are syntactically restricted; the scene adapter supplies
 the geometric certificate. Kitchen uses measured visible geometry and Living
-Room uses observed payload/support footprints. The experiment remains
-planning-only and scores plan-to-GT sequence agreement.
+Room uses observed payload/support footprints. The Living Room experiment is
+physically executed by default (`--physical-execution`) and reports physical
+goal satisfaction; the plan-to-GT sequence agreement is produced alongside it,
+in `episode_result.json`, and the two must not be conflated. Kitchen and
+Workshop remain planning-only.
 
 ### Receding-horizon condition
 

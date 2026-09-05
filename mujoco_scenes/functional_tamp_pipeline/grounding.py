@@ -550,6 +550,17 @@ def ground_graph(
     )
     roles = graph_f.nodes
     search_exhausted = bool(context.get("search_exhausted", True))
+    # Diagnostic only.  Grounding normally stops at the first assignment that
+    # satisfies every constraint, taking candidates in sorted instance-id
+    # order, so it is first-fit over a deterministic enumeration.  When several
+    # assignments would satisfy the constraints -- which is exactly what an
+    # ablated evidence mode makes likely, since it has less information to
+    # discriminate with -- the one chosen is decided by that ordering rather
+    # than by the evidence.  Setting this enumerates them all so the count can
+    # be reported; the assignment returned is still the first one found, so
+    # enabling it never changes which assignment is chosen, only what is known
+    # about how many alternatives there were.
+    count_all_assignments = bool(context.get("count_valid_assignments", False))
 
     # Step 1: Find candidate nodes for each role (both TRUE and UNKNOWN)
     role_candidates_true: dict[str, list[str]] = {}
@@ -816,15 +827,20 @@ def ground_graph(
 
             if combo_status == "TRUE":
                 valid_assignments.append((assignment_map, combo_op_bindings))
-                break
+                if not count_all_assignments:
+                    break
             elif combo_status == "UNKNOWN":
                 has_unknown_combination = True
 
-        if valid_assignments:
+        if valid_assignments and not count_all_assignments:
             break
 
     if valid_assignments:
-        valid_assignments.sort(key=lambda a: sorted(str(v) for v in a[0].values()))
+        # The first entry is the first-fit result over the sorted candidate
+        # enumeration, and is what gets returned whether or not the remaining
+        # alternatives were counted.  (A sort used to sit here, but both loops
+        # above stopped at the first success, so it only ever ordered a
+        # one-element list and implied a canonical choice that was never made.)
         chosen_assignment, chosen_bindings = valid_assignments[0]
         return GraphGroundingResult(
             status="COMPLETE",
@@ -837,7 +853,17 @@ def ground_graph(
             evidence={
                 "evidence_mode": evidence_mode,
                 "evidence_components": sorted(evidence_components),
-                "valid_assignment_count": len(valid_assignments),
+                # Meaningful only when the caller asked for the full count;
+                # otherwise the search stopped at the first success and this is
+                # 1 by construction, which previously read as "the assignment
+                # was uniquely determined" when nothing had checked that.
+                "valid_assignment_count": (
+                    len(valid_assignments) if count_all_assignments else None
+                ),
+                "assignment_selection": (
+                    "exhaustive_first_of_counted"
+                    if count_all_assignments else "first_fit_sorted_candidates"
+                ),
             },
         )
 

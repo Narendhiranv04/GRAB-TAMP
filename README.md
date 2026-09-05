@@ -14,9 +14,11 @@ shared comparison controls, and permitted claims, use
 [BASELINE_FIDELITY.md](BASELINE_FIDELITY.md).
 
 The independent [OWL-TAMP adapter](owl_tamp_baseline/README.md) supports
-planning-only Kitchen and Living Room sequence-to-GT experiments. It is
-explicitly labeled as a paper-derived reimplementation because no official
-author code release is currently available.
+Kitchen and Living Room experiments. Living Room is physically executed by
+default (`--physical-execution`); the sequence-to-GT comparison is still
+produced alongside it. It is explicitly labeled as a paper-derived
+reimplementation because no official author code release is currently
+available.
 
 ## Intended Workflow
 

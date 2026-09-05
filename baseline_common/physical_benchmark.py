@@ -70,12 +70,23 @@ def write_execution_result(
     elapsed_seconds: float,
     terminal_status: str,
     terminal_failure: Mapping[str, Any] | None = None,
+    expected_outcome: str | None = None,
+    predicted_outcome: str | None = None,
 ) -> dict[str, Any]:
     """Write the shared final artifact consumed by execution summaries.
 
     The caller owns its planner and robot interface.  This module deliberately
     records only cross-method outcome data, so a batch summarizer cannot infer
     physical success from a planning-only ``episode_result.json``.
+
+    ``expected_outcome``/``predicted_outcome`` carry the GT feasibility verdict
+    and the method's own verdict into the scored artifact.  ``success`` is
+    physical goal satisfaction, which an infeasible variant cannot produce by
+    construction, so without these a method that correctly rejects an
+    impossible task is indistinguishable from one that blunders through it --
+    and a summary that pools both kinds of variant into a single success rate
+    reports the first as a failure.  They stay optional so that older artifacts
+    and callers with no GT comparison remain valid.
     """
     if scene not in {"kitchen", "living_room", "workshop"}:
         raise ValueError(f"Unsupported benchmark scene {scene!r}")
@@ -112,6 +123,15 @@ def write_execution_result(
         "elapsed_seconds": round(float(elapsed_seconds), 6),
         "terminal_status": terminal_status,
         "terminal_failure": dict(terminal_failure or {}),
+        # GT feasibility and the method's own verdict, so feasible and
+        # infeasible variants can be scored separately rather than averaged.
+        "expected_outcome": expected_outcome,
+        "predicted_outcome": predicted_outcome,
+        "outcome_match": (
+            None
+            if expected_outcome is None or predicted_outcome is None
+            else expected_outcome == predicted_outcome
+        ),
         "physical_execution": True,
         # Physical outcomes depend on the contact solver, so the engine build
         # is part of the result.  Episodes produced by different MuJoCo

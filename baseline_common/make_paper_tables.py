@@ -30,15 +30,59 @@ NO_PLAN_STATUSES = {
     "NO_PLAN", "NO_SYMBOLIC_PLAN", "NO_CONTINUOUS_PLAN",
     "INVALID_MODEL_OUTPUT", "NO_RETRIEVED_ROLE_FILLER",
 }
+# Deliberately absent from NO_PLAN_STATUSES: these are excluded from the
+# plan-rate denominator entirely rather than counted as a failure to plan.
+# Both are infrastructure faults rather than planning outcomes -- a generation
+# stopped by our token ceiling, and a model server that could not be reached at
+# all.  Counting either against the method would report our own harness as its
+# inability to plan.  See _main_row.
+TRUNCATED_STATUS = "MODEL_OUTPUT_TRUNCATED"
+INFRASTRUCTURE_STATUSES = {TRUNCATED_STATUS, "INFERENCE_FAILED"}
+# Each row is (label, failure codes, terminal statuses).  A physical failure
+# can arrive by either route: a runner that records `terminal_failure` supplies
+# the lower-case code, while one that does not leaves the code absent and the
+# only evidence is the terminal status -- which `physical_terminal_status`
+# builds by upper-casing that same code.  Both spellings are therefore listed,
+# so an episode categorises identically whichever runner produced it.  Without
+# the upper-case forms every physical failure from a runner that omits
+# `terminal_failure` fell through into the uncategorised bucket.
+# The Living Room executor emits six failure codes and all six are covered
+# here.  The shared MuJoCoSkillDispatcher, which the Kitchen path runs through,
+# emits thirteen (mujoco_scenes.tamp.skills.FailureCode); nine of them had no
+# category until 2026-09-05, so a Kitchen grid would have dropped most of its
+# failures into the uncategorised bucket the way OWL-TAMP's did.  Kitchen has no
+# execution data yet, so this is prophylactic rather than a correction to any
+# reported number.
 FAILURE_CATEGORIES = (
-    ("No valid functional assignment", {"no_valid_subgoals"}, {"NO_RETRIEVED_ROLE_FILLER"}),
-    ("Geometric incompatibility", {"unsupported_subgoal"}, {"NO_CONTINUOUS_PLAN"}),
+    ("No valid functional assignment",
+     {"no_valid_subgoals", "no_candidate", "object_not_visible"},
+     {"NO_RETRIEVED_ROLE_FILLER", "NO_CANDIDATE", "OBJECT_NOT_VISIBLE"}),
+    ("Geometric incompatibility",
+     {"unsupported_subgoal", "target_occupied", "function_unsatisfied"},
+     {"NO_CONTINUOUS_PLAN", "UNSUPPORTED_SUBGOAL", "TARGET_OCCUPIED",
+      "FUNCTION_UNSATISFIED"}),
     ("TAMP refinement failure", {"tamp_refinement_failed"}, {"NO_SYMBOLIC_PLAN"}),
-    ("IK or collision failure", {"execution_failed"}, set()),
-    ("Grasp or placement failure", {"grasp_failed", "placement_failed"}, set()),
-    ("Final-state verification failure", set(), {"PLAN_EXHAUSTED_GOAL_NOT_SATISFIED"}),
+    ("IK or collision failure",
+     {"execution_failed", "internal_error", "ik_failed", "collision",
+      "path_blocked"},
+     {"EXECUTION_FAILED", "INTERNAL_ERROR", "IK_FAILED", "COLLISION",
+      "PATH_BLOCKED"}),
+    ("Grasp or placement failure", {"grasp_failed", "placement_failed"},
+     {"GRASP_FAILED", "PLACEMENT_FAILED"}),
+    ("Precondition violation", {"hand_not_empty", "precondition_failed"},
+     {"HAND_NOT_EMPTY", "PRECONDITION_FAILED"}),
+    ("Final-state verification failure", {"effect_not_observed"},
+     {"PLAN_EXHAUSTED_GOAL_NOT_SATISFIED", "EFFECT_NOT_OBSERVED"}),
     ("Model-call budget exhausted", set(), {"MODEL_CALL_BUDGET_EXHAUSTED"}),
     ("Model output truncated", {"model_output_truncated"}, {"MODEL_OUTPUT_TRUNCATED"}),
+    # Kept separate from truncation on purpose.  OWL-TAMP reports every
+    # unusable completion as INVALID_MODEL_OUTPUT, and truncation is only one
+    # of its causes; folding the two together would report a token-ceiling
+    # fault as a malformed-output failure, or the reverse.  Whether OWL-TAMP's
+    # truncations should be exempt from its planning budget the way VLM-TAMP's
+    # already are is an open question, and merging these rows would hide the
+    # evidence needed to answer it.
+    ("Invalid model output", {"invalid_vlm_output"}, {"INVALID_MODEL_OUTPUT"}),
 )
 
 
@@ -107,12 +151,22 @@ def _main_row(name: str, episodes: list[dict[str, Any]], bold: bool = False) -> 
     feasible = [e for e in episodes if e["_expected_outcome"] == "FEASIBLE"]
     infeasible = [e for e in episodes if e["_expected_outcome"] == "INFEASIBLE"]
     scored = [e for e in episodes if e["_outcome_match"] is not None]
+    # A generation stopped by the token ceiling produced no plan, but it is the
+    # harness's budget that stopped it, not the planner.  Counting it as a
+    # planning failure would report our own ceiling as the method's inability
+    # to plan, so it is excluded from the plan-rate denominator rather than
+    # counted against it -- the same treatment the executive already gives it
+    # when refusing to charge the model-call budget.  These episodes are still
+    # reported, in their own failure-analysis row.
+    plan_scored = [
+        e for e in episodes if e["terminal_status"] not in INFRASTRUCTURE_STATUSES
+    ]
     cells = [
         _pct([bool(e["_outcome_match"]) for e in scored]),
         _pct([bool(e["success"]) for e in feasible]),
         _avg([100.0 * e["_goal_coverage"] for e in feasible if e["_goal_coverage"] is not None]),
         _pct([e["_predicted_outcome"] == "FEASIBLE" for e in infeasible]),
-        _pct([e["terminal_status"] not in NO_PLAN_STATUSES for e in episodes]),
+        _pct([e["terminal_status"] not in NO_PLAN_STATUSES for e in plan_scored]),
         _avg([float(e["raw_vlm_requests"]) for e in episodes]),
         _avg([float(e["replans"]) for e in episodes]),
     ]

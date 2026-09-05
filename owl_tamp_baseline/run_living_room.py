@@ -1,4 +1,11 @@
-"""Run planning-only OWL-TAMP on one Living Room benchmark variant."""
+"""Run OWL-TAMP on one Living Room benchmark variant.
+
+Physical execution is the default reported condition and is selected with
+``--physical-execution``. This extends beyond the paper's own simulation
+condition, which reports plan feasibility rather than physical task success;
+see BASELINE_FIDELITY.md, "OWL-TAMP correspondence". Without the flag the run
+is symbolic only and writes no ``benchmark_execution_result.json``.
+"""
 
 from __future__ import annotations
 

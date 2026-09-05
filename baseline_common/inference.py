@@ -38,6 +38,19 @@ QWEN_THINKING_SAMPLING = {
 }
 
 
+class PromptLeakageError(RuntimeError):
+    """A model-facing request contained privileged evaluator information.
+
+    Deliberately **not** a `PlanningError`: this is not something the method
+    did wrong and it must not be caught, retried, or scored as a planning
+    failure. It means the harness was about to hand the model a checker
+    predicate, a canonical storage-region name or an oracle symbol, and any
+    episode built on such a request is contaminated. Failing the episode loudly
+    is cheaper than discovering afterwards that a reported number was produced
+    with privileged input.
+    """
+
+
 class PlanningError(RuntimeError):
     """The model request or completion could not produce valid output."""
 
@@ -66,11 +79,66 @@ class TransportConfig(Protocol):
     timeout_seconds: float
 
 
+def _auditable_text(payload: Mapping[str, object]) -> str:
+    """Serialize a request for leakage auditing, minus the image bytes.
+
+    A request carries a base64 data URL per camera, which is ~1.5 MB and can
+    contain no forbidden token as literal text -- the semantic aliases in these
+    frames are drawn into the pixels, not written into the encoding. Dropping
+    them keeps the audit on the part that could actually leak, and keeps it
+    cheap enough to run on every request rather than sampling.
+    """
+    def strip(value: Any) -> Any:
+        if isinstance(value, str):
+            return "<image>" if value.startswith("data:image/") else value
+        if isinstance(value, Mapping):
+            return {key: strip(item) for key, item in value.items()}
+        if isinstance(value, (list, tuple)):
+            return [strip(item) for item in value]
+        return value
+
+    return json.dumps(strip(dict(payload)), sort_keys=True)
+
+
+def assert_no_prompt_leakage(payload: Mapping[str, object]) -> dict[str, Any]:
+    """Refuse to send a request carrying privileged evaluator information.
+
+    `audit_prompt_leakage` has existed since the functional pipeline was
+    written but nothing ever called it, so the no-leakage property every
+    baseline claims was asserted rather than enforced. Auditing here -- at the
+    single transport every model-driven method shares -- makes it hold by
+    construction for all of them at once.
+
+    Import is local so `baseline_common` keeps no module-level dependency on
+    the functional pipeline, and so a checkout without it still runs: an
+    unavailable auditor reports itself as unavailable rather than silently
+    passing, which is the distinction that matters when reading a trace.
+    """
+    try:
+        from mujoco_scenes.functional_tamp_pipeline.audit import audit_prompt_leakage
+    except ImportError as error:  # pragma: no cover - environment guard
+        return {"audited": False, "audit_status": "SKIPPED_AUDITOR_UNAVAILABLE",
+                "reason": str(error)}
+    verdict = audit_prompt_leakage({"request": _auditable_text(payload)})
+    if verdict.get("audited") and not verdict.get("zero_leakage", True):
+        raise PromptLeakageError(
+            "Refusing to send a model request containing privileged evaluator "
+            f"information: checkers={verdict.get('forbidden_checkers_found')} "
+            f"regions={verdict.get('forbidden_regions_found')} "
+            f"oracles={verdict.get('forbidden_oracle_symbols_found')}"
+        )
+    return verdict
+
+
 class OpenAITransport:
     def __init__(self, config: TransportConfig):
         self.config = config
+        self.last_leakage_audit: dict[str, Any] | None = None
 
     def complete(self, payload: Mapping[str, object]) -> Mapping[str, object]:
+        # Audited before the request leaves, so a contaminated prompt is never
+        # sent rather than merely noticed afterwards.
+        self.last_leakage_audit = assert_no_prompt_leakage(payload)
         headers = {"Content-Type": "application/json"}
         if self.config.api_key:
             headers["Authorization"] = f"Bearer {self.config.api_key}"

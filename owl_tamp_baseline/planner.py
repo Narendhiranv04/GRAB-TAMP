@@ -11,6 +11,7 @@ from baseline_common.inference import (
     QWEN_THINKING_SAMPLING,
     OpenAITransport,
     PlanningError,
+    TruncatedCompletionError,
     load_model_profile,
     response_content,
     validate_images,
@@ -166,10 +167,23 @@ class OWLTAMPPlanner:
             sketch = PlanSketch.parse(response_content(sketch_response), max_actions=64)
             validate_sketch(observation.scene, sketch.actions, grounded)
         except (PlanningError, ValidationError) as error:
-            failure = f"Invalid OWL-TAMP discrete sketch: {error}"
+            # A generation cut off by the token ceiling produced no answer at
+            # all, so it is the harness's budget rather than a planning
+            # failure.  VLM-TAMP already separates the two; reporting both as
+            # INVALID_MODEL_OUTPUT here would score this method's single
+            # planning call as having produced bad output when it was never
+            # allowed to finish, and the two methods' failure columns would
+            # then mean different things.
+            truncated = isinstance(error, TruncatedCompletionError)
+            failure = (
+                f"OWL-TAMP sketch generation was truncated: {error}"
+                if truncated
+                else f"Invalid OWL-TAMP discrete sketch: {error}"
+            )
             sketch = PlanSketch("NO_PLAN", (), ())
             result = PlanningResult(
-                "INVALID_MODEL_OUTPUT", sketch, (), (), 0, 0, failure
+                "MODEL_OUTPUT_TRUNCATED" if truncated else "INVALID_MODEL_OUTPUT",
+                sketch, (), (), 0, 0, failure,
             )
             self.trace = {
                 "latency_ms": round((time.perf_counter() - started) * 1000.0, 3),
@@ -227,10 +241,20 @@ class OWLTAMPPlanner:
                         )
                     generated.extend(rows)
                 except (PlanningError, ValidationError) as error:
+                    # Same distinction as the sketch call above: a constraint
+                    # request that hit the token ceiling is a harness fault.
+                    truncated = isinstance(error, TruncatedCompletionError)
                     result = PlanningResult(
-                        "INVALID_MODEL_OUTPUT", sketch, (), (), 0, 0,
-                        f"Invalid OWL-TAMP constraint for action "
-                        f"{action_index}: {error}",
+                        "MODEL_OUTPUT_TRUNCATED" if truncated
+                        else "INVALID_MODEL_OUTPUT",
+                        sketch, (), (), 0, 0,
+                        (
+                            f"OWL-TAMP constraint generation for action "
+                            f"{action_index} was truncated: {error}"
+                            if truncated else
+                            f"Invalid OWL-TAMP constraint for action "
+                            f"{action_index}: {error}"
+                        ),
                     )
                     self.trace = {
                         "latency_ms": round(

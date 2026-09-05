@@ -217,6 +217,20 @@ def main() -> None:
         "model": args.model,
         "decoding": args.decoding,
         "max_model_calls": args.max_model_calls,
+        # Every knob that bounds a method's search is part of the reported
+        # condition, not a convenience default.  max_sketch_actions in
+        # particular caps OWL-TAMP's constraint requests, and an episode that
+        # hits it stops generating constraints part-way through its sketch --
+        # so a grid run under a different value is a different condition and
+        # must not be pooled with this one.
+        "max_sketch_actions": args.max_sketch_actions,
+        "max_replans": args.max_replans,
+        "max_actions": args.max_actions,
+        "max_tokens": args.max_tokens,
+        "episode_timeout_s": args.episode_timeout,
+        "variants": list(variants),
+        "camera_counts": list(cameras),
+        "seeds": list(seeds),
         "goal": args.goal,
         "physical_execution": True,
         "shared_result": "benchmark_execution_result.json",

@@ -53,7 +53,27 @@ ROLE_FOOTPRINTS = {
 
 
 class LivingRoomDiscoveryRuntime(LivingRoomPlanningRuntime):
-    """Five-camera Living Room observation plus guarded Google-robot skills."""
+    """Living Room observation plus guarded Google-robot skills.
+
+    The camera count is configurable (1/3/5 nested subsets) and is recorded per
+    episode, so this is not fixed at five.
+
+    ``goal_verifier`` is deliberately **not** overridden: the inherited
+    implementation reads ``self.locations``, and on this subclass that dict is
+    a verified projection of the simulator rather than a symbolic ledger.
+    ``_place`` assigns into it only after the pick/place controller returns
+    without failure, ``_settle_payload`` confirms the payload came to rest, and
+    ``_verify_place`` confirms the physical ON relation -- support contact,
+    footprint inside the observed support, payload non-overlap, no invalid
+    penetration, settling drift within bounds, height consistency and the
+    12-degree placement yaw tolerance. A placement that fails any of those
+    leaves ``locations`` untouched and reports ``PLACE``.
+
+    So a satisfied goal here *is* physical goal satisfaction, and reporting it
+    as such is sound. Anything that starts writing ``locations`` outside
+    ``_place`` would silently break that guarantee and turn reported physical
+    success back into a symbolic claim.
+    """
 
     def __init__(
         self,

@@ -313,13 +313,24 @@ class FunctionalPlannerTests(unittest.TestCase):
 
     def test_thinking_sampling_matches_checkpoint_guidance(self):
         expected = {
+            # Qwen3.5-9B's thinking-mode figures for **precise coding**, not the
+            # card's general-task thinking profile.  Every planner request here
+            # is schema-constrained JSON, and the general-task profile
+            # (temperature 1.0, presence_penalty 1.5, no repetition guard) made
+            # this checkpoint run past its stopping point on that kind of
+            # output -- see BASELINE_FIDELITY.md, "Decoding conditions", which
+            # records the measurements.  repetition_penalty 1.05 is the single
+            # documented deviation from the published figures.  These values
+            # duplicate inference_server/models.json; if that registry changes,
+            # this test is the thing that should stop the change from being
+            # silent, so update both together and deliberately.
             "qwen35-9b": {
-                "temperature": 1.0,
+                "temperature": 0.6,
                 "top_p": 0.95,
                 "top_k": 20,
                 "min_p": 0.0,
-                "presence_penalty": 1.5,
-                "repetition_penalty": 1.0,
+                "presence_penalty": 0.0,
+                "repetition_penalty": 1.05,
             },
             "glm46v-flash": {
                 "temperature": 0.8,

@@ -92,11 +92,14 @@ observations, physical telemetry, and the final result are written below the
 chosen output directory. Every episode requires an empty output directory so
 traces from separate trials cannot mix.
 
-## Living Room: planning-only GT sequence benchmark
+## Living Room: physically executed benchmark (GT sequence also reported)
 
-The Living Room condition deliberately stops before physical execution. It
-renders the selected L1--L10 initial state through the five fixed project
-cameras, annotates only persistent object/region IDs, runs the same two-stage
+The Living Room condition is physically executed by default via
+`--physical-execution`; omit the flag for a planning-only run, which writes no
+`benchmark_execution_result.json`. It renders the selected L1--L10 initial
+state through the fixed project cameras, annotates persistent object/region IDs
+**and unique semantic aliases** (matching the original paper's
+name-annotated input; see `BASELINE_FIDELITY.md`), runs the same two-stage
 VLM-TAMP proposer, and refines grounded subgoals with PDDLStream. Refined
 PICK/PLACE actions advance a private symbolic rollout; they never move MuJoCo.
 The resulting high-level sequence is compared with

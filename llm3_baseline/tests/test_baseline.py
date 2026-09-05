@@ -287,11 +287,20 @@ class ContractTests(unittest.TestCase):
         self.assertIn("continuous_parameter_catalog", task)
 
     def test_model_profile_supplies_recommended_thinking_settings(self):
+        # These are Qwen3.5-9B's published thinking-mode figures for precise
+        # coding, which is the decoding condition every model-driven method
+        # shares; see BASELINE_FIDELITY.md, "Decoding conditions".  The
+        # temperature assertion previously read 1.0, predating the move to the
+        # precise-coding profile, and had never been updated -- so this test
+        # failed against the value the planner actually serves.
         config = PlannerConfig.from_env({"LLM3_PROFILE": "qwen35-9b"})
         self.assertEqual(config.model, "qwen35-9b")
         self.assertEqual(config.max_tokens, 24576)
-        self.assertEqual(config.sampling["temperature"], 1.0)
+        self.assertEqual(config.sampling["temperature"], 0.6)
+        self.assertEqual(config.sampling["top_p"], 0.95)
         self.assertEqual(config.sampling["top_k"], 20)
+        # The single documented deviation from the published figures.
+        self.assertEqual(config.sampling["repetition_penalty"], 1.05)
         self.assertTrue(config.toggle_thinking)
 
     def test_prompt_constrained_profile_omits_response_format(self):

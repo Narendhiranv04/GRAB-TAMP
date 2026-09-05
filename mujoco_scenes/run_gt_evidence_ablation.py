@@ -129,6 +129,7 @@ def evaluate_one(
     evidence_components: tuple[str, ...] | None = None,
     specification=None,
     graph: ObservedSceneGraph | None = None,
+    count_valid_assignments: bool = False,
 ) -> dict[str, Any]:
     specification = specification or GTSpecProvider().provide(domain, "")
     graph = graph or build_oracle_graph(domain, variant, specification)
@@ -139,6 +140,14 @@ def evaluate_one(
             "search_exhausted": True,
             "evidence_mode": mode,
             "evidence_components": evidence_components,
+            # Grounding is first-fit over candidates sorted by instance id, so
+            # an ablated condition that cannot discriminate between several
+            # admissible objects still returns one -- decided by the id
+            # ordering, not by the evidence.  A completion rate of 100% under
+            # such a condition is then ambiguous between "this evidence
+            # determines the assignment" and "the tie-break happened to pick
+            # the right object".  Counting the alternatives separates them.
+            "count_valid_assignments": count_valid_assignments,
         },
     )
     runtime_ms = (perf_counter() - start) * 1000.0
@@ -156,6 +165,11 @@ def evaluate_one(
         "grounding_status": result.status,
         "grounding_complete": result.complete,
         "ground_truth_valid_complete": validity["all_selected_bindings_gt_valid"],
+        # None unless counting was requested.  A value above 1 means this
+        # evidence condition did not determine the assignment and the returned
+        # one was selected by candidate ordering.
+        "valid_assignment_count": result.evidence.get("valid_assignment_count"),
+        "assignment_selection": result.evidence.get("assignment_selection"),
         "runtime_ms": round(runtime_ms, 3),
         **validity,
         "missing_roles": list(result.missing_roles),
@@ -232,6 +246,20 @@ def main() -> int:
         ),
     )
     parser.add_argument("--output-root", type=Path, default=None)
+    parser.add_argument(
+        "--count-valid-assignments",
+        action="store_true",
+        help=(
+            "Also count how many assignments satisfy each condition instead of "
+            "stopping at the first. Grounding is first-fit over candidates "
+            "sorted by instance id, so an ablated condition that cannot "
+            "discriminate still returns an assignment chosen by that ordering. "
+            "A count above 1 means the condition did not determine the "
+            "assignment and its completion rate is a property of the id "
+            "ordering as much as of the evidence. Slower: enumerates the full "
+            "combination space rather than short-circuiting."
+        ),
+    )
     args = parser.parse_args()
 
     domains = tuple(item.strip() for item in args.domains.split(",") if item.strip())
@@ -278,6 +306,7 @@ def main() -> int:
                     domain, variant, "joint" if components is not None else condition,
                     evidence_components=components,
                     specification=specification, graph=graph,
+                    count_valid_assignments=args.count_valid_assignments,
                 )
                 row["condition"] = condition
                 rows.append(row)

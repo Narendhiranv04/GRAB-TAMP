@@ -26,7 +26,10 @@ git log -5 --oneline --decorate
 
 Run the test suite as `env -u PYTHONPATH PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
 .venv/bin/python -m pytest ...`. With ROS sourced, its pytest plugin hijacks
-collection and the suite exits 0 having tested nothing. Expect exactly seven
-failures, all Kitchen or robot-profile; any other failure is real.
+collection and the suite exits 0 having tested nothing. Expect exactly five
+failures, all Kitchen serving-allocator or Kitchen ground-truth execution; any
+other failure is real. (This was seven before 2026-09-05; three stale tests
+were updated against the contracts the code actually implements, and
+`MACHINE_HANDOFF.md` records which and why.)
 
 Do not reset, clean, discard, or overwrite the existing worktree.
