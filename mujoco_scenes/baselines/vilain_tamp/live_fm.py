@@ -163,6 +163,19 @@ def decoding_arguments(condition: str) -> dict[str, object]:
 # the budget derived from it needs real headroom rather than a token or two.
 _CONTEXT_MARGIN_TOKENS = 1024
 _CONTEXT_RETRY_ATTEMPTS = 3
+# BASELINE_FIDELITY.md: "Truncation draws on its own bounded retry budget, in
+# the same way a transport fault already did."  VLM-TAMP implements that as
+# `max_truncation_retries=2` in its executive; this transport had no retry at
+# all and raised on the first `finish_reason == "length"`, which killed the
+# whole episode and wrote no artifact -- the opposite of the same document's
+# "recorded, not dropped".  Three attempts = one call plus two retries, so the
+# budget matches VLM-TAMP's.  Retrying is meaningful rather than superstitious
+# because the completion length is bimodal under thinking-mode sampling: the
+# measurement in that document found calls that completed needed under 7400
+# tokens while the ones that ran away hit the ceiling, so a fresh draw at the
+# same temperature is a real second chance and does not alter the decoding
+# condition.
+_TRUNCATION_RETRY_ATTEMPTS = 3
 
 
 class VLLMQwenTransport:
@@ -212,6 +225,7 @@ class VLLMQwenTransport:
         self.timeout_seconds = timeout_seconds
         self.max_tokens = max_tokens
         self.decoding = decoding
+        self.last_truncated_attempts = 0
         # Resolved eagerly so an unknown condition fails at construction rather
         # than mid-episode, after a scene has already been built.
         self._decoding_arguments = decoding_arguments(decoding)
@@ -261,6 +275,37 @@ class VLLMQwenTransport:
         # provider error surface instead of masking it.
         return client.chat.completions.create(**arguments)
 
+    def _completion_with_truncation_retry(
+        self, client: Any, request_arguments: dict[str, Any]
+    ) -> tuple[Any, int]:
+        """Issue the completion, redrawing while the generation is cut off.
+
+        Returns the response and the number of attempts that came back
+        truncated, so the caller can tell "succeeded on the retry" from
+        "exhausted the budget" -- the first is a recovered harness fault and
+        the second is the distinct `MODEL_OUTPUT_TRUNCATED` failure mode that
+        `BASELINE_FIDELITY.md` requires be kept out of a method's
+        planning-failure count.
+
+        The arguments are re-sent unchanged: a truncated draw is not evidence
+        that the request was wrong, and shrinking or growing the budget here
+        would silently move this baseline off the table's token limit.
+        """
+        truncated_attempts = 0
+        response = None
+        for _ in range(_TRUNCATION_RETRY_ATTEMPTS):
+            response = self._completion_with_context_retry(
+                client, request_arguments
+            )
+            choices = getattr(response, "choices", ())
+            finish_reason = (
+                getattr(choices[0], "finish_reason", None) if choices else None
+            )
+            if finish_reason != "length":
+                return response, truncated_attempts
+            truncated_attempts += 1
+        return response, truncated_attempts
+
     def complete(self, request: FMRequest) -> FMTransportResponse:
         if request.model != self.served_model_id:
             raise FMTransportError(
@@ -296,13 +341,19 @@ class VLLMQwenTransport:
         }
         if request.response_format == "json":
             request_arguments["response_format"] = {"type": "json_object"}
-        response = self._completion_with_context_retry(
+        response, truncated_attempts = self._completion_with_truncation_retry(
             client, request_arguments
         )
         choices = getattr(response, "choices", ())
         finish_reason = getattr(choices[0], "finish_reason", None) if choices else None
-        if finish_reason == "length":
-            raise FMTransportError("TRUNCATED_RESPONSE: vLLM reached max_tokens")
+        if truncated_attempts >= _TRUNCATION_RETRY_ATTEMPTS:
+            raise FMTransportError(
+                "MODEL_OUTPUT_TRUNCATED: vLLM reached max_tokens on all "
+                f"{_TRUNCATION_RETRY_ATTEMPTS} attempts"
+            )
+        # Recorded even when zero, so an artifact shows whether the accepted
+        # completion needed a redraw.
+        self.last_truncated_attempts = truncated_attempts
         provider_model = str(getattr(response, "model", ""))
         if provider_model != self.served_model_id:
             raise FMTransportError(

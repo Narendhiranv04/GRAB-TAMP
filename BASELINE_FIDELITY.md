@@ -685,3 +685,70 @@ MuJoCo backend resolution are evaluation/adapter-private. The VLM receives the
 open-language goal, five ID-only annotated RGB views, semantic-neutral state,
 history, and failure feedback—never the expected sequence or functional
 assignment.
+
+## ViLaIn-TAMP transport faults corrected 2026-09-07 (evening)
+
+Two harness faults were destroying roughly half of all ViLaIn episodes under
+`--decoding model-native`, both of them conditions no other tabled method
+faced. Measured before the fix: Workshop 7 episodes launched -> 3 artifacts
+(3 `TRUNCATED_RESPONSE`); Living Room 10 launched -> 5 artifacts
+(2 `APITimeoutError`). A failed episode wrote **no artifact at all**.
+
+1. **Truncation ended the episode instead of drawing on a retry budget.**
+   `VLLMQwenTransport.complete` raised on the first
+   `finish_reason == "length"`. This section's own truncation policy above
+   requires the opposite -- "Truncation draws on its own bounded retry budget,
+   in the same way a transport fault already did", and those episodes are
+   "recorded, not dropped". VLM-TAMP implements that as
+   `max_truncation_retries=2`; ViLaIn's port had no retry.
+   Now `_completion_with_truncation_retry` redraws up to
+   `_TRUNCATION_RETRY_ATTEMPTS = 3` (one call plus two retries, matching
+   VLM-TAMP's budget) and reports exhaustion as the distinct
+   `MODEL_OUTPUT_TRUNCATED`, which must not be pooled into a planning-failure
+   count. The request is re-sent **unchanged**: a truncated draw is not
+   evidence the request was wrong, and altering the budget here would move this
+   baseline off the table's token limit. Redrawing is meaningful rather than
+   superstitious because completion length is bimodal under thinking-mode
+   sampling -- the measurement recorded above found completing calls needed
+   under 7400 tokens while runaway ones hit the ceiling.
+   `last_truncated_attempts` is recorded so an artifact shows whether the
+   accepted completion needed a redraw.
+
+2. **A 2x tighter transport deadline than the methods it is tabled against.**
+   `configs/qwen_only.yaml` set `model_seconds: 300` where VLM-TAMP's and
+   OWL-TAMP's planners both default to `timeout_seconds = 600.0`, and ViLaIn's
+   OpenAI client is built with `max_retries=0`, so one slow call ended the
+   episode. ViLaIn also makes the *slowest* calls in the grid: ~107 s measured
+   for a four-contact-sheet request with thinking enabled, against a server
+   saturated at `--max-num-seqs 8` with a queue behind it. Now 600, equal to
+   the other two. This changes nothing about what is asked of the model.
+
+Guarded by three tests in
+`mujoco_scenes/baselines/vilain_tamp/tests/test_live_fm.py`
+(`test_a_truncated_generation_is_retried_rather_than_failing_the_episode`,
+`test_b_truncation_budget_is_bounded_and_reports_the_distinct_mode`,
+`test_c_vilain_transport_deadline_matches_the_other_baselines`). ViLaIn's own
+suite still passes: 363 passed, 3 skipped.
+
+**Not touched, because it is a genuine ViLaIn failure:**
+`InterpreterOutputError: camera_id must be a non-empty string` -- the model
+returned a malformed detection. That is the method's own output, and it belongs
+in its results.
+
+**The 8 artifacts written before this fix remain valid.** Neither fault can
+produce a *completed* episode -- both raise and abort -- so any artifact that
+exists came from calls that neither timed out nor truncated. `--resume` keeps
+them.
+
+## Open: Workshop executor crashes on PLACE into a drawer
+
+`workshop_ground_truth_execution._destination_position` raises
+`ValueError: No assisted destination pose for LEFT_DRAWER` when a method plans
+`PLACE(<tool>, left drawer)` -- returning a tool to a drawer. The exception
+propagates out of the executive and kills the episode with no artifact, so the
+harness's missing pose is recorded as nothing rather than as a failed PLACE.
+Observed once in 200 Workshop episodes (`vlm_tamp` W8 seed 8, which is why
+that grid stands at 199/200). Same class as the truncation fault above --
+"recorded, not dropped" -- but it sits in the physical executor on the
+assisted-grasp path, so it is left for a deliberate decision rather than
+changed mid-grid.

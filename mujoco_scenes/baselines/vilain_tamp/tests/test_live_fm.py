@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 from pathlib import Path
+import types
 
 import pytest
 
@@ -13,6 +14,7 @@ from mujoco_scenes.baselines.vilain_tamp.fm import (
     FMTransportError,
     RecordedFMClient,
 )
+from mujoco_scenes.baselines.vilain_tamp import live_fm
 from mujoco_scenes.baselines.vilain_tamp.live_fm import (
     DEFAULT_VLLM_BASE_URL,
     OpenAIReasoningTransport,
@@ -450,3 +452,84 @@ def test_cli_help_does_not_make_a_model_call(capsys: pytest.CaptureFixture[str])
         main(["--help"])
     assert exit_info.value.code == 0
     assert "standalone" in capsys.readouterr().out
+
+
+def _truncation_client(finish_reasons):
+    """A stub client returning the given finish_reasons in order."""
+
+    class _Choice:
+        def __init__(self, reason):
+            self.finish_reason = reason
+            self.message = types.SimpleNamespace(content="{}", reasoning_content=None)
+
+    class _Response:
+        def __init__(self, reason):
+            self.choices = [_Choice(reason)]
+            self.model = "qwen35-9b"
+            self.id = "chatcmpl-test"
+            self.usage = types.SimpleNamespace(
+                prompt_tokens=10, completion_tokens=20, total_tokens=30
+            )
+
+    calls = {"n": 0}
+
+    class _Completions:
+        def create(self, **kwargs):
+            reason = finish_reasons[min(calls["n"], len(finish_reasons) - 1)]
+            calls["n"] += 1
+            return _Response(reason)
+
+    class _Client:
+        def __init__(self):
+            self.chat = types.SimpleNamespace(completions=_Completions())
+
+    return _Client(), calls
+
+
+def test_a_truncated_generation_is_retried_rather_than_failing_the_episode():
+    """BASELINE_FIDELITY.md gives truncation its own bounded retry budget.
+
+    Before this, the transport raised on the first finish_reason=="length",
+    which killed the episode and wrote no artifact -- the opposite of that
+    document's "recorded, not dropped".
+    """
+    client, calls = _truncation_client(["length", "stop"])
+    transport = live_fm.VLLMQwenTransport(
+        image_root=".",
+        served_model_id="qwen35-9b",
+        client=client,
+        decoding="model-native",
+    )
+    response, truncated = transport._completion_with_truncation_retry(client, {})
+    assert truncated == 1, "the first attempt truncated, so one retry was spent"
+    assert calls["n"] == 2, "the retry must actually re-issue the request"
+    assert response.choices[0].finish_reason == "stop"
+
+
+def test_b_truncation_budget_is_bounded_and_reports_the_distinct_mode():
+    """Exhausting the budget must be distinguishable from a planning failure."""
+    client, calls = _truncation_client(["length"])
+    transport = live_fm.VLLMQwenTransport(
+        image_root=".",
+        served_model_id="qwen35-9b",
+        client=client,
+        decoding="model-native",
+    )
+    _, truncated = transport._completion_with_truncation_retry(client, {})
+    assert truncated == live_fm._TRUNCATION_RETRY_ATTEMPTS
+    assert calls["n"] == live_fm._TRUNCATION_RETRY_ATTEMPTS, "must not retry forever"
+
+
+def test_c_vilain_transport_deadline_matches_the_other_baselines():
+    """A tighter deadline than VLM-TAMP/OWL-TAMP is a harness advantage.
+
+    Both of those planners default to timeout_seconds=600.0; this baseline ran
+    at 300 while making the slowest calls in the grid, and its client is built
+    with max_retries=0, so one slow call ended the episode.
+    """
+    import yaml
+
+    config = yaml.safe_load(
+        (Path(live_fm.__file__).parent / "configs" / "qwen_only.yaml").read_text()
+    )
+    assert float(config["timeouts"]["model_seconds"]) == 600.0

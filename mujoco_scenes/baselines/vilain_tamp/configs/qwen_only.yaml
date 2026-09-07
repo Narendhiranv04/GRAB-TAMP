@@ -15,7 +15,16 @@ model_condition: vilain_tamp_qwen
 max_cp_corrections: 3
 timeouts:
   symbolic_seconds: 200
-  model_seconds: 300
+  # 600 to match VLM-TAMP's and OWL-TAMP's transport timeout
+  # (`timeout_seconds: float = 600.0` in both of their planners).  At 300 this
+  # baseline faced a 2x tighter deadline than the methods it is tabled against
+  # while making the slowest calls in the grid -- ~107 s measured for a
+  # four-contact-sheet request with thinking on, against a server saturated at
+  # --max-num-seqs 8 with a queue behind it.  The OpenAI client is constructed
+  # with max_retries=0, so one slow call killed the episode outright and wrote
+  # no artifact.  Equalising the deadline removes a harness advantage; it does
+  # not change what is asked of the model.
+  model_seconds: 600
   refinement_seconds: 200
 output_root: runs/vilain_tamp_qwen
 external_tools:
