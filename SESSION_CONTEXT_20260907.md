@@ -483,3 +483,62 @@ the ablation.
 **Measured ViLaIn cost:** ~107 s per model call with thinking on, packing
 12 source images into 4 contact sheets (one per inspection stage). Hence
 `--episode-timeout 5400` rather than the 3600 the vlm/owl grids used.
+
+## State at 20:40, and the two-server plan
+
+Six commits landed this evening on `kitchen-workshop-integration`, tip
+`a1201fde`. **Keep the worktree clean while ViLaIn runs**: its
+`verify_repository_provenance` rejects both uncommitted tracked changes *and* a
+HEAD change mid-run, so any edit or commit kills in-flight ViLaIn episodes.
+Stop those legs before touching the tree.
+
+| leg | state |
+|---|---|
+| Workshop vlm+owl | **200/200 complete** |
+| Retrieval Workshop / Living Room / Kitchen | **10/10, 10/10, 12/12 complete** |
+| Living Room vlm+owl | 172/200 (vlm 100/100 done; owl ~72/100) |
+| ViLaIn Workshop / Living Room | 0/100 each, restarted clean at `a1201fde` |
+| Kitchen vlm+owl | 0/240, waiting on the Blackwell host |
+| ViLaIn Kitchen | 0/120, **must** be Blackwell -- needs >32768 |
+
+Retrieval Kitchen results (1 seed x 12 variants, ~55 s per episode):
+feasible success **0/6**, infeasible rejection **6/6**, outcome correct 6/12.
+It predicts INFEASIBLE uniformly.
+
+### Do not raise --max-num-seqs on the 5090
+
+Its own startup log settles it:
+
+```text
+Available KV cache memory: 8.4 GiB
+GPU KV cache size: 247,422 tokens
+Maximum concurrency for 32,768 tokens per request: 7.55x
+```
+
+`--max-num-seqs 8` already matches the hardware. Admitting 16 would preempt and
+recompute long sequences, which for ViLaIn's long prompts is slower, not
+faster. The Blackwell host is a different matter: 48 GB x 0.90 minus ~18 GB of
+weights leaves roughly 25 GB of KV pool, about 3x the 5090's, so 16 is
+justified there even at `--max-model-len 65536`.
+
+### Run both GPUs in parallel, not one behind the other
+
+ViLaIn's transport hard-asserts `http://127.0.0.1:18000/v1`, so it must own
+local port 18000. Every other runner takes `--base-url` freely. Therefore:
+
+- **Blackwell on 18000** -> all ViLaIn (Workshop, Living Room, and Kitchen,
+  which needs the larger window anyway).
+- **5090 on 18001** -> Kitchen vlm+owl, whose prompts fit 32768 comfortably.
+
+```bash
+ssh -f -N -L 18000:127.0.0.1:8000 user1@10.4.25.63
+ssh -f -N -L 18001:127.0.0.1:8000 long-horizon@gvlab2.iiit.ac.in
+```
+
+ViLaIn has 0 artifacts, so redirecting it costs nothing right now.
+
+### Still unmeasured
+
+**Kitchen per-episode cost.** The K1/K7 smoke that would have given it was
+killed by the 19:10 OOM before either episode finished. Smoke two Kitchen
+episodes on the new host before committing 240.
