@@ -77,6 +77,28 @@ def _unique_annotation_aliases(labels: Mapping[str, str]) -> dict[str, str]:
     return result
 
 
+def kitchen_public_region_ids() -> dict[str, str]:
+    """Anonymous, stable public identifiers for the Kitchen storage regions.
+
+    Kitchen's whole search problem is *which* closed region holds a required
+    item, and its canonical names (`D1`, `D2`, `B1`, `C1`, `C2`) are on the
+    forbidden list in `functional_tamp_pipeline/audit.py` for exactly that
+    reason: naming them tells the model the storage layout.  The shared
+    observation contract has always claimed `PERSISTENT_REGION_ID_ONLY`, but
+    the "persistent id" being published was the oracle's own name, so every
+    Kitchen episode was rejected by the leakage guard before its first model
+    call.
+
+    Sorted so the mapping is identical across methods, seeds and processes.
+    The open supports keep their names: `countertop` and `serving_area` are
+    named in the task instruction itself, so they disclose nothing.
+    """
+    return {
+        region_id: f"region_{index:04d}"
+        for index, region_id in enumerate(sorted(ARTICULATION_SPECS), start=1)
+    }
+
+
 def _public_region_reference(value: Any) -> Any:
     if isinstance(value, str) and value.strip().upper() in {
         "INITIAL",
@@ -143,6 +165,15 @@ def _goal_contract(bundle: KitchenExecutionBundle) -> "KitchenGoalContract":
     )
 
 
+class InfeasibleVariantHasNoGoalContract(ValueError):
+    """Raised when a goal contract is requested for an infeasible variant.
+
+    A ValueError subclass so any existing caller that catches ValueError keeps
+    working, but distinguishable so the runtime can substitute the unset-goal
+    contract rather than abort the episode.
+    """
+
+
 def goal_contract_from_expected_actions(
     path: str | Path,
     *,
@@ -156,7 +187,16 @@ def goal_contract_from_expected_actions(
     """
     document = json.loads(Path(path).read_text(encoding="utf-8"))
     if str(document.get("intended_outcome", "")).upper() != "FEASIBLE":
-        raise ValueError("Live discovery execution currently requires a FEASIBLE variant")
+        # An infeasible variant has no satisfiable terminal state, so there is
+        # no goal contract to build.  Raising here made every K7--K12 episode
+        # abort before it started, which is why the Kitchen grid produced 120
+        # crashes and no artifacts.  The caller substitutes the unset-goal
+        # contract instead: the verifier then never reports success, which is
+        # correct -- `success` is false by construction on an infeasible
+        # variant and the credit comes from predicted_outcome == "INFEASIBLE".
+        raise InfeasibleVariantHasNoGoalContract(
+            "infeasible variants carry no satisfiable goal contract"
+        )
     rows = document.get("actions")
     if not isinstance(rows, list):
         raise ValueError("Expected-action document must contain an actions array")
@@ -435,6 +475,15 @@ class BaselineKitchenRuntime:
                 for object_id in self.object_geom_ids
             }
         )
+        # Storage regions are published under anonymous ids; see
+        # `kitchen_public_region_ids`.  Both directions are kept because
+        # actions arrive in the public vocabulary and have to be executed
+        # against the canonical one.
+        self.public_region_ids = kitchen_public_region_ids()
+        self.canonical_region_ids = {
+            public: canonical
+            for canonical, public in self.public_region_ids.items()
+        }
         self.region_geom_ids = {
             region_id: self._subtree_geom_ids(spec.moving_body)
             for region_id, spec in ARTICULATION_SPECS.items()
@@ -627,15 +676,22 @@ class BaselineKitchenRuntime:
             str(row["generic_object_id"]): str(row.get("semantic_label", "unknown"))
             for row in accepted
         }
-        contract = (
-            goal_contract_from_expected_actions(
-                expected_actions,
-                generic_for_backend=generic_for_backend,
-                object_labels=labels,
-            )
-            if expected_actions is not None
-            else KitchenGoalContract(("__planning_goal_unset__",), (), (), labels)
+        unset_contract = KitchenGoalContract(
+            ("__planning_goal_unset__",), (), (), labels
         )
+        if expected_actions is None:
+            contract = unset_contract
+        else:
+            try:
+                contract = goal_contract_from_expected_actions(
+                    expected_actions,
+                    generic_for_backend=generic_for_backend,
+                    object_labels=labels,
+                )
+            except InfeasibleVariantHasNoGoalContract:
+                # Expected for K7--K12: run the episode so the method can be
+                # scored on whether it correctly rejects the variant.
+                contract = unset_contract
         runtime = cls(bundle, output, goal_contract=contract, **kwargs)
         write_json(
             output / "_private_evaluation" / "variant_adapter.json",
@@ -710,6 +766,9 @@ class BaselineKitchenRuntime:
         self.sync(f"{top_level} | controller: {physical_status}")
 
     def inspect(self, region_id: str) -> dict[str, Any]:
+        # Accept either vocabulary: the model only ever sees the public id, but
+        # internal callers (ground-truth scripts, tests) use the canonical one.
+        region_id = self.canonical_region_ids.get(region_id, region_id)
         self.sync(f"Inspecting {region_id}")
         if region_id not in self.scene.get_region_observation_states():
             return {
@@ -800,8 +859,11 @@ class BaselineKitchenRuntime:
                 self.object_annotation_aliases.get(item.entity_id, item.entity_id),
                 {
                     key: (
-                        _public_region_reference(value)
-                        if key in {"source_region", "region_id"}
+                        self.public_region_ids.get(
+                            str(_public_region_reference(value)),
+                            _public_region_reference(value),
+                        )
+                        if key in {"source_region", "region_id", "location"}
                         else value
                     )
                     for key, value in item.facts.items()
@@ -810,7 +872,15 @@ class BaselineKitchenRuntime:
             )
             for item in raw.entities
         )
-        existing_regions = {item.region_id: item for item in raw.regions}
+        existing_regions = {
+            self.public_region_ids.get(item.region_id, item.region_id): Region(
+                self.public_region_ids.get(item.region_id, item.region_id),
+                item.label,
+                item.state,
+                item.inspected,
+            )
+            for item in raw.regions
+        }
         for region in PUBLIC_REGIONS:
             existing_regions.setdefault(region.region_id, region)
         bounded = Observation(
