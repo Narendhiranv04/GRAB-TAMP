@@ -462,23 +462,31 @@ def main() -> None:
             "result": result.as_dict(),
             "observed_effects": sorted(runtime.ledger.effects),
         }
+        # Computed for BOTH paths, not just planning-only.  The physical path
+        # passes `expected["intended_outcome"]` to write_execution_result at
+        # the end of this function, so leaving these inside the planning-only
+        # branch made every *executing* Kitchen episode die with
+        # `UnboundLocalError: cannot access local variable 'expected'` -- after
+        # doing the full 20+ minutes of work, and with no artifact written.
+        # Latent since the verdict-recording fix, because until the region
+        # anonymisation landed no Kitchen episode ever reached this line.
+        # Workshop and Living Room compute theirs unconditionally, which is why
+        # both completed 200/200.
+        backend_by_id = {
+            str(row["generic_object_id"]): str(row["physical_backend_body"])
+            for row in runtime.bundle.resolution.get("accepted", ())
+        }
+        predicted = canonical_kitchen_actions(result.action_history, backend_by_id)
+        expected = load_expected(
+            arguments.expected_root.resolve(), arguments.variant
+        )
+        predicted_outcome = "FEASIBLE" if result.success else "UNRESOLVED"
+        if (
+            result.terminal_failure is not None
+            and result.terminal_failure.code == "no_valid_subgoals"
+        ):
+            predicted_outcome = "INFEASIBLE"
         if arguments.planning_only:
-            backend_by_id = {
-                str(row["generic_object_id"]): str(row["physical_backend_body"])
-                for row in runtime.bundle.resolution.get("accepted", ())
-            }
-            predicted = canonical_kitchen_actions(
-                result.action_history, backend_by_id
-            )
-            expected = load_expected(
-                arguments.expected_root.resolve(), arguments.variant
-            )
-            predicted_outcome = "FEASIBLE" if result.success else "UNRESOLVED"
-            if (
-                result.terminal_failure is not None
-                and result.terminal_failure.code == "no_valid_subgoals"
-            ):
-                predicted_outcome = "INFEASIBLE"
             comparison = compare_kitchen_actions(
                 predicted, expected.get("actions", ())
             )
