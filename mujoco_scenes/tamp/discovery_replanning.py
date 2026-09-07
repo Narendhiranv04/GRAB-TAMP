@@ -29,6 +29,17 @@ class RecoverablePlanningError(RuntimeError):
     """A model response can be retried from the current observation."""
 
 
+class TransportFaultError(RuntimeError):
+    """The inference service never returned a completion.
+
+    Distinct from RecoverablePlanningError because no plan was produced: the
+    model was never given the chance to answer.  Charging the episode's model
+    call or replan budget for it would report an infrastructure failure as the
+    method having planned badly -- and because `ModelTransportError` subclasses
+    `PlanningError`, that is exactly what happened until this split existed.
+    """
+
+
 @dataclass(frozen=True)
 class CameraObservation:
     """A planner-facing camera frame encoded as an image data URL."""
@@ -145,6 +156,10 @@ class DiscoveryReplanningExecutive:
         effect_sink: EffectSink | None = None,
         pre_action_check: PreActionCheck | None = None,
         max_replans: int = 5,
+        # Matches VLM-TAMP's `max_transport_retries`.  A transport fault costs
+        # neither a model call nor a replan, so this bound is what stops a
+        # dead server from looping forever.
+        max_transport_retries: int = 2,
         max_model_calls: int | None = None,
         max_actions: int = 80,
         defer_discovery_while_holding: bool = True,
@@ -154,6 +169,12 @@ class DiscoveryReplanningExecutive:
             raise ValueError("scene and goal must be non-empty")
         if isinstance(max_replans, bool) or not isinstance(max_replans, int) or max_replans < 0:
             raise ValueError("max_replans must be a non-negative integer")
+        if (
+            isinstance(max_transport_retries, bool)
+            or not isinstance(max_transport_retries, int)
+            or max_transport_retries < 0
+        ):
+            raise ValueError("max_transport_retries must be a non-negative integer")
         if (
             max_model_calls is not None
             and (
@@ -175,6 +196,7 @@ class DiscoveryReplanningExecutive:
         self.effect_sink = effect_sink
         self.pre_action_check = pre_action_check
         self.max_replans = max_replans
+        self.max_transport_retries = max_transport_retries
         self.max_model_calls = max_model_calls
         self.max_actions = max_actions
         self.defer_discovery_while_holding = bool(defer_discovery_while_holding)
@@ -192,6 +214,7 @@ class DiscoveryReplanningExecutive:
         self._executed_actions = 0
         self._replans = 0
         self._model_calls = 0
+        self._transport_retries = 0
         self._planning_latency_s = 0.0
         self._pending_discovery: set[str] = set()
         self.last_event: ReplanEvent | None = None
@@ -241,6 +264,7 @@ class DiscoveryReplanningExecutive:
         self._executed_actions = 0
         self._replans = 0
         self._model_calls = 0
+        self._transport_retries = 0
         self._planning_latency_s = 0.0
         self._pending_discovery.clear()
         self.last_event = None
@@ -459,9 +483,36 @@ class DiscoveryReplanningExecutive:
             self.remaining_actions,
             event,
         )
-        self._model_calls += 1
         try:
             result = self.planner.plan(request)
+        except TransportFaultError as error:
+            # No completion came back, so the model was never given a chance to
+            # answer.  This costs neither a model call nor a replan -- charging
+            # either would report an infrastructure failure as bad planning,
+            # which is what happened when ModelTransportError still arrived
+            # here as a RecoverablePlanningError.  Measured: when the server
+            # went away mid-run, an episode burned all 5 calls and 4 replans in
+            # 26 seconds and was recorded as FAILED with 0 actions.
+            self._transport_retries += 1
+            self.events.append(
+                "planner_transport_fault",
+                message=str(error),
+                attempt=self._transport_retries,
+                budget=self.max_transport_retries,
+            )
+            if self._transport_retries > self.max_transport_retries:
+                self._fail(
+                    FailureCode.INFERENCE_FAILED,
+                    f"Inference service unreachable after "
+                    f"{self.max_transport_retries} retries: {error}",
+                )
+                self.terminal_failure = {
+                    **(self.terminal_failure or {}),
+                    "transport_fault": True,
+                }
+                return
+            self._request_plan(event)
+            return
         except RecoverablePlanningError as error:
             event = ReplanEvent(
                 "planning",
@@ -476,6 +527,9 @@ class DiscoveryReplanningExecutive:
         except Exception as error:
             self._fail(FailureCode.INFERENCE_FAILED, f"Planner request failed: {error}")
             return
+        # Charged here, not before the request: a model call is a completion
+        # the model actually produced.
+        self._model_calls += 1
         if result.latency_s is not None:
             self._planning_latency_s += float(result.latency_s)
         self.events.append(

@@ -11,6 +11,7 @@ from typing import Any
 
 from baseline_common.inference import (
     QWEN_THINKING_SAMPLING,
+    ModelTransportError,
     OpenAITransport,
     PlanningError,
     load_model_profile,
@@ -18,6 +19,7 @@ from baseline_common.inference import (
 )
 
 from .discovery_replanning import (
+    TransportFaultError,
     PlanStatus,
     PlannerRequest,
     PlannerResult,
@@ -126,6 +128,21 @@ class OpenAIDiscoveryPlanner:
             result = self._parse_result(content, request=request, latency_s=elapsed)
             self._write_trace(request, content, latency_s=elapsed)
             return result
+        except ModelTransportError as error:
+            # Checked before PlanningError because it is a *subclass* of it.
+            # Folding the two together made a connection failure, an HTTP
+            # error and a timeout indistinguishable from the model emitting an
+            # unusable plan, so a server hiccup was charged to the method's
+            # planning budget.  BASELINE_FIDELITY.md treats a transport fault
+            # as drawing on its own bounded retry budget; VLM-TAMP implements
+            # that as `max_transport_retries`.
+            self._write_trace(
+                request,
+                None,
+                latency_s=time.monotonic() - started,
+                error=str(error),
+            )
+            raise TransportFaultError(str(error)) from error
         except PlanningError as error:
             self._write_trace(
                 request,
