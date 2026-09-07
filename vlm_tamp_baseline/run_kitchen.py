@@ -477,8 +477,14 @@ def main() -> None:
             for row in runtime.bundle.resolution.get("accepted", ())
         }
         predicted = canonical_kitchen_actions(result.action_history, backend_by_id)
+        # `--variant` is the planning-only flag and `--physical-variant` the
+        # executing one; the two are mutually exclusive and enforced above, so
+        # exactly one is set.  Using `arguments.variant` alone here passed None
+        # on the executing path and `load_expected` failed with
+        # `PosixPath / NoneType`.  Line 449 already resolves it this way.
+        variant_label = arguments.variant or arguments.physical_variant
         expected = load_expected(
-            arguments.expected_root.resolve(), arguments.variant
+            arguments.expected_root.resolve(), variant_label
         )
         predicted_outcome = "FEASIBLE" if result.success else "UNRESOLVED"
         if (
@@ -492,7 +498,7 @@ def main() -> None:
             )
             comparison.update(
                 {
-                    "variant": arguments.variant,
+                    "variant": variant_label,
                     "predicted_outcome": predicted_outcome,
                     "expected_outcome": expected["intended_outcome"],
                     "outcome_match": (

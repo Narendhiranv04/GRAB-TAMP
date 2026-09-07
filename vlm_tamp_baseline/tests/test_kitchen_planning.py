@@ -124,3 +124,55 @@ def test_private_goal_verifier_checks_task_relations_not_gt_assignment() -> None
         )
     )
     assert state.goal_verifier()
+
+
+def test_the_executing_path_resolves_the_variant_from_the_flag_it_actually_gets():
+    """Kitchen takes `--variant` when planning and `--physical-variant` when
+    executing, and the two are mutually exclusive.
+
+    A bare `arguments.variant` on the executing path is therefore always None.
+    `load_expected(root, None)` fails with
+    `TypeError: unsupported operand type(s) for /: 'PosixPath' and 'NoneType'`
+    at the very end of an episode, after 20+ minutes of planning and physical
+    manipulation, writing no artifact -- which is exactly what happened.
+
+    No test exercises `main()` on the executing path, so this is asserted
+    structurally: every call that consumes a variant outside a planning-only
+    branch must resolve it from both flags.
+    """
+    import ast
+    from pathlib import Path
+
+    source = (
+        Path(__file__).resolve().parents[2] / "vlm_tamp_baseline/run_kitchen.py"
+    ).read_text(encoding="utf-8")
+    tree = ast.parse(source)
+
+    # Names bound inside any `planning_only` branch: safe to use bare there.
+    planning_only_scope: set[int] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.If) and "planning_only" in ast.dump(node.test):
+            for sub in ast.walk(node):
+                planning_only_scope.add(id(sub))
+
+    offenders = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        name = getattr(node.func, "id", "") or getattr(node.func, "attr", "")
+        if name not in {"load_expected", "write_execution_result"}:
+            continue
+        if id(node) in planning_only_scope:
+            continue
+        for sub in ast.walk(node):
+            if (
+                isinstance(sub, ast.Attribute)
+                and sub.attr == "variant"
+                and getattr(sub.value, "id", "") == "arguments"
+            ):
+                offenders.append(name)
+    assert not offenders, (
+        f"{offenders} read arguments.variant on the executing path, where only "
+        "--physical-variant is set; resolve with "
+        "`arguments.variant or arguments.physical_variant`"
+    )
