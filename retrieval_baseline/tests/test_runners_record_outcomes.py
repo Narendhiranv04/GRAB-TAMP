@@ -37,3 +37,37 @@ def test_runner_records_the_outcome_verdict(runner):
     assert keywords, f"{runner}: no write_execution_result call found"
     for required in ("expected_outcome", "predicted_outcome"):
         assert required in keywords, f"{runner}: missing {required}"
+
+
+def test_a_every_kitchen_runner_honours_headless():
+    """--headless must reach show_viewer, not be parsed and dropped.
+
+    `retrieval_baseline/run_kitchen.py` declared the flag and then omitted
+    `show_viewer` from its `BaselineKitchenRuntime.from_variant` call, so it
+    inherited the show_viewer=True default and launched an interactive passive
+    viewer per episode.  That throttles MuJoCo stepping to render rate: under
+    the batch runner -- which passes --headless precisely to avoid this -- four
+    concurrent episodes held 43% CPU on an idle 24-core host and produced no
+    output for 54 minutes.  It also made retrieval's wall-clock times
+    incomparable with the other methods'.
+    """
+    import ast
+    import pathlib
+
+    for runner in ("retrieval_baseline/run_kitchen.py",
+                   "vlm_tamp_baseline/run_kitchen.py",
+                   "owl_tamp_baseline/run_kitchen.py"):
+        source = pathlib.Path(runner).read_text()
+        tree = ast.parse(source)
+        constructions = [
+            node for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            and "BaselineKitchenRuntime" in ast.dump(node.func)
+        ]
+        assert constructions, f"{runner}: no BaselineKitchenRuntime construction found"
+        for call in constructions:
+            names = {kw.arg for kw in call.keywords}
+            assert "show_viewer" in names, (
+                f"{runner}: a BaselineKitchenRuntime construction omits "
+                "show_viewer and so silently inherits the viewer"
+            )

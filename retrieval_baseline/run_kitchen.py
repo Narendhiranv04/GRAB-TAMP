@@ -116,6 +116,14 @@ def main() -> None:
         camera_count=arguments.camera_count,
         image_width=arguments.image_width,
         image_height=arguments.image_height,
+        # --headless was parsed and then ignored, so this runner inherited
+        # BaselineKitchenRuntime's show_viewer=True default and launched an
+        # interactive passive viewer per episode -- even under the batch
+        # runner, which passes --headless for exactly this reason.  The viewer
+        # throttles stepping to render rate: four concurrent episodes sat at
+        # 43% CPU on an idle 24-core host and wrote nothing for 54 minutes.
+        # The other two Kitchen runners already pass this.
+        show_viewer=not arguments.headless,
     )
     goal = arguments.goal or getattr(runtime, "goal", "")
     executor = MuJoCoActionExecutor(
