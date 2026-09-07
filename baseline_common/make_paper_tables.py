@@ -197,11 +197,19 @@ def main() -> None:
     for episode in episodes:
         by_method[str(episode["method"])].append(episode)
 
+    # `discovery_replanning` is ROBUST-TAMP: visible-state-only planning with
+    # discovery treated as a first-class replanning event.  It was previously
+    # labelled "Ours (single FM call)" and bolded, which put a comparison
+    # method in the contribution row.  The proposed method is the
+    # functional-requirement + geometric-verification pipeline, which has its
+    # own key below and is the row that gets bolded.
     labels = {
         "vlm_tamp": "VLM-TAMP (single-shot)",
         "owl_tamp": "OWL-TAMP (single-shot)",
         "retrieval": "Retrieval (CLIP, no FM)",
-        "discovery_replanning": "Ours (single FM call)",
+        "vilain_tamp": "ViLaIn-TAMP",
+        "discovery_replanning": "ROBUST-TAMP",
+        "functional_tamp": "Ours (functional + geometric)",
     }
     print(f"% Generated from: {', '.join(str(r) for r in args.roots)}")
     print(f"% MuJoCo {builds.pop()};  {len(episodes)} episodes")
@@ -211,11 +219,20 @@ def main() -> None:
         print("% WARNING: no GT-infeasible variants present -> outcome-correct and")
         print("%          false-completion columns are not measurable from this run.")
     print()
-    for key in ("vlm_tamp", "owl_tamp", "retrieval", "discovery_replanning"):
+    # Baselines first, proposed method last and bolded, which is also the order
+    # a reader expects in the table.
+    for key in (
+        "vlm_tamp",
+        "owl_tamp",
+        "retrieval",
+        "vilain_tamp",
+        "discovery_replanning",
+        "functional_tamp",
+    ):
         rows = by_method.get(key, [])
         counts = Counter(e["variant"] for e in rows)
         suffix = "" if rows else "   % no runs"
-        print(_main_row(labels[key], rows, bold=key == "discovery_replanning") + suffix)
+        print(_main_row(labels[key], rows, bold=key == "functional_tamp") + suffix)
         if rows:
             print(f"%   n={len(rows)}  per-variant={dict(sorted(counts.items()))}")
 

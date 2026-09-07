@@ -116,6 +116,7 @@ def run_episode(
     camera_count: int = 5,
     max_tokens: int = 4096,
     timeout_seconds: float = 600.0,
+    decoding: str = "paper",
     show_viewer: bool = True,
     viewer_camera: str = "free",
     enable_thinking: bool | None = None,
@@ -156,6 +157,10 @@ def run_episode(
             enable_thinking=enable_thinking,
             seed=seed,
             trace_dir=output / "model_calls",
+            # The table's condition, not this method's own: see
+            # OpenAIPlannerConfig.  `paper` stays the default so an existing
+            # caller is unchanged.
+            decoding=decoding,
         )
     )
     events = EventLog(
@@ -255,6 +260,18 @@ def main() -> None:
     parser.add_argument("--max-actions", type=int, default=80)
     parser.add_argument("--max-tokens", type=int, default=4096)
     parser.add_argument("--timeout-seconds", type=float, default=600.0)
+    parser.add_argument(
+        "--decoding",
+        choices=("paper", "model-native"),
+        default="paper",
+        help=(
+            "Decoding condition. 'paper' is this method's published "
+            "temperature-0 / 4096-token setting and stays the default; "
+            "'model-native' draws from baseline_common.inference, the same "
+            "source VLM-TAMP, OWL-TAMP and ViLaIn-TAMP read, and is what the "
+            "comparison table runs."
+        ),
+    )
     parser.add_argument("--camera-count", type=int, choices=(1, 3, 5), default=5)
     parser.add_argument("--headless", action="store_true")
     parser.add_argument("--camera", default="free")
@@ -277,6 +294,7 @@ def main() -> None:
         camera_count=args.camera_count,
         max_tokens=args.max_tokens,
         timeout_seconds=args.timeout_seconds,
+        decoding=args.decoding,
         show_viewer=not args.headless,
         viewer_camera=args.camera,
         enable_thinking=True if args.thinking else False if args.no_thinking else None,

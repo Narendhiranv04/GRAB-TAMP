@@ -9,7 +9,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from baseline_common.inference import OpenAITransport, PlanningError, response_content
+from baseline_common.inference import (
+    QWEN_THINKING_SAMPLING,
+    OpenAITransport,
+    PlanningError,
+    load_model_profile,
+    response_content,
+)
 
 from .discovery_replanning import (
     PlanStatus,
@@ -23,8 +29,23 @@ from .skills import SkillAction
 DEFAULT_ACTION_CATALOG = Path(__file__).resolve().parents[2] / "baseline_common" / "action_catalog.json"
 
 
+DECODING_CONDITIONS = ("paper", "model-native")
+
+
 @dataclass(frozen=True)
 class OpenAIPlannerConfig:
+    """Planner transport settings, including the decoding condition.
+
+    `temperature 0.0` with `max_tokens 4096` is ROBUST-TAMP's own published
+    condition and stays the default, so an existing caller is unchanged.  But
+    it is *not* the condition the comparison table runs: VLM-TAMP, OWL-TAMP and
+    ViLaIn-TAMP all send `model-native` sampling drawn from
+    `baseline_common.inference`, and BASELINE_FIDELITY.md requires one decoding
+    condition per table.  Selecting `model-native` here draws from that same
+    shared source, so the columns cannot drift apart silently; `paper` becomes
+    the reported ablation.
+    """
+
     base_url: str
     model: str
     scene: str
@@ -35,6 +56,30 @@ class OpenAIPlannerConfig:
     seed: int = 0
     enable_thinking: bool | None = None
     trace_dir: str | Path | None = None
+    decoding: str = "paper"
+
+    def resolved_sampling(self) -> dict[str, object]:
+        """Sampling arguments for this condition, plus the output budget.
+
+        Returned as a dict so `_payload` has one place to read from and the
+        two conditions cannot diverge in how they are applied.
+        """
+        if self.decoding not in DECODING_CONDITIONS:
+            raise ValueError(
+                f"decoding must be one of {DECODING_CONDITIONS}, got {self.decoding!r}"
+            )
+        if self.decoding == "paper":
+            return {
+                "temperature": self.temperature,
+                "max_tokens": self.max_tokens,
+            }
+        # model-native: the same profile the other model-driven baselines read.
+        planner = dict(load_model_profile(self.model).get("planner", {}))
+        sampling = dict(
+            planner.get("sampling", {}).get("thinking", QWEN_THINKING_SAMPLING)
+        )
+        sampling["max_tokens"] = int(planner.get("max_tokens", 24576))
+        return sampling
 
 
 class OpenAIDiscoveryPlanner:
@@ -131,8 +176,7 @@ class OpenAIDiscoveryPlanner:
             )
         payload: dict[str, object] = {
             "model": self.config.model,
-            "temperature": self.config.temperature,
-            "max_tokens": self.config.max_tokens,
+            **self.config.resolved_sampling(),
             "seed": self.config.seed,
             "messages": [
                 {"role": "system", "content": self._system_prompt()},
