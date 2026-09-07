@@ -77,7 +77,7 @@ methods.** Two independent biases, pointing in opposite directions.
 | OWL-TAMP | yes | yes | yes | single-shot, but ~11 raw requests/round |
 | Retrieval | new | yes | new | CPU-only (CLIP); no model requests |
 | ViLaIn-TAMP | yes | yes | yes | ported this session; see below |
-| ROBUST-TAMP | -- | -- | -- | **no implementation exists** |
+| ROBUST-TAMP | yes | yes | yes | was already ported; wired up 2026-09-07 evening |
 
 `model_calls` counts planning *rounds*; `raw_vlm_requests` counts HTTP
 requests. OWL-TAMP is 1 round but ~11 requests (sketch + one constraint call
@@ -542,3 +542,62 @@ ViLaIn has 0 artifacts, so redirecting it costs nothing right now.
 **Kitchen per-episode cost.** The K1/K7 smoke that would have given it was
 killed by the 19:10 OOM before either episode finished. Smoke two Kitchen
 episodes on the new host before committing 240.
+
+## ROBUST-TAMP was already implemented (2026-09-07 evening)
+
+"No implementation exists" was **wrong**. `mujoco_scenes/tamp/discovery_replanning.py`
+opens with "the MuJoCo counterpart of the earlier Robust-TAMP execution loop"
+and is a faithful port: `discovery_planner.py` builds exactly the paper's
+`c_k = (s_vis_k, h_k, e_k, g)` as `observation` / `completed_actions` /
+`replanning_event` / `goal` / `available_actions`, with "use only visible object
+IDs" and "do not infer hidden objects"; status is
+`PLAN | GOAL_COMPLETE | NO_VALID_PLAN`; discovery is a distinct event; and
+executor-local recovery precedes FM escalation. Kitchen and Living Room runners
+and four test files existed. **Do not reimplement it.**
+
+Four things were wrong or missing, all now fixed:
+
+1. **The paper table put it in the contribution row.**
+   `make_paper_tables.py` mapped `discovery_replanning` to
+   "Ours (single FM call)" and **bolded** it. The proposed method is the
+   functional-requirement plus geometric-verification pipeline, so every table
+   generated from that script printed a comparison method as the contribution.
+   Now labelled `ROBUST-TAMP` among the baselines; `vilain_tamp` gained the row
+   it never had; a `functional_tamp` key is reserved for the proposed method and
+   is the bolded row, printing `% no runs` until it has episodes.
+2. **It could not run the table's decoding condition.** `temperature 0.0` /
+   `max_tokens 4096` was hardcoded -- the published ROBUST-TAMP setting, kept as
+   the default, but not what the table runs. `--decoding` now selects, and
+   `model-native` reads `baseline_common.inference` (asserted byte-identical to
+   `QWEN_THINKING_SAMPLING`). Same defect ViLaIn had.
+3. **No Workshop runner**, hence the empty column.
+   `run_workshop_discovery_replanning.py` adds one. Its executors are
+   synchronous while the executive polls, so `WorkshopSkillDispatcher` bridges
+   the two. Inspection goes through `MirroredWorkshopExecutor` because the
+   *planning* runtime owns `visible_object_ids`, which is the signal discovery
+   fires on -- execute only against the physical scene and the drawer opens
+   while the runtime still thinks the cell is closed, so no discovery event ever
+   fires.
+4. **No feasibility verdict reached the metrics.** The runners wrote only
+   `discovery_replanning_result.json`. All three now emit the shared artifact
+   through one helper so the verdict rule cannot drift: INFEASIBLE only on
+   `NO_VALID_PLAN` (the counterpart of VLM-TAMP's `no_valid_subgoals`), never on
+   a plain budget overrun, and where a runtime offers the stricter
+   `infeasibility_proven()` -- Workshop -- that is the authority.
+
+**Protocol:** `robust_tamp` is a method in `run_baseline_execution_batch.py`
+for all three scenes, so it faces the same `--decoding`, `--camera-count`,
+`--max-model-calls`, `--seeds`, `--resume` and `--workers` as the rest. Its
+replanning budget follows the grid's planning budget (**5**), not OWL-TAMP's
+`--max-replans` (8, which bounds sketch retries). ROBUST-TAMP published 10, so
+that is the ablation.
+
+**Verified against the live server**, not only by test: a W1 episode planned,
+executed, and logged both mechanisms the method exists for --
+`objects_discovered` -> `discovery_replan_requested` ("New object observations
+require a plan from the current checkpoint") and an L1 rejection before
+execution ("INSERT.target_id references object 'region_0004', which is not
+visible").
+
+Full suite after this work: **57 failed, 1696 passed, 12 errors** -- failures
+and errors unchanged from the documented baseline, passes up from 1660.
