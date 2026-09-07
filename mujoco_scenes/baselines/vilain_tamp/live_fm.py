@@ -33,6 +33,8 @@ from .prompts import build_object_estimation_prompt
 PAPER_QWEN_MODEL = "Qwen2.5-VL-7B-Instruct"
 PAPER_QWEN_SOURCE = "Qwen/Qwen2.5-VL-7B-Instruct"
 PAPER_REASONING_MODEL = "gpt-4o-2024-08-06"
+from baseline_common.inference import assert_no_prompt_leakage
+
 DEFAULT_VLLM_BASE_URL = "http://127.0.0.1:18000/v1"
 VLLM_MAX_VISION_IMAGES = 8
 _FULL_COMMIT = re.compile(r"^[0-9a-fA-F]{40}$")
@@ -226,6 +228,7 @@ class VLLMQwenTransport:
         self.max_tokens = max_tokens
         self.decoding = decoding
         self.last_truncated_attempts = 0
+        self.last_leakage_audit: dict[str, Any] | None = None
         # Resolved eagerly so an unknown condition fails at construction rather
         # than mid-episode, after a scene has already been built.
         self._decoding_arguments = decoding_arguments(decoding)
@@ -341,6 +344,15 @@ class VLLMQwenTransport:
         }
         if request.response_format == "json":
             request_arguments["response_format"] = {"type": "json_object"}
+        # Audited before the request leaves, exactly as OpenAITransport does for
+        # VLM-TAMP, OWL-TAMP and ROBUST-TAMP.  This baseline builds its own
+        # OpenAI client, so it was the only model-driven method whose prompts
+        # were never checked for privileged evaluator information -- and that
+        # guard is what caught Kitchen publishing the oracle's own region names
+        # (B1/C1/C2/D1/D2) to the model.  Auditing here rather than trusting a
+        # one-off manual review means Kitchen's 120 ViLaIn episodes, which have
+        # not run yet, cannot leak silently.
+        self.last_leakage_audit = assert_no_prompt_leakage(request_arguments)
         response, truncated_attempts = self._completion_with_truncation_retry(
             client, request_arguments
         )
