@@ -71,3 +71,23 @@ def test_a_every_kitchen_runner_honours_headless():
                 f"{runner}: a BaselineKitchenRuntime construction omits "
                 "show_viewer and so silently inherits the viewer"
             )
+
+
+def test_b_kitchen_retrieval_reads_the_frame_directory_the_runtime_wrote():
+    """The observation dir must follow the runtime's numbered-frame contract.
+
+    `BaselineKitchenRuntime._images` writes to
+    `observations/{capture_index:04d}` and increments the counter as it writes.
+    The runner hardcoded `observations/initial`, which Kitchen never creates, so
+    every episode completed its five region inspections and then died on
+    FileNotFoundError -- which is why that cell had no results at all.
+    """
+    import pathlib
+
+    source = pathlib.Path("retrieval_baseline/run_kitchen.py").read_text()
+    assert '"observations" / "initial"' not in source, (
+        "Kitchen writes numbered frame dirs, never 'initial'"
+    )
+    assert 'f"{runtime.capture_index:04d}"' in source, (
+        "must read the frame the runtime just captured"
+    )

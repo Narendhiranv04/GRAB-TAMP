@@ -161,7 +161,15 @@ def main() -> None:
                 inspected_regions.append(region_id)
 
         observation, _ = runtime.observe()
-        observation_dir = output / "observations" / "initial"
+        # `observations/initial` never existed for Kitchen: its runtime writes
+        # each capture to `observations/{capture_index:04d}` -- 0001, 0002, ...
+        # -- and `observe()` -> `_images()` increments that counter as it
+        # writes, so this names the frame just captured.  The hardcoded
+        # "initial" is why the Kitchen retrieval cell had no results at all:
+        # every episode inspected all five regions correctly and then died on
+        # `FileNotFoundError: No annotations.json`.  Workshop and Living Room
+        # were unaffected -- their runtimes use named revision directories.
+        observation_dir = output / "observations" / f"{runtime.capture_index:04d}"
         annotations = read_annotations(observation_dir)
 
         retriever = CLIPRetriever(device=arguments.clip_device)
