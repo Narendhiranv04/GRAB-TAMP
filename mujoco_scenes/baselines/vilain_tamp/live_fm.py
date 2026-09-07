@@ -111,6 +111,15 @@ def build_qwen_only_clients(
 # so the four columns cannot drift apart silently.
 from .config import DECODING_CONDITIONS
 
+# Output budget per condition.  4096 was sized for the paper condition, whose
+# completions run a few hundred tokens with thinking disabled.  A thinking
+# trace overruns that and returns finish_reason=length on an episode's first
+# call.  The served window is 32768 and the Kitchen fixed-full-inspection
+# prompt alone runs 24-31k, so the larger budget cannot always be honoured
+# there; `_completion_with_context_retry` shrinks the request when the server
+# rejects it outright.
+DECODING_MAX_TOKENS = {"paper": 4096, "model-native": 16384}
+
 
 def decoding_arguments(condition: str) -> dict[str, object]:
     """Sampling arguments and thinking flag for a named decoding condition."""
@@ -126,10 +135,24 @@ def decoding_arguments(condition: str) -> dict[str, object]:
     if condition == "model-native":
         from baseline_common.inference import QWEN_THINKING_SAMPLING
 
+        # The other baselines POST raw JSON, so vLLM accepts its sampling
+        # extensions as ordinary fields.  This transport goes through the
+        # OpenAI SDK, which validates keyword arguments and rejects anything
+        # outside the documented API -- so top_k, min_p and repetition_penalty
+        # have to travel in extra_body instead.  Passing them at the top level
+        # raises TypeError on the first request of every episode.
         sampling = dict(QWEN_THINKING_SAMPLING)
+        vllm_only = {
+            key: sampling.pop(key)
+            for key in ("top_k", "min_p", "repetition_penalty")
+            if key in sampling
+        }
         return {
             **sampling,
-            "extra_body": {"chat_template_kwargs": {"enable_thinking": True}},
+            "extra_body": {
+                **vllm_only,
+                "chat_template_kwargs": {"enable_thinking": True},
+            },
         }
     raise ValueError(
         f"decoding must be one of {DECODING_CONDITIONS}, got {condition!r}"
@@ -160,11 +183,17 @@ class VLLMQwenTransport:
         # exceed the served 32768-token window outright (24577 input + 8192
         # requested).  A smaller budget is still generous, and
         # `_completion_with_context_retry` recovers if a prompt grows further.
-        max_tokens: int = 4096,
+        # None means "pick from the decoding condition".  4096 was sized for
+        # the paper condition, whose completions run a few hundred tokens with
+        # thinking disabled; a thinking trace overruns it and the request comes
+        # back finish_reason=length on the very first call of an episode.
+        max_tokens: int | None = None,
         # Defaults to ViLaIn's published greedy condition so an existing caller
         # is unchanged; the grid selects "model-native" for table parity.
         decoding: str = "paper",
     ) -> None:
+        if max_tokens is None:
+            max_tokens = DECODING_MAX_TOKENS[decoding]
         normalized_url = base_url.rstrip("/")
         if normalized_url != DEFAULT_VLLM_BASE_URL:
             raise ValueError(
