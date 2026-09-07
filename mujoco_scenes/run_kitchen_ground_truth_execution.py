@@ -49,6 +49,10 @@ from .kitchen_ground_truth_state import (
     initialize_oracle_world_state,
     run_symbolic_preflight,
 )
+from baseline_common.physical_benchmark import (
+    GOAL_COMPLETE_STATUS,
+    write_execution_result,
+)
 from .scene_loader import (
     KITCHEN_FEASIBILITY_VARIANTS,
     KitchenScene,
@@ -222,6 +226,8 @@ def run_variant_ground_truth(
     if description:
         print(f"Description: {description}")
     print("=" * 70)
+
+    episode_started = time.monotonic()
 
     # 1. Instantiate KitchenScene
     scene = KitchenScene(scene_name, include_robot=True, robot="google")
@@ -498,6 +504,58 @@ def run_variant_ground_truth(
         "success": overall_success,
     }
     write_json(variant_out_dir / "summary.json", summary)
+
+    # Emit the shared cross-method artifact so ground-truth execution is
+    # summarized and tabulated by the same code path as the baselines.  Without
+    # it a GT run produces only `summary.json`, which
+    # `summarize_execution_batch` does not read, so the oracle upper bound
+    # could not appear in the paper tables beside the methods it bounds.
+    write_execution_result(
+        variant_out_dir,
+        scene="kitchen",
+        method="ground_truth",
+        protocol="oracle",
+        variant=variant_id,
+        camera_count=len(FIVE_PROJECT_CAMERAS),
+        # The oracle is deterministic: the assignment solver and the plan are
+        # fully determined by the variant, so there is no seed to vary.
+        seed=0,
+        # `success` in this artifact is physical goal satisfaction, which an
+        # infeasible variant cannot produce by construction -- there the GT
+        # summary's `success` means "correctly rejected" instead.  Conflating
+        # the two would report a correct rejection as a solved task.  The
+        # rejection is carried by expected/predicted_outcome below.
+        success=bool(overall_success and assignment.is_feasible),
+        executed_actions=len(execution_trace),
+        # No semantic model is consulted anywhere in the ground-truth path.
+        model_calls=0,
+        raw_vlm_requests=0,
+        replans=0,
+        planning_latency_s=0.0,
+        elapsed_seconds=time.monotonic() - episode_started,
+        terminal_status=(
+            GOAL_COMPLETE_STATUS
+            if (overall_success and assignment.is_feasible)
+            else str(execution_outcome)
+        ),
+        terminal_failure=(
+            None
+            if (overall_success and assignment.is_feasible)
+            else {
+                "failure_reason": summary["failure_reason"],
+                "execution_outcome": execution_outcome,
+                "actions_completed": len(execution_trace),
+                "total_actions": len(plan),
+            }
+        ),
+        expected_outcome=intended_outcome,
+        # The oracle's own verdict, which for a correct solver equals the
+        # intended outcome -- recorded rather than assumed so a solver
+        # regression surfaces as an outcome mismatch instead of vanishing.
+        predicted_outcome=(
+            "FEASIBLE" if assignment.is_feasible else "INFEASIBLE"
+        ),
+    )
 
     print("-" * 70)
     print(f"Result for {variant_id}: {execution_outcome} (Success={overall_success})")
