@@ -344,3 +344,142 @@ Cost: ~28 min/episode against single-shot's 215 s. A full three-scene row is
 7. **Whether to apply `repair_gt_comparison.py`** to the 114 recorded Workshop
    comparison artifacts (see defect 1). Non-destructive, backs up originals.
 5. The proposed method needs re-running after the prompt de-bias.
+
+---
+
+# Session 2, 2026-09-07 evening: the OOM, and the Kitchen fix that unblocks 240 episodes
+
+## What killed the previous session
+
+The **OOM killer killed the entire VS Code snap cgroup at 17:48:04**
+(`snap.code.code-*.scope: Failed with result 'oom-kill'`, `27.0G memory peak`
+on a 31 GB host with 2 GB swap). Everything launched with `nohup` from the
+Claude Code shell was a child of that cgroup, so the extension host, the
+Claude session and every running episode died together.
+
+The trigger was oversubscription: four legs at once, the Kitchen one at
+`--workers 14`, while the server is capped at `--max-num-seqs 8`. Workers past
+8 do not batch -- they queue in vLLM while still holding a full MuJoCo scene in
+local RAM. Pure memory cost, zero throughput.
+
+**Nothing was lost.** The transcript is intact at
+`~/.claude/projects/-home-longhorizon-Documents-LH-Extension/dced8008-8eec-4369-80a7-41d50636d710.jsonl`
+(19 MB) -- filed under the *parent* directory because that session's cwd was
+`/home/longhorizon/Documents/LH_Extension`, which is why it does not appear in
+the extension's session list when the workspace is opened at `V1`. Its
+scratchpad survives too, at
+`/tmp/claude-1002/-home-longhorizon-Documents-LH-Extension/dced8008-.../scratchpad`,
+with every leg script, log, and `repair_gt_comparison.py` /
+`backfill_verdicts.py` / `time_inspect.py`.
+
+**Launch grids as `systemd-run --user` units from now on**, one per leg, with
+`systemctl --user set-property <unit> MemoryHigh=9G MemoryMax=12G`. They then
+live in `app.slice`, not the snap scope: a grid OOM cannot kill Claude, and
+Claude crashing cannot kill a grid.
+
+## Why all 240 Kitchen episodes crashed, and the fix
+
+`runs/kitchen/execution/grid_20260907b` recorded 240 episodes with
+`return_code 1` and **zero artifacts**. Two causes, both in
+`mujoco_scenes/baseline_kitchen_runtime.py`, both fixed in the working tree
+(uncommitted at the time of writing):
+
+1. **K1--K6: `PromptLeakageError ... regions=['B1','C1','C2','D1','D2']`.**
+   The shared observation contract has always claimed
+   `PERSISTENT_REGION_ID_ONLY`, but the "persistent id" being published was the
+   oracle's own region name -- and those five names are on the forbidden list
+   in `functional_tamp_pipeline/audit.py` precisely because naming them
+   discloses the storage layout, which is Kitchen's entire search problem. The
+   transport-level guard added earlier this session (`assert_no_prompt_leakage`
+   in `baseline_common/inference.py`) is what turned a silent fairness defect
+   into a hard failure. **The guard was right; the Kitchen observation was
+   wrong.**
+   Fixed by `kitchen_public_region_ids()`: `region_0001..region_0005`, sorted so
+   the mapping is identical across methods, seeds and processes, with the
+   inverse map kept so actions arriving in the public vocabulary still execute
+   against the canonical one. `countertop` and `serving_area` keep their names
+   -- the task instruction names them, so they disclose nothing.
+2. **K7--K12: `ValueError("Live discovery execution currently requires a
+   FEASIBLE variant")`.** An infeasible variant has no satisfiable terminal
+   state, so `goal_contract_from_expected_actions` refused to build one and
+   aborted the episode before its first model call. Now raises the typed
+   `InfeasibleVariantHasNoGoalContract` and the caller substitutes the
+   unset-goal contract, so the episode runs and can be scored on whether it
+   correctly *rejects* the variant -- which is how infeasible variants are
+   scored anyway (`success` is false by construction; credit comes from
+   `predicted_outcome == "INFEASIBLE"`).
+
+**Verified end to end**, not just by unit test: a K1 + K7 smoke pair reached
+planning and physical execution with **zero** `PromptLeakageError`, zero
+FEASIBLE-aborts and zero tracebacks, and `latest_observation.json` for K7
+contains `region_0001..region_0005` plus `countertop`/`serving_area` and **no
+occurrence of any of B1/C1/C2/D1/D2**. The three test files that cover this
+code (`mujoco_scenes/tests/test_baseline_kitchen_runtime.py`,
+`vlm_tamp_baseline/tests/test_kitchen_planning.py`,
+`baseline_common/tests/test_every_runner_records_the_verdict.py`) pass 24/24.
+
+## Grid state at restart (18:07)
+
+| scene | done | of | remaining |
+|---|---|---|---|
+| Workshop | 195 | 200 | vlm_tamp W1 s2, W1 s8, W3 s7, W6 s3, W8 s8 |
+| Living Room | 142 | 200 | owl_tamp L5 s2-9, L6-L10 all seeds (58) |
+| Kitchen | 0 | 240 | everything, now unblocked |
+| **total** | **337** | **640** | **303** |
+
+Living Room `vlm_tamp` and Workshop `owl_tamp` are both complete at 100/100.
+
+Relaunched as four units, `--resume --continue-on-error`, flags matched to each
+scene's recorded `protocol_manifest.json` so artifacts pool (`--workers` is not
+part of the manifest, so lowering it changes nothing reportable):
+`lh-kitchen` (workers 6), `lh-lrowl` (4), `lh-wsgap` (3), `lh-ksmoke`.
+Status: `scratchpad/status.sh`.
+
+## Test-suite baseline on this machine
+
+**57 failed, 1660 passed, 1 skipped, 12 errors.** `CLAUDE.md`'s "expect
+exactly five failures" is **stale** -- it predates the Naren merge. The count
+here is consistent with this file's earlier note (~73 inherited problems, net
+-3 this session, 0 new):
+
+- The **12 errors** are all one missing fixture,
+  `runs/integrated_no_pot_clearance_seed19_20260807/object_registry.json`, part
+  of the 5 GB `runs/` archive never copied to this machine.
+- **None of the 57 failures touch `baseline_kitchen_runtime`.** The only two
+  test files that reference it both pass, so the Kitchen fix introduces no
+  failures.
+
+## Plan change 18:20: Kitchen deferred to the Blackwell host, ViLaIn queued on the 5090
+
+The current inference host is an **RTX 5090, 32607 MiB**, which is why vLLM
+serves `--max-model-len 32768`. Kitchen's ViLaIn prompt
+(`fixed_full_inspection`) runs **24-31k on its own**, so a 16384-token output
+budget cannot be honoured there and `_completion_with_context_retry` has to
+shrink every request. The incoming Blackwell host (RTX 5000 Pro, 48 GB) lifts
+that ceiling, so **all of Kitchen waits for it**; `lh-kitchen` was stopped at
+18:14 with 0 artifacts written, so nothing was lost and `--resume` will start
+it clean.
+
+Note that Kitchen's *vlm_tamp/owl_tamp* 240 episodes are **no longer blocked**
+-- the leakage and infeasible-variant bugs are fixed and verified. They are
+waiting on the Blackwell host for throughput (48 GB supports a higher
+`--max-num-seqs` than the 5090's 8), not for correctness.
+
+**When the Blackwell host arrives, run the episodes from *this* machine against
+its endpoint.** MuJoCo physics is local; the server only does inference. Keeping
+the episode host constant keeps `host_cpu` constant across scenes, which is what
+`make_paper_tables` cares about. Running episodes *on* the new box instead would
+put Kitchen on a different physics host than Workshop and Living Room.
+
+Queued now on the 5090, both `--decoding model-native`, 10 variants x 10 seeds,
+3 workers each, `runs/{workshop,living_room}/execution/vilain_20260907`:
+`lh-vilain-workshop`, `lh-vilain-living_room`. This is the re-run open question
+1 asked for. Verified from the first episode's `model_metadata.json`:
+`decoding: model-native`, `temperature 0.6 / top_p 0.95`,
+`thinking_enabled: true`, `max_tokens 16384`, `finish_reason: stop` (no
+truncation on Workshop), `camera_count 3`. Its greedy `paper` numbers become
+the ablation.
+
+**Measured ViLaIn cost:** ~107 s per model call with thinking on, packing
+12 source images into 4 contact sheets (one per inspection stage). Hence
+`--episode-timeout 5400` rather than the 3600 the vlm/owl grids used.
