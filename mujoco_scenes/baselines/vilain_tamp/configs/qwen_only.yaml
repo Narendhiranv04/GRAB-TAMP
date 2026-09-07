@@ -1,0 +1,42 @@
+domain: kitchen
+# Exposure parity with the methods this baseline is compared against.
+# VLM-TAMP and OWL-TAMP execute INSPECT actions and therefore see inside
+# the closed storage regions; under initial_observation_only this
+# baseline never opened one (inspection_trace was empty), so it was asked
+# to assert facts about contents it could not observe.  That is not the
+# identical exposure BASELINE_FIDELITY.md requires for comparable columns.
+#
+# This is parity of *information*, not of mechanism: the other methods
+# spend planning actions to inspect, while this baseline is a one-shot
+# planner and receives the inspection observation directly.  Report it as
+# an adaptation.
+observation_mode: fixed_full_inspection
+model_condition: vilain_tamp_qwen
+max_cp_corrections: 3
+timeouts:
+  symbolic_seconds: 200
+  model_seconds: 300
+  refinement_seconds: 200
+output_root: runs/vilain_tamp_qwen
+external_tools:
+  # Relative to the repository root, or override with
+  # ${VILAIN_FAST_DOWNWARD}.  An absolute path under a developer's home
+  # directory made this baseline unrunnable on any other machine.
+  fast_downward: ../third_party/fast-downward-24.06.1/fast-downward.py
+  fast_downward_version: "24.06"
+  val: ../third_party/VAL/build/vilain-release/bin/Validate
+  val_version: null
+object_estimator_model: qwen35-9b
+reasoning_model: qwen35-9b
+model_endpoint: http://127.0.0.1:18000/v1
+served_model_family: Qwen/Qwen3.5-9B
+served_revision: unverified
+symbolic_planner: Fast Downward
+search_configuration: lama-first
+independent_model_calls: true
+execute_by_default: false
+# All baseline experimentation runs on this host and branch, so the
+# provenance guard is pointed at it rather than at the branch the
+# baseline was originally developed on.
+execution_branch: kitchen-workshop-integration
+require_clean_execution_provenance: true

@@ -1,0 +1,205 @@
+"""Small validated configuration model for the ViLaIn-TAMP baseline."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from enum import Enum
+import os
+from pathlib import Path
+from typing import Any, Mapping
+
+import yaml
+
+
+class Domain(str, Enum):
+    KITCHEN = "kitchen"
+    LIVING_ROOM = "living_room"
+    WORKSHOP = "workshop"
+
+
+class ObservationMode(str, Enum):
+    INITIAL_ONLY = "initial_observation_only"
+    FIXED_FULL_INSPECTION = "fixed_full_inspection"
+
+
+class ModelCondition(str, Enum):
+    PAPER_FAITHFUL = "paper_faithful"
+    MODEL_MATCHED = "model_matched"
+    QWEN_ONLY = "vilain_tamp_qwen"
+
+
+@dataclass(frozen=True)
+class TimeoutConfig:
+    symbolic_seconds: float
+    model_seconds: float
+    refinement_seconds: float
+
+    def __post_init__(self) -> None:
+        for name, value in (
+            ("symbolic_seconds", self.symbolic_seconds),
+            ("model_seconds", self.model_seconds),
+            ("refinement_seconds", self.refinement_seconds),
+        ):
+            if value <= 0:
+                raise ValueError(f"{name} must be greater than zero")
+
+
+@dataclass(frozen=True)
+class ExternalToolPaths:
+    fast_downward: Path | None
+    val: Path | None
+    fast_downward_version: str | None = "24.06"
+    val_version: str | None = None
+
+    def __post_init__(self) -> None:
+        for name, value in (("fast_downward", self.fast_downward), ("val", self.val)):
+            if value is not None and not value.is_absolute():
+                raise ValueError(f"external_tools.{name} must be an absolute path")
+        for name, value in (
+            ("fast_downward_version", self.fast_downward_version),
+            ("val_version", self.val_version),
+        ):
+            if value is not None and not value.strip():
+                raise ValueError(f"external_tools.{name} must not be empty")
+
+
+@dataclass(frozen=True)
+class BaselineConfig:
+    domain: Domain
+    observation_mode: ObservationMode
+    model_condition: ModelCondition
+    max_cp_corrections: int
+    timeouts: TimeoutConfig
+    output_root: Path
+    external_tools: ExternalToolPaths
+    object_estimator_model: str
+    reasoning_model: str
+    symbolic_planner: str
+    search_configuration: str
+    model_endpoint: str | None = None
+    served_model_family: str | None = None
+    served_revision: str | None = None
+    independent_model_calls: bool = True
+    execute_by_default: bool = False
+    require_clean_execution_provenance: bool = True
+    # Branch a provenance-checked execution run must be on.  This was a
+    # module constant naming one contributor's branch, so no other
+    # checkout could execute at all.  Declaring it in configuration keeps
+    # the guarantee -- results are attributable to a named branch and a
+    # clean tree -- while letting the experiment host be chosen.
+    execution_branch: str = "naren/ViLaIn-TAMP"
+
+    def __post_init__(self) -> None:
+        if not 0 <= self.max_cp_corrections <= 3:
+            raise ValueError("max_cp_corrections must be between 0 and 3")
+        if not str(self.output_root):
+            raise ValueError("output_root must not be empty")
+        for name, value in (
+            ("object_estimator_model", self.object_estimator_model),
+            ("reasoning_model", self.reasoning_model),
+            ("symbolic_planner", self.symbolic_planner),
+            ("search_configuration", self.search_configuration),
+        ):
+            if not value.strip():
+                raise ValueError(f"{name} must not be empty")
+        if not self.independent_model_calls:
+            raise ValueError("baseline model calls must be independent")
+        if self.execute_by_default:
+            raise ValueError("baseline configuration must default to planning-only")
+
+    @classmethod
+    def from_mapping(cls, data: Mapping[str, Any]) -> BaselineConfig:
+        timeouts = _mapping(data, "timeouts")
+        tools = _mapping(data, "external_tools")
+        output_root = str(data["output_root"]).strip()
+        if not output_root:
+            raise ValueError("output_root must not be empty")
+        return cls(
+            domain=Domain(str(data["domain"])),
+            observation_mode=ObservationMode(str(data["observation_mode"])),
+            model_condition=ModelCondition(str(data["model_condition"])),
+            max_cp_corrections=int(data["max_cp_corrections"]),
+            timeouts=TimeoutConfig(
+                symbolic_seconds=float(timeouts["symbolic_seconds"]),
+                model_seconds=float(timeouts["model_seconds"]),
+                refinement_seconds=float(timeouts["refinement_seconds"]),
+            ),
+            output_root=Path(output_root),
+            external_tools=ExternalToolPaths(
+                fast_downward=_optional_path(tools.get("fast_downward")),
+                val=_optional_path(tools.get("val")),
+                fast_downward_version=_optional_text(
+                    tools.get("fast_downward_version", "24.06")
+                ),
+                val_version=_optional_text(tools.get("val_version")),
+            ),
+            object_estimator_model=str(data["object_estimator_model"]),
+            reasoning_model=str(data["reasoning_model"]),
+            symbolic_planner=str(data["symbolic_planner"]),
+            search_configuration=str(data["search_configuration"]),
+            model_endpoint=_optional_text(data.get("model_endpoint")),
+            served_model_family=_optional_text(data.get("served_model_family")),
+            served_revision=_optional_text(data.get("served_revision")),
+            independent_model_calls=bool(data.get("independent_model_calls", True)),
+            execute_by_default=bool(data.get("execute_by_default", False)),
+            execution_branch=str(
+                data.get("execution_branch", "naren/ViLaIn-TAMP")
+            ),
+            require_clean_execution_provenance=bool(
+                data.get("require_clean_execution_provenance", True)
+            ),
+        )
+
+    @classmethod
+    def from_yaml(cls, path: str | Path) -> BaselineConfig:
+        source = Path(path)
+        loaded = yaml.safe_load(source.read_text(encoding="utf-8"))
+        if not isinstance(loaded, Mapping):
+            raise ValueError(f"configuration must be a mapping: {source}")
+        return cls.from_mapping(loaded)
+
+
+def _mapping(data: Mapping[str, Any], key: str) -> Mapping[str, Any]:
+    value = data.get(key)
+    if not isinstance(value, Mapping):
+        raise ValueError(f"{key} must be a mapping")
+    return value
+
+
+# The repository root, four levels up from this file
+# (mujoco_scenes/baselines/vilain_tamp/config.py).
+_REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
+
+
+def _optional_path(value: Any) -> Path | None:
+    """Resolve a configured tool path, keeping the absolute-path invariant.
+
+    The shipped configuration hardcoded an absolute path under one developer's
+    home directory, so the baseline could not plan on any other machine.
+    ``ExternalToolPaths`` still requires an absolute path, which is the right
+    invariant -- an external planner must not be resolved off a working
+    directory -- so the fix is to expand and anchor the configured value rather
+    than to relax it:
+
+    - ``~`` and ``${VAR}`` are expanded, so a configuration can name a tool
+      through the environment instead of a fixed home directory;
+    - a relative path is anchored at the repository root, matching how this
+      repository already locates its other external dependency (MuJoCo
+      Menagerie under ``../third_party``).
+
+    The result is still required to be absolute by ``ExternalToolPaths``.
+    """
+    if value is None or str(value).strip() == "":
+        return None
+    text = os.path.expanduser(os.path.expandvars(str(value).strip()))
+    candidate = Path(text)
+    if not candidate.is_absolute():
+        candidate = (_REPOSITORY_ROOT / candidate).resolve()
+    return candidate
+
+
+def _optional_text(value: Any) -> str | None:
+    if value is None:
+        return None
+    rendered = str(value).strip()
+    return rendered or None
