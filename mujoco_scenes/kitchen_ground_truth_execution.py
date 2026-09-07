@@ -117,9 +117,22 @@ def serving_utensil_containment_evidence(
     active_tip_inside = bool(inside[0])
     interior_segment_present = bool(inside_length >= required_inside_length)
     exterior_support_contact = bool(counter_contact or serving_contact)
-    # Any live counter/serving support means the utensil has escaped the
-    # requested bowl relation, even if it also grazes the bowl's outer wall.
-    exterior_support_only = exterior_support_contact
+    # "Only" now means what the name says: supported by the counter/serving
+    # surface and NOT by the assigned bowl.  `assigned_bowl_contact` was
+    # already passed in and reported here but took no part in the verdict, so
+    # any counter contact disqualified a utensil even when it was plainly
+    # resting in its bowl.  That is the wrong test for a served vessel: the
+    # bowl itself stands on the serving surface, so a utensil seated in it
+    # with the handle across the rim touches that surface too.
+    #
+    # The distinction that matters is whether the bowl is carrying the
+    # utensil.  A utensil that fell out onto the counter reports
+    # assigned_bowl_contact False and still fails, which is what the earlier
+    # F0 failures looked like (spoon flat on the counter, 8.5 cm outside the
+    # opening, no bowl contact).
+    exterior_support_only = bool(
+        exterior_support_contact and not assigned_bowl_contact
+    )
     containment_verified = bool(
         (active_tip_inside or interior_segment_present)
         and not exterior_support_only
@@ -266,6 +279,49 @@ def build_oracle_inventory_and_resolution(
     return inventory, resolution
 
 
+# Kitchen settling is judged by pose drift over a window, not by an
+# instantaneous velocity sample.  Resting mesh payloads chatter in the contact
+# solver: the Living Room work measured a saucer alternating between 0.06 and
+# 0.48 rad/s on consecutive steps while its pose moved 0.03 mm per 500 steps
+# (see BASELINE_FIDELITY.md, "Physical execution controls"), so an instantaneous
+# threshold rejects placements that are provably static.  Kitchen kept the
+# velocity test after Living Room moved off it, which is why a released mug
+# reporting 0.293 rad/s failed a 0.12 rad/s limit while sitting still.
+#
+# The velocity test is retained as a cheap accept: a payload already below the
+# old thresholds is settled and needs no extra stepping.  Only a payload that
+# fails it pays for a drift window, and the drift bounds are tighter than the
+# velocity thresholds they replace.
+# Contact skin allowance for judging a *settled* pose against measured
+# geometry.  MuJoCo lets resting bodies sit fractionally inside the surface
+# they lean on, so an exact geometric bound is razor-thin in practice.
+SETTLED_CONTACT_SKIN_M = 0.002
+
+KITCHEN_SETTLE_WINDOW_STEPS = 50
+KITCHEN_SETTLE_POSITION_DRIFT_M = 5.0e-4
+KITCHEN_SETTLE_ORIENTATION_DRIFT_RAD = 6.0e-3
+
+
+def kitchen_pose_drift_over_window(
+    model: "mujoco.MjModel",
+    data: "mujoco.MjData",
+    body_id: int,
+    steps: int = KITCHEN_SETTLE_WINDOW_STEPS,
+) -> tuple[float, float]:
+    """Advance one settle window and report how far the body's pose moved."""
+    position = data.xpos[body_id].copy()
+    orientation = data.xquat[body_id].copy()
+    for _ in range(steps):
+        mujoco.mj_step(model, data)
+    # Quaternion sign is free, so compare the geodesic angle.
+    alignment = min(1.0, abs(float(np.dot(data.xquat[body_id], orientation))))
+    return (
+        float(np.linalg.norm(data.xpos[body_id] - position)),
+        2.0 * math.acos(alignment),
+    )
+
+
+
 class OraclePhaseCLedger:
     """Dynamic ledger for Ground-Truth Oracle execution that accepts all verified physical motions."""
 
@@ -361,6 +417,57 @@ class KitchenGroundTruthExecutionDispatcher:
                 "backend pick specification missing for resolved object "
                 f"{object_id} -> {backend}"
             ) from error
+
+    def _minimum_signed_distance(
+        self, first_body: str, second_body: str
+    ) -> float | None:
+        """Closest signed distance between two bodies' collision geometry."""
+        model, data = self.scene.model, self.scene.data
+        groups = []
+        for name in (first_body, second_body):
+            body_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, name)
+            if body_id < 0:
+                return None
+            geoms = [
+                geom_id
+                for geom_id in range(model.ngeom)
+                if int(model.geom_bodyid[geom_id]) == body_id
+                and (
+                    model.geom_contype[geom_id]
+                    or model.geom_conaffinity[geom_id]
+                )
+            ]
+            if not geoms:
+                return None
+            groups.append(geoms)
+        closest = None
+        for first in groups[0]:
+            for second in groups[1]:
+                distance = float(mujoco.mj_geomDistance(
+                    model, data, first, second, 0.05, None
+                ))
+                closest = distance if closest is None else min(closest, distance)
+        return closest
+
+    def mark_object_served(self, object_id: str) -> None:
+        """Record that ``object_id`` now rests on the serving surface.
+
+        Three separate routes can end a successful serving PLACE (the physical
+        `place`, the controlled-placement recovery, and the verified-release
+        fallback).  Only the first two updated the inventory row and the
+        placement resolver; this collects that bookkeeping so a fourth route
+        cannot silently diverge again.
+        """
+        row = self.inventory_by_id.get(object_id)
+        if row is not None:
+            row["location"] = "serving_area"
+            context = row.setdefault("source_context", {})
+            context["source_kind"] = SourceKind.TABLE.value
+            context["source_container"] = None
+            context["required_workspace"] = KitchenWorkspace.HOME.value
+        self.phase_b.manipulation.placement_resolver.record_observed_serving_placement(
+            object_id
+        )
 
     def _allow_served_payloads_for_next_motion(self) -> None:
         """Scope robot-path allowances to vessels already placed for serving.
@@ -776,10 +883,37 @@ class KitchenGroundTruthExecutionDispatcher:
         # supported countertop placement.
         if not is_countertop_utensil and tilt_deg > 8.0:
             return False, f"OBJECT_TILTED_{tilt_deg:.1f}_DEG", telemetry
-        if lin_speed > 0.03:
-            return False, f"OBJECT_UNSETTLED_LIN_VEL_{lin_speed:.3f}", telemetry
-        if ang_speed > maximum_angular_speed:
-            return False, f"OBJECT_UNSETTLED_ANG_VEL_{ang_speed:.3f}", telemetry
+        if lin_speed > 0.03 or ang_speed > maximum_angular_speed:
+            # Too fast on this sample to accept outright.  Step a settle window
+            # and decide on drift, which distinguishes a payload that is moving
+            # from one that is merely chattering in the contact solver.
+            position_drift, orientation_drift = kitchen_pose_drift_over_window(
+                self.scene.model, self.scene.data, body_id
+            )
+            telemetry["settle_position_drift_m"] = position_drift
+            telemetry["settle_orientation_drift_rad"] = orientation_drift
+            telemetry["settle_window_steps"] = KITCHEN_SETTLE_WINDOW_STEPS
+            telemetry["settle_decided_by"] = "POSE_DRIFT_OVER_WINDOW"
+            if position_drift > KITCHEN_SETTLE_POSITION_DRIFT_M:
+                return (
+                    False,
+                    f"OBJECT_UNSETTLED_POSITION_DRIFT_{position_drift:.5f}",
+                    telemetry,
+                )
+            if orientation_drift > KITCHEN_SETTLE_ORIENTATION_DRIFT_RAD:
+                return (
+                    False,
+                    f"OBJECT_UNSETTLED_ORIENTATION_DRIFT_{orientation_drift:.5f}",
+                    telemetry,
+                )
+            # Re-read the pose: the settle window advanced the simulation, so
+            # the checks below must see where the payload actually came to rest.
+            pos = self.scene.data.xpos[body_id].copy()
+            mat = self.scene.data.xmat[body_id].reshape(3, 3).copy()
+            tilt_deg = float(np.rad2deg(np.arccos(np.clip(mat[2, 2], -1.0, 1.0))))
+        else:
+            telemetry["settle_decided_by"] = "INSTANTANEOUS_VELOCITY"
+
         if pos[2] < 0.55:
             return False, f"OBJECT_BELOW_TABLE_{pos[2]:.3f}", telemetry
         if is_countertop_utensil and not counter_contact:
@@ -1640,6 +1774,17 @@ class KitchenGroundTruthExecutionDispatcher:
             if valid:
                 if destination == "countertop":
                     self.update_object_to_countertop_location(object_id)
+                elif destination == "serving_area":
+                    # This route verifies a release that completed outside the
+                    # planned place, so it used to return success without any
+                    # of the bookkeeping the other two success paths perform.
+                    # Every payload that reached the serving surface this way
+                    # was therefore invisible to the resolver: later serving
+                    # slots were allocated as if the surface were emptier than
+                    # it is, and the allowances that let the arm reach past an
+                    # already-served vessel never matched it.  Mirror what
+                    # `_execute_controlled_placement` and `place` record.
+                    self.mark_object_served(object_id)
                 return {
                     "action": "PLACE",
                     "arguments": [object_id, destination],
@@ -1922,11 +2067,114 @@ class KitchenGroundTruthExecutionDispatcher:
                 if np.linalg.norm(handle_tangent) < 1e-9:
                     handle_tangent = np.array((1.0, 0.0, 0.0), dtype=float)
                 handle_tangent /= np.linalg.norm(handle_tangent)
-                vertical_orientations = self.phase_c._stir_orientation_family(
-                    live_utensil_rotation,
-                    np.asarray(tool_geometry.longitudinal_axis_local, dtype=float),
-                    opening_normal,
-                    handle_tangent,
+                # Seating a utensil in a served bowl, not stirring: use the
+                # insertion family, which offers small 3/5 degree tilts and
+                # their azimuths as IK fallbacks.  _stir_orientation_family is
+                # vertical-only by design and leaves this call with a single
+                # candidate, which is what made the pre-release rotation IK
+                # fail outright rather than try an alternative.
+                # A utensil longer than the cavity's cross-section diagonal
+                # cannot come to rest inside the bowl in any orientation, so a
+                # vertical release leaves it standing on its head with most of
+                # its length above the rim: it topples and ends up flat on the
+                # counter beside the bowl (measured for the 0.264 m spoon at
+                # 8.5 cm outside a 7.0 cm opening).
+                #
+                # It can still be *seated* the way a serving spoon actually
+                # sits: head resting on the cavity floor against the far wall,
+                # shaft crossing the near rim, handle out over the counter.
+                # That pose is supported at two points and its centre of mass
+                # falls inboard of the rim contact, so gravity holds it rather
+                # than rolling it out.
+                #
+                # An earlier attempt tilted the utensil while keeping its tip
+                # on the bowl axis; that leaves the handle cantilevered with
+                # nothing beneath it and it slid out entirely.  The tip has to
+                # go to the far wall for the shaft to reach the rim.
+                rim_rest_usable_radius = max(
+                    0.0,
+                    min(opening.opening_half_extents_m)
+                    - opening.safety_margin_m,
+                )
+                rim_rest_cavity_depth = max(
+                    0.0, opening.cavity_depth_m - opening.safety_margin_m
+                )
+                # A utensil shorter than the opening radius could sit inside
+                # the column on its own.  Anything longer cannot: on release it
+                # topples about the rim, and whether it lands inside or across
+                # it is chance.  The measurements show exactly that -- the same
+                # spoon and bowl settle at 162 degrees with the tip 0.049 m from
+                # the axis in one variant and at 3 degrees with the tip 0.085 m
+                # out in another, from an identical action sequence.  Variants
+                # were passing this action by luck.
+                #
+                # Seat every such utensil deliberately instead, in the posture a
+                # serving spoon actually takes.
+                # Scope: only a utensil that cannot rest inside the cavity in
+                # ANY orientation -- longer than the cavity cross-section
+                # diagonal.  Extending it to every utensil longer than the
+                # opening radius was measured and is a net loss: it fixed F0
+                # but broke F1 (tip 0.119 m out) and cascaded into F2's bowl
+                # pick.  A utensil that does fit has a workable vertical
+                # release, and forcing it into a rim-rest whose handle clears
+                # the rim by only ~5 mm is worse than leaving it alone.
+                stands_within_opening_column = float(
+                    observed["length"]
+                ) <= math.hypot(
+                    2.0 * rim_rest_usable_radius, rim_rest_cavity_depth
+                )
+                rim_rest_inclination_deg = None
+                rim_rest_tip_position = None
+                if (
+                    not stands_within_opening_column
+                    and rim_rest_cavity_depth > 0.0
+                ):
+                    # Tip just clear of the far wall and just above the floor.
+                    rim_rest_tip_radius = max(
+                        0.0, rim_rest_usable_radius - 0.008
+                    )
+                    # `cavity_depth_m` is the declared opening depth and runs
+                    # slightly past the bowl's real interior floor -- for the
+                    # deep bowl it reads 0.080 while the collision floor sits
+                    # 0.0728 below the rim.  Seating the tip at
+                    # cavity - margin therefore left only 5 mm of clearance,
+                    # and the utensil settled 1.8 cm *through* the floor: the
+                    # thin head tunnels the 12 mm bottom disc on release.  Stay
+                    # well above it; the seated geometry stays valid because
+                    # the inclination is derived from this depth, so the shaft
+                    # still meets the rim at the usable radius.
+                    rim_rest_tip_depth = min(
+                        max(0.0, rim_rest_cavity_depth - 0.006),
+                        0.70 * float(opening.cavity_depth_m),
+                    )
+                    if rim_rest_tip_depth > 0.0:
+                        # Rise so the shaft meets the rim exactly at the usable
+                        # radius: horizontal run (R + r_tip) over depth.
+                        rim_rest_inclination_deg = math.degrees(
+                            math.atan2(
+                                rim_rest_usable_radius + rim_rest_tip_radius,
+                                rim_rest_tip_depth,
+                            )
+                        )
+                        rim_rest_tip_position = (
+                            opening_centre
+                            - rim_rest_tip_depth * opening_normal
+                            - rim_rest_tip_radius * handle_tangent
+                        )
+
+                vertical_orientations = (
+                    self.phase_c._serving_utensil_orientation_family(
+                        live_utensil_rotation,
+                        np.asarray(
+                            tool_geometry.longitudinal_axis_local, dtype=float
+                        ),
+                        opening_normal,
+                        handle_tangent,
+                        float(observed["length"]),
+                        opening_radius_m=min(opening.opening_half_extents_m),
+                        cavity_depth_m=float(opening.cavity_depth_m),
+                        rim_rest_inclination_deg=rim_rest_inclination_deg,
+                    )
                 )
                 # Reuse STIR's vertical tool-axis construction and lower the
                 # spoon tip into the measured safe cavity before release.
@@ -1951,6 +2199,12 @@ class KitchenGroundTruthExecutionDispatcher:
                 desired_tip_position = (
                     opening_centre - insertion_depth * opening_normal
                 )
+                if rim_rest_tip_position is not None:
+                    # Seat against the far wall rather than on the bowl axis.
+                    desired_tip_position = rim_rest_tip_position
+                    insertion_depth = float(np.dot(
+                        opening_centre - desired_tip_position, opening_normal
+                    ))
                 usable_opening_radius = max(
                     0.0,
                     min(opening.opening_half_extents_m)
@@ -2101,10 +2355,20 @@ class KitchenGroundTruthExecutionDispatcher:
                     low.profile,
                     mounting_allowances=serving_mounting_allowances,
                 )
+                # Payloads already resting on the serving surface, taken from
+                # the placement resolver rather than the observed inventory.
+                # inventory_by_id["location"] is where Phase 1 *found* an
+                # object and is never rewritten when it is served, so a bowl
+                # retrieved from B1 still reads "B1" after being placed.  It
+                # was therefore missing from this allow-list, and seating the
+                # second utensil was rejected on 3-6 mm forearm overlaps with
+                # the first bowl -- an object the arm is expressly permitted to
+                # reach past.  serving_placements records what was actually
+                # placed and verified.
                 served_objects = [
-                    self.binding_by_id[p]["physical_backend_body"]
-                    for p, r in self.inventory_by_id.items()
-                    if r.get("location") == "serving_area" and p in self.binding_by_id
+                    placement.backend_body
+                    for placement in self.phase_b.manipulation
+                    .placement_resolver.serving_placements.values()
                 ]
                 allowed_robot_contact_bodies = frozenset(
                     body_id
@@ -2141,6 +2405,7 @@ class KitchenGroundTruthExecutionDispatcher:
                     orientation_weight=0.45,
                 )
 
+                serving_search_rejections = []
                 for orientation_index, (
                     (cand_rel_pos, cand_rel_rot),
                     (cand_elev_pos, cand_elev_rot),
@@ -2157,6 +2422,10 @@ class KitchenGroundTruthExecutionDispatcher:
                             e_pos_err <= low.ik_position_tolerance
                             and e_ang_err <= low.ik_angle_tolerance
                         ):
+                            serving_search_rejections.append(
+                                f"o{orientation_index}:ELEVATED_IK"
+                                f"(p={e_pos_err:.4f},a={e_ang_err:.4f})"
+                            )
                             continue
                         rel_arm, r_pos_err, r_ang_err = release_ik.solve(
                             cand_rel_pos, elev_arm, cand_rel_rot
@@ -2165,6 +2434,10 @@ class KitchenGroundTruthExecutionDispatcher:
                             r_pos_err <= low.ik_position_tolerance
                             and r_ang_err <= low.ik_angle_tolerance
                         ):
+                            serving_search_rejections.append(
+                                f"o{orientation_index}:RELEASE_IK"
+                                f"(p={r_pos_err:.4f},a={r_ang_err:.4f})"
+                            )
                             continue
                         c_valid1, c_err1 = checker.segment_valid(
                             self.scene.data.qpos[low.arm_qpos].copy(),
@@ -2178,6 +2451,11 @@ class KitchenGroundTruthExecutionDispatcher:
                             frozenset((held_body,)) | allowed_robot_contact_bodies,
                             resolution=0.025,
                         )
+                        if not (c_valid1 and c_valid2):
+                            serving_search_rejections.append(
+                                f"o{orientation_index}:COLLISION"
+                                f"(approach={c_err1},release={c_err2})"
+                            )
                         if c_valid1 and c_valid2:
                             current_base_solution = {
                                 "selected_family": orientation_index,
@@ -2230,6 +2508,25 @@ class KitchenGroundTruthExecutionDispatcher:
                         )
                     )
                     try:
+                        # Seating the second utensil requires reaching past the
+                        # bowl already served.  Every reachable orientation was
+                        # rejected on 3-6 mm overlaps between the forearm/wrist
+                        # conservative shells and the first bowl's wall geoms,
+                        # against the global 2 mm ENVIRONMENT_COLLISION_TOLERANCE,
+                        # even though both IK stages converged.  These are
+                        # environment collisions, so the self-collision
+                        # mounting-allowance channel does not apply to them; the
+                        # environment channel is per body/geom and boolean.
+                        # Scope the exemption to the payloads already resting on
+                        # the serving surface, for this stance only.  If the arm
+                        # did displace one, the episode's goal verification would
+                        # fail on the final state rather than pass silently.
+                        other_serving_bodies = tuple(
+                            placement.backend_body
+                            for placement in self.phase_b.manipulation
+                            .placement_resolver.serving_placements.values()
+                            if placement.backend_body != bowl_backend
+                        )
                         stance = self.phase_c._local_stance(
                             primary_position,
                             primary_rotation,
@@ -2238,11 +2535,20 @@ class KitchenGroundTruthExecutionDispatcher:
                                 if elevated_pose_candidates else ()
                             ),
                             alternative_pose_families=alt_families,
-                            base_position_tolerance_m=(
-                                0.02 if float(observed["length"]) < 0.20 else 0.10
-                            ),
+                            # How far the base may stand from its nominal
+                            # pose, not how precisely the utensil is placed --
+                            # end-effector accuracy is enforced separately by
+                            # ik_position_tolerance.  A short utensil was
+                            # pinned to 0.02 m, which left the arm no reachable
+                            # configuration for the far serving slot: the long
+                            # spoon (0.264 m, 0.10 m of freedom) seated
+                            # successfully while the short one (0.141 m, 0.02 m)
+                            # failed its pre-release IK by 0.114 m from all 18
+                            # orientation candidates and all three seeds.
+                            base_position_tolerance_m=0.10,
                             compact_arm_for_base_motion=False,
                             allowed_robot_contact_body_names=(
+                                *other_serving_bodies,
                                 bowl_backend,
                                 "serving_area",
                                 "drawer_D1_tray",
@@ -2329,7 +2635,19 @@ class KitchenGroundTruthExecutionDispatcher:
                             raise RuntimeError(
                                 "Pre-release serving-spoon rotation IK failed: "
                                 f"position={position_error:.6f}, "
-                                f"angle={angle_error:.6f}"
+                                f"angle={angle_error:.6f}, "
+                                f"target_xyz={np.round(elevated_position, 4).tolist()}, "
+                                f"opening_centre={np.round(opening_centre, 4).tolist()}, "
+                                f"utensil_length={float(observed['length']):.4f}, "
+                                f"safe_cavity={safe_cavity_depth:.4f}, "
+                                f"usable_radius={usable_opening_radius:.4f}, "
+                                f"gravity_drop={short_utensil_gravity_drop}, "
+                                f"candidates={len(vertical_orientations)}, "
+                                f"tolerance={low.ik_position_tolerance:.4f}, "
+                                f"allowed_contact={sorted(served_objects)}, "
+                                f"served_placements={sorted(self.phase_b.manipulation.placement_resolver.serving_placements)}, "
+                                f"search_rejections={serving_search_rejections[:8]}, "
+                                f"total_rejections={len(serving_search_rejections)}"
                             )
                     for _ in range(1200):
                         command = self.scene.data.ctrl[low.arm_actuators]
@@ -2446,42 +2764,75 @@ class KitchenGroundTruthExecutionDispatcher:
                 # vertical body-feature transform on an empty wrist created
                 # an unnecessary, occasionally unreachable orientation
                 # constraint for the shorter spoon.
-                clearance_position = (
-                    release_position + 0.08 * opening_normal
-                )
                 clearance_ik = ProfiledIK(
                     self.scene.model,
                     self.scene.data,
                     low.profile,
                     orientation_weight=0.20,
                 )
-                clearance_arm, clearance_position_error, clearance_angle_error = (
-                    clearance_ik.solve(
-                        clearance_position,
-                        release_arm,
-                        release_rotation,
-                    )
+                # A straight 8 cm lift is the right retreat for a vertical
+                # insertion, and it stays first so that case is unchanged.  It
+                # is not reachable after a rim-resting release: there the wrist
+                # sits low and tilted out over the rim, and holding that
+                # attitude while rising 8 cm leaves the arm's range (the
+                # oversized spoon failed here with a 6.1 cm position error).
+                # The gripper is already empty, so any path that clears the
+                # cavity will do.  Withdrawing outwards as well as upwards is
+                # the direction the wrist actually came in along, so try
+                # progressively shallower lifts combined with an outward radial
+                # component before giving up.
+                radial_offset = release_position - opening_centre
+                radial_offset -= opening_normal * float(
+                    np.dot(radial_offset, opening_normal)
                 )
-                if (
-                    clearance_position_error > low.ik_position_tolerance
-                    or clearance_angle_error > low.ik_angle_tolerance
-                ):
-                    if elevated_arm is not None:
-                        clearance_arm, clearance_position_error, clearance_angle_error = (
-                            clearance_ik.solve(
-                                clearance_position,
-                                elevated_arm.copy(),
-                                release_rotation,
+                radial_norm = float(np.linalg.norm(radial_offset))
+                radial_direction = (
+                    radial_offset / radial_norm
+                    if radial_norm > 1e-9
+                    else np.zeros(3, dtype=float)
+                )
+                clearance_targets = [release_position + 0.08 * opening_normal]
+                if radial_norm > 1e-9:
+                    for outward_m in (0.04, 0.08):
+                        for lift_m in (0.08, 0.06, 0.04):
+                            clearance_targets.append(
+                                release_position
+                                + lift_m * opening_normal
+                                + outward_m * radial_direction
                             )
+                clearance_seeds = [release_arm]
+                if elevated_arm is not None:
+                    clearance_seeds.append(elevated_arm.copy())
+
+                clearance_arm = None
+                clearance_position_error = float("inf")
+                clearance_angle_error = float("inf")
+                clearance_position = clearance_targets[0]
+                for candidate_target in clearance_targets:
+                    for seed in clearance_seeds:
+                        arm, position_error, angle_error = clearance_ik.solve(
+                            candidate_target, seed, release_rotation
                         )
-                if (
-                    clearance_position_error > low.ik_position_tolerance
-                    or clearance_angle_error > low.ik_angle_tolerance
-                ):
+                        if (
+                            position_error <= low.ik_position_tolerance
+                            and angle_error <= low.ik_angle_tolerance
+                        ):
+                            clearance_arm = arm
+                            clearance_position = candidate_target
+                            clearance_position_error = position_error
+                            clearance_angle_error = angle_error
+                            break
+                        if position_error < clearance_position_error:
+                            clearance_position_error = position_error
+                            clearance_angle_error = angle_error
+                    if clearance_arm is not None:
+                        break
+                if clearance_arm is None:
                     raise RuntimeError(
-                        "Serving-spoon vertical retreat IK failed: "
+                        "Serving-spoon retreat IK failed: "
                         f"position={clearance_position_error:.6f}, "
-                        f"angle={clearance_angle_error:.6f}"
+                        f"angle={clearance_angle_error:.6f}, "
+                        f"targets={len(clearance_targets)}"
                     )
                 backend = self.binding_by_id[object_id]["physical_backend_body"]
                 weld_id = mujoco.mj_name2id(
@@ -2737,8 +3088,23 @@ class KitchenGroundTruthExecutionDispatcher:
                     tip_from_opening - tip_axial * opening_normal
                 )
                 tip_radial_distance = float(np.linalg.norm(tip_radial_vector))
+                # `usable_opening_radius` carries a safety margin because it is
+                # a *planning* clearance: it keeps an inserted utensil from
+                # clipping the rim on the way down.  It is the wrong bound for
+                # judging a pose that has already settled.  A utensil longer
+                # than the opening necessarily comes to rest leaning against
+                # the inner wall, which puts its active tip at the measured
+                # opening half-extent -- inside the bowl, but outside the
+                # planning margin.  F1/F2/F3 were rejected this way with their
+                # tips 0.2-0.6 mm inside the physical opening.  The measured
+                # half-extent is the real bound and still separates a served
+                # utensil from a missed one by a wide margin (F0's tip sat
+                # 15 mm beyond it, on the counter).
+                settled_opening_radius = (
+                    min(opening.opening_half_extents_m) + SETTLED_CONTACT_SKIN_M
+                )
                 tip_inside_bowl = bool(
-                    tip_radial_distance <= usable_opening_radius
+                    tip_radial_distance <= settled_opening_radius
                     and -opening.cavity_depth_m - 0.01
                     <= tip_axial
                     <= 0.02
@@ -2822,6 +3188,20 @@ class KitchenGroundTruthExecutionDispatcher:
                     ),
                     "active_tip_axial_offset_from_rim_m": tip_axial,
                     "usable_opening_radius_m": usable_opening_radius,
+                    "settled_opening_radius_m": settled_opening_radius,
+                    # The tip telemetry above is a derived feature point, and
+                    # for some utensils it lies outside the collision surface
+                    # -- the oversized spoon's is 2.6 cm beyond its head
+                    # ellipsoid -- so tip depth cannot answer "is the utensil
+                    # intersecting the bowl?".  Measure the collision geometry
+                    # directly instead.  Small negative values are ordinary
+                    # contact softness for a resting body; a large one means
+                    # the utensil is passing through the vessel.
+                    "utensil_bowl_minimum_signed_distance_m": (
+                        self._minimum_signed_distance(
+                            utensil_backend, bowl_backend
+                        )
+                    ),
                     "active_tip_inside_assigned_bowl": tip_inside_bowl,
                     "vertical_drop_depth_fraction": drop_depth_fraction,
                     "body_centre_radial_distance_from_opening_m": (

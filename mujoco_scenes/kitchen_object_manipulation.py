@@ -145,6 +145,10 @@ class PhysicalPickResult:
     manipulation_stance: dict[str, Any] | None = None
     extraction_strategy: str | None = None
     source_clearance_verified: bool | None = None
+    # Why the clearance test passed or failed.  A bare bool made an
+    # extraction failure indistinguishable from a grasp failure in the
+    # artifacts, since both surface as HELD_STATE_INVALID.
+    source_clearance_telemetry: dict | None = None
 
 
 @dataclass(frozen=True)
@@ -1375,10 +1379,16 @@ def make_kitchen_pick_specs(
                     (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.0),
                     (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -3.0),
                 )
-                if family == "JAR_SOURCE"
-                or observed["source_context"]["source_kind"] == "DRAWER"
-                else ()
             ),
+            # Restart seeds were previously offered only to jars and
+            # drawer-sourced objects.  They are search breadth, not a
+            # relaxation: `_solve_points` consults them only after the first
+            # solve has already missed, and whatever they return must still
+            # clear the same position/angle tolerance and the same collision
+            # check.  Withholding them did not make other picks stricter, only
+            # more likely to fail on a poor local IK branch -- F0's countertop
+            # bowl was rejected with every candidate missing the descent by
+            # 0.2 cm, which a different seed resolves.
             intermediate_ik_position_tolerance=(
                 0.055
                 if observed["source_context"]["source_kind"] == "DRAWER"
@@ -1532,6 +1542,42 @@ class KitchenPlacementResolver:
             footprint_xy_m=self.footprint(object_id),
             yaw_world_rad=target.target_yaw_world_rad,
             support_backend=target.support_backend or "",
+        )
+
+    def record_observed_serving_placement(self, object_id: str) -> None:
+        """Record a serving placement from the payload's actual resting pose.
+
+        ``record_successful_serving_placement`` takes the commanded
+        ``PlacementTarget``, which the ground-truth executor's verified-release
+        fallback does not have: that route confirms a placement that completed
+        while the gripper opened along a path the resolver did not plan.  The
+        resting pose read back from the simulation is the only description of
+        where the payload actually is, and for footprint bookkeeping it is the
+        more accurate one in any case.
+
+        Without this, objects released through that route were absent from
+        ``serving_placements`` entirely -- so later serving slots were
+        allocated without knowing they were occupied, and the robot-path
+        allowances that exempt already-served payloads never matched them.
+        """
+        binding = self.binding.get(object_id)
+        if binding is None:
+            return
+        backend = str(binding["physical_backend_body"])
+        body_id = mujoco.mj_name2id(
+            self.scene.model, mujoco.mjtObj.mjOBJ_BODY, backend
+        )
+        if body_id < 0:
+            return
+        position = self.scene.data.xpos[body_id]
+        rotation = self.scene.data.xmat[body_id].reshape(3, 3)
+        self.serving_placements[object_id] = ServingPlacementState(
+            object_id=object_id,
+            backend_body=backend,
+            centre_xy_m=(float(position[0]), float(position[1])),
+            footprint_xy_m=self.footprint(object_id),
+            yaw_world_rad=float(math.atan2(rotation[1, 0], rotation[0, 0])),
+            support_backend=self.current_support_backend(object_id),
         )
 
     def current_support_backend(self, object_id: str) -> str:
@@ -2765,7 +2811,14 @@ class KitchenObjectManipulationExecutor:
                     approach_offset_world_m=(0.0, 0.0, 0.12),
                     approach_clearance_m=0.10,
                     approach_route_offsets_world_m=((0.0, 0.0, 0.18),),
-                    retreat_route_offsets_world_m=((0.0, 0.0, 0.18),),
+                    # 0.18 left the bowl 0.010 m short of B1's 0.740 m rim
+                    # whenever the grasp landed at its tolerated limit: the
+                    # preclose position tolerance is 0.020 m and a measured
+                    # extraction closed at 0.0198 m of error, so the fixed
+                    # retreat has to clear the rim from the worst pose the
+                    # grasp check still accepts.  0.010 shortfall + 0.020
+                    # tolerance + 0.030 margin.
+                    retreat_route_offsets_world_m=((0.0, 0.0, 0.24),),
                     predicted_contact_geom_names=(left_name, right_name),
                     predicted_contact_points_world_m=contact_points,
                 )
@@ -4208,6 +4261,7 @@ class KitchenObjectManipulationExecutor:
         ].copy()
         source_clearance = None
         extraction_strategy = None
+        source_clearance_telemetry = None
         if context_row["source_kind"] in {"CUPBOARD", "BOX"}:
             from .geometry_checker import load_inspection_rig_config
 
@@ -4239,11 +4293,62 @@ class KitchenObjectManipulationExecutor:
                     after_pos[1] <= front_plane_y + 0.005
                 )
             else:
-                # Conservative observed-geometry sphere versus the box AABB.
+                # An open-top box is left by lifting straight up, which is what
+                # VERTICAL_FIRST_ABOVE_RIM does.  The isotropic test below asks
+                # the payload's whole bounding sphere to leave the box AABB in
+                # any direction, and that sphere radius is the half *diagonal*:
+                # for a wide shallow bowl it is dominated by width, so a bowl
+                # 0.08 m tall had to rise ~0.12 m above the rim before the test
+                # would accept an extraction that was already complete.  Judge
+                # the vertical case on the axis the motion actually uses -- the
+                # payload's underside clear of the box top -- and keep the
+                # isotropic sphere as the general criterion for any other
+                # direction of travel.
                 closest = np.maximum(minimum, np.minimum(after_pos, maximum))
+                isotropic_clearance_m = float(np.linalg.norm(after_pos - closest))
+                measured_height = float(measured_dimensions.get("height", 0.0))
+                underside_z = float(after_pos[2]) - 0.5 * measured_height
+                # Measure against the container's own walls, not the inspection
+                # volume.  The volume in inspection_rigs.yaml is a perception
+                # region sized to cover the opening from the camera rig; for B1
+                # its top is 0.82 while the physical walls end at 0.740, so
+                # judging extraction against it demanded 8 cm more lift than
+                # leaving the box actually needs.  Fall back to the configured
+                # volume only when the walls cannot be found.
+                container = str(context_row["source_container"])
+                wall_tops = []
+                for suffix in ("_left", "_right", "_back", "_front_wall", "_front"):
+                    wall_id = mujoco.mj_name2id(
+                        self.scene.model, mujoco.mjtObj.mjOBJ_GEOM, f"{container}{suffix}"
+                    )
+                    if wall_id >= 0:
+                        wall_tops.append(
+                            float(self.scene.data.geom_xpos[wall_id, 2])
+                            + float(self.scene.model.geom_size[wall_id, 2])
+                        )
+                rim_z = max(wall_tops) if wall_tops else float(maximum[2])
+                vertical_clearance_m = underside_z - rim_z
                 source_clearance = bool(
-                    np.linalg.norm(after_pos - closest) > bounding_radius
+                    isotropic_clearance_m > bounding_radius
+                    or vertical_clearance_m > 0.0
                 )
+                source_clearance_telemetry = {
+                    "isotropic_clearance_m": isotropic_clearance_m,
+                    "isotropic_clearance_required_m": bounding_radius,
+                    "vertical_clearance_above_rim_m": vertical_clearance_m,
+                    "payload_underside_z_m": underside_z,
+                    "container_rim_z_m": rim_z,
+                    "container_rim_source": (
+                        "PHYSICAL_WALL_GEOMS" if wall_tops
+                        else "INSPECTION_VOLUME_FALLBACK"
+                    ),
+                    "inspection_volume_top_z_m": float(maximum[2]),
+                    "criterion_met": (
+                        "VERTICAL_ABOVE_RIM" if vertical_clearance_m > 0.0
+                        else "ISOTROPIC_SPHERE"
+                        if isotropic_clearance_m > bounding_radius else "NONE"
+                    ),
+                }
             extraction_strategy = (
                 "VERTICAL_FIRST_ABOVE_RIM"
                 if context_row["source_kind"] == "BOX"
@@ -4275,6 +4380,7 @@ class KitchenObjectManipulationExecutor:
             manipulation_stance=manipulation_stance,
             extraction_strategy=extraction_strategy,
             source_clearance_verified=source_clearance,
+            source_clearance_telemetry=source_clearance_telemetry,
         )
 
     def place(

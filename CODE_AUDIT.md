@@ -850,3 +850,110 @@ real gaps were both at *seams* the guard culture had not been extended across:
 Both were seams between subsystems rather than holes inside one, which is the
 usual place for this class of gap.
 
+
+---
+
+## K-02 — Serving placements were never recorded on the verified-release path
+
+**Files.** [`mujoco_scenes/kitchen_ground_truth_execution.py`](mujoco_scenes/kitchen_ground_truth_execution.py),
+[`mujoco_scenes/kitchen_object_manipulation.py`](mujoco_scenes/kitchen_object_manipulation.py)
+
+**Severity.** Result-affecting. Fixed 2026-09-06.
+
+### What was wrong
+
+A successful Kitchen `PLACE(object, serving_area)` can finish through three
+different routes in the ground-truth executor:
+
+| Route | Returned status | Updated `inventory_by_id[...]["location"]` | Recorded in `serving_placements` |
+|---|---|---|---|
+| `KitchenObjectManipulationExecutor.place` | `PLACE_SUCCESS` | n/a (resolver-side) | yes, `kitchen_object_manipulation.py:4659` |
+| `_execute_controlled_placement` recovery | `PLACEMENT_COMPLETED` | yes | yes |
+| **verified-release fallback** | `RELEASED_PLACEMENT_VERIFIED` | **no** | **no** |
+
+The third route confirms a release that completed while the gripper opened
+along a path the resolver had not planned. It called
+`validate_stable_placement`, saw the object was correctly and stably placed,
+returned `success: True` — and then performed **only** the `countertop`
+bookkeeping. For `serving_area` it did nothing at all.
+
+Everything downstream that asks "what is already on the serving surface?" reads
+`KitchenPlacementResolver.serving_placements`. There are five such consumers:
+
+- `_allow_served_payloads_for_next_motion` (`kitchen_ground_truth_execution.py:414`)
+- the bowl-descent contact allowance (`kitchen_ground_truth_execution.py:1755`)
+- the serving-utensil stance search allow-list (`kitchen_ground_truth_execution.py:2196`)
+- the serving-utensil `_local_stance` exemption (`kitchen_ground_truth_execution.py:2360`)
+- **serving slot allocation itself** — the `footprints_overlap` guard in
+  `KitchenPlacementResolver` (`kitchen_object_manipulation.py:1704`)
+
+### How it presented
+
+In `F5_FULL_DISTRIBUTED_SEARCH` four objects reach the serving area (actions
+21, 23, 25, 29). Three of them — `ab3_narrow_deep_cup`, `ab3_medium_deep_mug`,
+`ab3_deep_bowl` — completed through the verified-release fallback and were
+never recorded. At the final action the resolver believed exactly one object
+was on the surface:
+
+```
+allowed_contact=['ab3_shallow_bowl'], served_placements=['ab3_shallow_bowl']
+```
+
+So the allow-list that exists specifically to let the arm reach past an
+already-served vessel did not contain `ab3_deep_bowl`, and seating the last
+utensil was rejected on a 3–6 mm forearm overlap with it:
+
+```
+o1:COLLISION(approach=environment collision
+  google:link_forearm / ab3_deep_bowl [ab3_deep_bowl_wall_5] (-0.3 cm),
+  release=... [ab3_deep_bowl_wall_4] (-0.6 cm))
+```
+
+Every orientation candidate was exhausted and the episode failed with
+`SERVING_UTENSIL_RELEASE_FAILED`.
+
+### The second, quieter consequence
+
+**This is the part that affects results beyond one variant.** Serving *slot
+allocation* also consults `serving_placements`, through the `footprints_overlap`
+rejection in the candidate loop. An unrecorded object is an invisible one, so
+the allocator was free to hand out a slot that physically overlaps a vessel
+already sitting there. It did not produce a visible failure in the runs
+observed, because the fixed four-object layout happens to keep the semantic
+slots apart — but the guard that is supposed to prevent an overlapping
+allocation was inoperative for any object placed through this route, which was
+most of them.
+
+### The fix
+
+1. `KitchenPlacementResolver.record_observed_serving_placement(object_id)` —
+   records a serving placement from the payload's **actual resting pose** read
+   back from the simulation. The existing
+   `record_successful_serving_placement` requires a commanded `PlacementTarget`,
+   which this route does not have. Reading the pose back is also the more
+   accurate footprint centre, since it is where the object ended up rather than
+   where it was aimed.
+2. `KitchenGroundTruthExecutor.mark_object_served(object_id)` — collects the
+   inventory-row update and the resolver call in one place, so a fourth success
+   route cannot silently diverge the way this one did. The verified-release
+   fallback now calls it for `serving_area`.
+
+### Why the bookkeeping was not simply read from the inventory
+
+An earlier attempt built the allow-list from
+`inventory_by_id[object_id]["location"] == "serving_area"`. That is wrong for a
+different reason: `location` is where Phase 1 *observed* the object, and two of
+the three success routes never rewrite it either. The resolver is the right
+source of truth; it just was not being written to.
+
+### Effect
+
+`F5_FULL_DISTRIBUTED_SEARCH` under `--strict-robot-execution`: 31/31 actions,
+`SUCCESS`. Previously 30/31 with the final `PLACE_SERVING_UTENSIL` failing.
+
+### Not fixed here
+
+The three routes still exist and still return three different success statuses
+for the same outcome. Consolidating them is a larger change to the placement
+control flow and is not attempted while execution results are being collected.
+`mark_object_served` is the seam that keeps them consistent in the meantime.

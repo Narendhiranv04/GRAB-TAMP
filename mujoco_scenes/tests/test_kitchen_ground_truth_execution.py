@@ -16,6 +16,7 @@ import os
 from pathlib import Path
 import tempfile
 from types import SimpleNamespace
+import mujoco
 import pytest
 import numpy as np
 
@@ -833,3 +834,59 @@ def test_video_recording_smoke():
     assert tmp_path.exists()
     assert tmp_path.stat().st_size > 0
     tmp_path.unlink()
+
+
+def test_serving_placements_are_recorded_from_the_observed_resting_pose():
+    # Regression guard for CODE_AUDIT.md K-02.  A serving PLACE can succeed
+    # through three routes; the verified-release fallback used to return
+    # success without telling the placement resolver anything, so objects it
+    # placed were invisible both to the slot-overlap guard and to the
+    # robot-path allowances that let the arm reach past an already-served
+    # vessel.  `mark_object_served` is the single seam those routes share.
+    scene = KitchenScene(
+        "S1_integrated_kitchen_object_function_feasibility_F0",
+        include_robot=True,
+        robot="google",
+    )
+    assignment = solve_ground_truth_assignment(scene, "F0_ALL_VISIBLE", "FEASIBLE")
+    dispatcher = KitchenGroundTruthExecutionDispatcher(scene, assignment)
+    resolver = dispatcher.phase_b.manipulation.placement_resolver
+
+    assert resolver.serving_placements == {}
+    dispatcher.mark_object_served("ab3_deep_bowl")
+
+    placement = resolver.serving_placements["ab3_deep_bowl"]
+    body_id = mujoco.mj_name2id(
+        scene.model, mujoco.mjtObj.mjOBJ_BODY, placement.backend_body
+    )
+    # The centre must come from where the payload actually is, not from a
+    # commanded target -- the fallback route has no target to quote.
+    assert placement.centre_xy_m == pytest.approx(
+        tuple(float(v) for v in scene.data.xpos[body_id][:2])
+    )
+    assert dispatcher.inventory_by_id["ab3_deep_bowl"]["location"] == "serving_area"
+
+
+def test_marking_an_object_served_exempts_it_from_later_serving_slots():
+    # The overlap guard in the resolver only rejects candidate slots that clash
+    # with a *recorded* placement, which is why the missing bookkeeping was a
+    # correctness problem and not only a collision-allowance one.
+    scene = KitchenScene(
+        "S1_integrated_kitchen_object_function_feasibility_F0",
+        include_robot=True,
+        robot="google",
+    )
+    assignment = solve_ground_truth_assignment(scene, "F0_ALL_VISIBLE", "FEASIBLE")
+    dispatcher = KitchenGroundTruthExecutionDispatcher(scene, assignment)
+    resolver = dispatcher.phase_b.manipulation.placement_resolver
+
+    first = resolver.resolve("ab3_deep_bowl", "serving_area")
+    resolver.record_successful_serving_placement("ab3_deep_bowl", first)
+    second = resolver.resolve("ab3_shallow_bowl", "serving_area")
+
+    assert not resolver.footprints_overlap(
+        tuple(first.target_position_world_m[:2]),
+        resolver.footprint("ab3_deep_bowl"),
+        tuple(second.target_position_world_m[:2]),
+        resolver.footprint("ab3_shallow_bowl"),
+    )

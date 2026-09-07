@@ -294,6 +294,102 @@ class KitchenPhaseCExecutionDispatcher:
                 return True
         return False
 
+        # PLACE_SERVING_UTENSIL and STIR share a geometry but not a requirement.
+    # A stir is only valid with the tool axis on the opening normal, so
+    # _stir_orientation_family below is deliberately vertical-only.  Seating a
+    # utensil in a served bowl tolerates a few degrees, and needs to: with a
+    # single candidate orientation the pre-release rotation IK has no
+    # alternative to fall back on and fails outright (measured 0.114 m position
+    # error against a 0.02 m tolerance from all three seeds).  The tilts here
+    # are deliberately too small to encode a rim-resting posture.
+    @staticmethod
+    def _serving_utensil_orientation_family(
+        current_body_rotation: np.ndarray,
+        local_axis: np.ndarray,
+        rim_normal: np.ndarray,
+        preferred_tangent: np.ndarray,
+        observed_length_m: float = 0.20,
+        opening_radius_m: float | None = None,
+        cavity_depth_m: float | None = None,
+        rim_rest_inclination_deg: float | None = None,
+    ) -> list[dict[str, Any]]:
+        normal = np.asarray(rim_normal, float)
+        normal /= np.linalg.norm(normal)
+        tangent = np.asarray(preferred_tangent, float)
+        tangent -= normal * float(np.dot(tangent, normal))
+        if np.linalg.norm(tangent) < 1e-9:
+            tangent = np.array((1.0, 0.0, 0.0), dtype=float)
+        tangent /= np.linalg.norm(tangent)
+        lateral = np.cross(normal, tangent)
+        candidates: list[dict[str, Any]] = []
+        seen: set[tuple[float, ...]] = set()
+
+        def append(rotation: np.ndarray, inclination: float, azimuth: float, roll: float, provenance: str) -> None:
+            key = tuple(float(value) for value in np.round(rotation, 7).ravel())
+            if key in seen:
+                return
+            seen.add(key)
+            candidates.append({
+                "rotation": rotation,
+                "inclination_deg": inclination,
+                "azimuth_deg": azimuth,
+                "tool_roll_deg": roll,
+                "provenance": provenance,
+            })
+
+        current_axis = np.asarray(current_body_rotation, float) @ np.asarray(local_axis, float)
+        # PLACE_SERVING_UTENSIL is an insertion relation, not a request to
+        # balance the handle on the rim.  Keep the active utensil end on the
+        # bowl centreline and align the longitudinal axis with the opening
+        # normal.  Tiny deterministic tilt fallbacks remain only for strict IK;
+        # they are deliberately too small to encode a rim-resting posture.
+        # PLACE_SERVING_UTENSIL is an insertion relation, so the default
+        # family is vertical with tiny tilt fallbacks for strict IK only.
+        #
+        # A utensil too long to fit inside the cavity is the exception: it
+        # cannot rest inside in any orientation, and released vertical it
+        # topples straight back out.  The caller measures the pose that does
+        # work -- head on the cavity floor against the far wall, shaft crossing
+        # the near rim -- and passes its inclination here.  The caller also
+        # moves the tip to the far wall; the angle alone is not sufficient and
+        # was measured leaving the utensil worse off (it slid out entirely when
+        # tilted about a tip still on the bowl axis).
+        _ = opening_radius_m, cavity_depth_m
+        inclinations: tuple[float, ...] = (0.0, 3.0, 5.0)
+        if rim_rest_inclination_deg is not None:
+            inclinations = (
+                float(rim_rest_inclination_deg),
+                float(rim_rest_inclination_deg) - 6.0,
+                float(rim_rest_inclination_deg) + 6.0,
+                # Vertical stays last so nothing that used to be reachable
+                # becomes unreachable if the seated pose has no IK solution.
+                0.0,
+                3.0,
+                5.0,
+            )
+        for inclination_deg in inclinations:
+            inclination = math.radians(inclination_deg)
+            azimuths = (
+                (0.0,)
+                if inclination_deg == 0.0
+                else (0.0, 180.0, -90.0, 90.0)
+            )
+            for azimuth_deg in azimuths:
+                azimuth = math.radians(azimuth_deg)
+                radial = math.cos(azimuth) * tangent + math.sin(azimuth) * lateral
+                desired_axis = math.cos(inclination) * normal + math.sin(inclination) * radial
+                aligned = _align_vectors(current_axis, desired_axis) @ current_body_rotation
+                for roll_deg in (0.0, 180.0):
+                    rotation = rotation_about_axis(desired_axis, math.radians(roll_deg)) @ aligned
+                    append(
+                        rotation,
+                        inclination_deg,
+                        azimuth_deg,
+                        roll_deg,
+                        "SERVING_UTENSIL_INSERTION_AXIS_FAMILY",
+                    )
+        return candidates
+
     @staticmethod
     def _stir_orientation_family(
         current_body_rotation: np.ndarray,
