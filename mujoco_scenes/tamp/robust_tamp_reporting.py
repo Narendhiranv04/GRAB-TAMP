@@ -88,6 +88,7 @@ def write_robust_tamp_artifacts(
     success: bool,
     executed_actions: int,
     model_calls: int,
+    raw_vlm_requests: int,
     replans: int,
     planning_latency_s: float,
     elapsed_seconds: float,
@@ -118,11 +119,12 @@ def write_robust_tamp_artifacts(
         success=bool(success),
         executed_actions=executed_actions,
         model_calls=model_calls,
-        # ROBUST-TAMP issues exactly one request per planning event, so rounds
-        # and raw requests coincide.  Recorded separately anyway because they
-        # do not for OWL-TAMP, which sends one sketch plus one constraint call
-        # per sketched action.
-        raw_vlm_requests=model_calls,
+        # Counted from the planner, not inferred from model_calls.  Those
+        # coincided until transport faults gained their own retry budget: a
+        # failed request is real HTTP traffic that produces no completion, so
+        # `model_calls` now undercounts what was actually sent.  VLM-TAMP and
+        # OWL-TAMP both count from their transports for the same reason.
+        raw_vlm_requests=raw_vlm_requests,
         replans=replans,
         planning_latency_s=planning_latency_s,
         elapsed_seconds=elapsed_seconds,

@@ -74,9 +74,16 @@ class FakeRuntime:
 
 class FakePlanner:
     def __init__(self, _config):
-        pass
+        # The real planner counts every attempted request here, and the runner
+        # reports it as `raw_vlm_requests`.  A stub that omits it is not
+        # standing in for the interface it replaces.
+        self.call_count = 0
 
     def plan(self, _request):
+        self.call_count += 1
+        return self._plan(_request)
+
+    def _plan(self, _request):
         return PlannerResult(
             PlanStatus.PLAN,
             (SkillAction("PICK", {"object_id": "mug"}),),

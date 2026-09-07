@@ -143,3 +143,22 @@ def test_g_every_runner_records_the_feasibility_verdict(scene):
     for call in calls:
         names = {kw.arg for kw in call.keywords}
         assert "expected_outcome" in names, f"{scene}: no expected_outcome"
+
+
+@pytest.mark.parametrize("scene", SCENES)
+def test_h_raw_requests_are_counted_not_inferred(scene):
+    """A retried transport fault is real HTTP traffic with no completion.
+
+    `raw_vlm_requests` used to be set to `executive.model_calls`, which was
+    true only while every request produced a completion.  Once transport faults
+    gained their own retry budget that stopped holding, and this column is what
+    the planner-cost comparison rests on -- VLM-TAMP and OWL-TAMP both count
+    from their transports.
+    """
+    source = RUNNERS[scene].read_text(encoding="utf-8")
+    assert "raw_vlm_requests=planner.call_count" in source, (
+        f"{scene}: raw request count is inferred rather than measured"
+    )
+    assert '"raw_vlm_requests": executive.model_calls' not in source, (
+        f"{scene}: still equates requests with completions"
+    )
