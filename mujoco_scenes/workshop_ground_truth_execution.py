@@ -156,6 +156,14 @@ def strict_insertion_verified(
     )
 
 
+class NoAssistedDestinationPose(RuntimeError):
+    """No assisted placement pose is defined for a named destination.
+
+    A RuntimeError so the baseline runtime's physical-failure handler catches
+    it while the ground-truth runner still aborts on it.
+    """
+
+
 class WorkshopExecutionDispatcher:
     """Execute Workshop actions with constrained grasps and measured mechanics.
 
@@ -2222,7 +2230,23 @@ class WorkshopExecutionDispatcher:
                 self.scene.model, mujoco.mjtObj.mjOBJ_BODY, "google:link_gripper"
             )
             return self.scene.data.xpos[body_id].copy() + np.array([0.0, 0.0, -0.10])
-        raise ValueError(f"No assisted destination pose for {name}")
+        # RuntimeError, not ValueError, and deliberately so.  The
+        # ground-truth runner does not catch either, so an oracle plan that
+        # names an undefined destination still aborts the episode -- which is
+        # right, since the oracle should never produce one.  But
+        # `BaselineWorkshopRuntime._run` catches RuntimeError and records it as
+        # PHYSICAL_MOTION_FAILED, and a *baseline* naming such a destination is
+        # an ordinary wrong answer, not a harness crash: VLM-TAMP planned
+        # PLACE(power screwdriver, left drawer) on W8 seed 8, and as a
+        # ValueError it escaped that handler and killed the episode with no
+        # artifact at all -- the opposite of BASELINE_FIDELITY.md's
+        # "recorded, not dropped".  The storage regions have no assisted
+        # placement pose because returning a tool *into* a drawer was never a
+        # goal condition; that remains true, and this makes the attempt score
+        # as a failed PLACE instead of vanishing.
+        raise NoAssistedDestinationPose(
+            f"No assisted destination pose for {name}"
+        )
 
     def _strict_insert_fastener(self, object_name: str) -> dict[str, Any]:
         """Unaided insertion.  Currently unreferenced -- kept deliberately.

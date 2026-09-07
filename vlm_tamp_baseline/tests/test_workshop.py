@@ -410,3 +410,26 @@ def test_empty_prediction_does_not_score_a_perfect_match():
     for view in ("raw_execution_vocabulary", "shared_task_vocabulary"):
         assert not comparison[view]["exact_sequence_match"], view
         assert comparison[view]["ordered_f1"] == 0.0, view
+
+
+def test_a_place_into_a_drawer_is_a_failed_action_not_a_dead_episode():
+    """A baseline naming an undefined destination must be scored, not dropped.
+
+    VLM-TAMP planned PLACE(power screwdriver, left drawer) on W8 seed 8.
+    `_destination_position` raised ValueError, which escaped
+    `BaselineWorkshopRuntime._run`'s RuntimeError handler and killed the
+    episode with no artifact -- the opposite of BASELINE_FIDELITY.md's
+    "recorded, not dropped".  The exception is now a RuntimeError subclass, so
+    the handler converts it to PHYSICAL_MOTION_FAILED while the ground-truth
+    runner (which catches neither) still aborts on an oracle plan that does it.
+    """
+    from mujoco_scenes.workshop_ground_truth_execution import (
+        NoAssistedDestinationPose,
+    )
+
+    assert issubclass(NoAssistedDestinationPose, RuntimeError), (
+        "must be caught by BaselineWorkshopRuntime._run's RuntimeError handler"
+    )
+    assert not issubclass(NoAssistedDestinationPose, ValueError), (
+        "a plain ValueError is what escaped the handler in the first place"
+    )
