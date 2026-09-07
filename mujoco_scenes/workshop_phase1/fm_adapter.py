@@ -122,16 +122,28 @@ Rules:
   entities need not be reintroduced as selectable functional roles unless their
   functional suitability itself must be discovered.
 - Use SHORT ATOMIC PHRASES for all functions, properties, and relations:
-  - Role function: describe what the physical candidate must be capable of doing (e.g. "contain hot liquid", "stir drink", "drive fastener", "hold items for viewer"), rather than abstract workflow stages (e.g. "coffee preparation", "serving process").
-  - Required properties: list only task-critical physical or geometric characteristics of this single role used to decide candidate suitability (e.g. open cavity, elongated shape, planar horizontal support). Do NOT include non-physical adjectives (e.g. good, useful, safe, edible, hot), task state descriptions, or semantic class labels already covered in candidate_categories.
-  - Functional relations: describe physical spatial or interface compatibility relations between roles (e.g. "fits into", "reaches into", "compatible with", "placed on", "near seat").
+  - Role function: describe what the physical candidate must be capable of doing
+    (e.g. "cut a sheet of material", "illuminate a dark area", "clamp two
+    parts together"), rather than abstract workflow stages (e.g. "site
+    setup", "end-of-shift routine"). The examples are deliberately unrelated
+    to any evaluated task: they show the required form, not the answer.
+  - Required properties: list only task-critical physical or geometric characteristics of this single role used to decide candidate suitability (e.g. cylindrical, has a raised lip, wider than it is tall). Do NOT include non-physical adjectives (e.g. good, useful, safe, edible, hot), task state descriptions, or semantic class labels already covered in candidate_categories.
+  - Functional relations: describe physical spatial or interface compatibility relations between roles (e.g. "encloses", "aligns with", "attaches to", "rests against").
   Do not write long narrative sentences. Do not use complex compound clauses.
 - Robot Verifier Capabilities:
   The robot is equipped with physical and geometric verifiers that can check concepts such as:
-  * Unary physical shapes: whether an object has an open/deep cavity or container volume; whether an object is elongated enough to serve as an implement; whether a surface is a flat/planar support.
-  * Spatial & container relations: whether one object/implement can fit into or enter another object's opening; whether an implement reaches sufficiently deep into a container; whether a region can support a payload.
-  * Seating & proximity relations: relative proximity or accessibility of support surfaces to seating/viewers; whether a support is accessible to multiple seating positions.
-  * Tool & fastener interfaces: interface compatibility between a tool/driver and a fastener; whether a tool reaches a target workpiece/hole; whether a fastener is compatible with a target opening.
+  * Unary physical shape: whether an object has an interior volume open at one
+    face; whether one axis of an object greatly exceeds its others; whether a
+    surface is flat and horizontal.
+  * Spatial and enclosure relations: whether one object can enter another
+    object's opening; whether an entered object reaches a stated depth;
+    whether a region can bear a placed object.
+  * Proximity relations: relative proximity or accessibility between a region
+    and a designated fixed reference position; whether one region is
+    accessible from several such positions at once.
+  * Interface compatibility: whether an actuating object mates with the part
+    it acts on; whether an actuating object reaches a fixed target feature;
+    whether an inserted part is compatible with a target opening.
 - When a role must be paired independently with multiple task targets or
   contextual references, represent that dependency using an interaction group
   rather than relying on an unconstrained many-to-many relation.
@@ -271,6 +283,16 @@ RESPONSE_SCHEMA: dict[str, Any] = {
                         "items": {"type": "string"},
                     },
                 },
+                # `context_role` is listed as required because every consumer
+                # of RESPONSE_SCHEMA -- Living Room and Workshop -- rejects a
+                # group without one.  Leaving it optional advertised a contract
+                # the pipeline does not accept: the model followed the schema,
+                # omitted the field, and was then failed for it.  This states a
+                # structural requirement only; it names no benchmark entity, so
+                # the neutrality guarantee is unaffected.  (Kitchen is not a
+                # consumer of this schema; it uses
+                # KITCHEN_FUNCTIONAL_GRAPH_SCHEMA, whose groups carry no
+                # context role.)
                 "required": [
                     "id",
                     "function",
@@ -279,6 +301,7 @@ RESPONSE_SCHEMA: dict[str, Any] = {
                     "required_target_count",
                     "usage_policy",
                     "required_relations",
+                    "context_role",
                 ],
                 "additionalProperties": False,
             },

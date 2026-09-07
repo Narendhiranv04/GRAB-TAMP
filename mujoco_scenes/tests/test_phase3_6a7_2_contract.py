@@ -147,6 +147,17 @@ def _valid_generic_vlm_doc() -> dict[str, Any]:
                 "required_target_count": 1,
                 "usage_policy": "SEQUENTIAL_REUSE_ALLOWED",
                 "required_relations": ["compatible with"],
+                # This fixture claimed to be a valid generic document while
+                # omitting context_role, which the validator has always
+                # required -- several tests in this file fail today with
+                # "Interaction group 'fastening_op' context_role None not
+                # declared in functional_roles".  The omission only became a
+                # schema error once RESPONSE_SCHEMA was corrected to advertise
+                # the field as required, matching what is enforced.
+                # `target_joint` is the declared FIXED_TARGET role, and
+                # "reaches target" is its declared relation.
+                "context_role": "target_joint",
+                "context_relations": ["reaches target"],
             }
         ],
         "inspectable_regions": [],

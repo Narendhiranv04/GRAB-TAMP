@@ -431,15 +431,44 @@ def test_operation_group_redundancy_validation():
     ]
 
 
-def test_workshop_group_usage_policy_enforced():
+def test_workshop_group_usage_policy_enforced_above_one_target():
+    # The guard still holds where the two policies actually differ.  Above one
+    # target, DEDICATED_PER_TARGET requires a distinct tool per target while
+    # SEQUENTIAL_REUSE_ALLOWED permits one tool to serve them all, so the
+    # Workshop domain must keep rejecting the second.
     from mujoco_scenes.workshop_phase1.requirements import FMRequirementProvider
     from mujoco_scenes.functional_tamp_pipeline.errors import MalformedVLMSpecificationError
     from mujoco_scenes.functional_tamp_pipeline.tests.test_ideal_fixtures import load_ideal_fixture
     data = load_ideal_fixture("workshop")
     data["interaction_groups"][0]["usage_policy"] = "SEQUENTIAL_REUSE_ALLOWED"
+    data["interaction_groups"][0]["required_target_count"] = 2
     provider = FMRequirementProvider()
     with pytest.raises(MalformedVLMSpecificationError, match="invalid usage_policy 'SEQUENTIAL_REUSE_ALLOWED', expected 'DEDICATED_PER_TARGET'"):
         provider.generate_canonical(raw_document=data)
+
+
+def test_workshop_single_target_accepts_either_equivalent_usage_policy():
+    # This case used to raise, and that rejection was wrong.  At one target the
+    # two policies are the same computation -- grounding permutes one tool over
+    # one target either way -- so the canonical graph is identical.  The
+    # requirement prompt is deliberately domain-neutral and cannot tell the
+    # model that this domain dedicates one driver per joint without leaking the
+    # benchmark, so the model picks either enum value and a correct
+    # decomposition was being failed on a phrasing choice.  Both spellings must
+    # now canonicalize to the same graph.
+    from mujoco_scenes.workshop_phase1.requirements import FMRequirementProvider
+    from mujoco_scenes.functional_tamp_pipeline.tests.test_ideal_fixtures import load_ideal_fixture
+
+    dedicated = load_ideal_fixture("workshop")
+    assert dedicated["interaction_groups"][0]["required_target_count"] == 1
+    assert dedicated["interaction_groups"][0]["usage_policy"] == "DEDICATED_PER_TARGET"
+    reused = load_ideal_fixture("workshop")
+    reused["interaction_groups"][0]["usage_policy"] = "SEQUENTIAL_REUSE_ALLOWED"
+
+    provider = FMRequirementProvider()
+    from_dedicated = provider.generate_canonical(raw_document=dedicated)
+    from_reused = FMRequirementProvider().generate_canonical(raw_document=reused)
+    assert from_reused == from_dedicated
 
 
 def test_workshop_group_context_regressions():

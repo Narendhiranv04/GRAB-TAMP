@@ -4,6 +4,9 @@ import xml.etree.ElementTree as ET
 import mujoco
 import numpy as np
 
+from mujoco_scenes.benchmark_task_instructions import (
+    KITCHEN_TASK_INSTRUCTION,
+)
 from mujoco_scenes.scene_loader import (
     COUNTER_SPOTS,
     INTEGRATED_TARGET_VESSELS,
@@ -430,12 +433,11 @@ def test_c2_spoon_stands_above_shelf_with_bowl_up_and_wall_clearance():
 
 def test_integrated_manual_specification_has_function_scoped_usage():
     task = load_task_requirements(TASK_PATH)
-    assert task["goal_instruction"] == (
-        "Prepare and serve coffee and soup for two people using the "
-        "available kitchenware. Stir both coffees and provide each "
-        "soup bowl with a suitable utensil. Search the closed kitchen "
-        "storage for anything still required."
-    )
+    # Compare against the canonical instruction rather than restating it.  A
+    # fifth copy of this string is how the methods came to be given different
+    # tasks in the first place; this asserts the requirements file agrees with
+    # the single source every runtime reads.
+    assert task["goal_instruction"] == KITCHEN_TASK_INSTRUCTION
     assert task["roles"]["coffee_container"]["count"] == 2
     assert task["roles"]["soup_container"]["count"] == 2
     coffee = task["operation_groups"]["coffee_stirring"]

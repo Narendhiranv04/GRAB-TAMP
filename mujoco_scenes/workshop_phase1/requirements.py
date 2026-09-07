@@ -922,7 +922,21 @@ class FMRequirementProvider(RequirementProvider):
                 raise MalformedVLMSpecificationError(
                     f"Interaction group {grp_id!r} required_target_count must be an integer >= 1, got {grp['required_target_count']!r}"
                 )
-            if grp["usage_policy"] != "DEDICATED_PER_TARGET":
+            # With a single target the two policies are provably the same
+            # computation: `DEDICATED_PER_TARGET` permutes one tool over one
+            # target, and `SEQUENTIAL_REUSE_ALLOWED` asks that the one target
+            # be satisfied by some selected tool.  Rejecting the second
+            # spelling therefore discards a semantically identical answer.
+            #
+            # This matters because the requirement prompt is deliberately
+            # domain-neutral -- it cannot say "this domain dedicates one
+            # driver per joint" without leaking the benchmark -- so the model
+            # legitimately picks either value from the schema's enum, and a
+            # correct decomposition was being failed on a phrasing choice.
+            # Above one target the distinction is real and stays enforced.
+            if grp["usage_policy"] != "DEDICATED_PER_TARGET" and (
+                grp["required_target_count"] != 1
+            ):
                 raise MalformedVLMSpecificationError(
                     f"Interaction group {grp_id!r} has invalid usage_policy {grp['usage_policy']!r}, expected 'DEDICATED_PER_TARGET'"
                 )
@@ -1467,9 +1481,15 @@ class FMRequirementProvider(RequirementProvider):
             ctx_rels_raw = grp.get("context_relations", [])
 
             if policy != "DEDICATED_PER_TARGET":
-                raise MalformedVLMSpecificationError(
-                    f"Interaction group {g_id!r} has invalid usage_policy {policy!r}, expected 'DEDICATED_PER_TARGET'"
-                )
+                if target_count != 1:
+                    raise MalformedVLMSpecificationError(
+                        f"Interaction group {g_id!r} has invalid usage_policy {policy!r}, expected 'DEDICATED_PER_TARGET'"
+                    )
+                # Equivalent at one target (see the validation site above).
+                # Normalize so every downstream consumer -- the canonical
+                # graph, the reference evaluator, the grounding search -- sees
+                # exactly one spelling and behaves identically either way.
+                policy = "DEDICATED_PER_TARGET"
 
             if not ctx_raw:
                 raise MalformedVLMSpecificationError(
