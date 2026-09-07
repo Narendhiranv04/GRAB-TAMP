@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 from dataclasses import replace
 import json
+import os
 from pathlib import Path
 import time
 from typing import Sequence
@@ -19,7 +20,7 @@ from vlm_tamp_baseline.kitchen_planning_runtime import KitchenPlanningState
 
 from .evaluation import EXPECTED_ROOT, compare_kitchen_actions, load_expected
 from .models import Action, Constraint
-from .planner import OWLTAMPPlanner, OWLTAMPPlannerConfig, protocol_max_tokens
+from .planner import registry_sampling, OWLTAMPPlanner, OWLTAMPPlannerConfig, protocol_max_tokens
 from .prompt import PROMPT_VERSION
 from .receding_horizon import OWLTAMPRecedingHorizon
 
@@ -41,6 +42,18 @@ def build_parser() -> argparse.ArgumentParser:
         "--protocol",
         choices=("native", "single_call", "receding_horizon"),
         default="native",
+    )
+    parser.add_argument(
+        "--decoding",
+        choices=("paper", "model-native"),
+        default="model-native",
+        help=(
+            "'paper' reproduces the baseline paper's own condition "
+            "(temperature 0.2, top_p 1.0, thinking disabled).  'model-native' "
+            "uses the served checkpoint's published sampling with thinking "
+            "enabled.  Both baselines must run the same choice or the "
+            "comparison measures decoding rather than method."
+        ),
     )
     parser.add_argument("--max-replans", type=int, default=8)
     parser.add_argument("--max-total-actions", type=int, default=48)
@@ -97,6 +110,21 @@ def main() -> None:
         **({"base_url": args.base_url} if args.base_url else {}),
         **({"model": args.model} if args.model else {}),
     )
+    if args.decoding == "paper":
+        config = replace(
+            config,
+            enable_thinking=False,
+            sampling={"temperature": 0.2, "top_p": 1.0},
+        )
+    else:
+        # Re-resolve sampling: from_env picked the non-thinking block.
+        config = replace(
+            config,
+            enable_thinking=True,
+            sampling=registry_sampling(
+                os.environ.get("OWL_TAMP_PROFILE", "qwen35-9b"), True
+            ),
+        )
     planner = OWLTAMPPlanner(config)
     observation, images = runtime.observe()
     inventory = {

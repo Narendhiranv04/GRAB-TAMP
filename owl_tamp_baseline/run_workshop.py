@@ -1,14 +1,24 @@
-"""Run planning-only OWL-TAMP on one Workshop W1--W10 variant."""
+"""Run OWL-TAMP on one Workshop W1--W10 variant, planning-only or executing."""
 
 from __future__ import annotations
 
 import argparse
 from dataclasses import replace
 import json
+import os
+import time
 from typing import Sequence
 
 from baseline_common.artifacts import prepare_run_directory, write_json
 from baseline_common.models import Action as SharedAction
+from baseline_common.physical_benchmark import (
+    GOAL_COMPLETE_STATUS,
+    write_execution_result,
+)
+from mujoco_scenes.baseline_workshop_runtime import (
+    MirroredWorkshopExecutor,
+    WorkshopPhysicalExecutor,
+)
 
 from vlm_tamp_baseline.workshop_runtime import (
     WorkshopPlanningRuntime,
@@ -19,7 +29,7 @@ from vlm_tamp_baseline.workshop_runtime import (
 
 from .evaluation import load_expected
 from .models import Action, Constraint
-from .planner import OWLTAMPPlanner, OWLTAMPPlannerConfig, protocol_max_tokens
+from .planner import registry_sampling, OWLTAMPPlanner, OWLTAMPPlannerConfig, protocol_max_tokens
 from .prompt import PROMPT_VERSION
 from .receding_horizon import OWLTAMPRecedingHorizon
 
@@ -41,8 +51,27 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("native", "single_call", "receding_horizon"),
         default="native",
     )
+    parser.add_argument(
+        "--decoding",
+        choices=("paper", "model-native"),
+        default="model-native",
+        help=(
+            "'paper' reproduces the baseline paper's own condition "
+            "(temperature 0.2, top_p 1.0, thinking disabled).  'model-native' "
+            "uses the served checkpoint's published sampling with thinking "
+            "enabled.  Both baselines must run the same choice or the "
+            "comparison measures decoding rather than method."
+        ),
+    )
     parser.add_argument("--max-replans", type=int, default=8)
     parser.add_argument("--max-total-actions", type=int, default=48)
+    parser.add_argument(
+        "--execute", action="store_true",
+        help=(
+            "Execute each action in the physical Workshop scene instead "
+            "of advancing the planning-only symbolic rollout."
+        ),
+    )
     parser.add_argument(
         "--max-sketch-actions",
         type=int,
@@ -83,6 +112,21 @@ def main() -> None:
         **({"base_url": args.base_url} if args.base_url else {}),
         **({"model": args.model} if args.model else {}),
     )
+    if args.decoding == "paper":
+        config = replace(
+            config,
+            enable_thinking=False,
+            sampling={"temperature": 0.2, "top_p": 1.0},
+        )
+    else:
+        # Re-resolve sampling: from_env picked the non-thinking block.
+        config = replace(
+            config,
+            enable_thinking=True,
+            sampling=registry_sampling(
+                os.environ.get("OWL_TAMP_PROFILE", "qwen35-9b"), True
+            ),
+        )
     planner = OWLTAMPPlanner(config)
     observation, images = runtime.observe()
 
@@ -111,7 +155,14 @@ def main() -> None:
         return False
 
     try:
-        executor = WorkshopSymbolicExecutor(runtime)
+        physical = WorkshopPhysicalExecutor(runtime) if args.execute else None
+        # The scene decides each outcome; the symbolic rollout is replayed only
+        # so the model keeps observing an up-to-date world.
+        executor = (
+            WorkshopSymbolicExecutor(runtime) if physical is None
+            else MirroredWorkshopExecutor(physical, WorkshopSymbolicExecutor(runtime))
+        )
+        episode_started = time.monotonic()
         horizon = None
         if args.protocol == "receding_horizon":
             def observe():
@@ -179,8 +230,12 @@ def main() -> None:
         backend_by_id = {**runtime.object_by_backend, **runtime.region_by_backend}
         predicted = canonical_workshop_actions(history, backend_by_id)
         expected = load_expected("workshop", runtime.variant)
+        goal_reached = (
+            physical.goal_satisfied if physical is not None
+            else runtime.goal_verifier()
+        )
         predicted_outcome = (
-            "FEASIBLE" if runtime.goal_verifier()
+            "FEASIBLE" if goal_reached
             else "INFEASIBLE" if runtime.infeasibility_proven()
             else "UNRESOLVED"
         )
@@ -200,14 +255,21 @@ def main() -> None:
             "raw_vlm_requests": raw_vlm_requests,
             "protocol": args.protocol,
             "max_tokens": config.max_tokens,
-            "physical_execution": False,
+            "physical_execution": bool(args.execute),
+            "executed_actions": (physical.executed_actions if physical else 0),
+            "direct_payload_pose_writes": (
+                physical.direct_payload_pose_writes if physical else 0
+            ),
             "hidden_storage_contents_visible_to_model": False,
             "result": result_payload, "gt_comparison": comparison,
         }
         write_json(output / "method_manifest.json", {
             "method": "OWL-TAMP paper-derived reproduction", "official_author_code": False,
-            "environment": "workshop", "evaluation_mode": "PLANNING_ONLY_GT_SEQUENCE_COMPARISON",
-            "physical_execution": False, "prompt_version": PROMPT_VERSION, "model": config.model,
+            "environment": "workshop", "evaluation_mode": (
+                "PHYSICAL_EXECUTION_PLUS_GT_SEQUENCE_COMPARISON"
+                if args.execute else "PLANNING_ONLY_GT_SEQUENCE_COMPARISON"
+            ),
+            "physical_execution": bool(args.execute), "prompt_version": PROMPT_VERSION, "model": config.model,
             "seed": config.seed, "camera_count": args.camera_count,
             "planner_input_contract": "ALIAS_ANNOTATED_RGB_PLUS_OBSERVABLE_ALIAS_ID_MAP",
             "hidden_storage_contents_visible_to_model": False, "gt_visible_to_model": False,
@@ -215,6 +277,28 @@ def main() -> None:
         if args.protocol != "receding_horizon":
             write_json(output / "model_trace.json", planner.trace)
         write_json(output / "episode_result.json", payload)
+        if args.execute:
+            write_execution_result(
+                output,
+                scene="workshop",
+                method="owl_tamp",
+                protocol=args.protocol,
+                variant=runtime.variant,
+                camera_count=args.camera_count,
+                seed=config.seed,
+                success=bool(goal_reached),
+                executed_actions=physical.executed_actions,
+                model_calls=planning_rounds,
+                raw_vlm_requests=raw_vlm_requests,
+                replans=replans,
+                planning_latency_s=0.0,
+                elapsed_seconds=time.monotonic() - episode_started,
+                terminal_status=(
+                    GOAL_COMPLETE_STATUS if goal_reached else "GOAL_NOT_REACHED"
+                ),
+                expected_outcome=expected["intended_outcome"],
+                predicted_outcome=predicted_outcome,
+            )
         print("[OWL-TAMP refined plan]", flush=True)
         for index, row in enumerate(history, 1):
             action = row["action"]

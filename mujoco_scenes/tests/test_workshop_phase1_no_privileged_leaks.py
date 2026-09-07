@@ -7,6 +7,12 @@ import tempfile
 from pathlib import Path
 import pytest
 
+# The repository root, derived from this file's own location.  These two audits
+# previously hardcoded an absolute path to the machine they were written on, so
+# they failed with FileNotFoundError everywhere else -- which meant the leak
+# guard they implement was not actually running on any other checkout.
+REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+
 from mujoco_scenes.workshop_scene import WorkshopScene
 from mujoco_scenes.workshop_phase1.types import MaskBackendType
 from mujoco_scenes.workshop_phase1.inspection_controller import WorkshopPhase1InspectionController
@@ -40,7 +46,7 @@ PRODUCTION_MODULES = [
 
 def test_static_code_scan_no_forbidden_methods():
     """Static AST scan: verify production modules do NOT call or reference forbidden oracle APIs."""
-    base_dir = Path("/home/naren/RA_iiith")
+    base_dir = REPOSITORY_ROOT
 
     for rel_path in PRODUCTION_MODULES:
         file_path = base_dir / rel_path
@@ -53,7 +59,9 @@ def test_static_code_scan_no_forbidden_methods():
 
 def test_no_static_closed_set_in_perception():
     """Verify perception.py does not contain static closed-set Workshop taxonomies."""
-    perception_path = Path("/home/naren/RA_iiith/mujoco_scenes/workshop_phase1/perception.py")
+    perception_path = (
+        REPOSITORY_ROOT / "mujoco_scenes" / "workshop_phase1" / "perception.py"
+    )
     source = perception_path.read_text(encoding="utf-8")
     assert "workshop_long_phillips_driver" not in source
     assert "workshop_power_driver" not in source

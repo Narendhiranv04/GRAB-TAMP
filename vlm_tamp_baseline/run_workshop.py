@@ -1,4 +1,4 @@
-"""Run planning-only VLM-TAMP on one Workshop W1--W10 variant."""
+"""Run VLM-TAMP on one Workshop W1--W10 variant, planning-only or executing."""
 
 from __future__ import annotations
 
@@ -7,10 +7,19 @@ from collections.abc import Mapping
 from dataclasses import replace
 import json
 from pathlib import Path
+import time
 from typing import Any
 
 from baseline_common.artifacts import prepare_run_directory, write_json
 from baseline_common.inference import PlanningError
+from baseline_common.physical_benchmark import (
+    GOAL_COMPLETE_STATUS,
+    write_execution_result,
+)
+from mujoco_scenes.baseline_workshop_runtime import (
+    MirroredWorkshopExecutor,
+    WorkshopPhysicalExecutor,
+)
 
 from .executive import ObservationFrame, VLMTAMPExecutive
 from .failure_feedback import model_failure_feedback
@@ -49,6 +58,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="One initial plan by default; use >1 only for a separately reported replan condition.",
     )
     parser.add_argument("--decoding", choices=("paper", "model-native"), default="paper")
+    parser.add_argument(
+        "--execute", action="store_true",
+        help=(
+            "Execute each refined action in the physical Workshop scene "
+            "instead of advancing the planning-only symbolic rollout."
+        ),
+    )
     return parser
 
 
@@ -141,7 +157,11 @@ def main() -> None:
 
     write_json(output / "method_manifest.json", {
         "method": "VLM-TAMP algorithm port", "environment": "workshop",
-        "evaluation_mode": "PLANNING_ONLY_GT_SEQUENCE_COMPARISON", "physical_execution": False,
+        "evaluation_mode": (
+            "PHYSICAL_EXECUTION_PLUS_GT_SEQUENCE_COMPARISON"
+            if args.execute else "PLANNING_ONLY_GT_SEQUENCE_COMPARISON"
+        ),
+        "physical_execution": bool(args.execute),
         "prompt_version": PROMPT_VERSION, "model": config.model, "seed": config.seed,
         "camera_count": args.camera_count, "decoding": args.decoding, "sampling": dict(config.sampling),
         "thinking_enabled": config.enable_thinking, "model_calls_condition": "INITIAL_PLAN_ONLY" if args.max_model_calls == 1 else "SYMBOLIC_REPROMPT_ABLATION",
@@ -151,9 +171,23 @@ def main() -> None:
         "comparison_target": str(args.expected_root.resolve() / runtime.variant / "expected_gt_actions.json"),
     })
     planner = TracedPlanner()
+    physical = WorkshopPhysicalExecutor(runtime) if args.execute else None
+    if physical is None:
+        executor = WorkshopSymbolicExecutor(runtime)
+        goal_verifier = runtime.goal_verifier
+    else:
+        # The scene decides the outcome; the symbolic rollout is replayed only
+        # so the model keeps seeing an up-to-date world.  Goal satisfaction
+        # comes from the physical joint state, never from the rollout.
+        executor = MirroredWorkshopExecutor(
+            physical, WorkshopSymbolicExecutor(runtime)
+        )
+        def goal_verifier(_observation: Any = None) -> bool:
+            return physical.goal_satisfied
+    episode_started = time.monotonic()
     executive = VLMTAMPExecutive(
-        planner, observe, WorkshopSymbolicExecutor(runtime), refiner=refiner,
-        goal_verifier=runtime.goal_verifier, state_observer=runtime.observe_state,
+        planner, observe, executor, refiner=refiner,
+        goal_verifier=goal_verifier, state_observer=runtime.observe_state,
         refinement_sink=record_refinement, max_model_calls=args.max_model_calls,
         max_total_actions=args.max_total_actions,
     )
@@ -183,10 +217,38 @@ def main() -> None:
             # the English stage issues one request, not the usual two.
             "raw_vlm_requests": planner.raw_vlm_requests,
             "protocol": args.protocol,
-            "execution_started": False, "physical_execution": False, "result": result.as_dict(), "gt_comparison": comparison,
+            "execution_started": bool(args.execute),
+            "physical_execution": bool(args.execute),
+            "executed_actions": (physical.executed_actions if physical else 0),
+            "direct_payload_pose_writes": (
+                physical.direct_payload_pose_writes if physical else 0
+            ),
+            "result": result.as_dict(), "gt_comparison": comparison,
         }
         write_json(output / "episode_result.json", payload)
         write_json(output / "gt_sequence_comparison.json", comparison)
+        if args.execute:
+            write_execution_result(
+                output,
+                scene="workshop",
+                method="vlm_tamp",
+                protocol=args.protocol,
+                variant=runtime.variant,
+                camera_count=args.camera_count,
+                seed=config.seed,
+                success=bool(result.success),
+                executed_actions=physical.executed_actions,
+                model_calls=result.model_calls,
+                raw_vlm_requests=planner.raw_vlm_requests,
+                replans=max(0, result.model_calls - 1),
+                planning_latency_s=0.0,
+                elapsed_seconds=time.monotonic() - episode_started,
+                terminal_status=(
+                    GOAL_COMPLETE_STATUS if result.success else str(result.status)
+                ),
+                expected_outcome=runtime.expected.intended_outcome,
+                predicted_outcome=predicted_outcome,
+            )
         print("[GT task-level comparison]", json.dumps(comparison["shared_task_vocabulary"], sort_keys=True), flush=True)
         print(json.dumps(payload, indent=2, sort_keys=True))
     finally:
