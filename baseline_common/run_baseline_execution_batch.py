@@ -38,9 +38,9 @@ VARIANTS = {
 # ViLaIn-TAMP exist for all three scenes and are opt-in via --methods.
 METHODS = ("vlm_tamp", "owl_tamp")
 ENVIRONMENT_METHODS = {
-    "kitchen": ("vlm_tamp", "owl_tamp", "retrieval", "vilain_tamp"),
-    "living_room": ("vlm_tamp", "owl_tamp", "retrieval", "vilain_tamp"),
-    "workshop": ("vlm_tamp", "owl_tamp", "retrieval", "vilain_tamp"),
+    "kitchen": ("vlm_tamp", "owl_tamp", "retrieval", "vilain_tamp", "robust_tamp"),
+    "living_room": ("vlm_tamp", "owl_tamp", "retrieval", "vilain_tamp", "robust_tamp"),
+    "workshop": ("vlm_tamp", "owl_tamp", "retrieval", "vilain_tamp", "robust_tamp"),
 }
 
 
@@ -228,6 +228,39 @@ def _command(
             "--execute",
             "--output-directory", str(output_dir),
             "--seed", str(seed),
+        ]
+    if method == "robust_tamp":
+        # ROBUST-TAMP lives under mujoco_scenes rather than a
+        # `<method>_baseline` package, so the shared `module` name does not
+        # apply.  It is wired into *this* runner rather than kept behind
+        # `run_discovery_execution_batch.py` so it faces the same protocol as
+        # the other baselines: the same --decoding, --camera-count,
+        # --max-model-calls, --max-actions, --seeds, --resume and --workers.
+        # Running it from its own driver was how its decoding condition and
+        # camera parity drifted from the table's in the first place.
+        max_calls = 1 if args.protocol == "single_call" else args.max_model_calls
+        # These runners predate `--close-on-complete`, and Workshop's renders
+        # offscreen so it has no viewer to suppress either.  Passing a flag a
+        # runner does not define is an argparse error, not a warning, so the
+        # tail is filtered rather than assumed.
+        unsupported = {"--close-on-complete"}
+        if args.environment == "workshop":
+            unsupported.add("--headless")
+        tail = [item for item in common[2:] if item not in unsupported]
+        return [
+            sys.executable, "-m",
+            f"mujoco_scenes.run_{args.environment}_discovery_replanning",
+            "--variant", variant,
+            *tail,
+            "--max-model-calls", str(max_calls),
+            # The replanning budget follows the grid's planning budget, not
+            # OWL-TAMP's --max-replans (which defaults to 8 and bounds a
+            # different thing -- its sketch retries).  ROBUST-TAMP published
+            # 10; 5 is what the table runs and 10 is the reported ablation.
+            # Under single_call this correctly collapses to 1.
+            "--max-replans", str(max_calls),
+            "--max-actions", str(args.max_actions),
+            "--decoding", args.decoding,
         ]
     if method == "retrieval":
         # Kitchen's retrieval runner always executes and selects its variant

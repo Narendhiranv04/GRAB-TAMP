@@ -195,6 +195,13 @@ class DiscoveryReplanningExecutive:
         self._planning_latency_s = 0.0
         self._pending_discovery: set[str] = set()
         self.last_event: ReplanEvent | None = None
+        # Structured, not just the human-readable `status` string.  The runner
+        # has to distinguish "the planner concluded no valid plan exists" from
+        # "the budget ran out", because only the first earns an INFEASIBLE
+        # verdict on a GT-infeasible variant -- and `write_execution_result`
+        # takes a terminal_failure mapping.  Mirrors the `result.terminal_failure`
+        # that VLM-TAMP and OWL-TAMP expose.
+        self.terminal_failure: dict[str, object] | None = None
 
     @property
     def busy(self) -> bool:
@@ -482,6 +489,14 @@ class DiscoveryReplanningExecutive:
         self.last_event = event
         if result.status is PlanStatus.NO_VALID_PLAN:
             self._fail(FailureCode.INFERENCE_FAILED, result.message or "Planner returned no valid plan")
+            # The planner asserting that no valid plan exists is a *claim about
+            # the task*, not a transport or parse fault, and it is the only
+            # signal this method offers that maps to an INFEASIBLE verdict.
+            # Every other INFERENCE_FAILED must stay UNRESOLVED.
+            self.terminal_failure = {
+                **(self.terminal_failure or {}),
+                "no_valid_plan": True,
+            }
             return
         if result.status is PlanStatus.GOAL_COMPLETE:
             self._finish_plan()
@@ -519,4 +534,5 @@ class DiscoveryReplanningExecutive:
     def _fail(self, code: FailureCode, message: str) -> None:
         self.mode = "failed"
         self.status = f"Discovery replanning failed: {message}"
+        self.terminal_failure = {"code": code.value, "message": message}
         self.events.append("discovery_episode_failed", failure_code=code.value, message=message)

@@ -78,3 +78,17 @@ def test_d_each_runner_exposes_and_forwards_the_condition(runner):
         for node in ast.walk(tree)
     )
     assert forwarded, f"{runner}: main() does not forward --decoding to run_episode"
+
+
+def test_e_the_trace_records_which_condition_produced_it(tmp_path):
+    """An artifact that omits its decoding condition cannot be audited.
+
+    BASELINE_FIDELITY.md makes the decoding condition part of what is frozen
+    per table; ViLaIn records it in model_metadata.json for the same reason.
+    """
+    from mujoco_scenes.tamp.discovery_planner import OpenAIDiscoveryPlanner
+
+    planner = OpenAIDiscoveryPlanner(_config(decoding="model-native", trace_dir=tmp_path))
+    source = __import__("inspect").getsource(planner._write_trace)
+    assert '"decoding": self.config.decoding' in source
+    assert '"sampling": self.config.resolved_sampling()' in source

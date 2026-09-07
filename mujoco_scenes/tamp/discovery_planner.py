@@ -157,6 +157,13 @@ class OpenAIDiscoveryPlanner:
             "latency_s": latency_s,
             "error": error or None,
             "private_goal_evaluator_exposed": False,
+            # Recorded so an artifact says which condition produced it.
+            # BASELINE_FIDELITY.md requires the decoding condition to be part
+            # of what is frozen per table, and a trace that omits it cannot be
+            # audited after the fact -- ViLaIn's model_metadata.json records
+            # the same thing for the same reason.
+            "decoding": self.config.decoding,
+            "sampling": self.config.resolved_sampling(),
         }
         path = self.trace_dir / f"call_{self.call_count:03d}.json"
         path.write_text(

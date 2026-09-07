@@ -15,6 +15,10 @@ from .tamp.baseline_observation_bridge import (
     observed_skill_precheck,
 )
 from .tamp.discovery_planner import OpenAIDiscoveryPlanner, OpenAIPlannerConfig
+from .tamp.robust_tamp_reporting import (
+    expected_outcome_for,
+    write_robust_tamp_artifacts,
+)
 from .tamp.discovery_replanning import DiscoveryReplanningExecutive
 from .tamp.events import EventLog
 
@@ -191,6 +195,29 @@ def run_episode(
         (output / "discovery_replanning_result.json").write_text(
             json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
         )
+        # The shared artifact the metrics actually read.  Without it this
+        # method produced no scored episode at all, and without the verdict
+        # inside it every GT-infeasible variant would score as a plain
+        # failure -- the defect that cost VLM-TAMP and OWL-TAMP their
+        # infeasible-rejection numbers until it was fixed.
+        verdict = write_robust_tamp_artifacts(
+            output,
+            scene="living_room",
+            protocol=protocol,
+            variant=variant,
+            camera_count=camera_count,
+            seed=seed,
+            success=bool(executive.mode == "complete"),
+            executed_actions=executive.executed_actions,
+            model_calls=executive.model_calls,
+            replans=executive.replans,
+            planning_latency_s=round(executive.planning_latency_s, 6),
+            elapsed_seconds=round(time.monotonic() - started, 6),
+            status=executive.mode,
+            terminal_failure=executive.terminal_failure,
+            expected_outcome=expected_outcome_for("living_room", variant),
+        )
+        result.update(verdict)
         return result
     finally:
         events.close()
