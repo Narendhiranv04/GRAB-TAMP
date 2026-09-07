@@ -23,6 +23,7 @@ def _args(**overrides):
         "max_tokens": 24576,
         "max_model_calls": 10,
         "max_replans": 8,
+        "replan_on_no_plan": False,
         "max_actions": 80,
         "max_sketch_actions": 24,
         "decoding": "model-native",
@@ -47,16 +48,43 @@ def test_owl_tamp_command_enables_physical_execution():
     assert command[command.index("--max-sketch-actions") + 1] == "24"
 
 
-def test_retrieval_is_living_room_only_and_needs_no_model_flags():
-    command = _command(
-        "retrieval", "L1", 3, 0, Path("runs/out"),
-        _args(environment="living_room", methods=("retrieval",), variants=("L1",)),
-    )
-    assert command[2] == "retrieval_baseline.run_living_room"
-    assert "--physical-execution" in command
-    assert "--max-model-calls" not in command
-    with pytest.raises(ValueError, match="supports only"):
-        _validate(_args(methods=("retrieval",)))
+def test_retrieval_executes_in_every_scene_and_needs_no_model_flags():
+    """Retrieval exists for all three scenes, each with its own execution flag.
+
+    It was Living-Room-only until the Kitchen and Workshop runners landed, and
+    the execution switch is not spelled the same way in all three: Kitchen's
+    runner always executes and selects with --physical-variant, Workshop opts
+    in with --execute, Living Room with --physical-execution.  A regression
+    here would silently run a scene planning-only.
+    """
+    expected_flags = {
+        "living_room": ("L1", ["--variant", "--physical-execution"]),
+        "kitchen": ("K1", ["--physical-variant"]),
+        "workshop": ("W1", ["--variant", "--execute"]),
+    }
+    for environment, (variant, flags) in expected_flags.items():
+        command = _command(
+            "retrieval", variant, 3, 0, Path("runs/out"),
+            _args(
+                environment=environment,
+                methods=("retrieval",),
+                variants=(variant,),
+            ),
+        )
+        assert command[2] == f"retrieval_baseline.run_{environment}"
+        for flag in flags:
+            assert flag in command, (environment, flag)
+        # No language model is involved, so no inference budget may be billed
+        # to it -- these would be silently accepted and ignored otherwise.
+        for flag in ("--max-model-calls", "--decoding", "--max-replans"):
+            assert flag not in command, (environment, flag)
+        _validate(
+            _args(
+                environment=environment,
+                methods=("retrieval",),
+                variants=(variant,),
+            )
+        )
 
 
 def test_receding_horizon_is_not_available_for_vlm_tamp():
@@ -128,3 +156,25 @@ def test_living_room_goal_defaults_to_the_frozen_goal():
     command = _command("owl_tamp", "L1", 3, 0, Path("runs/out"), args)
     goal = command[command.index("--goal") + 1]
     assert "side table" in goal and "coffee table" in goal
+
+
+def test_receding_horizon_forwards_the_no_plan_retry_flag():
+    """The flag must reach the runner, and only when asked for.
+
+    Without it a single unsatisfiable sketch ends a receding-horizon episode
+    at round two, so `--max-replans` is unreachable and the protocol
+    degenerates to single-shot -- which is the whole thing this row exists to
+    avoid.
+    """
+    base = dict(
+        environment="workshop", methods=("owl_tamp",), variants=("W1",),
+        protocol="receding_horizon", max_replans=14, max_actions=40,
+    )
+    on = _command("owl_tamp", "W1", 3, 0, Path("runs/out"),
+                  _args(**base, replan_on_no_plan=True))
+    off = _command("owl_tamp", "W1", 3, 0, Path("runs/out"),
+                   _args(**base, replan_on_no_plan=False))
+    assert "--replan-on-no-plan" in on
+    assert "--replan-on-no-plan" not in off
+    assert on[on.index("--protocol") + 1] == "receding_horizon"
+    assert on[on.index("--max-replans") + 1] == "14"

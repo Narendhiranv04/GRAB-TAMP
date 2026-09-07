@@ -28,6 +28,12 @@ class ModelCondition(str, Enum):
     QWEN_ONLY = "vilain_tamp_qwen"
 
 
+# Decoding conditions this baseline can be run under.  Declared here rather
+# than in live_fm so the planning modules can validate the choice without
+# importing the transport (and its OpenAI dependency).
+DECODING_CONDITIONS = ("paper", "model-native")
+
+
 @dataclass(frozen=True)
 class TimeoutConfig:
     symbolic_seconds: float

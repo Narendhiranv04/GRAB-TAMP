@@ -343,6 +343,12 @@ class WorkshopPlanningRuntime:
         image_width: int = 960,
         image_height: int = 540,
         camera_count: int = 5,
+        # Recorded in the shared observation contract.  It is not an
+        # observation property, but the contract is the artifact a reader
+        # consults to learn how an episode was run, and a hardcoded value there
+        # went on claiming planning-only for a day after Workshop began
+        # executing.  Defaults to False so a planning-only caller is unchanged.
+        physical_execution: bool = False,
     ):
         internal = resolve_variant_name("workshop", variant)
         config = _load_yaml(VARIANT_CONFIG)
@@ -443,7 +449,7 @@ class WorkshopPlanningRuntime:
             "initial_observation": "CLOSED_STORAGE_ONLY",
             "semantic_labels_exposed": True,
             "alias_to_planning_id_map_exposed": True,
-            "physical_execution": False,
+            "physical_execution": bool(physical_execution),
             "gt_visible_to_model": False,
         })
         write_json(output_dir / "_private_evaluation" / "expected_gt_actions.json", {
@@ -687,11 +693,33 @@ def canonical_workshop_actions(history: Sequence[Mapping[str, Any]], backend_by_
     return rows
 
 
+# Operator synonyms folded into the shared task vocabulary.  Two families
+# arrive here and both must be covered:
+#
+#   * the long-form execution vocabulary (`INSPECT_STORAGE`, ...), and
+#   * the vocabulary the frozen `EXPECTED_GT/workshop` files actually use
+#     (`OPEN`, `PICK`, `PLACE`, `SCREW`).
+#
+# The second family was missing until 2026-09-07, and because the retention
+# pass below keys off the *normalized* names, every GT action was silently
+# discarded: `shared_task_vocabulary` compared an empty expected sequence
+# against the prediction for all ten variants.  Where the baseline also
+# produced nothing that scored as `exact_sequence_match: True` with
+# `ordered_f1: 1.0` -- a perfect score for doing nothing.  Do not remove an
+# entry here without checking what `normalize_workshop_actions` returns for
+# every variant in `EXPECTED_GT/workshop`.
+_WORKSHOP_OPERATOR_SYNONYMS = {
+    "INSPECT_STORAGE": "INSPECT",
+    "OPEN": "INSPECT",
+    "PLACE_ON_SURFACE": "PLACE",
+    "INSERT_FASTENER": "INSERT",
+    "DRIVE_FASTENER": "FASTEN",
+    "SCREW": "FASTEN",
+}
+
+
 def normalize_workshop_actions(actions: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
-    mapping = {
-        "INSPECT_STORAGE": "INSPECT", "PLACE_ON_SURFACE": "PLACE",
-        "INSERT_FASTENER": "INSERT", "DRIVE_FASTENER": "FASTEN",
-    }
+    mapping = _WORKSHOP_OPERATOR_SYNONYMS
     ignored = {"MOVE_TO", "OPEN_STORAGE", "CLOSE_STORAGE", "VERIFY_REPAIR", "TERMINATE_INFEASIBLE"}
     rows = []
     for row in actions:
@@ -700,6 +728,13 @@ def normalize_workshop_actions(actions: Sequence[Mapping[str, Any]]) -> list[dic
             continue
         operator = mapping.get(operator, operator)
         arguments = list(map(str, row.get("arguments", ())))
+        if operator == "PLACE" and len(arguments) > 1 and arguments[1] not in REGION_LABELS:
+            # The GT files express insertion as a placement whose target is
+            # the fastening target rather than a storage or surface region.
+            # The planning vocabulary calls that INSERT.  Keyed on the region
+            # set so a renamed region cannot turn an insertion into a
+            # placement unnoticed.
+            operator = "INSERT"
         if operator == "PICK":
             # The expected executor records a source region; the planning
             # action signature contains only the selected object.
@@ -756,7 +791,8 @@ def compare_workshop_actions(predicted: Sequence[Mapping[str, Any]], expected: S
         "raw_execution_vocabulary": compare_action_sequences(predicted, expected),
         "shared_task_vocabulary": compare_action_sequences(normalize_workshop_actions(predicted), normalize_workshop_actions(expected)),
         "normalization": {
-            "INSPECT_STORAGE": "INSPECT", "PLACE_ON_SURFACE": "PLACE", "INSERT_FASTENER": "INSERT", "DRIVE_FASTENER": "FASTEN",
+            **_WORKSHOP_OPERATOR_SYNONYMS,
+            "PLACE(item, non_region_target)": "INSERT",
             "MOVE_TO|OPEN_STORAGE|CLOSE_STORAGE|VERIFY_REPAIR|TERMINATE_INFEASIBLE": "excluded_execution_detail",
         },
     }

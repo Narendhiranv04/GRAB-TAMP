@@ -378,13 +378,37 @@ class _WorkshopPrimitives:
         from mujoco_scenes.workshop_ground_truth_planner import WorkshopAssignment
         from mujoco_scenes.workshop_ground_truth_state import WorkshopWorldState
 
-        drive = next(item for item in projections if item.pddl_operator == "drive")
-        placement = next(
-            item
-            for item in projections
-            if item.pddl_operator == "place-on"
-            and item.pddl_arguments[0] == drive.pddl_arguments[0]
+        from .execution.workshop import WorkshopExecutionContractError
+
+        # A generated plan need not contain these operators, and a bare next()
+        # over the projections raised StopIteration when it did not -- which
+        # aborted the whole run instead of recording an episode that produced
+        # an unusable plan.  The baseline's plan is its output; a plan missing
+        # the operator this domain's execution is built around is a result to
+        # report, not a crash, and nothing here may invent one.
+        drive = next(
+            (item for item in projections if item.pddl_operator == "drive"),
+            None,
         )
+        if drive is None:
+            raise WorkshopExecutionContractError(
+                "generated plan contains no 'drive' action, so the Workshop "
+                "repair cannot be executed"
+            )
+        placement = next(
+            (
+                item
+                for item in projections
+                if item.pddl_operator == "place-on"
+                and item.pddl_arguments[0] == drive.pddl_arguments[0]
+            ),
+            None,
+        )
+        if placement is None:
+            raise WorkshopExecutionContractError(
+                "generated plan drives a fastener but never places the "
+                f"actuating object {drive.pddl_arguments[0]!r} back on a surface"
+            )
         self.assignment = WorkshopAssignment(
             variant_id=str(getattr(scene, "variant_name", "vilain")),
             intended_outcome="UNKNOWN",

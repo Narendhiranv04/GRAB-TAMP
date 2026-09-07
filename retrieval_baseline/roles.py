@@ -84,3 +84,67 @@ WORKSHOP_ROLES = (
 # then scores the revealed candidates -- the same discovery discipline the
 # other baselines follow.
 WORKSHOP_INSPECTION_FIRST = True
+
+
+# Kitchen: brew one coffee per person using a water source and a grounds
+# source, stir each, then serve every vessel and pair each soup vessel with its
+# own eating utensil.  Same discipline as above -- no category nouns.  Note
+# that two pairs of roles are deliberately close in wording, because they are
+# close in appearance: the stirring implement and the eating utensil are both
+# slender implements, and the two vessel kinds are both open vessels.  That is
+# the distinction functional grounding is supposed to make and similarity
+# retrieval is not.
+KITCHEN_ROLES = (
+    Role(
+        key="water_source",
+        phrase="a closed vessel with a handle and a spout for pouring hot liquid",
+        count=1,
+        kind="object",
+    ),
+    Role(
+        key="grounds_source",
+        phrase="a closed container holding a dry granular substance",
+        count=1,
+        kind="object",
+    ),
+    Role(
+        key="stir_tool",
+        phrase="a slender rigid implement for agitating a liquid",
+        count=1,
+        kind="object",
+    ),
+    Role(
+        key="drink_vessel",
+        phrase="a small deep open vessel for drinking a hot liquid from",
+        count=2,
+        kind="object",
+    ),
+    Role(
+        key="food_vessel",
+        phrase="a wide shallow open vessel for holding liquid food",
+        count=2,
+        kind="object",
+    ),
+    Role(
+        key="eating_utensil",
+        phrase="a slender implement with a shallow scoop at one end",
+        count=2,
+        kind="object",
+    ),
+)
+
+# Ordered task skeleton, derived from the published ground-truth sequence
+# (K1: PICK x9, POUR x4, PLACE x7, STIR x2, PLACE_SERVING_UTENSIL x2).
+#
+# Each source is picked once, applied to every drink vessel, and returned to
+# the countertop before the next is picked, because the robot has one gripper.
+# Serving interleaves: a food vessel is placed and then immediately paired with
+# its utensil, which is what the ground truth does and what the serving-slot
+# allocator expects.
+KITCHEN_TASK_SKELETON = (
+    ("USE_SOURCE", "water_source"),
+    ("USE_SOURCE", "grounds_source"),
+    ("STIR_ALL", "stir_tool"),
+    ("SERVE_ALL", "drink_vessel"),
+    ("SERVE_PAIRED", "food_vessel"),
+)

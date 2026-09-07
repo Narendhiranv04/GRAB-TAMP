@@ -229,6 +229,7 @@ def build_live_components(
         reference_revision=None,
         base_url=base_url,
         timeout_seconds=config.timeouts.model_seconds,
+        decoding=options.decoding,
     )
     fixed_evidence_provider = FixedSceneEvidenceProvider(
         scene=observation_runtime.scene,

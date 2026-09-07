@@ -298,6 +298,14 @@ def main() -> None:
                     status, physical_goal_satisfied,
                     result_payload.get("action_history", ()),
                 ),
+                # Without these the shared artifact carried three nulls, and
+                # this column contributed nothing to outcome_correct_percent
+                # or infeasible_rejection_percent -- which is the only credit
+                # an infeasible variant can earn, since `success` is false
+                # there by construction.  The Kitchen and Workshop retrieval
+                # runners have always passed them; this one had not.
+                expected_outcome=runtime.expected.intended_outcome,
+                predicted_outcome=predicted_outcome,
             )
         print(
             f"[retrieval] {runtime.variant}: {predicted_outcome} vs "

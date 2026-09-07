@@ -20,7 +20,7 @@ from vlm_tamp_baseline.workshop_runtime import (
     WorkshopPlanningRuntime,
     WorkshopSymbolicExecutor,
     compare_workshop_actions,
-)
+    normalize_workshop_actions,)
 
 
 def _runtime(tmp_path, variant: str = "W1"):
@@ -186,10 +186,13 @@ def test_workshop_expected_gt_agrees_with_public_variant_layout():
                 else:
                     assert region == "MAIN_WORKBENCH_ZONE"
                     assert item in {item for values in contents.values() for item in values}
+        # Checked through the normalizer rather than against a raw operator
+        # name: the GT files spell inspection `OPEN`, and a test that looked
+        # for `INSPECT_STORAGE` here compared against an empty list for a day.
         inspected = [
             action["arguments"][0]
-            for action in expected.actions
-            if action["operator"] == "INSPECT_STORAGE"
+            for action in normalize_workshop_actions(expected.actions)
+            if action["operator"] == "INSPECT"
         ]
         discovered: set[str] = set()
         required_inspections = []
@@ -204,15 +207,23 @@ def test_workshop_expected_gt_agrees_with_public_variant_layout():
             ):
                 break
         assert inspected == required_inspections
+        normalized = normalize_workshop_actions(expected.actions)
         if expected.intended_outcome == "FEASIBLE":
-            driven = [action for action in expected.actions if action["operator"] == "DRIVE_FASTENER"]
+            # Read through the normalizer for the same reason as `inspected`
+            # above: the GT files spell this operator `SCREW`.
+            driven = [row for row in normalized if row["operator"] == "FASTEN"]
             assert len(driven) == 1
             driver, screw, _target = driven[0]["arguments"]
             all_items = {item for values in contents.values() for item in values}
             assert driver in all_items
             assert screw in all_items
         else:
-            assert any(action["operator"] == "TERMINATE_INFEASIBLE" for action in expected.actions)
+            # An infeasible variant carries no fastening, and its GT is the
+            # exhaustive inspection that proves the absence.
+            assert not any(row["operator"] == "FASTEN" for row in normalized)
+            assert [row["operator"] for row in normalized] == ["INSPECT"] * len(
+                config["search_order"]
+            )
 
 
 def test_workshop_all_variants_have_the_expected_symbolic_feasibility(tmp_path):
@@ -368,3 +379,34 @@ def test_workshop_cli_defaults_to_one_initial_model_call():
     args = build_parser().parse_args(["--variant", "W1", "--output-dir", "run"])
     assert args.max_model_calls == 1
     assert args.camera_count == 5
+
+
+def test_normalizer_covers_the_frozen_gt_vocabulary():
+    """Every frozen GT trace must survive normalization non-empty.
+
+    The retention pass in `normalize_workshop_actions` keys off normalized
+    operator names, so an unmapped GT synonym does not raise -- it silently
+    empties the expected sequence, and an episode that also produced nothing
+    then scores `exact_sequence_match: True` with `ordered_f1: 1.0`.  This
+    test is the guard against that class of vacuous perfect score.
+    """
+    for label in variant_mapping("workshop"):
+        raw = ExpectedGT.load(DEFAULT_EXPECTED_ROOT, label).actions
+        assert raw, label
+        normalized = normalize_workshop_actions(raw)
+        assert normalized, f"{label}: GT normalized to an empty sequence"
+        operators = {row["operator"] for row in normalized}
+        assert operators <= {"INSPECT", "PICK", "PLACE", "INSERT", "FASTEN"}, (
+            label, operators
+        )
+        # Every variant requires discovery, so an inspection must survive.
+        assert any(row["operator"] == "INSPECT" for row in normalized), label
+
+
+def test_empty_prediction_does_not_score_a_perfect_match():
+    """A baseline that emits nothing must not match a non-empty GT."""
+    expected = ExpectedGT.load(DEFAULT_EXPECTED_ROOT, "W3").actions
+    comparison = compare_workshop_actions([], expected)
+    for view in ("raw_execution_vocabulary", "shared_task_vocabulary"):
+        assert not comparison[view]["exact_sequence_match"], view
+        assert comparison[view]["ordered_f1"] == 0.0, view

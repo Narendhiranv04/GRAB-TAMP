@@ -124,6 +124,15 @@ def build_parser() -> argparse.ArgumentParser:
             "served context window."
         ),
     )
+    parser.add_argument(
+        "--decoding", choices=("paper", "model-native"), default="paper",
+        help=(
+            "Decoding condition.  'paper' is this baseline's own greedy "
+            "setting (temperature 0, thinking off) and is the default; "
+            "'model-native' is the shared thinking-mode sampling the other "
+            "baselines use, and is required for a single reported table."
+        ),
+    )
     parser.add_argument("--seed", type=int, default=0, help="Recorded random seed.")
     return parser
 
@@ -200,6 +209,7 @@ def resolve_run(
         val_path=tools.val,
         random_seed=args.seed,
         camera_count=int(args.camera_count),
+        decoding=str(args.decoding),
     )
     return config, config_path, options
 

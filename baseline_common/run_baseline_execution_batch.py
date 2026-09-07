@@ -33,16 +33,14 @@ VARIANTS = {
     "living_room": tuple(f"L{index}" for index in range(1, 11)),
     "workshop": tuple(f"W{index}" for index in range(1, 11)),
 }
+# The default pair is the two model-driven baselines, because they are what a
+# grid is usually re-run for.  Retrieval (CLIP, no language model) and
+# ViLaIn-TAMP exist for all three scenes and are opt-in via --methods.
 METHODS = ("vlm_tamp", "owl_tamp")
-# Retrieval grounds with CLIP rather than a language model and only exists for
-# the Living Room, so it is opt-in via --methods rather than a default.
-LIVING_ROOM_ONLY_METHODS = ("retrieval",)
-# Workshop has no Retrieval or LLM3 runner, so a Workshop grid is a two-method
-# comparison.  Stated here rather than discovered from a missing module.
 ENVIRONMENT_METHODS = {
-    "kitchen": ("vlm_tamp", "owl_tamp", "vilain_tamp"),
+    "kitchen": ("vlm_tamp", "owl_tamp", "retrieval", "vilain_tamp"),
     "living_room": ("vlm_tamp", "owl_tamp", "retrieval", "vilain_tamp"),
-    "workshop": ("vlm_tamp", "owl_tamp", "vilain_tamp"),
+    "workshop": ("vlm_tamp", "owl_tamp", "retrieval", "vilain_tamp"),
 }
 
 
@@ -90,6 +88,10 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument("--max-replans", type=int, default=8)
+    parser.add_argument(
+        "--replan-on-no-plan", action="store_true",
+        help="Forwarded to OWL-TAMP receding-horizon episodes; see that runner.",
+    )
     parser.add_argument("--max-actions", type=int, default=80)
     parser.add_argument(
         "--max-sketch-actions",
@@ -192,6 +194,7 @@ def _command(
             "--execute" if args.environment == "workshop" else "--physical-execution",
             *common[2:],
             "--max-replans", str(args.max_replans),
+            *(["--replan-on-no-plan"] if args.replan_on_no_plan else []),
             "--max-total-actions", str(args.max_actions),
             "--max-sketch-actions", str(args.max_sketch_actions),
             "--decoding", args.decoding,
@@ -200,10 +203,13 @@ def _command(
         # This baseline owns its own CLI vocabulary: --domain rather than a
         # module per scene, --output-directory, and a model condition in place
         # of the native/single_call protocol.  It also has no --camera-count
-        # (its observation boundary fixes five RGB-D views) and no
         # --base-url/--model/--max-tokens (the endpoint and checkpoint come
         # from its own configuration), so the shared `common` block does not
-        # apply and the command is built explicitly.
+        # apply and the command is built explicitly -- but --camera-count is
+        # passed through, because exposure parity is a property of the grid
+        # cell, not of the method.  Its runner defaults to 3; omitting the flag
+        # would silently pin every camera-count cell to that default while
+        # labelling the artifacts as though they differed.
         return [
             sys.executable, "-m", "mujoco_scenes.run_vilain_tamp_baseline",
             "--domain", args.environment,
@@ -212,12 +218,34 @@ def _command(
             # Stated explicitly rather than relying on the config, so a
             # grid cannot silently run without exposure parity.
             "--observation-mode", "fixed_full_inspection",
+            "--camera-count", str(camera_count),
+            # Same reason as --camera-count: the decoding condition belongs to
+            # the table, not the method.  This baseline defaults to its own
+            # greedy condition, which Qwen's card advises against and which
+            # would make its column non-comparable with the other three.
+            "--decoding", args.decoding,
             "--live",
             "--execute",
             "--output-directory", str(output_dir),
             "--seed", str(seed),
         ]
     if method == "retrieval":
+        # Kitchen's retrieval runner always executes and selects its variant
+        # with --physical-variant, matching the other Kitchen runners;
+        # Workshop opts in with --execute; Living Room with
+        # --physical-execution.
+        if args.environment == "kitchen":
+            return [
+                *common[:2], module,
+                "--physical-variant", variant,
+                *common[2:],
+            ]
+        if args.environment == "workshop":
+            return [
+                *common[:2], module,
+                "--variant", variant, "--execute",
+                *common[2:],
+            ]
         # Retrieval calls no model, so --base-url/--model/--max-tokens are
         # accepted and ignored; --protocol and the render size still apply.
         return [

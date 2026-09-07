@@ -16,7 +16,13 @@ from .artifacts import (
     verify_artifact_manifest,
     verify_repository_provenance,
 )
-from .config import BaselineConfig, Domain, ModelCondition, ObservationMode
+from .config import (
+    DECODING_CONDITIONS,
+    BaselineConfig,
+    Domain,
+    ModelCondition,
+    ObservationMode,
+)
 from .contracts import (
     BaselineExecutionPlan,
     BaselineRunResult,
@@ -65,12 +71,20 @@ class RunOptions(SerializableContract):
     # run options so an episode's exposure is part of its provenance, the way
     # the other baselines record `camera_count`.
     camera_count: int = 3
+    # BASELINE_FIDELITY.md requires one decoding condition per reported table.
+    # "paper" is ViLaIn's own greedy condition and stays the default; the grid
+    # passes "model-native" to match the other three baselines.
+    decoding: str = "paper"
 
     def __post_init__(self) -> None:
         if not self.variant.strip():
             raise RunnerContractError("variant must not be empty")
         if self.camera_count not in {1, 3, 5}:
             raise RunnerContractError("camera_count must be 1, 3, or 5")
+        if self.decoding not in DECODING_CONDITIONS:
+            raise RunnerContractError(
+                f"decoding must be one of {DECODING_CONDITIONS}"
+            )
         if not 0 <= self.cp_limit <= 3:
             raise RunnerContractError("CP limit must be between zero and three")
         if not str(self.output_directory):

@@ -63,6 +63,15 @@ def build_parser() -> argparse.ArgumentParser:
             "comparison measures decoding rather than method."
         ),
     )
+    parser.add_argument(
+        "--replan-on-no-plan", action="store_true",
+        help=(
+            "Treat a round whose sketch admits no symbolic plan as a consumed "
+            "replan and re-plan, instead of ending the episode.  Without it a "
+            "single malformed sketch terminates the run and --max-replans is "
+            "unreachable, collapsing this protocol onto single-shot."
+        ),
+    )
     parser.add_argument("--max-replans", type=int, default=8)
     parser.add_argument("--max-total-actions", type=int, default=48)
     parser.add_argument(
@@ -100,6 +109,7 @@ def main() -> None:
     output = prepare_run_directory(args.output_dir)
     runtime = WorkshopPlanningRuntime(
         args.variant, output, image_width=args.image_width, image_height=args.image_height, camera_count=args.camera_count,
+        physical_execution=bool(args.execute),
     )
     config = OWLTAMPPlannerConfig.from_env()
     config = replace(
@@ -183,6 +193,7 @@ def main() -> None:
                 ),
                 max_replans=args.max_replans,
                 max_total_actions=args.max_total_actions,
+                replan_on_no_plan=bool(args.replan_on_no_plan),
             ).run(args.goal or runtime.goal)
             history = [
                 {

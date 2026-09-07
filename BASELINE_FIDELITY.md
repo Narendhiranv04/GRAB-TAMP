@@ -55,6 +55,30 @@ Both inflated the baselines relative to the proposed method. Any table mixing
 pre- and post-2026-09-07 runs would understate the proposed method's margin
 for a reason that has nothing to do with either method.
 
+## What each method sees
+
+Two different exposures are involved and they must not be conflated.
+
+**Images sent to the language model: three, for every method.** The grid runs
+`--camera-counts 3`, and ViLaIn-TAMP is given the same count through its own
+nested view subsets. This is the number that has to match, because it is the
+evidence the model reasons over.
+
+**Detector input for the proposed method: five views.** The proposed method
+runs its detector over all five canonical cameras and grounds the resulting
+candidates with geometric verifiers, while the language model still receives
+only three images. That is a property of the method -- perception and
+verification are its contribution -- and not an image-exposure advantage at
+the model interface. It must be described that way rather than reported as
+"five cameras", which would wrongly imply the model saw five.
+
+A baseline has no separate detector stage: VLM-TAMP and OWL-TAMP receive
+annotated views with persistent instance and region IDs, and ViLaIn-TAMP
+performs its own object estimation with a model call. So the comparison is
+three model-visible images on both sides, with the proposed method
+additionally holding a detector and verifier stack. Stating the detector's
+five-view input is necessary for the comparison to be read correctly.
+
 ## VLM-TAMP correspondence
 
 Preserved algorithmically:
@@ -108,13 +132,21 @@ Embodiment adaptations:
   said so; the physical layer landed in `a73cc89` and the restriction no
   longer applies. Planning-only Living Room results, if any are still wanted,
   come from `run_plan_gt_batch`, which writes no execution artifact.)
-- The Workshop W1--W10 experiment is also planning-only. It uses a separate
-  symbolic PDDLStream domain for `INSPECT`, `PICK`, `PLACE`, `INSERT`, and
-  `FASTEN`; no continuous stream or physical skill is claimed for this
-  condition. Storage contents remain hidden from the VLM until a successful
-  symbolic inspect update. The default one-call condition is initial-plan
-  comparison; any higher call limit is reported as a symbolic-reprompt
-  ablation.
+- **The Workshop W1--W10 experiment is physically executed** as of
+  2026-09-06. It uses a separate symbolic PDDLStream domain for `INSPECT`,
+  `PICK`, `PLACE`, `INSERT`, and `FASTEN`, and every operator that domain
+  emits is driven through the calibrated Google-robot skills by
+  `mujoco_scenes/baseline_workshop_runtime.py`; the grid passes `--execute`.
+  Physics decides each action and the symbolic rollout mirrors it, so the
+  observation the model sees next reflects what actually happened
+  (`MirroredWorkshopExecutor`). Storage contents remain hidden from the VLM
+  until a physically successful inspect. Reported Workshop success is an
+  execution-success claim.
+  (Before 2026-09-06 this condition was planning-only and this clause said so.
+  Workshop runs on the assisted-grasp path rather than contact-gated
+  execution -- see "Why contact-gated execution is not used here" -- which is
+  the one remaining difference from Kitchen and Living Room and must be stated
+  when reporting.)
 
 The original VLM-TAMP prompt included semantically named objects and annotated
 images, and **so does this port**: both visual baselines receive unique
@@ -152,6 +184,7 @@ difference is deliberate:
 |---|---|---|
 | Kitchen | `UNIQUE_SEMANTIC_ALIAS_ONLY` | `PERSISTENT_REGION_ID_ONLY` |
 | Living Room | `UNIQUE_SEMANTIC_ALIAS_ONLY` | `UNIQUE_SEMANTIC_ALIAS_ONLY` |
+| Workshop | `UNIQUE_SEMANTIC_ALIAS_ONLY` | `UNIQUE_SEMANTIC_ALIAS_ONLY` |
 
 Kitchen withholds region names because its regions *are* the search problem:
 `D1`, `D2`, `B1`, `C1` and `C2` are closed storage whose contents are hidden
@@ -163,6 +196,26 @@ Living Room has no closed or hidden regions, and its goal already names the
 roles ("each person's fixed individual side table", "the fixed shared coffee
 table"), so region aliases reveal nothing the instruction does not already
 state. The `object_annotation` mode is identical in both.
+
+Workshop names both, and its object labels are the most revealing of the three:
+`OBJECT_LABELS` in `vlm_tamp_baseline/workshop_runtime.py` supplies "screw",
+"manual screwdriver", "power screwdriver", "wooden hammer" and "frame joint",
+and `REGION_LABELS` supplies "left drawer", "right drawer", "tool cabinet" and
+"main workbench". These reach the model twice -- printed on the annotated
+bounding boxes and as the alias field of each `Entity`/`Region` in the
+textualized state.
+
+**This matters for the Workshop comparison specifically.** The de-biased task
+instruction says only "the compatible components required to complete the
+fastening", but the annotation layer then hands the model the words "screw" and
+"screwdriver" outright, so the category-noun leak the instruction fix removed
+returns through the observation. It is faithful to VLM-TAMP and OWL-TAMP, whose
+published inputs are annotated with object names, and it applies equally to
+both -- but it is a real advantage over the proposed method's detector, which
+grounds function from pixels, and over the retrieval control, which reads the
+*raw* frames. Do not present Workshop grounding as solved from appearance by
+the model-driven baselines: they are told what the objects are called, and only
+the *compatibility* relation is left for them to infer.
 
 Record the scene when reporting, because "the model was given semantic aliases"
 means something different in each.
@@ -176,13 +229,23 @@ Preserved algorithmically:
 
 1. Relaxed grounding enumerates reachable discrete actions while deferring
    continuous parameters optimistically.
-2. A five-image VLM query produces a partial discrete sketch and goal facts.
+2. A single multi-image VLM query produces a partial discrete sketch and goal
+   facts. The image count is the grid's `--camera-count`, not a fixed five:
+   the planner forwards whatever views the runner renders, and each request
+   records them in `model_trace.json` as `camera_ids`. The reported execution
+   grid sent **three** (verified in the recorded traces), matching VLM-TAMP.
 3. `Executed(i)` preconditions/effects constrain the symbolic solution to
    contain that sketch as an ordered subsequence.
 4. Separate VLM calls translate each sketched action's physical requirement
    into a restricted geometric constraint expression.
 5. Refinement uses discrete search followed by bounded continuous sampling:
-   500 samples per action and at most five skeletons.
+   500 samples per action (`PAPER_MAX_SAMPLES_PER_ACTION`) and a five-skeleton
+   budget (`PAPER_MAX_SKELETONS`). **Exactly one skeleton is ever explored** in
+   these domains: the discrete operators are deterministic, so the
+   `Executed(i)`-constrained breadth-first search returns a single shortest
+   skeleton and the budget is never reached. The budget is retained for
+   provenance, and `skeletons_explored` is reported as 1 accordingly. Do not
+   describe the search as exploring up to five skeletons here.
 6. The paper's simulation condition is single-shot; it does not inherit
    VLM-TAMP's reprompt loop. The paper's real-robot appendix separately
    describes a receding-horizon observe--plan--execute policy.
@@ -193,9 +256,10 @@ Domain adaptations and reporting restrictions:
   Living Room schemas. The model receives the same annotated views and
   alias-carrying textualized state as VLM-TAMP -- identical exposure, verified
   over the 2026-09-05 grid -- which is what makes the two columns comparable.
-- **The Living Room implementation is physically executed**, through the same
-  shared runtime and the same goal verifier as every other method, so its
-  reported success is an execution-success claim. This is a deliberate
+- **All three scenes are physically executed** -- Living Room and Kitchen via
+  `--physical-execution`, Workshop via `--execute` -- through the same shared
+  runtimes and the same goal verifiers as every other method, so reported
+  success is an execution-success claim. This is a deliberate
   extension beyond the paper's simulation condition and must be described as
   such: the paper reports plan feasibility, not physical task success on this
   domain. `--protocol receding_horizon` remains a separately named symbolic
@@ -223,9 +287,11 @@ Domain adaptations and reporting restrictions:
   paper-derived reimplementation,” never an official code port or exact
   replication. Keep `model_trace.json` and the method manifest for audit.
 
-For K1--K12 planning-only trials, both visual baselines construct the variant
-directly and use MuJoCo instance segmentation solely to assign persistent
-anonymous IDs in the configured views. They do not consume the proposed framework's
+In the K1--K12 trials, both visual baselines construct the variant directly
+and use MuJoCo instance segmentation solely to assign persistent anonymous IDs
+and semantic aliases in the configured views. (These trials were planning-only
+before the physical-execution port; they are now executed, and the sentence no
+longer restricts itself to a planning-only condition.) They do not consume the proposed framework's
 Phase-1 object registry or functional witness. GT/backend ID translation occurs
 only after planning. Report raw execution-vocabulary agreement and the shared
 task-vocabulary normalization separately.
@@ -237,12 +303,28 @@ open-vocabulary grounding baseline that isolates how far similarity-based
 retrieval alone gets on the benchmark, with no language model in the loop.
 
 1. The task structure is a fixed role template rather than a planned
-   decomposition: two personal supports, one shared support, two drink
-   vessels, two under-dishes, one handheld control.
+   decomposition, one template per scene, in `retrieval_baseline/roles.py`:
+   - **Living Room** (`LIVING_ROOM_ROLES`, 8 fillers): two personal supports,
+     one shared support, two drink vessels, two under-dishes, one handheld
+     control.
+   - **Kitchen** (`KITCHEN_ROLES`, 9 fillers): one water source, one grounds
+     source, one stirring implement, two drink vessels, two food vessels, two
+     eating utensils -- driven through the 24-action ordered
+     `KITCHEN_TASK_SKELETON`, because Kitchen is a sequence with one-gripper
+     ordering constraints rather than a set of placements.
+   - **Workshop** (`WORKSHOP_ROLES`, 2 fillers): one turning tool, one
+     threaded part.
 2. Each role is filled by CLIP ViT-B/32 image-text similarity between the
    role's function phrase and a crop taken from the raw, unannotated frames.
-3. Role phrases name functions, never category nouns, so the baseline is not
-   handed the answer inside its own query.
+3. Role phrases describe function rather than naming the target's category.
+   Audited phrase by phrase against the scenes' own semantic labels: no phrase
+   contains the category noun of the object it is meant to select. Two contain
+   generic hypernyms and are worth stating exactly rather than claiming
+   absolute purity -- Workshop's `turning_tool` says "a hand tool", which is
+   equally true of the wooden-hammer distractor and so discriminates nothing;
+   Living Room's `under_dish` says "a shallow flat dish", a hypernym of the
+   target rather than its name ("saucer"). Neither hands over the answer, but
+   do not claim the phrases are noun-free.
 4. Candidate supports are restricted to the runtime's registered support
    regions. The staging area is where payloads start and is not a placement
    target; electing it would let a missing table masquerade as a usable one.
@@ -252,9 +334,20 @@ retrieval alone gets on the benchmark, with no language model in the loop.
    zero, so this baseline is unaffected by the decoding conditions below and
    its numbers do not move with the served checkpoint.
 
+4b. Required items may sit inside closed storage, and similarity gives no
+   basis for choosing where to look, so the Kitchen and Workshop runners
+   inspect every storage region in a fixed order **to exhaustion** before
+   scoring. This is what makes their infeasible verdicts admissible:
+   `infeasibility_proven()` requires every region to have been inspected.
+   A closed region simply yields no candidates.
+
 Physical execution runs the retrieved assignment through the same shared
-Living Room skills as the other methods, so a wrong grounding appears as a
-physically executed wrong plan rather than a planning-only mismatch. Because
+skills as the other methods in all three scenes, so a wrong grounding appears
+as a physically executed wrong plan rather than a planning-only mismatch.
+Workshop routes through `MirroredWorkshopExecutor` rather than the physical
+executor directly: without the mirror the planning runtime never learns that a
+drawer opened, and the baseline returns a confident `INFEASIBLE` on a feasible
+variant. Do not "simplify" that call site. Because
 the physical runtime re-settles the scene before observing, its crops are not
 bit-identical to the planning path's; render size is held equal across both so
 the difference is scene settling only.

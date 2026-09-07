@@ -534,6 +534,15 @@ def main() -> None:
                     if result.terminal_failure is not None
                     else None
                 ),
+                # The verdict is computed above and written to
+                # gt_sequence_comparison.json, but it also has to reach the
+                # shared artifact: outcome_correct_percent and
+                # infeasible_rejection_percent are read from here, and an
+                # infeasible variant's ONLY credit is the rejection, since
+                # `success` is false there by construction.  Omitting these
+                # left all 46 recorded Living Room episodes with three nulls.
+                expected_outcome=expected["intended_outcome"],
+                predicted_outcome=predicted_outcome,
             )
         print(json.dumps(payload, indent=2, sort_keys=True))
         runtime.sync("Goal complete" if result.success else f"Stopped: {result.status}")

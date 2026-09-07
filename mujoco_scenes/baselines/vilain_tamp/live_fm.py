@@ -79,6 +79,7 @@ def build_qwen_only_clients(
     base_url: str = DEFAULT_VLLM_BASE_URL,
     client: Any | None = None,
     timeout_seconds: float = 120.0,
+    decoding: str = "paper",
 ) -> LiveModelClients:
     """Build distinct object/reasoning clients backed by one local vLLM API."""
     transport = VLLMQwenTransport(
@@ -88,6 +89,7 @@ def build_qwen_only_clients(
         base_url=base_url,
         client=client,
         timeout_seconds=timeout_seconds,
+        decoding=decoding,
     )
     return LiveModelClients(
         object_client=RecordedFMClient(transport),
@@ -96,6 +98,41 @@ def build_qwen_only_clients(
         object_estimator_revision=None,
         reasoning_model=served_model_id,
         reasoning_model_revision=None,
+    )
+
+
+# Decoding conditions.  ViLaIn's own published condition is greedy: temperature
+# 0 with thinking disabled, which is what this transport did unconditionally.
+# That is faithful to the paper but it is *not* the condition VLM-TAMP and
+# OWL-TAMP run in the reported table, and BASELINE_FIDELITY.md requires one
+# condition per table -- so the condition is now selectable and the paper's is
+# merely the default.  The `model-native` numbers come from
+# `baseline_common.inference`, the same source the other three baselines read,
+# so the four columns cannot drift apart silently.
+from .config import DECODING_CONDITIONS
+
+
+def decoding_arguments(condition: str) -> dict[str, object]:
+    """Sampling arguments and thinking flag for a named decoding condition."""
+    if condition == "paper":
+        # Qwen's card advises against greedy decoding for this checkpoint, and
+        # BASELINE_FIDELITY.md records that near-greedy sampling is where plan
+        # degeneration was first observed.  Retained because it is what
+        # ViLaIn-TAMP published, not because it is the better setting here.
+        return {
+            "temperature": 0,
+            "extra_body": {"chat_template_kwargs": {"enable_thinking": False}},
+        }
+    if condition == "model-native":
+        from baseline_common.inference import QWEN_THINKING_SAMPLING
+
+        sampling = dict(QWEN_THINKING_SAMPLING)
+        return {
+            **sampling,
+            "extra_body": {"chat_template_kwargs": {"enable_thinking": True}},
+        }
+    raise ValueError(
+        f"decoding must be one of {DECODING_CONDITIONS}, got {condition!r}"
     )
 
 
@@ -124,6 +161,9 @@ class VLLMQwenTransport:
         # requested).  A smaller budget is still generous, and
         # `_completion_with_context_retry` recovers if a prompt grows further.
         max_tokens: int = 4096,
+        # Defaults to ViLaIn's published greedy condition so an existing caller
+        # is unchanged; the grid selects "model-native" for table parity.
+        decoding: str = "paper",
     ) -> None:
         normalized_url = base_url.rstrip("/")
         if normalized_url != DEFAULT_VLLM_BASE_URL:
@@ -142,6 +182,10 @@ class VLLMQwenTransport:
         self.base_url = normalized_url
         self.timeout_seconds = timeout_seconds
         self.max_tokens = max_tokens
+        self.decoding = decoding
+        # Resolved eagerly so an unknown condition fails at construction rather
+        # than mid-episode, after a scene has already been built.
+        self._decoding_arguments = decoding_arguments(decoding)
         self._client = client
 
     @staticmethod
@@ -218,9 +262,8 @@ class VLLMQwenTransport:
         request_arguments: dict[str, Any] = {
             "model": self.served_model_id,
             "messages": messages,
-            "temperature": 0,
             "max_tokens": self.max_tokens,
-            "extra_body": {"chat_template_kwargs": {"enable_thinking": False}},
+            **self._decoding_arguments,
         }
         if request.response_format == "json":
             request_arguments["response_format"] = {"type": "json_object"}
@@ -256,9 +299,18 @@ class VLLMQwenTransport:
                 "served_model_id": self.served_model_id,
                 "configured_reference_revision": self.reference_revision,
                 "served_revision_verified": False,
-                "temperature": 0,
+                "decoding": self.decoding,
+                "sampling": {
+                    key: value
+                    for key, value in self._decoding_arguments.items()
+                    if key != "extra_body"
+                },
                 "max_tokens": self.max_tokens,
-                "thinking_enabled": False,
+                "thinking_enabled": bool(
+                    self._decoding_arguments.get("extra_body", {})
+                    .get("chat_template_kwargs", {})
+                    .get("enable_thinking", False)
+                ),
                 "finish_reason": finish_reason,
                 **image_metadata,
             },

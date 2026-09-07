@@ -87,6 +87,7 @@ def main() -> None:
         image_width=args.image_width,
         image_height=args.image_height,
         camera_count=args.camera_count,
+        physical_execution=bool(args.execute),
     )
     config = VLMTAMPPlannerConfig.from_env()
     config = replace(
