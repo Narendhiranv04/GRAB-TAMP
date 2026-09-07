@@ -57,3 +57,30 @@ LIVING_ROOM_TASK_TEMPLATE = (
     (0, 0, 0),
     (1, 1, 1),
 )
+
+
+# Workshop: find a compatible screw and driver in the closed storage regions,
+# insert the screw into the workbench repair hole and drive it home, then leave
+# the driver on the workbench.  As above, no category nouns: "screwdriver" or
+# "screw" would hand the baseline its answer and turn CLIP retrieval into a
+# label lookup, which is precisely the capability under test.
+WORKSHOP_ROLES = (
+    Role(
+        key="turning_tool",
+        phrase="a hand tool with a long shaft and a shaped tip for turning",
+        count=1,
+        kind="object",
+    ),
+    Role(
+        key="threaded_part",
+        phrase="a small metal part with a spiral ridge along its body",
+        count=1,
+        kind="object",
+    ),
+)
+
+# Storage is closed at the start, so retrieval cannot score what it cannot see.
+# The template opens regions in the scene's fixed inspection order and only
+# then scores the revealed candidates -- the same discovery discipline the
+# other baselines follow.
+WORKSHOP_INSPECTION_FIRST = True

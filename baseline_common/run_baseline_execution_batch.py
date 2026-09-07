@@ -5,31 +5,45 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
 import subprocess
 import sys
+import threading
 from typing import Any
 
 from .artifacts import write_json
 
 
-KITCHEN_GOAL = (
-    "Prepare and serve coffee and soup for two people using the available "
-    "kitchenware. Stir both coffees and provide each soup bowl with a suitable utensil."
+# The published Table I instructions, imported so the batch path and the
+# single-episode path cannot state the task differently, and so every method
+# receives identical text.
+from mujoco_scenes.benchmark_task_instructions import (  # noqa: E402
+    KITCHEN_TASK_INSTRUCTION as KITCHEN_GOAL,
+    LIVING_ROOM_TASK_INSTRUCTION as LIVING_ROOM_GOAL,
+    WORKSHOP_TASK_INSTRUCTION as WORKSHOP_GOAL,
 )
-LIVING_ROOM_GOAL = (
-    "Prepare the living room for two people watching television. Place one cup "
-    "and one saucer on each person's fixed individual side table, and place the "
-    "TV remote on the fixed shared coffee table."
-)
-GOALS = {"kitchen": KITCHEN_GOAL, "living_room": LIVING_ROOM_GOAL}
+
+GOALS = {
+    "kitchen": KITCHEN_GOAL,
+    "living_room": LIVING_ROOM_GOAL,
+    "workshop": WORKSHOP_GOAL,
+}
 VARIANTS = {
     "kitchen": tuple(f"K{index}" for index in range(1, 13)),
     "living_room": tuple(f"L{index}" for index in range(1, 11)),
+    "workshop": tuple(f"W{index}" for index in range(1, 11)),
 }
 METHODS = ("vlm_tamp", "owl_tamp")
 # Retrieval grounds with CLIP rather than a language model and only exists for
 # the Living Room, so it is opt-in via --methods rather than a default.
 LIVING_ROOM_ONLY_METHODS = ("retrieval",)
+# Workshop has no Retrieval or LLM3 runner, so a Workshop grid is a two-method
+# comparison.  Stated here rather than discovered from a missing module.
+ENVIRONMENT_METHODS = {
+    "kitchen": ("vlm_tamp", "owl_tamp", "vilain_tamp"),
+    "living_room": ("vlm_tamp", "owl_tamp", "retrieval", "vilain_tamp"),
+    "workshop": ("vlm_tamp", "owl_tamp", "vilain_tamp"),
+}
 
 
 def _csv(value: str) -> tuple[str, ...]:
@@ -54,7 +68,18 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--base-url", required=True)
     parser.add_argument("--model", required=True)
     parser.add_argument("--max-tokens", type=int, default=24576)
-    parser.add_argument("--max-model-calls", type=int, default=10)
+    parser.add_argument(
+        "--max-model-calls", type=int, default=5,
+        help=(
+            "Replanning budget per episode.  Measured on the completed Living "
+            "Room grid, which ran with 10: OWL-TAMP used exactly 1 call in all "
+            "60 episodes, and only 6 of 121 VLM-TAMP episodes exceeded 5.  Of "
+            "those 6, five hit the ceiling and mostly failed anyway, and they "
+            "were the slowest episodes in the grid (999 s mean against 166 s "
+            "for single-call episodes).  Capping at 5 trims the expensive tail "
+            "while changing at most one episode's outcome."
+        ),
+    )
     parser.add_argument(
         "--decoding",
         choices=("paper", "model-native"),
@@ -85,6 +110,17 @@ def build_parser() -> argparse.ArgumentParser:
             "Without it a single hung episode stalls an unattended grid "
             "indefinitely; the longest episode measured so far is well under "
             "an hour."
+        ),
+    )
+    parser.add_argument(
+        "--workers", type=int, default=1,
+        help=(
+            "Episodes to run concurrently.  Each episode is a separate "
+            "process: MuJoCo stepping is single-threaded, and the model calls "
+            "are remote, so an episode spends much of its life idle waiting on "
+            "the inference server.  Concurrency overlaps that waiting and the "
+            "server batches the requests.  Keep it at or below the core count "
+            "and well below what the served model can hold at once."
         ),
     )
     parser.add_argument("--resume", action="store_true")
@@ -135,6 +171,10 @@ def _command(
         variant_flags = (
             ["--physical-variant", variant]
             if args.environment == "kitchen"
+            # Workshop's runner grew from a planning-only script, so its
+            # execution switch is --execute rather than --physical-execution.
+            else ["--variant", variant, "--execute"]
+            if args.environment == "workshop"
             else ["--variant", variant, "--physical-execution"]
         )
         return [
@@ -149,12 +189,33 @@ def _command(
         return [
             *common[:2], module,
             "--variant", variant,
-            "--physical-execution",
+            "--execute" if args.environment == "workshop" else "--physical-execution",
             *common[2:],
             "--max-replans", str(args.max_replans),
             "--max-total-actions", str(args.max_actions),
             "--max-sketch-actions", str(args.max_sketch_actions),
             "--decoding", args.decoding,
+        ]
+    if method == "vilain_tamp":
+        # This baseline owns its own CLI vocabulary: --domain rather than a
+        # module per scene, --output-directory, and a model condition in place
+        # of the native/single_call protocol.  It also has no --camera-count
+        # (its observation boundary fixes five RGB-D views) and no
+        # --base-url/--model/--max-tokens (the endpoint and checkpoint come
+        # from its own configuration), so the shared `common` block does not
+        # apply and the command is built explicitly.
+        return [
+            sys.executable, "-m", "mujoco_scenes.run_vilain_tamp_baseline",
+            "--domain", args.environment,
+            "--variant", variant,
+            "--model-condition", "vilain_tamp_qwen",
+            # Stated explicitly rather than relying on the config, so a
+            # grid cannot silently run without exposure parity.
+            "--observation-mode", "fixed_full_inspection",
+            "--live",
+            "--execute",
+            "--output-directory", str(output_dir),
+            "--seed", str(seed),
         ]
     if method == "retrieval":
         # Retrieval calls no model, so --base-url/--model/--max-tokens are
@@ -172,9 +233,7 @@ def _validate(
     args: argparse.Namespace,
 ) -> tuple[tuple[str, ...], tuple[str, ...], tuple[int, ...], tuple[int, ...]]:
     methods = tuple(args.methods)
-    allowed = set(METHODS)
-    if args.environment == "living_room":
-        allowed |= set(LIVING_ROOM_ONLY_METHODS)
+    allowed = set(ENVIRONMENT_METHODS.get(args.environment, METHODS))
     if not set(methods) <= allowed:
         raise ValueError(f"--methods supports only {', '.join(sorted(allowed))}")
     if args.protocol == "receding_horizon" and "vlm_tamp" in methods:
@@ -235,6 +294,11 @@ def main() -> None:
         "physical_execution": True,
         "shared_result": "benchmark_execution_result.json",
     })
+    # Episodes are independent processes writing to their own directories, so
+    # they can overlap.  The plan is built first, and only episodes that
+    # actually need running are dispatched; --resume bookkeeping and the
+    # not-empty guard stay sequential so they behave exactly as before.
+    pending: list[tuple] = []
     for method in methods:
         for variant in variants:
             for camera_count in cameras:
@@ -265,30 +329,59 @@ def main() -> None:
                             f"seed={seed}; partial artifacts moved to {aside.name}",
                             flush=True,
                         )
-                    print(f"[baseline-execution] {method} {variant} images={camera_count} seed={seed}", flush=True)
-                    try:
-                        return_code = subprocess.run(
-                            _command(method, variant, camera_count, seed, output, args),
-                            check=False,
-                            timeout=args.episode_timeout,
-                        ).returncode
-                    except subprocess.TimeoutExpired:
-                        # Abandon the episode rather than stall the grid.  The
-                        # partial directory is kept: a hang is worth diagnosing.
-                        return_code = 124
-                        print(
-                            f"[batch] TIMEOUT after {args.episode_timeout:.0f}s: "
-                            f"{method} {variant} images={camera_count} seed={seed}",
-                            flush=True,
-                        )
-                    result = (
-                        json.loads(result_path.read_text(encoding="utf-8"))
-                        if result_path.is_file() else None
-                    )
-                    rows[key] = _row(args.environment, method, variant, camera_count, seed, output, return_code, result)
-                    write_json(summary_path, {"schema_version": 1, "runs": list(rows.values())})
-                    if result is None and return_code and not args.continue_on_error:
-                        raise SystemExit(return_code)
+                    pending.append((key, method, variant, camera_count, seed, output, result_path))
+
+    summary_lock = threading.Lock()
+    failures: list[int] = []
+
+    def run_episode(entry: tuple) -> None:
+        key, method, variant, camera_count, seed, output, result_path = entry
+        print(f"[baseline-execution] {method} {variant} images={camera_count} seed={seed}", flush=True)
+        try:
+            return_code = subprocess.run(
+                _command(method, variant, camera_count, seed, output, args),
+                check=False,
+                timeout=args.episode_timeout,
+            ).returncode
+        except subprocess.TimeoutExpired:
+            # Abandon the episode rather than stall the grid.  The
+            # partial directory is kept: a hang is worth diagnosing.
+            return_code = 124
+            print(
+                f"[batch] TIMEOUT after {args.episode_timeout:.0f}s: "
+                f"{method} {variant} images={camera_count} seed={seed}",
+                flush=True,
+            )
+        result = (
+            json.loads(result_path.read_text(encoding="utf-8"))
+            if result_path.is_file() else None
+        )
+        row = _row(args.environment, method, variant, camera_count, seed, output, return_code, result)
+        # The summary is rewritten after every episode so an interrupted grid
+        # still describes what completed.  Serialise that, since episodes now
+        # finish concurrently.
+        with summary_lock:
+            rows[key] = row
+            write_json(summary_path, {"schema_version": 1, "runs": list(rows.values())})
+            if result is None and return_code:
+                failures.append(return_code)
+
+    workers = max(1, int(args.workers))
+    if workers == 1:
+        for entry in pending:
+            run_episode(entry)
+            if failures and not args.continue_on_error:
+                raise SystemExit(failures[0])
+    else:
+        # Concurrency does not change any episode's condition: each is the same
+        # command in its own process and its own output directory.  Under
+        # --continue-on-error the grid runs to completion either way; without
+        # it, already-dispatched episodes are allowed to finish before the
+        # non-zero exit, so no episode is left half-written.
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            list(pool.map(run_episode, pending))
+        if failures and not args.continue_on_error:
+            raise SystemExit(failures[0])
     write_json(summary_path, {"schema_version": 1, "runs": list(rows.values())})
 
 

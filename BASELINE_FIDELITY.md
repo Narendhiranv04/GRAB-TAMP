@@ -12,11 +12,48 @@ tasks, or model.
 | VLM-TAMP | arXiv:2410.02193 | `Learning-and-Intelligent-Systems/kitchen-worlds` and its PDDLStream submodule | kitchen-worlds `1839f5ff4c41f6a6b0cf5abbeb7a1292b1a551c4`; PDDLStream `b38137e47fd4a4116a3e36bc4be691cbe5da6cb0` |
 | LLM3 | arXiv:2403.11552 | `AssassinWS/LLM-TAMP` | `aca6f0c1ed5f7319b48b44523e4b317a15b3861f` |
 | OWL-TAMP | arXiv:2411.08253v4 | No public author code release found; independent implementation from the paper | Not applicable |
+| ViLaIn-TAMP | arXiv:2506.03270 | `omron-sinicx/ViLaIn` (earlier official ViLaIn release); ViLaIn-TAMP itself has no public release | Independent implementation from the paper |
 
 The PDDLStream source is installed outside the repository by
 `vlm_tamp_baseline/setup_pddlstream.sh`; the adapter checks its Git revision at
 runtime. Small Python 3.11 and logging shims are applied without modifying the
 pinned source.
+
+## The task instruction is identical for every method
+
+Each domain issues exactly one instruction, and the proposed method and every
+baseline receive that same string.  It is defined once, in the scene
+configuration each runtime already reads
+(`kitchen_feasibility_variants.yaml:goal_instruction`,
+`living_room_variants.yaml:task`,
+`workshop_variants.yaml:canonical_task_instruction`), and re-exported by
+`mujoco_scenes/benchmark_task_instructions.py`.  Nothing restates it.
+
+| Domain | Instruction |
+|---|---|
+| Kitchen | Prepare and serve one coffee and one soup for each of two people. Make each coffee using coffee and water and stir it before serving. Serve each soup bowl with its own suitable eating utensil. |
+| Living Room | Place one cup and one saucer on each of two fixed personal side tables and place the TV remote on the fixed shared coffee table. |
+| Workshop | Identify the compatible components required to complete the fastening at the marked workbench location, complete the fastening, and leave any reusable equipment used for the task safely on the workbench. |
+
+**This was not previously true, and results produced before 2026-09-07 are not
+comparable across methods.** The text had been written out separately in the
+batch runner, three scene configs, the pipeline's domain definitions and
+several baselines, and the copies had drifted. Two differences mattered:
+
+- The Workshop instruction given to the baselines named the object categories
+  and prescribed the insertion geometry -- "the compatible **screw**", "the
+  first compatible **driver**", "**tip-down**", "**head/recess on top**" --
+  where the published instruction says only "the compatible **components**
+  required to complete the fastening" and "reusable **equipment**". That is a
+  substantial information difference in the baselines' favour: it supplies the
+  category identification the task is meant to require.
+- The Kitchen instruction given to the baselines added "Search the closed
+  kitchen storage for anything still required", a procedural hint absent from
+  the published instruction.
+
+Both inflated the baselines relative to the proposed method. Any table mixing
+pre- and post-2026-09-07 runs would understate the proposed method's margin
+for a reason that has nothing to do with either method.
 
 ## VLM-TAMP correspondence
 
@@ -297,7 +334,142 @@ thinking enabled the same variant was solved on the first model call. A
 per-method difference in thinking would confound the comparison, so the two
 baselines must share the flag.
 
+## ViLaIn-TAMP correspondence
+
+Preserved algorithmically:
+
+1. Four independent model calls: object estimation, initial-state estimation,
+   goal-state estimation, and Corrective Planning. The architectural and
+   prompt boundaries between them are kept separate.
+2. The estimated state is compiled to PDDL and solved by **Fast Downward
+   24.06.1** with `lama-first`, the paper's symbolic planner and search.
+3. Generated plans are validated with **VAL**; an invalid or unplannable
+   problem enters Corrective Planning, bounded by `--cp-limit` (0-3).
+4. Geometric refinement precedes execution.
+
+Domain adaptations and reporting restrictions:
+
+- **Qwen-only reproduction.** The paper allocates object estimation to a local
+  Qwen2.5-VL checkpoint and reasoning to a `gpt-4o-2024-08-06` snapshot. This
+  runs all four calls against the served Qwen3.5-9B, so it is a Qwen-only
+  reproduction and not the paper's model allocation. Report it as such.
+- Geometric refinement is a MuJoCo cloned-scene sequence preflight, an
+  adaptation of the paper's MoveIt Task Constructor refinement, not a
+  reproduction of it.
+- The baseline owns its observations, PDDL problems, plans, refinement records
+  and execution projections. It does not consume `G_F`, `G_O`,
+  `ground_graph()`, `phi*`, or any of their assignments or witnesses.
+- It runs in a dedicated `.venv-vilain-tamp`, enforced at runtime, so its
+  model stack cannot alter the proposed method's environment.
+- Fast Downward and VAL are built under `third_party/` and located relative to
+  the repository root. The shipped configuration named absolute paths under
+  one developer's home directory, which made the baseline unrunnable
+  elsewhere; `_optional_path` now expands `~`/`${VAR}` and anchors relative
+  paths at the repository root, while `ExternalToolPaths` still refuses a
+  genuinely relative path so no planner resolves off a working directory.
+
+### Observed failure mode
+
+Across the first probe episodes (W1, W2, L1, K1) every run ended `EXHAUSTED`
+with zero actions executed, and the mechanism is specific and reportable: the
+model's generated `:init` omits a **static** compatibility predicate that no
+action can establish. In Workshop that is `(fits ?fastener ?target)`, declared
+in the domain and required by both `insert` and `drive` but absent from every
+action's effects, so it can only come from the initial state. Fast Downward
+correctly reports the initial state as a dead end (`Expanded 0 state(s)`,
+`Dead ends: 1 state(s)`).
+
+The baseline's own Corrective Planning diagnosed this correctly --
+`RELAXED_GOAL_UNREACHABLE`, "all grounded achievers have unreachable positive
+preconditions", naming `drive` as the potential achiever -- and the corrective
+fact universe offered the missing predicate. The model still failed to select
+it across three corrective iterations.
+
+**A uniform zero is a weak result even when it is honest.** Before publishing
+one, confirm that the initial-state prompt exposes the domain's static
+predicates: "the baseline was never told a predicate it could not infer" and
+"the baseline cannot do this task" are different claims, and only the second
+is about the method.
+
 ## Physical execution controls
+
+### Workshop: what "physical execution" covers
+
+Workshop runs the **assisted grasp path**, for both the ground-truth oracle and
+every baseline.  The robot navigates, reaches and actuates; the grasp itself is
+completed by an equality constraint that attaches the payload without requiring
+confirmed finger contact, and fastener insertion uses a compliant alignment
+fixture.
+
+**Do not describe Workshop execution as autonomous or contact-gated
+manipulation.**  The accurate claim is robot-actuated execution with
+constraint-assisted grasping and insertion.  Kitchen and Living Room are
+contact-gated; Workshop is not, and the difference should be stated rather than
+averaged away.
+
+Artifacts say so: `execution_profile` is
+`ASSISTED_GRASP_ROBOT_ACTUATED_GT_EXECUTION`, `INSERT_FASTENER` carries
+`insertion_alignment_fixture_used: true`, and each assisted handle grasp
+records `status: "LEGACY_ASSISTED_HANDLE_GRASP"` with
+`bilateral_handle_contact_confirmed: false`.
+
+#### Why contact-gated execution is not used here
+
+This is measured, not assumed.  Contact-gated mode was enabled for the full
+10-variant suite and fails:
+
+| Variant | Failure |
+|---|---|
+| F0, F2, F4 | `workshop_long_phillips_driver` -- lift clearance, then no sustained bilateral finger contact (best streak 0; the gripper closes 8.2 cm short of the handle and the tool never moves) |
+| F6, F7 | screw from `RIGHT_DRAWER` -- preclose pose off by 0.0781 m against a 0.075 m limit |
+| F3 | `SCREW` -- gripper `ACTUATOR_STALL` |
+| F1, F5 | all actions complete, then `driver_on_assigned_surface` and `hand_empty` fail |
+| I0, I1 | correctly rejected (infeasible variants pass) |
+
+The cause is that the Workshop grasp geometry was calibrated against the
+assisted path, where the attachment constraint absorbs the positioning error.
+Gating on real contact exposes that error per object and per base stance, and
+the two are coupled: removing the strict-only 0.07 m drawer base offset brings
+the screw's preclose inside its limit but then the fingers make no contact at
+all, while keeping the offset makes contact but misses preclose by 0.6 mm.
+Re-enabling contact gating therefore requires re-calibrating each grasp against
+its stance, not a threshold change.
+
+Kitchen runs contact-gated (`--strict-robot-execution`) and is unaffected.
+
+#### Fixes retained from that investigation
+
+These were found while enabling contact gating and are kept because they are
+correct in either mode:
+
+- The furniture-penetration audit exempts *finger-pad* contact with the single
+  panel whose handle is being gripped.  Closing the gripper on a handle
+  necessarily overlaps the panel it is mounted on (measured at 8.2 mm), so
+  counting the commanded grasp as forbidden penetration was a false positive.
+  Any other robot link touching that panel, and the pads touching anything else
+  monitored, still fail.
+- Contact-gated mode searches the same five IK seeds as the assisted path.
+  Seeds are search breadth, not a physical criterion: every candidate passes
+  the same collision check, so one seed did not make execution stricter, only
+  more likely to fail.
+- The caller's explicit `allowed_body_names` is honoured in both modes.  It
+  previously discarded every named body without a free joint, which threw away
+  the container the primitive had just named; entering an open drawer puts the
+  finger tips 3-6 mm from its own front and floor, so reaching into any
+  container was impossible.  The list is built per call and names only the
+  container being manipulated, and the independent furniture audit still runs.
+- The drawer lift aims at the measured apron plane instead of a fixed 0.18 m,
+  which left the long driver's lowest point 3.1 cm *below* the apron -- still
+  inside the drawer envelope.  Measured clearance for the screw improved from
+  -13.3 cm to +4.4 cm.
+
+The unaided insertion path is retained as `_strict_insert_fastener`, unused, so
+the gap it measures stays stated: it leaves the screw 27 degrees off vertical,
+7.8 mm lateral, tip 2.8 mm above the hole entry, against a gate of 0.05 rad,
+3 mm and 8-18 mm of depth.
+
+### Living Room
+
 
 Reported physical success depends on the shared Living Room controller and
 verifier, so these are part of the result definition and not incidental tuning:
