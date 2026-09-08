@@ -94,3 +94,59 @@ not trustworthy as a method result.
 - Ablation instrumentation (Regions Inspected, Candidate Checks, Grounding
   Time) still has zero implementation; "No verification" missing from
   `COMPONENT_MASKS`.
+
+## 7. Later the same afternoon -- ViLaIn root cause found and fixed
+
+`e2a49e2d` Stop downscaling ViLaIn observation frames before tiling.
+
+The ViLaIn `EXHAUSTED` streak was **not** a planning failure. ViLaIn packs one
+contact sheet per stage and shrank each 640x480 frame to 448x336 first, leaving
+a cup ~18x13 px. ViLaIn is the only baseline needing a pixel-accurate box: it
+unprojects the box centre through depth to bind entities. A box that misses the
+object samples the floor behind the table, so Z collapsed.
+
+Measured on L1, distance from each estimate to its own true object
+(limit is `maximum_distance_m = 0.75`):
+
+| object | before (448x336) | after (native 640x480) |
+|---|---|---|
+| red_cup_1 | 0.941 FAIL | **0.255 OK** |
+| red_cup_2 | 1.045 FAIL | **0.137 OK** |
+| white_saucer_1 | 0.865 FAIL | **0.322 OK** |
+| white_saucer_2 | -- | **0.329 OK** |
+| black_remote_1 | 0.827 FAIL | 2.072 FAIL |
+
+Z went from ~0.006 to ~0.70-0.74 against a true 0.795.
+
+**Caveat, not yet resolved:** identity resolution raises on the *first*
+unresolved estimate, so the remote alone can still end an episode. 4 of 5
+entities now bind; ViLaIn is not yet confirmed to produce a success. The
+remote is a genuine model localization miss, not a harness fault.
+
+Diagnosis was empirical: project the known candidate centroids into
+`l2_camera_top` and compare with the model's boxes. X was accurate (the remote
+projected to exactly 320.0 vs the model's 320.0); Y was systematically ~50-60 px
+high. Depth estimator choice was ruled out first -- median, p15, p05 and min all
+gave Z~0.01, proving the box was on empty floor rather than the box being noisy.
+
+## 8. Kitchen POUR confirmed working in the real pipeline
+
+`lh-kpour-smoke` (K1, vlm_tamp, seed 0) finished rc=0 and the log shows
+`POUR_APPROACH` x18, `POUR_ORIENTATION_SELECTION`, `POUR_GRASP_POSE_HOVER`,
+`POUR_ALIGNMENT_FAILED` x4 and one **`POURED`** effect committed. So POUR now
+performs real physical motion and can commit its symbolic effect, where before
+it returned `POUR_TARGET_RESOLUTION_FAILED` instantly, 368 times out of 368.
+The episode itself still ended `UNRESOLVED` (goal not satisfied) -- that is now
+a genuine physics/capability outcome rather than a harness block.
+
+## 9. ROBUST-TAMP Living Room finished
+
+`rc=0` at 12:30, **60 results** in `runs/living_room/execution/robust_tamp_20260908`.
+**Check this:** the launcher requested L1-L10 x seeds 0-9 = 100 episodes but 60
+landed, and the runner still exited 0. Reconcile before reporting that column.
+
+## 10. Running at handoff
+
+`lh-rt-workshop`, `lh-vilain-lr-c`, `lh-vilain-ws-c` (both fresh roots
+`vilain_20260908c` under commit `e2a49e2d`), `lh-vilain-restest2`.
+Roots `vilain_20260908b` are abandoned (pre-fix, worthless).
