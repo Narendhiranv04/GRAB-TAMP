@@ -243,3 +243,20 @@ def test_public_region_aliases_match_the_authoritative_scene_sources() -> None:
         assert set(FIXED_INSPECTION_ORDERS[domain]) == set(PUBLIC_REGION_ALIASES[domain])
         with pytest.raises(KeyError, match="refusing to publish"):
             public_region_alias(domain, "NOT_A_REGION")
+
+
+def test_model_stage_references_resolve_to_published_stage_ids() -> None:
+    """The payload publishes each stage id twice, so models echo both forms."""
+
+    from mujoco_scenes.baselines.vilain_tamp.interpreter import _resolve_stage_id
+
+    order = {"000_initial": 0, "001_left_drawer": 1, "002_right_drawer": 2}
+    assert _resolve_stage_id("002_right_drawer", order) == "002_right_drawer"
+    assert _resolve_stage_id("stages/002_right_drawer", order) == "002_right_drawer"
+    assert (
+        _resolve_stage_id("stages/002_right_drawer/cameras/x/rgb.png", order)
+        == "002_right_drawer"
+    )
+    assert _resolve_stage_id("002", order) == "002_right_drawer"
+    # a genuinely unknown stage is still an error, so it is returned unchanged
+    assert _resolve_stage_id("007_nowhere", order) == "007_nowhere"

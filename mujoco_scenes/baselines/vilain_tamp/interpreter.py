@@ -804,6 +804,30 @@ def _movable_estimates(
     return movable, fixed
 
 
+def _resolve_stage_id(value: str, stage_order: Mapping[str, int]) -> str:
+    """Match a model-supplied stage reference against the published stage ids.
+
+    The observation payload names every stage twice: as `stage_id`, and again
+    inside each image path as `stages/<stage_id>/...`.  Models echo back either
+    spelling, and sometimes just the ordinal, so `stages/002_right_drawer` and
+    `002` both turn up for `002_right_drawer`.  Resolve those only when exactly
+    one published stage can be meant; an genuinely unknown stage still fails,
+    because that is a model error rather than a spelling difference.
+    """
+    if value in stage_order:
+        return value
+    candidate = value.strip().strip("/")
+    if candidate.startswith("stages/"):
+        candidate = candidate[len("stages/"):]
+    candidate = candidate.split("/", 1)[0]
+    if candidate in stage_order:
+        return candidate
+    matches = sorted(
+        stage for stage in stage_order if stage.startswith(f"{candidate}_")
+    )
+    return matches[0] if len(matches) == 1 else value
+
+
 def _normalize_detections(
     value: Any,
     frame_index: Mapping[tuple[str, str], Any],
@@ -822,6 +846,7 @@ def _normalize_detections(
             stage_id = next(iter(stage_order))
         else:
             raise InterpreterOutputError("stage_id must be a non-empty string")
+        stage_id = _resolve_stage_id(stage_id, stage_order)
         camera_id = _required_text(detection, "camera_id")
         if (stage_id, camera_id) not in frame_index:
             raise InterpreterOutputError(
