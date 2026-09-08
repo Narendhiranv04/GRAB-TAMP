@@ -53,7 +53,14 @@ class OpenAIPlannerConfig:
     model: str
     scene: str
     api_key: str = ""
-    timeout_seconds: float = 600.0
+    # Workshop planning latency reached 763 s against this ceiling, so a
+    # generation that ran long was billed to the method as
+    # "Inference service unreachable" after two retries -- 11 of 51 Workshop
+    # episodes, each dying with 1.1 executed actions.  Living Room plans in
+    # 80 s, so this only ever binds on the scene where the model thinks
+    # longest.  It is a transport ceiling, not a decoding parameter: the token
+    # budget is unchanged, so the comparison across methods is unaffected.
+    timeout_seconds: float = 1200.0
     max_tokens: int = 4096
     temperature: float = 0.0
     seed: int = 0
