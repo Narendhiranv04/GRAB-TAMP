@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import re
 from typing import Any
 
 import numpy as np
@@ -11,9 +12,12 @@ from mujoco_scenes.baselines.vilain_tamp.config import Domain, ObservationMode
 from mujoco_scenes.baselines.vilain_tamp.observations import (
     CameraFrameCapture,
     FIXED_INSPECTION_ORDERS,
+    PUBLIC_REGION_ALIASES,
     ObservationProtocol,
     prompt_observation_payload,
+    public_region_alias,
 )
+from baseline_common.inference import assert_no_prompt_leakage
 
 
 INTRINSICS = (
@@ -188,3 +192,54 @@ def test_full_inspection_requires_opener_for_storage_domains(tmp_path: Path) -> 
     )
     with pytest.raises(ValueError, match="region-opening backend"):
         protocol.acquire()
+
+
+def test_prompt_payload_never_publishes_canonical_region_names(tmp_path: Path) -> None:
+    """Every canonical inspection region is on the audit's forbidden list."""
+
+    for index, domain in enumerate((Domain.KITCHEN, Domain.WORKSHOP)):
+        protocol, _, _ = make_protocol(
+            tmp_path / f"domain_{index}",
+            domain=domain,
+            mode=ObservationMode.FIXED_FULL_INSPECTION,
+            opener=FakeOpeningBackend(),
+        )
+        payload = prompt_observation_payload(protocol.acquire().observations)
+        rendered = json.dumps(payload, sort_keys=True)
+        # The guard the runtime itself calls; raises PromptLeakageError on a leak.
+        verdict = assert_no_prompt_leakage({"request": rendered})
+        assert verdict["zero_leakage"], (domain, verdict["forbidden_regions_found"])
+        for canonical in FIXED_INSPECTION_ORDERS[domain]:
+            assert canonical not in rendered
+
+    # Kitchen is PERSISTENT_REGION_ID_ONLY: no alias may hint at the layout, so
+    # the canonical names must be absent even case-insensitively.
+    protocol, _, _ = make_protocol(
+        tmp_path / "kitchen_strict",
+        domain=Domain.KITCHEN,
+        mode=ObservationMode.FIXED_FULL_INSPECTION,
+        opener=FakeOpeningBackend(),
+    )
+    kitchen = json.dumps(
+        prompt_observation_payload(protocol.acquire().observations), sort_keys=True
+    )
+    assert not re.search(r"\b[bcd][12]\b", kitchen, re.IGNORECASE), kitchen
+
+
+def test_public_region_aliases_match_the_authoritative_scene_sources() -> None:
+    """The aliases are duplicated for import isolation; fail loudly on drift."""
+
+    from mujoco_scenes.baseline_kitchen_runtime import kitchen_public_region_ids
+    from vlm_tamp_baseline.workshop_runtime import REGION_LABELS
+
+    assert PUBLIC_REGION_ALIASES[Domain.KITCHEN] == kitchen_public_region_ids()
+    workshop = PUBLIC_REGION_ALIASES[Domain.WORKSHOP]
+    assert workshop == {
+        region: REGION_LABELS[region] for region in FIXED_INSPECTION_ORDERS[Domain.WORKSHOP]
+    }
+
+    # An unaliased region must fail closed rather than publish its canonical name.
+    for domain in (Domain.KITCHEN, Domain.WORKSHOP):
+        assert set(FIXED_INSPECTION_ORDERS[domain]) == set(PUBLIC_REGION_ALIASES[domain])
+        with pytest.raises(KeyError, match="refusing to publish"):
+            public_region_alias(domain, "NOT_A_REGION")

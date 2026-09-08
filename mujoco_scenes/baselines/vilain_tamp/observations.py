@@ -26,6 +26,33 @@ FIXED_INSPECTION_ORDERS: Mapping[Domain, tuple[str, ...]] = {
     Domain.WORKSHOP: ("LEFT_DRAWER", "RIGHT_DRAWER", "TOOL_CABINET"),
     Domain.LIVING_ROOM: (),
 }
+
+# Canonical inspection-region names are evaluator-side only; every name in
+# `FIXED_INSPECTION_ORDERS` is on the shared prompt-leakage forbidden list
+# enforced by `baseline_common.inference.assert_no_prompt_leakage`.  These are
+# the published aliases, per the per-scene annotation policy in
+# `BASELINE_FIDELITY.md`.  Kitchen is
+# `PERSISTENT_REGION_ID_ONLY` because *which* closed region holds a required item
+# is its entire search problem, so its alias carries no layout information and
+# mirrors `baseline_kitchen_runtime.kitchen_public_region_ids()`.  Workshop is
+# `UNIQUE_SEMANTIC_ALIAS_ONLY` and mirrors
+# `vlm_tamp_baseline.workshop_runtime.REGION_LABELS`, which is what the other
+# baselines publish.  `tests/test_observations.py` fails if either drifts.
+PUBLIC_REGION_ALIASES: Mapping[Domain, Mapping[str, str]] = {
+    Domain.KITCHEN: {
+        "B1": "region_0001",
+        "C1": "region_0002",
+        "C2": "region_0003",
+        "D1": "region_0004",
+        "D2": "region_0005",
+    },
+    Domain.WORKSHOP: {
+        "LEFT_DRAWER": "left drawer",
+        "RIGHT_DRAWER": "right drawer",
+        "TOOL_CABINET": "tool cabinet",
+    },
+    Domain.LIVING_ROOM: {},
+}
 _SAFE_COMPONENT = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
 
 
@@ -220,27 +247,62 @@ def prompt_observation_payload(
     mode = observations[0].observation_mode
     if any(item.domain != domain or item.observation_mode != mode for item in observations):
         raise ValueError("all observations must share a domain and observation mode")
-    return {
-        "domain": domain,
-        "observation_mode": mode,
-        "stages": [
+    stages: list[dict[str, object]] = []
+    for observation in observations:
+        alias = (
+            public_region_alias(domain, observation.opened_region_id)
+            if observation.opened_region_id
+            else None
+        )
+        public_stage_id = _public_stage_id(
+            observation.stage_id, observation.inspection_ordinal, alias
+        )
+        stages.append(
             {
-                "stage_id": observation.stage_id,
+                "stage_id": public_stage_id,
                 "inspection_ordinal": observation.inspection_ordinal,
-                "opened_region_id": observation.opened_region_id,
+                "opened_region_id": alias,
                 "images": [
                     {
                         "camera_id": frame.camera_id,
                         "view_description": frame.view_description,
-                        "rgb_path": frame.rgb_path,
+                        "rgb_path": _public_stage_path(
+                            frame.rgb_path, observation.stage_id, public_stage_id
+                        ),
                         "rgb_sha256": frame.rgb_sha256,
                     }
                     for frame in observation.camera_frames
                 ],
             }
-            for observation in observations
-        ],
-    }
+        )
+    return {"domain": domain, "observation_mode": mode, "stages": stages}
+
+
+def public_region_alias(domain: Domain | str, region_id: str) -> str:
+    """Return the published alias for a canonical inspection region."""
+
+    aliases = PUBLIC_REGION_ALIASES[Domain(domain)]
+    try:
+        return aliases[region_id]
+    except KeyError as error:
+        raise KeyError(
+            f"no published alias for region {region_id!r} in domain {Domain(domain).value!r}; "
+            "refusing to publish the canonical name, which would disclose the scene layout"
+        ) from error
+
+
+def _public_stage_id(stage_id: str, ordinal: int | None, alias: str | None) -> str:
+    """Rebuild a stage identifier so it names the alias, never the canonical region."""
+
+    if alias is None or ordinal is None:
+        return stage_id
+    return f"{ordinal:03d}_{re.sub(r'[^a-z0-9]+', '_', alias.lower()).strip('_')}"
+
+
+def _public_stage_path(path: str, stage_id: str, public_stage_id: str) -> str:
+    if stage_id == public_stage_id:
+        return path
+    return path.replace(f"stages/{stage_id}/", f"stages/{public_stage_id}/", 1)
 
 
 def _validate_capture(capture: CameraFrameCapture) -> None:

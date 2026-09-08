@@ -752,3 +752,78 @@ that grid stands at 199/200). Same class as the truncation fault above --
 "recorded, not dropped" -- but it sits in the physical executor on the
 assisted-grasp path, so it is left for a deliberate decision rather than
 changed mid-grid.
+
+## Blocking: Kitchen POUR/STIR can never succeed, so Kitchen feasible-success is not a capability result
+
+**Do not report Kitchen `feasible_success_percent` as a measurement of any
+method.**  Kitchen's goal is a seven-condition conjunction that includes two
+pour relations and one stir relation, and in the baseline runtime those three
+conditions are unsatisfiable by construction, for every method, on every
+variant.  The reported `0/60` for VLM-TAMP, OWL-TAMP and Retrieval is a harness
+artifact.
+
+Two independent blockers are stacked, both unconditional:
+
+1. **The POUR/STIR whitelist is empty.**  `KitchenPhaseCExecutionDispatcher`
+   builds `expected_pairs` from its `frozen_plan` argument, and
+   `baseline_kitchen_runtime.from_variant` constructs the dispatcher with
+   `frozen_plan=[]` (`baseline_kitchen_runtime.py:456`).  So `expected_pairs`
+   is `{'POUR': {}, 'STIR': {}}` and every POUR/STIR returns
+   `POUR_TARGET_RESOLUTION_FAILED` / `STIR_TARGET_RESOLUTION_FAILED` before any
+   geometry is consulted, whatever arguments the method chose.
+2. **The registry carries no opening geometry.**  The same factory builds each
+   registry row as `{"generic_object_id": ...}` and nothing else
+   (`baseline_kitchen_runtime.py:656`).  `derive_target_opening` requires
+   `opening_width_m`, `opening_length_m` and `cavity_depth_m` under
+   `geometric_properties`, so even with the whitelist bypassed it raises
+   `POUR_OPENING_GEOMETRY_UNAVAILABLE`.
+
+Measured on K1 (`BaselineKitchenRuntime.from_variant`), all four functionally
+valid pours and both valid stirs fail, and the geometry check fails
+independently:
+
+```
+kettle -> mug            success=False status=POUR_TARGET_RESOLUTION_FAILED
+kettle -> cup            success=False status=POUR_TARGET_RESOLUTION_FAILED
+coffee_source -> mug     success=False status=POUR_TARGET_RESOLUTION_FAILED
+coffee_source -> cup     success=False status=POUR_TARGET_RESOLUTION_FAILED
+spoon_1 in mug           success=False status=STIR_TARGET_RESOLUTION_FAILED
+spoon_2 in cup           success=False status=STIR_TARGET_RESOLUTION_FAILED
+registry objects WITH geometric_properties: 0   (of 9)
+derive_target_opening(object_0002) -> POUR_OPENING_GEOMETRY_UNAVAILABLE
+```
+
+Consistent with the 252 completed Kitchen episodes: POUR was attempted 368
+times and succeeded 0 times, STIR was never reached, and the only effects ever
+observed were `holding` and `placed`.
+
+This is **not** a GT-grounding-mismatch issue.  The whitelist would gate POUR on
+the ground-truth plan if one were supplied, but none is: the constraint binds
+identically for a method whose grounding matches GT exactly.  The ground-truth
+runner does not exercise this path either -- it passes `dummy_registry, []` and
+replaces the ledger with `OraclePhaseCLedger`
+(`kitchen_ground_truth_execution.py:389`) -- so Kitchen pour/stir physics has
+never been wired to real geometry by any caller.
+
+### What remains valid
+
+* Kitchen `infeasible_rejection_percent` is unaffected: rejecting an infeasible
+  variant requires no POUR.  VLM-TAMP 16/59, OWL-TAMP 0/60, Retrieval 6/6 stand.
+* Kitchen `outcome_correct_percent` is dominated by the infeasible half; its
+  feasible half is structurally 0 and must be described that way, not as a
+  capability gap.
+* **Workshop and Living Room are unaffected.**  Neither has a `frozen_plan`
+  whitelist (`expected_pairs` does not exist in
+  `workshop_ground_truth_execution.py` or `living_room_discovery_runtime.py`)
+  and neither goal requires pour or stir.  Their 400 completed episodes stand.
+
+### A fix is available and does not require ground truth
+
+`exact_scene_geometry.extract_exact_object_geometry` already derives
+`opening_width_m`, `opening_length_m` and `cavity_depth_m` from the live MuJoCo
+mesh rim, which is perceptual rather than plan-derived -- it is the same routine
+the feasibility oracle uses.  Populating `geometric_properties` from it clears
+blocker 2 with no leakage.  Blocker 1 needs a decision rather than a patch:
+POUR/STIR admissibility must stop depending on plan membership and be decided by
+geometry, so that the pair a method actually chose is what gets executed and
+judged.  Until both are done, Kitchen's feasible column is not reportable.
