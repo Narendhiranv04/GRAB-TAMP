@@ -235,6 +235,41 @@ def rotation_about_axis(axis: np.ndarray, angle: float) -> np.ndarray:
     return np.eye(3) + math.sin(angle) * cross + (1.0 - math.cos(angle)) * (cross @ cross)
 
 
+class VerifiedMotionPhaseCLedger:
+    """Record POUR/STIR effects from verified motion, with no plan to match.
+
+    `PhaseCExecutionLedger` commits only what a frozen ground-truth plan
+    predicted, which is correct when Phase C replays that plan.  A baseline
+    grounds its own source/target pair and supplies no plan, so its verified
+    motions would never commit and the goal would stay unsatisfiable no matter
+    what the method did.  Physical verification is the only evidence used
+    here: the pair is the method's choice, and the motion either happened or
+    it did not.
+    """
+
+    def __init__(self) -> None:
+        self.events: list[dict[str, Any]] = []
+
+    def commit(self, step: int | None, result: dict[str, Any]) -> bool:
+        verified = result.get("success") is True and (
+            result.get("pour_motion_verified") is True
+            or result.get("stir_motion_verified") is True
+        )
+        if not verified:
+            return False
+        self.events.append(result)
+        return True
+
+    def summary(self) -> dict[str, Any]:
+        return {
+            "evidence_mode": EVIDENCE_MODE,
+            "physical_fluid_transfer_modeled": False,
+            "admissibility": "GEOMETRIC",
+            "verified_event_count": len(self.events),
+            "events": list(self.events),
+        }
+
+
 class PhaseCExecutionLedger:
     """Exact-event ledger; records effects only from verified physical motion."""
 

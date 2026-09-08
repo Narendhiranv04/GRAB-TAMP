@@ -15,7 +15,9 @@ from .kitchen_execution_policy import KitchenWorkspace
 from .kitchen_phase_b_execution import KitchenPhaseBExecutionDispatcher
 from .kitchen_pour_stir_manipulation import (
     EVIDENCE_MODE,
+    PHASE_C_OPERATOR_ELIGIBLE_TARGET_REGIONS,
     PhaseCExecutionLedger,
+    VerifiedMotionPhaseCLedger,
     derive_pour_spec,
     derive_target_opening,
     derive_tool_tip,
@@ -49,6 +51,10 @@ def _align_vectors(source: np.ndarray, target: np.ndarray) -> np.ndarray:
     return rotation_about_axis(axis, math.acos(cosine))
 
 
+FROZEN_PLAN_ADMISSIBILITY = "FROZEN_PLAN"
+GEOMETRIC_ADMISSIBILITY = "GEOMETRIC"
+
+
 class KitchenPhaseCExecutionDispatcher:
     """Wrap Phase B without changing its PICK/PLACE or rejection semantics."""
 
@@ -57,7 +63,13 @@ class KitchenPhaseCExecutionDispatcher:
         phase_b: KitchenPhaseBExecutionDispatcher,
         frozen_registry: dict[str, Any],
         frozen_plan: list[dict[str, Any]],
+        admissibility: str = FROZEN_PLAN_ADMISSIBILITY,
     ):
+        if admissibility not in (FROZEN_PLAN_ADMISSIBILITY, GEOMETRIC_ADMISSIBILITY):
+            raise ValueError(
+                f"unknown Phase-C admissibility policy: {admissibility!r}"
+            )
+        self.admissibility = admissibility
         self.phase_b = phase_b
         self.scene = phase_b.scene
         self.inventory_by_id = phase_b.inventory_by_id
@@ -71,21 +83,26 @@ class KitchenPhaseCExecutionDispatcher:
         self.frozen_plan = phase_c_execution_plan(frozen_plan, frozen_registry)
         self.post_pick_carry_arm_by_id: dict[str, np.ndarray] = {}
         self.stir_chain_start_base_by_tool: dict[str, np.ndarray] = {}
-        self.ledger = PhaseCExecutionLedger(self.frozen_plan)
-        self.expected_pairs = {
-            row["action"].upper(): {
-                tuple(row.get("arguments", [])[:2]): int(row["step"])
-                for row in self.frozen_plan
-                if row["action"].upper() == row["action"].upper()
-            }
-            for row in self.frozen_plan
-        }
+        self.ledger = (
+            VerifiedMotionPhaseCLedger()
+            if admissibility == GEOMETRIC_ADMISSIBILITY
+            else PhaseCExecutionLedger(self.frozen_plan)
+        )
         self.expected_pairs = {
             operator: {
                 tuple(row.get("arguments", [])[:2]): int(row["step"])
                 for row in self.frozen_plan if row["action"].upper() == operator
             }
             for operator in ("POUR", "STIR")
+        }
+        # Where each object is *now*.  The frozen-plan path filters targets
+        # once, up front, because a pre-validated plan already pours on the
+        # countertop.  A baseline may legitimately retrieve a vessel from a
+        # cupboard and place it out before pouring, so the region has to track
+        # the placement rather than stay at wherever the vessel was first seen.
+        self.region_by_id = {
+            object_id: (row or {}).get("source_region")
+            for object_id, row in self.registry_by_id.items()
         }
 
     @property
@@ -254,7 +271,34 @@ class KitchenPhaseCExecutionDispatcher:
             }
 
     def place(self, object_id: str, destination: str) -> dict[str, Any]:
-        return self.phase_b.place(object_id, destination)
+        result = self.phase_b.place(object_id, destination)
+        if result.get("success"):
+            self.region_by_id[object_id] = destination
+        return result
+
+    def _pair_admissible(self, operator: str, first: str, second: str) -> bool:
+        """Decide whether POUR/STIR may be attempted on this pair.
+
+        Phase C was built as a frozen-plan executor: the ground-truth plan is
+        pre-validated, so a pair outside it is a harness error rather than a
+        method's choice.  A baseline supplies no plan and grounds the pair
+        itself, and gating on plan membership then makes the goal unreachable
+        for every method regardless of what it chose.  Under `GEOMETRIC` the
+        pair is admitted here and judged by opening geometry, reachability and
+        physics downstream.
+        """
+        if first not in self.binding_by_id or second not in self.binding_by_id:
+            return False
+        if self.admissibility == GEOMETRIC_ADMISSIBILITY:
+            # `phase_c_execution_plan` applies this rule to a frozen plan up
+            # front.  There is no plan to filter here, so it is applied per
+            # call: a vessel still inside a cupboard or drawer is not a legal
+            # target however the method grounded it.
+            return (
+                self.region_by_id.get(second)
+                in PHASE_C_OPERATOR_ELIGIBLE_TARGET_REGIONS
+            )
+        return self.expected_pairs[operator].get((first, second)) is not None
 
     def _opening(self, target_id: str):
         binding = self.binding_by_id.get(target_id)
@@ -833,7 +877,7 @@ class KitchenPhaseCExecutionDispatcher:
             "steps": [],
         }
         step = self.expected_pairs["POUR"].get((source_id, target_id))
-        if step is None or source_id not in self.binding_by_id or target_id not in self.binding_by_id:
+        if not self._pair_admissible("POUR", source_id, target_id):
             record.update(success=False, status="POUR_TARGET_RESOLUTION_FAILED", failure_code="POUR_TARGET_RESOLUTION_FAILED")
             return record
         held_before = self.phase_b._held_state(source_id)
@@ -1143,10 +1187,10 @@ class KitchenPhaseCExecutionDispatcher:
             "steps": [],
         }
         step = self.expected_pairs["STIR"].get((tool_id, target_id))
-        if step is None or tool_id not in self.binding_by_id or target_id not in self.binding_by_id:
+        if not self._pair_admissible("STIR", tool_id, target_id):
             record.update(success=False, status="STIR_TARGET_RESOLUTION_FAILED", failure_code="STIR_TARGET_RESOLUTION_FAILED")
             return record
-        has_later_stir_for_tool = any(
+        has_later_stir_for_tool = step is not None and any(
             row["action"].upper() == "STIR"
             and row.get("arguments", [None])[0] == tool_id
             and int(row["step"]) > int(step)

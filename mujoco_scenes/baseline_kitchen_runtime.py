@@ -32,7 +32,10 @@ from .kitchen_execution_bundle import (
 from .kitchen_articulation import ARTICULATION_SPECS
 from .geometry_checker import look_at_camera_rotation
 from .kitchen_phase_b_execution import KitchenPhaseBExecutionDispatcher
-from .kitchen_phase_c_execution import KitchenPhaseCExecutionDispatcher
+from .kitchen_phase_c_execution import (
+    GEOMETRIC_ADMISSIBILITY,
+    KitchenPhaseCExecutionDispatcher,
+)
 from .kitchen_tamp_execution import KitchenExecutionObserver
 from .tamp.physical_dispatcher import MuJoCoSkillDispatcher
 
@@ -75,6 +78,42 @@ def _unique_annotation_aliases(labels: Mapping[str, str]) -> dict[str, str]:
             else f"{normalized}_{seen[normalized]}"
         )
     return result
+
+
+def _measured_geometric_properties(
+    scene: Any, backend_body: str | None, object_kind: str
+) -> dict[str, Any]:
+    """Measure pour-target opening geometry from the instantiated mesh.
+
+    `derive_target_opening` needs an opening and a cavity depth and reads them
+    as `{"value": float}` rows.  Without them POUR fails
+    `POUR_OPENING_GEOMETRY_UNAVAILABLE` for every object, which made Kitchen's
+    goal unreachable for every method.  The measurement comes from the loaded
+    MuJoCo mesh rim -- the routine the feasibility oracle uses -- so it is a
+    property of the scene and not of any plan.  Objects with no measurable
+    cavity, such as spoons, simply carry no opening.
+    """
+    if backend_body is None:
+        return {}
+    from .exact_scene_geometry import extract_exact_object_geometry
+
+    try:
+        geometry = extract_exact_object_geometry(scene, backend_body, object_kind)
+    except (ValueError, KeyError):
+        return {}
+    measured = {
+        "opening_width_m": geometry.opening_width_m,
+        "opening_length_m": geometry.opening_length_m,
+        "cavity_depth_m": geometry.cavity_depth_m,
+    }
+    if any(value is None for value in measured.values()):
+        return {}
+    return {
+        "geometric_properties": {
+            key: {"value": float(value), "source": geometry.geometry_source}
+            for key, value in measured.items()
+        }
+    }
 
 
 def kitchen_public_region_ids() -> dict[str, str]:
@@ -455,6 +494,7 @@ class BaselineKitchenRuntime:
             self.phase_b,
             bundle.registry,
             [],
+            admissibility=GEOMETRIC_ADMISSIBILITY,
         )
         self.observer = KitchenExecutionObserver(self.phase_b)
         self.dispatcher = MuJoCoSkillDispatcher(
@@ -653,10 +693,24 @@ class BaselineKitchenRuntime:
             "accepted": accepted,
             "rejected": [],
         }
+        backend_for_generic = {
+            str(row["generic_object_id"]): str(row["physical_backend_body"])
+            for row in accepted
+        }
         registry = {
             "objects": {
                 row["generic_object_id"]: {
-                    "generic_object_id": row["generic_object_id"]
+                    "generic_object_id": row["generic_object_id"],
+                    # Phase C refuses to pour into a vessel still inside a
+                    # cupboard or drawer, keyed on this field.
+                    "source_region": (row.get("source_context") or {}).get(
+                        "observed_source_region"
+                    ),
+                    **_measured_geometric_properties(
+                        scene,
+                        backend_for_generic.get(str(row["generic_object_id"])),
+                        str(row["semantic_label"]),
+                    ),
                 }
                 for row in inventory_rows
             }
