@@ -119,15 +119,52 @@ def assert_no_prompt_leakage(payload: Mapping[str, object]) -> dict[str, Any]:
     except ImportError as error:  # pragma: no cover - environment guard
         return {"audited": False, "audit_status": "SKIPPED_AUDITOR_UNAVAILABLE",
                 "reason": str(error)}
-    verdict = audit_prompt_leakage({"request": _auditable_text(payload)})
+    auditable = _auditable_text(payload)
+    verdict = audit_prompt_leakage({"request": auditable})
     if verdict.get("audited") and not verdict.get("zero_leakage", True):
+        found = [
+            *(verdict.get("forbidden_checkers_found") or ()),
+            *(verdict.get("forbidden_regions_found") or ()),
+            *(verdict.get("forbidden_oracle_symbols_found") or ()),
+        ]
         raise PromptLeakageError(
             "Refusing to send a model request containing privileged evaluator "
             f"information: checkers={verdict.get('forbidden_checkers_found')} "
             f"regions={verdict.get('forbidden_regions_found')} "
             f"oracles={verdict.get('forbidden_oracle_symbols_found')}"
+            f"{_leakage_context(auditable, found)}"
         )
     return verdict
+
+
+# Long enough to identify the field and the surrounding structure, short enough
+# that a 30k-token prompt does not end up in a log line.
+_LEAKAGE_CONTEXT_RADIUS = 90
+
+
+def _leakage_context(auditable: str, tokens: Sequence[str]) -> str:
+    """Quote where each forbidden token actually appears in the payload.
+
+    Naming the token alone is not enough to fix a leak: a Kitchen episode was
+    refused for `regions=['D1']` and locating the source cost an hour of
+    reading, because the observation, the effect strings and the failure
+    feedback were all verifiably clean.  The guard already knows what it
+    matched, so it should also say where.
+    """
+    if not tokens:
+        return ""
+    excerpts: list[str] = []
+    for token in dict.fromkeys(tokens):
+        index = auditable.find(token)
+        if index < 0:
+            continue
+        start = max(0, index - _LEAKAGE_CONTEXT_RADIUS)
+        end = min(len(auditable), index + len(token) + _LEAKAGE_CONTEXT_RADIUS)
+        excerpt = auditable[start:end].replace("\n", " ")
+        excerpts.append(f"{token!r} in ...{excerpt}...")
+    if not excerpts:
+        return ""
+    return " | found at: " + " ;; ".join(excerpts)
 
 
 class OpenAITransport:

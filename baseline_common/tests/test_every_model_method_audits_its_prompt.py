@@ -78,3 +78,50 @@ def test_c_no_model_driven_baseline_bypasses_an_audited_transport():
         "these build a model client without auditing the prompt: "
         f"{sorted(set(offenders) - allowed)}"
     )
+
+
+def test_d_a_refused_prompt_says_where_the_token_appeared():
+    """Naming the token is not enough to fix a leak.
+
+    A Kitchen episode was refused for `regions=['D1']` and locating the source
+    cost an hour: the observation (verified across 106 episodes), the effect
+    strings and the failure-feedback table were all clean, so the message gave
+    nothing to act on. The guard already knows what it matched; it should also
+    quote where.
+    """
+    from baseline_common.inference import (
+        PromptLeakageError,
+        assert_no_prompt_leakage,
+    )
+
+    payload = {
+        "model": "qwen35-9b",
+        "messages": [
+            {"role": "system", "content": "plan over the visible state"},
+            {"role": "user", "content": "the mug is inside D1, retrieve it"},
+        ],
+    }
+    with pytest.raises(PromptLeakageError) as caught:
+        assert_no_prompt_leakage(payload)
+    message = str(caught.value)
+    assert "regions=['D1']" in message, "still reports what it found"
+    assert "found at:" in message, "must also report where"
+    assert "retrieve it" in message, "excerpt must include surrounding context"
+
+
+def test_e_the_excerpt_cannot_dump_an_entire_prompt():
+    """A 30k-token prompt must not end up in a log line."""
+    from baseline_common.inference import (
+        PromptLeakageError,
+        _LEAKAGE_CONTEXT_RADIUS,
+        assert_no_prompt_leakage,
+    )
+
+    filler = "x" * 40000
+    payload = {"model": "m", "messages": [{"role": "user", "content": f"{filler} D1 {filler}"}]}
+    with pytest.raises(PromptLeakageError) as caught:
+        assert_no_prompt_leakage(payload)
+    message = str(caught.value)
+    assert len(message) < 4 * _LEAKAGE_CONTEXT_RADIUS + 400, (
+        f"excerpt is unbounded: {len(message)} chars"
+    )
