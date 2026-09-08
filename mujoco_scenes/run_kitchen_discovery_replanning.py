@@ -270,7 +270,7 @@ def main() -> None:
         "--variant",
         choices=tuple(f"K{index}" for index in range(1, 13)),
         default="K2",
-        help="Feasible Kitchen variant",
+        help="Kitchen variant (K1-K6 feasible, K7-K12 infeasible)",
     )
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--goal", required=True)
