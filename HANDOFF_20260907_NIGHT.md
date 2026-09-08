@@ -140,3 +140,100 @@ failures" is stale -- it predates the Naren merge. The 12 errors are all one
 missing fixture, `runs/integrated_no_pot_clearance_seed19_20260807`, part of
 the 5 GB `runs/` archive never copied here. Run as:
 `env -u PYTHONPATH PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest`
+
+---
+
+# 2026-09-08 morning: Kitchen complete, region leaks found in two methods
+
+## Kitchen finished 06:22 — the baseline table is complete (771 episodes)
+
+| scene | method | n | outcome | feas succ | infeas rej | calls | reqs | acts | mean s |
+|---|---|---|---|---|---|---|---|---|---|
+| Living Room | VLM-TAMP | 100 | 60.0% | 52/60 | 8/40 | 3.1 | 5.9 | 8.7 | 598 |
+| Living Room | OWL-TAMP | 100 | 73.0% | 43/60 | 17/40 | 1.0 | 8.9 | 6.5 | 643 |
+| Living Room | Retrieval | 10 | 100.0% | 0/6 | 4/4 | 0 | 0 | 6.0 | 100 |
+| Workshop | VLM-TAMP | 100 | 12.0% | 8/80 | 4/20 | 4.8 | 9.6 | 3.1 | 974 |
+| Workshop | OWL-TAMP | 100 | 13.0% | 0/80 | 13/20 | 1.0 | 3.5 | 2.2 | 213 |
+| Workshop | Retrieval | 10 | 80.0% | 1/8 | 0/2 | 0 | 0 | 5.1 | 131 |
+| Kitchen | VLM-TAMP | 119 | 13.4% | 0/60 | 16/59 | 5.0 | 9.6 | 4.6 | 1291 |
+| Kitchen | OWL-TAMP | 120 | 0.0% | 0/60 | 0/60 | 1.0 | 12.1 | 0.0 | 1088 |
+| Kitchen | Retrieval | 12 | 50.0% | 0/6 | 6/6 | 0 | 0 | 5.0 | 55 |
+
+Feasible success is monotone in scene difficulty: 87/72% -> 10/0% -> 0/0%.
+**Neither model-driven baseline solves any feasible Kitchen variant.**
+
+**OWL-TAMP's Kitchen 0.0% needs its caveat stated.** `acts = 0.0` across all
+120 episodes: it terminated at `NO_SYMBOLIC_PLAN` having executed nothing.
+`infeasibility_proven()` requires every storage region to have been physically
+inspected, so an episode that executes nothing cannot earn a rejection whatever
+it concluded. The 0/60 is structural, not evidence it cannot discriminate --
+and it inverts its Living Room (17/40) and Workshop (13/20) behaviour.
+
+Kitchen is 239/240; `vlm_tamp K10 seed 1` is re-running (lost to the residual
+D1 leak below).
+
+## Region-identity leaks in ROBUST-TAMP and ViLaIn (both legs stopped)
+
+`FORBIDDEN_CANONICAL_REGION_TOKENS` in
+`functional_tamp_pipeline/audit.py` lists only Kitchen (`D1 D2 C2 B1 C1`) and
+Workshop (`LEFT_DRAWER RIGHT_DRAWER TOOL_CABINET`) tokens. **It has no Living
+Room tokens**, so a Living Room leak is silent while the same defect on
+Workshop fails loudly. That asymmetry hid two real defects:
+
+**ROBUST-TAMP Living Room.** Its observation's `regions` list is anonymised,
+but `known_regions[].category` carries the canonical role name:
+`{"id": "region_0001", "category": "personal_table_left", ...}`. VLM-TAMP's
+Living Room observation exposes only `{id, inspected, state}` -- no category at
+all. Since the task instruction is "each of two fixed *personal side tables*
+... the fixed *shared coffee table*", the category hands ROBUST-TAMP the
+object-to-region answer the other methods must infer. Source is the
+`category` field of `ObservedRegion`/`ObservedEntity` in
+`mujoco_scenes/tamp/state.py`. Workshop was clean (its categories are the
+legitimate lowercase annotation labels, not canonical tokens).
+
+**ViLaIn-TAMP, both scenes.** Two independent sources:
+- Kitchen/Workshop: `baselines/vilain_tamp/observations.py:24`
+  `FIXED_INSPECTION_ORDERS` hardcodes `("D1","D2","C2","B1","C1")` and
+  `("LEFT_DRAWER","RIGHT_DRAWER","TOOL_CABINET")`. Caught: 194 errors,
+  every Workshop episode died.
+- Living Room: `identity.py:302` and `live_fixed_evidence.py:30` key off
+  `personal_table_left` / `personal_table_right` / `shared_table`. **Silent.**
+
+ViLaIn is the harder fix: these identifiers run end-to-end through its PDDL
+`:init`/`:goal`, inspection traces, identity map and fixed-evidence tables, so
+anonymising only the prompt would desynchronise the PDDL from the prompt.
+
+**Extend the forbidden list with the Living Room tokens** so this class cannot
+hide again.
+
+## Fixes committed this morning
+
+- `2ff16ca6` the leakage guard now quotes a bounded excerpt around each
+  forbidden token. It identified the ViLaIn Workshop source on the first
+  occurrence, after the previous D1 refusal cost an hour of blind reading.
+- `7943d374` ROBUST-TAMP Living Room now runs headless. The shared `common`
+  block adds `--headless` for Kitchen only, on the grounds that "the Living
+  Room physical runtime is constructed headless" -- true of vlm/owl's runner
+  but not of `run_living_room_discovery_replanning.py`, which owns the flag and
+  defaults to viewer-on. Measured while wrong: 1 `mujoco.viewer` process, 37
+  GPU/DRI handles, **1.4-1.6% CPU** per episode against 22-25% headless. Third
+  appearance of this bug; now asserted as a parity property (the grid passes
+  `--headless` exactly when the runner defines it).
+- `3cf652bd`, `b2f2047c` two end-of-episode faults in
+  `vlm_tamp_baseline/run_kitchen.py`: `expected` bound only under
+  `--planning-only`, then `arguments.variant` used where only
+  `--physical-variant` is set. Each killed episodes *after* 20+ minutes of
+  work. No test calls `main()` or exercises the executing path for any scene
+  runner -- that gap is why both shipped, and an end-to-end executing-path
+  test with a mocked planner and runtime is still worth adding.
+
+## State
+
+Running: `lh-k10` (one Kitchen episode), `lh-rt-workshop` (clean, headless).
+Stopped: both ViLaIn legs, ROBUST-TAMP Living Room -- all for region leaks.
+Discarded: ~100 viewer-throttled ROBUST-TAMP Living Room episodes, and both
+ViLaIn output roots (0 artifacts).
+
+gvlab2 is free again if inference becomes the bottleneck. It is not currently:
+the Blackwell server runs `--max-num-seqs 16` and sits at 7 concurrent with 0
+queued, so worker count rather than server capacity is the limit.
