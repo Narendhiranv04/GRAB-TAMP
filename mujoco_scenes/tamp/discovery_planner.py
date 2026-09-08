@@ -13,6 +13,7 @@ from baseline_common.inference import (
     QWEN_THINKING_SAMPLING,
     ModelTransportError,
     OpenAITransport,
+    TruncatedCompletionError,
     PlanningError,
     load_model_profile,
     response_content,
@@ -128,6 +129,21 @@ class OpenAIDiscoveryPlanner:
             result = self._parse_result(content, request=request, latency_s=elapsed)
             self._write_trace(request, content, latency_s=elapsed)
             return result
+        except TruncatedCompletionError as error:
+            # Checked before PlanningError, which it subclasses.  A generation
+            # cut off by the token ceiling produced no plan, so charging the
+            # episode's replan budget for it reports the harness's ceiling as
+            # the method having planned badly -- BASELINE_FIDELITY.md requires
+            # it to draw "its own bounded retry budget, in the same way a
+            # transport fault already did", and VLM-TAMP implements that as
+            # max_truncation_retries.  Routed through TransportFaultError so it
+            # reuses that bounded, replan-free retry path; the message keeps
+            # MODEL_OUTPUT_TRUNCATED so the artifact still distinguishes the
+            # two causes.
+            self._write_trace(
+                request, None, latency_s=time.monotonic() - started, error=str(error)
+            )
+            raise TransportFaultError(f"MODEL_OUTPUT_TRUNCATED: {error}") from error
         except ModelTransportError as error:
             # Checked before PlanningError because it is a *subclass* of it.
             # Folding the two together made a connection failure, an HTTP
