@@ -162,3 +162,27 @@ def test_h_raw_requests_are_counted_not_inferred(scene):
     assert '"raw_vlm_requests": executive.model_calls' not in source, (
         f"{scene}: still equates requests with completions"
     )
+
+
+@pytest.mark.parametrize("scene", SCENES)
+def test_i_every_runner_that_owns_a_viewer_is_told_to_suppress_it(scene):
+    """A discovery runner with a --headless flag must receive it.
+
+    The shared `common` block adds --headless for Kitchen only, because "the
+    Living Room physical runtime is constructed headless" -- true of vlm_tamp's
+    and owl_tamp's Living Room runners, but not of
+    run_living_room_discovery_replanning.py, which owns the flag and defaults
+    to viewer-on.  ROBUST-TAMP Living Room therefore launched
+    mujoco.viewer.launch_passive per episode and stepped at render rate:
+    1.4-1.6% CPU against 22-25% for the headless Workshop episodes.  This is
+    the third time this exact bug has appeared, after retrieval Kitchen.
+    """
+    command = _command("robust_tamp", "K1" if scene == "kitchen" else ("L1" if scene == "living_room" else "W1"),
+                       3, 0, Path("/tmp/e"), _args(scene, "K1" if scene == "kitchen" else ("L1" if scene == "living_room" else "W1")))
+    defines_flag = "--headless" in _accepted_flags(RUNNERS[scene])
+    passed = "--headless" in command
+    assert passed == defines_flag, (
+        f"{scene}: runner defines --headless={defines_flag} but grid passes it={passed}; "
+        "a runner that owns a viewer and is not told to suppress it throttles "
+        "stepping to render rate"
+    )

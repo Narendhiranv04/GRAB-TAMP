@@ -247,6 +247,17 @@ def _command(
         if args.environment == "workshop":
             unsupported.add("--headless")
         tail = [item for item in common[2:] if item not in unsupported]
+        # The shared `common` block adds --headless for Kitchen only, on the
+        # grounds that "the Living Room physical runtime is constructed
+        # headless".  That is true of vlm_tamp's and owl_tamp's Living Room
+        # runners but NOT of run_living_room_discovery_replanning.py, which
+        # owns a --headless flag defaulting to viewer-on.  Without this,
+        # ROBUST-TAMP Living Room launched mujoco.viewer.launch_passive per
+        # episode and stepped at render rate: measured 1.4-1.6% CPU against
+        # 22-25% for the headless Workshop episodes, the same throttle that
+        # made retrieval Kitchen look like a 240 h cell.
+        if args.environment == "living_room" and "--headless" not in tail:
+            tail.append("--headless")
         return [
             sys.executable, "-m",
             f"mujoco_scenes.run_{args.environment}_discovery_replanning",
