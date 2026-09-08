@@ -1,0 +1,204 @@
+\begin{table*}[t]
+\centering
+\caption{End-to-end results in the three-view setting using the shared
+Google-Robot execution interface. Each scene variant is evaluated over
+$N=10$ trials. \emph{Native} conditions make one planning decision from the
+initial observation and re-plan only when grounding, refinement, or physical
+execution fails; receding-horizon conditions re-observe and plan again after
+each action. All methods share the \emph{model-native} decoding condition
+(temperature $0.6$, top-$p$ $0.95$, top-$k$ $20$, repetition penalty $1.05$,
+thinking enabled) with Qwen3.5-9B substituted for each method's published
+backbone.}
+\label{tab:main_results}
+
+\setlength{\tabcolsep}{3.0pt}
+\renewcommand{\arraystretch}{1.08}
+\scriptsize
+
+\begin{tabular*}{\textwidth}{
+@{\extracolsep{\fill}}
+ll
+ccccccc
+@{}}
+\toprule
+
+\textbf{Method} &
+\textbf{Setting} &
+\makecell{\textbf{Outcome}\\\textbf{correct (\%) $\uparrow$}} &
+\makecell{\textbf{Feasible-task}\\\textbf{success (\%) $\uparrow$}} &
+\makecell{\textbf{Goal}\\\textbf{coverage (\%) $\uparrow$}} &
+\makecell{\textbf{False}\\\textbf{completion (\%) $\downarrow$}} &
+\makecell{\textbf{Physical plan}\\\textbf{found (\%) $\uparrow$}} &
+\makecell{\textbf{Raw VLM}\\\textbf{requests $\downarrow$}} &
+\makecell{\textbf{High-level}\\\textbf{replans (\#) $\downarrow$}} \\
+
+\midrule
+
+% ================================================================
+% KITCHEN
+% ================================================================
+\multicolumn{9}{@{}l}{
+    \textbf{Kitchen}
+} \\
+\addlinespace[1pt]
+
+\multirow{2}{*}{VLM-TAMP~\cite{yang2025vlmtamp}}
+& \textit{Native}
+& 13.3 & \textdagger & -- & 0.0 & 100.0 & 9.6 & 3.96 \\
+
+& \textit{Receding horizon}
+& -- & -- & -- & -- & -- & -- & -- \\
+
+\addlinespace[1pt]
+
+\multirow{2}{*}{OWL-TAMP~\cite{kumar2026owltamp}}
+& \textit{Native}
+& 0.0 & \textdagger & -- & 0.0 & 0.0 & 12.1 & 0.00 \\
+
+& \textit{Receding horizon}
+& -- & -- & -- & -- & -- & -- & -- \\
+
+\addlinespace[1pt]
+
+ROBUST-TAMP
+& \textit{Native}
+& -- & -- & -- & -- & -- & -- & -- \\
+
+ViLaIn-TAMP~\cite{siburian2025vilaintamp}
+& --
+& -- & -- & -- & -- & -- & -- & -- \\
+
+\textbf{Ours}
+& \textbf{\textit{Single FM call}}
+& \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--}
+& \textbf{--} & \textbf{--} & \textbf{0.0} \\
+
+\midrule
+
+% ================================================================
+% LIVING ROOM
+% ================================================================
+\multicolumn{9}{@{}l}{
+    \textbf{Living room}
+} \\
+\addlinespace[1pt]
+
+\multirow{2}{*}{VLM-TAMP~\cite{yang2025vlmtamp}}
+& \textit{Native}
+& 60.0 & 86.7 & \textbf{81.1} & 0.0 & \textbf{100.0} & 5.9 & 2.06 \\
+
+& \textit{Receding horizon}
+& -- & -- & -- & -- & -- & -- & -- \\
+
+\addlinespace[1pt]
+
+\multirow{2}{*}{OWL-TAMP~\cite{kumar2026owltamp}}
+& \textit{Native}
+& \textbf{73.0} & 71.7 & 63.9 & 45.0 & 93.3 & 8.9 & 0.00 \\
+
+& \textit{Receding horizon}
+& -- & -- & -- & -- & -- & -- & -- \\
+
+\addlinespace[1pt]
+
+ROBUST-TAMP
+& \textit{Native}
+& 76.4$^{\ast}$ & \textbf{91.7}$^{\ast}$ & 75.7$^{\ast}$ & 0.0$^{\ast}$ & \textbf{100.0}$^{\ast}$ & \textbf{2.2}$^{\ast}$ & 1.08$^{\ast}$ \\
+
+ViLaIn-TAMP~\cite{siburian2025vilaintamp}
+& --
+& 0.0$^{\ast}$ & 0.0$^{\ast}$ & -- & -- & 0.0$^{\ast}$ & 6.0$^{\ast}$ & 3.00$^{\ast}$ \\
+
+\textbf{Ours}
+& \textbf{\textit{Single FM call}}
+& \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--}
+& \textbf{--} & \textbf{--} & \textbf{0.0} \\
+
+\midrule
+
+% ================================================================
+% WORKSHOP
+% ================================================================
+\multicolumn{9}{@{}l}{
+    \textbf{Workshop}
+} \\
+\addlinespace[1pt]
+
+\multirow{2}{*}{VLM-TAMP~\cite{yang2025vlmtamp}}
+& \textit{Native}
+& 12.0 & \textbf{10.0} & -- & 0.0 & 90.0 & 9.6 & 3.83 \\
+
+& \textit{Receding horizon}
+& -- & -- & -- & -- & -- & -- & -- \\
+
+\addlinespace[1pt]
+
+\multirow{2}{*}{OWL-TAMP~\cite{kumar2026owltamp}}
+& \textit{Native}
+& \textbf{13.0} & 0.0 & -- & 0.0 & 73.8 & 3.5 & 0.00 \\
+
+& \textit{Receding horizon}
+& -- & -- & -- & -- & -- & -- & -- \\
+
+\addlinespace[1pt]
+
+ROBUST-TAMP
+& \textit{Native}
+& 0.0$^{\ast}$ & 0.0$^{\ast}$ & -- & -- & \textbf{96.0}$^{\ast}$ & 6.6$^{\ast}$ & 5.00$^{\ast}$ \\
+
+ViLaIn-TAMP~\cite{siburian2025vilaintamp}
+& --
+& 0.0$^{\ast}$ & 0.0$^{\ast}$ & -- & -- & 0.0$^{\ast}$ & 7.6$^{\ast}$ & 3.00$^{\ast}$ \\
+
+\textbf{Ours}
+& \textbf{\textit{Single FM call}}
+& \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--}
+& \textbf{--} & \textbf{--} & \textbf{0.0} \\
+
+\bottomrule
+\end{tabular*}
+
+\vspace{3pt}
+
+\begin{minipage}{0.98\textwidth}
+\footnotesize
+\textit{Note:}
+\textbf{Outcome correctness} is the percentage of trials with the correct
+final feasible/infeasible outcome.
+\textbf{Feasible-task success} is the percentage of feasible trials successfully completed.
+\textbf{Goal coverage} is the percentage of required task goals satisfied.
+\textbf{False completion} is the percentage of infeasible trials incorrectly reported as complete.
+\textbf{Physical plan found} is the percentage of feasible trials for which an executable motion plan is obtained.
+\textbf{Raw VLM requests} is the mean number of VLM calls per trial.
+\textbf{High-level replans} is the mean number of times the task plan is regenerated after execution begins.
+\\[2pt]
+Trials per cell: VLM-TAMP and OWL-TAMP $N{=}10$ per variant (Kitchen $120$,
+Living room $100$, Workshop $100$).
+$^{\ast}$Cell still filling: ROBUST-TAMP Living room $72$, Workshop $46$;
+ViLaIn-TAMP Living room $23$, Workshop $12$.
+Receding-horizon conditions were not run; the reported protocol is
+\texttt{native} for every method.
+\textdagger Kitchen feasible-task success is withheld: the shared Kitchen
+execution harness admitted \textsc{pour}/\textsc{stir} only for
+ground-truth-planned argument pairs while being supplied an empty plan, so the
+goal's two pour relations and one stir relation were unsatisfiable for every
+method on every variant, independently of what it proposed. Kitchen outcome
+correctness and false completion are unaffected, being carried by the
+infeasible half, which requires no pour. The re-run under the corrected
+harness is in progress.
+\textbf{Physical plan found} is operationalised as a feasible trial in which at
+least one refined action was physically executed, so the harness demonstrably
+obtained an executable motion plan; a trial that terminates without executing
+any action obtained none.
+\textbf{Goal coverage} is measured against the ground-truth goal decomposition
+by checking which required final placements hold in the recorded terminal
+state. It is reported for Living room only, where the ground-truth goal is
+exactly a set of placements. Workshop is withheld because its goal includes a
+fastening condition that is not a placement, and Kitchen because no
+ground-truth action decomposition is recorded alongside those episodes;
+neither is estimated. ViLaIn-TAMP records neither a terminal-state snapshot nor
+a ground-truth decomposition in its own artifact layout, so its coverage is
+unavailable in all three scenes.
+\end{minipage}
+
+\end{table*}
