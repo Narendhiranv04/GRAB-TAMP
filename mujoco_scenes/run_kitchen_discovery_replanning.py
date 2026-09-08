@@ -268,7 +268,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--variant",
-        choices=tuple(f"K{index}" for index in range(1, 7)),
+        choices=tuple(f"K{index}" for index in range(1, 13)),
         default="K2",
         help="Feasible Kitchen variant",
     )
