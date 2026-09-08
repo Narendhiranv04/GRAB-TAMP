@@ -227,7 +227,7 @@ def run_episode(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--variant", choices=tuple(f"L{index}" for index in range(1, 7)), default="L1")
+    parser.add_argument("--variant", choices=tuple(f"L{index}" for index in range(1, 11)), default="L1")
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--goal", required=True)
     parser.add_argument("--base-url", required=True)
