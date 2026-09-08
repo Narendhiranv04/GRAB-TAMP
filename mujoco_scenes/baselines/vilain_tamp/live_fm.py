@@ -504,7 +504,16 @@ class VLLMQwenTransport:
             raise FMTransportError(
                 "Pillow is required to pack multi-stage observation images"
             ) from error
-        tile_size = (448, 336)
+        # Native render size.  Downscaling to 448x336 before tiling left a
+        # cup about 18x13 px, and ViLaIn is the one baseline whose entity
+        # binding needs a pixel-accurate box: it unprojects the box centre
+        # through depth, so a box that misses the object samples the floor
+        # behind the table and the centroid collapses to ground level.  Every
+        # L1 estimate landed at z~0.01 against a true 0.795, putting it 0.94 m
+        # from its own object past the 0.75 m limit, so identity resolution
+        # raised UNRESOLVED_ENTITY on every episode.  VLM-TAMP and OWL-TAMP
+        # send un-downscaled frames and need no box at all.
+        tile_size = (640, 480)
         columns = min(3, len(paths))
         rows = (len(paths) + columns - 1) // columns
         sheet = Image.new("RGB", (tile_size[0] * columns, tile_size[1] * rows))
