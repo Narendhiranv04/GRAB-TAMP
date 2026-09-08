@@ -171,7 +171,8 @@ class MockCorrectivePlanning:
             problem = replace(initial_problem, attempt_index=index, source=ProblemSource.INITIAL if index == 0 else ProblemSource.CP)
             success = self.scenario["outcome"] != "exhausted_infeasible" and index == count - 1
             _write_attempt_artifacts(attempt_root, problem, success)
-            failure = None if success else CorrectiveFailure(CorrectiveFailureKind.REFINEMENT, f"offline refinement failure {index}", {"stage": "IK"})
+            kind = CorrectiveFailureKind(self.scenario.get("failure_kind", "REFINEMENT"))
+            failure = None if success else CorrectiveFailure(kind, f"offline {kind.value.lower()} failure {index}", {"stage": "IK"})
             payload = _successful_payload(domain.key, index) if success else {"metrics": {"translation_valid": True, "plannable": True, "val_plan_valid": True, "symbolic_plan_length": 1}}
             attempts.append(TAMPAttemptOutcome(index, success, failure, result_payload=payload))
             if success:

@@ -31,7 +31,11 @@ from .contracts import (
     GeneratedPDDLProblem,
     SerializableContract,
 )
-from .corrective_planning import CorrectivePlanningResult, CorrectiveRunStatus
+from .corrective_planning import (
+    CorrectiveFailureKind,
+    CorrectivePlanningResult,
+    CorrectiveRunStatus,
+)
 from .domains.registry import DomainDefinition, load_domain
 from .evaluation import (
     HiddenBenchmarkContext,
@@ -396,10 +400,35 @@ class BaselineRunner:
                 terminal_state = execution_result.terminal_state
                 effect_ledger = execution_result.effect_ledger
             else:
-                predicted_infeasible = planning.status in {
-                    CorrectiveRunStatus.EXHAUSTED,
-                    CorrectiveRunStatus.REPEATED_REVISION,
+                # Exhausting the corrective loop is ViLaIn's own infeasibility
+                # signal -- on a variant whose required tool is absent it plans
+                # symbolically, then fails refinement repeatedly, which is what
+                # `workshop_infeasible.json` encodes.  But that only holds when
+                # the loop failed on the task itself.  Living Room exhausted 59
+                # feasible episodes on ENTITY_RESOLUTION -- it could not bind
+                # its own `red_cup_1` to any observed object -- and grounding
+                # failure is not a verdict that the task cannot be done.  Nor
+                # is a transport fault or a symbolic timeout.  Scoring those as
+                # INFEASIBLE also handed ViLaIn a spurious 11/11 on the
+                # infeasible half, since it answered INFEASIBLE 70 times in 71.
+                NON_VERDICT_FAILURES = {
+                    CorrectiveFailureKind.ENTITY_RESOLUTION,
+                    CorrectiveFailureKind.INFRASTRUCTURE,
+                    CorrectiveFailureKind.SYMBOLIC_TIMEOUT,
                 }
+                terminal_kind = (
+                    planning.terminal_failure.kind
+                    if planning.terminal_failure is not None
+                    else None
+                )
+                predicted_infeasible = (
+                    planning.status
+                    in {
+                        CorrectiveRunStatus.EXHAUSTED,
+                        CorrectiveRunStatus.REPEATED_REVISION,
+                    }
+                    and terminal_kind not in NON_VERDICT_FAILURES
+                )
                 terminal_state = components.execution.terminal_without_execution(
                     domain=options.domain.value,
                     variant=options.variant,

@@ -290,7 +290,14 @@ def _write_shared_execution_result(result: Any, options: Any) -> None:
             if ground_truth_feasible is None
             else ("FEASIBLE" if ground_truth_feasible else "INFEASIBLE")
         ),
-        predicted_outcome=("INFEASIBLE" if predicted_infeasible else "FEASIBLE"),
+        # Three-way, like every other baseline: claiming FEASIBLE for a run
+        # that never satisfied the goal scored a match on the feasible half
+        # without achieving anything.
+        predicted_outcome=(
+            "FEASIBLE"
+            if success
+            else ("INFEASIBLE" if predicted_infeasible else "UNRESOLVED")
+        ),
     )
 
 
