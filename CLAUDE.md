@@ -26,10 +26,17 @@ git log -5 --oneline --decorate
 
 Run the test suite as `env -u PYTHONPATH PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
 .venv/bin/python -m pytest ...`. With ROS sourced, its pytest plugin hijacks
-collection and the suite exits 0 having tested nothing. Expect exactly five
-failures, all Kitchen serving-allocator or Kitchen ground-truth execution; any
-other failure is real. (This was seven before 2026-09-05; three stale tests
-were updated against the contracts the code actually implements, and
-`MACHINE_HANDOFF.md` records which and why.)
+collection and the suite exits 0 having tested nothing.
+
+The suite is not clean: expect 57 failures and 12 errors, and judge by which
+files they are in rather than by the count. They are `functional_tamp_pipeline`
+contract tests for the proposed method, which has never been run, plus
+`FileNotFoundError` for generated `runs/` artifacts that are not in version
+control. A failure outside those files is real. Verified identical at
+`8cba7610` in a throwaway worktree, so they predate the 2026-09-09 baseline
+work. Section 0 of `CLAUDE_HANDOFF.md` lists them precisely.
+
+An earlier version of this file claimed exactly five failures, all Kitchen
+serving-allocator or Kitchen ground-truth execution. That count is retired.
 
 Do not reset, clean, discard, or overwrite the existing worktree.

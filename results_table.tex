@@ -1,3 +1,9 @@
+% Generated from execution artifacts.  Do not hand-edit the numbers:
+%   .venv/bin/python -m scripts.paper_metrics_table --latex
+%   .venv/bin/python -m scripts.paper_metrics_table --validate
+% `--validate` asserts that every trial the harness scored a success also
+% scores 100%% goal coverage.  That check is what caught the Workshop goal
+% being scored on one clause of three.
 \begin{table*}[t]
 \centering
 \caption{End-to-end results in the three-view setting using the shared
@@ -48,7 +54,7 @@ OWL-TAMP~\cite{kumar2026owltamp}
 
 ROBUST-TAMP
 & \textit{Native}
-& $82^{\ast}$ & $0.0^{\ast}$ & $0.0^{\ast}$ & -- & $0.0^{\ast}$ & $26.7^{\ast}$ & $6.02^{\ast}$ & $4.63^{\ast}$ \\
+& \multicolumn{8}{c}{\textit{re-running: harness defect corrected 2026-09-09}} \\
 
 ViLaIn-TAMP~\cite{siburian2025vilaintamp}
 & \textit{Native}
@@ -90,15 +96,15 @@ ViLaIn-TAMP~\cite{siburian2025vilaintamp}
 
 VLM-TAMP~\cite{yang2025vlmtamp}
 & \textit{Native}
-& $100$ & $12.0$ & $\mathbf{10.0}$ & -- & $0.0$ & $90.0$ & $9.56$ & $3.83$ \\
+& \multicolumn{8}{c}{\textit{re-running: harness defect corrected 2026-09-09}} \\
 
 OWL-TAMP~\cite{kumar2026owltamp}
 & \textit{Native}
-& $100$ & $\mathbf{13.0}$ & $0.0$ & -- & $0.0$ & $73.8$ & $\mathbf{3.49}$ & $0.00$ \\
+& $100$ & $\mathbf{13.0}$ & $0.0$ & $0.0$ & $0.0$ & $73.8$ & $\mathbf{3.49}$ & $0.00$ \\
 
 ROBUST-TAMP
 & \textit{Native}
-& $100$ & $0.0$ & $0.0$ & -- & $0.0$ & $\mathbf{97.5}$ & $6.76$ & $4.64$ \\
+& \multicolumn{8}{c}{\textit{re-running: harness defect corrected 2026-09-09}} \\
 
 ViLaIn-TAMP~\cite{siburian2025vilaintamp}
 & \textit{Native}
@@ -125,11 +131,13 @@ measured against the ground-truth goal decomposition on the recorded terminal
 state. Living room is scored over role slots rather than object identity,
 because its goal is symmetric under exchanging the two place settings; Kitchen
 is scored against the evaluator's goal contract, which enumerates the required
-pour, stir and serving conditions. Workshop is withheld: a ground-truth-derived
-reading was built against the fastening relations the privileged observation
-records, and it fails validation on all eight known successes, so it measures
-something other than the goal. ViLaIn-TAMP records neither a terminal-state
-snapshot nor a ground-truth decomposition in its artifact layout.
+pour, stir and serving conditions. Workshop is scored over the three
+terminal conditions its instruction names: the fastener seated in the joint,
+the joint fastened, and the driver returned to the workbench with an empty
+gripper. Which driver performed the fastening is not checked against ground
+truth, because the physical fastening skill already rejects an incompatible
+driver. ViLaIn-TAMP records neither a terminal-state snapshot nor a
+ground-truth decomposition in its artifact layout.
 \textbf{False completion} is the percentage of infeasible trials incorrectly
 reported as complete.
 \textbf{Physical plan found} is the percentage of feasible trials in which at
@@ -146,7 +154,17 @@ the original grid, which needed no re-run because rejecting an infeasible
 variant requires no pour. Kitchen feasible-task success is $0.0$ for both
 model-driven baselines under the corrected harness: pours now execute and
 commit, but neither method ever emits a \textsc{stir}, which the goal requires.
-$^{\ast}$Cell still filling; the value is over the trials collected so far.
+Cells marked \textit{re-running} are being re-collected after three harness
+defects were corrected on 2026-09-09, and no value is reported for them. In
+Workshop, method success had been scored on the physical joint state alone,
+which is one clause of a three-clause instruction that also asks that reusable
+equipment be left on the workbench; every episode that fastened ended holding
+the driver, and because the executive stops as soon as its verifier passes,
+the omission that was rewarded was also the omission it caused. In Kitchen,
+\textsc{robust-tamp} read the gripper under a key its runtime does not
+publish, so every placement, pour and stir after a successful pick was
+rejected. In Workshop, \textsc{robust-tamp} additionally ran against a
+serving configuration on which 67 of 100 episodes took a transport fault.
 Receding-horizon conditions and the \emph{Ours} rows are not yet run.
 \end{minipage}
 

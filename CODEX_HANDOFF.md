@@ -2,6 +2,16 @@
 
 Updated: 2026-08-31 (Asia/Kolkata)
 
+> **Stale for status, kept for architecture.** Read section 0 of
+> `CLAUDE_HANDOFF.md` first; it carries the current state as of 2026-09-09 and
+> supersedes every status claim in this file. What is still reliable here is
+> the architecture, the scene and variant design, and the rationale behind the
+> planning paths. What is not: which grids exist, which methods have run, what
+> the numbers are, which variants are in scope, and what the test suite does.
+> This file predates the physical execution of all three scenes, the ViLaIn and
+> ROBUST-TAMP baselines, and the three harness defects corrected on
+> 2026-09-09. Do not quote a result from it.
+
 This file is the working context for continuing the project from another Codex
 session after SSHing into this machine. Start the next session by asking Codex
 to read this file, inspect the current worktree, and continue without resetting

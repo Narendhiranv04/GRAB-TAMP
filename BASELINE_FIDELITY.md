@@ -827,3 +827,68 @@ blocker 2 with no leakage.  Blocker 1 needs a decision rather than a patch:
 POUR/STIR admissibility must stop depending on plan membership and be decided by
 geometry, so that the pair a method actually chose is what gets executed and
 judged.  Until both are done, Kitchen's feasible column is not reportable.
+
+## What the Workshop goal is, and what it is not (2026-09-09)
+
+The published Workshop instruction has three clauses:
+
+> Identify the compatible components required to complete the fastening at the
+> marked workbench location, complete the fastening, **and leave any reusable
+> equipment used for the task safely on the workbench.**
+
+Only the middle clause is visible in the physical joint state.
+`WorkshopPhysicalExecutor.goal_satisfied` is `repaired_joint == TARGET_JOINT`
+and nothing else, so it is not the goal; it is the fastening clause of it.
+
+VLM-TAMP handed that clause to the executive as its goal verifier. Because the
+executive returns as soon as its verifier passes, the omission it rewarded was
+also the omission it caused: of 400 Workshop episodes, 8 ever fastened, and all
+8 ended with the driver still in the gripper, stopped one action short of the
+goal they were credited with. The environment's own predicate had recorded
+`goal_satisfied: false` beside `terminal_status: GOAL_COMPLETE` in every one.
+
+OWL-TAMP and the Retrieval baseline drove their control loops from the full
+predicate but reported the verdict from the joint alone. Neither reported
+number moves -- neither ever fastened -- but a run that pursues one definition
+and reports another is a defect regardless of whether the arithmetic changes.
+
+**What may be claimed.** Workshop success is `workshop_goal_reached`: the
+physical scene is authoritative on the fastening, and the runtime predicate
+carries the clauses the joint cannot see (empty gripper, driver returned to the
+work surface). A number scored on the joint alone may not be reported as
+Workshop success. The 100 VLM-TAMP episodes recorded under the old definition
+are retired to `runs/_superseded/`.
+
+**Goal coverage** is the three terminal conditions in that instruction:
+fastener seated, joint fastened, driver back on the workbench with an empty
+gripper. Which driver did it is deliberately not checked against ground truth,
+for the reason the Living Room established -- demanding GT's specific
+assignment marked 30 of 95 correct solves wrong -- and because the physical
+FASTEN skill already rejects an incompatible driver, so a recorded fastening is
+a compatible one.
+
+## Limitation: ROBUST-TAMP and the 24576-token ceiling (2026-09-09)
+
+`--max-tokens` is 24576 for every model-driven method, and it stays there. This
+is recorded as a limitation of the ROBUST-TAMP framework rather than corrected,
+because raising the ceiling for one method would make the comparison measure
+the ceiling instead of the method.
+
+ROBUST-TAMP pays for it more than the others. Its planner must emit strict JSON
+containing exactly `status` and `actions`, with explanations and markdown
+forbidden by its system prompt, after a thinking pass. Measured on the retired
+Kitchen leg: 48 of 519 planner calls reached the ceiling before emitting any
+JSON at all, one of them after 450 s, and the reply is then unusable. A further
+403 of 1570 calls across the retired Kitchen and Workshop legs were rejected
+for carrying top-level keys other than those two.
+
+The VLM-TAMP and OWL-TAMP legs do not show this: across 620 episodes of
+Kitchen, Living Room and Workshop grids their truncation count is 0. The
+ceiling binds on ROBUST-TAMP specifically, because of what its output contract
+demands after a long generation.
+
+**What may be claimed.** ROBUST-TAMP's scores are reported at the same decoding
+condition as every other method, and its output-format brittleness under that
+condition is part of the result. It may not be reported as though it ran under
+a different ceiling, and the other methods' numbers may not be re-run at a
+higher one for comparison.

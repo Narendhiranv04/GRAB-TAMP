@@ -89,6 +89,11 @@ LABEL = {
     "robust_tamp": "ROBUST-TAMP", "functional_tamp": "Ours",
 }
 SCENES = ("kitchen", "living_room", "workshop")
+# Table I variant counts x 10 seeds.  A cell holding fewer trials than this is
+# a leg still in flight or one that died partway, and it is rendered as
+# incomplete rather than as a result: a ROBUST-TAMP Kitchen cell holding 1 of
+# 120 trials otherwise prints "0.0", which reads exactly like a finding.
+GRID_TRIALS = {"kitchen": 120, "living_room": 100, "workshop": 100}
 SCENE_LABEL = {"kitchen": "Kitchen", "living_room": "Living room", "workshop": "Workshop"}
 ORDER = ("VLM-TAMP", "OWL-TAMP", "Retrieval", "ROBUST-TAMP", "ViLaIn-TAMP", "Ours")
 # Goal coverage is only meaningful where the ground-truth goal is a set of
@@ -295,6 +300,19 @@ def render(cells, latex: bool) -> str:
         for method in ORDER:
             c = cells.get((scene, method))
             if not c:
+                continue
+            expected = GRID_TRIALS[scene]
+            if c["n"] < expected:
+                note = f"incomplete: {c['n']}/{expected} trials"
+                if latex:
+                    out.append(
+                        f"{method} & ${c['n']}/{expected}$ & "
+                        + " & ".join([r"\multicolumn{1}{c}{--}"] * 7)
+                        + r" \\"
+                    )
+                else:
+                    out.append(f"{SCENE_LABEL[scene]:12s}{method:13s}"
+                               f"{c['n']:5d}   {note:>60s}")
                 continue
             vals = (
                 _pct(c["match"], c["n"]), _pct(c["fs"], c["ft"]),

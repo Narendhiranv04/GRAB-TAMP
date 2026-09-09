@@ -1,110 +1,152 @@
 # Claude Project Handoff
 
-Updated: 2026-09-04 (Asia/Kolkata)
+Updated: 2026-09-09 (Asia/Kolkata)
 
 This is the current-state handoff for continuing work on this repository with
 Claude or another coding agent. Read this file before changing code. Then read
 the current Git status and the narrowly relevant runbook/source files. Do not
 assume that every older status statement in `CODEX_HANDOFF.md` is still true.
 
-## 0. Read first: state as of 2026-09-04
+## 0. Read first: state as of 2026-09-09
 
 This section supersedes any older statement in this file that conflicts with
 it. The rest of the document remains accurate about architecture, boundaries,
 and scene design, but its status claims predate the work below.
 
-### The worktree is no longer dirty
+Working branch is `baseline_executions`. It is not pushed: `origin` is an
+HTTPS remote with no stored credential on this host and the SSH key is not
+authorised for it.
 
-Everything is committed. `MACHINE_HANDOFF.md` at the repo root covers setting
-this repository up on a new host and is the right starting point after a fresh
-clone. Sections 1's warnings about a dirty worktree are historical.
+Four dated operational handoffs -- `SESSION_CONTEXT_20260907.md`,
+`HANDOFF_20260907_NIGHT.md`, `RESUME_20260908.md` and
+`RESUME_20260908_POUR.md` -- were removed on 2026-09-09 because this section
+supersedes them and they only cross-referenced each other. They cost real time:
+`RESUME_20260908_POUR.md` had already recorded that the test-failure count was
+no longer five, and that never reached `CLAUDE.md`, which went on telling every
+reader that any sixth failure was real. Read them from git history if needed;
+do not start a fifth. Current state belongs in this section.
 
-```text
-dbf2556  Document the machine handoff and the truncation failure mode
-107f385  Track the workshop_realistic scene assets
-8ab22df  Record host provenance and generate the paper tables from artifacts
-66f6d27  Survive interruption and hangs in an unattended execution grid
-db0cf37  Treat truncated generation as a harness fault, not a planning failure
-70fd174  Execute the retrieval baseline and record execution provenance
-6853f3d  Hold decoding fixed across baselines and stop sketch degeneration
-ab3d6b1  Fix Living Room physical execution stranding, settling and grasp twist
-a73cc89  Port phase-4 execution layer and baseline comparison scaffolding
-```
+### The task instructions are settled; import them, never restate them
 
-Branches `baseline_execution` and `phase4_integration` both point at `dbf2556`.
-Read each commit message before changing the areas they touch: each records the
-measurements that justify it.
+`mujoco_scenes/benchmark_task_instructions.py` loads the published Table I
+instruction for each domain from the scene YAML and is the only source. All
+three match the paper byte for byte, and so does the recorded prompt of every
+one of the 1,244 episodes on disk.
+
+Restating them has drifted twice. The Workshop copy handed to the baselines
+once named the categories and prescribed the geometry ("the compatible screw",
+"the first compatible driver", "tip-down"), which gave them information the
+proposed method never got, and `run_discovery_execution_batch` kept Kitchen and
+Living Room copies that had lost clauses. Both are fixed. Do not add a third.
+
+### Three harness bugs were found on 2026-09-09; read these before trusting a number
+
+1. **Kitchen ROBUST-TAMP could not succeed.** `observation_to_observed_state`
+   read the grasp as `robot["holding"]`. Living Room and Workshop publish that
+   key; Kitchen arrives via `RobotObservation.as_dict()`, which spells it
+   `held_object`. So `observed_skill_precheck` saw an empty gripper on every
+   Kitchen observation and rejected every PLACE, POUR and STIR after a
+   successful pick. Fixed in `a3dd4c75`; the bridge reads both dialects, as its
+   location lookup always did.
+2. **Workshop was scored on one clause of a three-clause goal.** The goal also
+   asks that reusable equipment be left on the workbench.
+   `WorkshopPhysicalExecutor.goal_satisfied` is only `repaired_joint ==
+   TARGET_JOINT`, and the executive returns as soon as its verifier passes, so
+   the omission it rewarded was the omission it caused: of 400 Workshop
+   episodes 8 ever fastened and all 8 ended holding the driver. Fixed in
+   `1e6f5bf6`; `workshop_goal_reached` now holds the definition once.
+3. **Workshop ROBUST-TAMP measured the serving configuration.** 67 of 100
+   episodes took a planner transport fault, 55 a request timeout and 70
+   exhausted the replan budget, against a vLLM then running
+   `--max-num-seqs 16`.
+
+Episodes recorded under 1--3 are retired to `runs/_superseded/`, which carries
+a README naming the reason for each. They are kept as the evidence, and they
+sit outside every root in `scripts/paper_metrics_table.py` rather than being
+filtered, because de-duplication picks the newest artifact per trial and a
+re-run that failed to produce one would let the retired episode win.
 
 ### Decisions the researcher has made; do not silently revert these
 
-- **Decoding is `model-native` for every model-driven method**, with thinking
-  enabled for both baselines. Sampling is Qwen3.5-9B's published thinking-mode
-  figures for precise coding, with `repetition_penalty` 1.05 as the single
-  documented deviation. Rationale and measurements are in
-  `BASELINE_FIDELITY.md` under "Decoding conditions". `--decoding paper`
-  reproduces each baseline's own published condition and is a reported
-  ablation, not the default.
-- **`--max-model-calls` is 10** for physical execution.
-- **Only GT-feasible variants (L1--L6) are being run** for now. Infeasible
-  variants are deferred until the scoring gap below is closed.
+- **Decoding is `model-native` for every model-driven method**, thinking
+  enabled. Sampling is Qwen3.5-9B's published thinking-mode figures, with
+  `repetition_penalty` 1.05 as the single documented deviation. See
+  `BASELINE_FIDELITY.md`, "Decoding conditions". `--decoding paper` is a
+  reported ablation, not the default.
+- **`--max-model-calls` is 5.** Measured on the completed Living Room grid:
+  OWL-TAMP used exactly 1 call in all 60 episodes and only 6 of 121 VLM-TAMP
+  episodes exceeded 5, of which five hit the ceiling, mostly failed anyway, and
+  were the slowest in the grid.
+- **`--max-tokens` is 24576 for every method.** ROBUST-TAMP suffers for it --
+  48 of 519 Kitchen planner calls reached the ceiling before emitting any JSON
+  -- and that is reported as a limitation of the framework, not corrected.
+  Raising it for one method would make the comparison measure the ceiling.
+- **All variants run, feasible and infeasible.** Table I: Kitchen 6 + 6,
+  Living Room 6 + 4, Workshop 8 + 2. Verified against the artifacts.
 - **The 12-degree placement yaw tolerance applies to every payload.** An
   earlier exemption for round payloads was reverted once the grasp twist was
-  cancelled at its source; do not reintroduce the exemption.
+  cancelled at its source; do not reintroduce it.
 
 ### Current experimental state
 
-- **Physical execution grid**: `runs/living_room/execution/feasible_20260904`,
-  Living Room L1--L6, three views, 10 seeds, methods vlm_tamp/owl_tamp/
-  retrieval. Was at 84/180 on the i5 host. The researcher is migrating to an
-  i9-12900HX and **re-running everything there**, so treat that run as
-  historical rather than resuming it: execution artifacts now record
-  `host_cpu`, and contact-rich stepping is host-sensitive.
-- **VLM-TAMP result so far**: 92.3% outcome-correct, 92.3% feasible success,
-  95.4% goal coverage, 3.6 raw requests, 1.0 replans over 52 episodes. The
-  gap between success and coverage means failures are near-misses.
-- **GT evidence ablation**: complete, `runs/gt_evidence_ablation/full_20260904`.
-  Full evidence is 100% on all three domains. Feasible completion is 100% in
-  every ablated condition, so all discrimination is in rejecting infeasible
-  tasks. Kitchen needs semantics alone; workshop is undiscriminating; Living
-  Room is the only domain requiring the semantic+binary conjunction.
-  **Caveat added 2026-09-05: the ablated-condition completion rates are
-  confounded and should not be reported as they stand.** Grounding is
-  first-fit over candidates sorted by instance id, so a condition with too
-  little evidence to discriminate still returns an assignment -- chosen by that
-  ordering rather than by the evidence. Counting the alternatives
-  (`run_gt_evidence_ablation --count-valid-assignments`) on Living Room gives:
+Regenerate with `scripts/paper_metrics_table.py` (below); do not copy these
+numbers forward by hand.
 
-  | condition | completed | valid assignments | ambiguous |
-  |---|---|---|---|
-  | `full` | 6 | 1 | 0/6 |
-  | `no_unary` | 6 | 1 | 0/6 |
-  | `no_semantic` | 7 | 1--3 | 6/7 |
-  | `binary_only` | 7 | 1--3 | 6/7 |
-  | `no_binary` | 7 | 2--3 | 7/7 |
-  | `semantic_only` | 7 | 2--3 | 7/7 |
-  | `unary_only` | 8 | 54--243 | 8/8 |
+| scene | method | n | outcome | feas | coverage | falseC | planFnd |
+|---|---|---|---|---|---|---|---|
+| Kitchen | VLM-TAMP | 120 | 13.3 | 0.0 | 6.1 | 0.0 | 100.0 |
+| Kitchen | OWL-TAMP | 120 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 |
+| Living room | VLM-TAMP | 100 | 60.0 | 86.7 | 93.6 | 0.0 | 100.0 |
+| Living room | OWL-TAMP | 100 | 73.0 | 71.7 | 82.1 | 45.0 | 93.3 |
+| Living room | ROBUST-TAMP | 100 | 60.0 | 91.7 | 95.7 | 0.0 | 100.0 |
+| Living room | ViLaIn-TAMP | 100 | 23.0 | 0.0 | -- | 0.0 | 0.0 |
+| Workshop | OWL-TAMP | 100 | 13.0 | 0.0 | 0.0 | 0.0 | 73.8 |
+| Workshop | ViLaIn-TAMP | 100 | 10.0 | 0.0 | -- | 0.0 | 0.0 |
 
-  So `full` and `no_unary` genuinely determine the assignment and their 100%
-  is real, while `semantic_only`, `no_binary` and especially `unary_only`
-  (which picks one of up to 243 admissible assignments) complete by tie-break.
-  The infeasible-rejection results are unaffected: those turn on
-  `missing_roles_definitive` and never reach the tie-break. Before publishing
-  the ablated completion figures, either report the assignment count alongside
-  them or re-run under permuted instance ids to show the rate is stable.
-- **No runs of the proposed framework exist.** Only baselines have executed.
-- **Kitchen and Workshop have no execution data.**
+- **Re-running after the three bugs**: ROBUST-TAMP Kitchen (120), VLM-TAMP
+  Workshop (100), ROBUST-TAMP Workshop (100).
+- **Never run**: ViLaIn Kitchen (120).
+- **Kitchen feasible success is a genuine 0.0%** for both model-driven
+  baselines, and the reason is capability, not harness: neither ever emits a
+  STIR, which the goal requires. Skills proposed across the grid were PICK 71,
+  POUR 55, PLACE 55, STIR 0.
+- **Living Room ROBUST-TAMP is the strongest method measured** -- 91.7%
+  feasible success at 3.21 requests, against OWL-TAMP's 8.88 -- which is what
+  made the Kitchen bridge bug findable: the same method scored 0.0% there.
+- **OWL-TAMP's 45% false completion in Living Room is the only non-zero cell in
+  that column**, in the method with the best outcome correctness.
+- **No runs of the proposed framework (`functional_tamp`) exist.** Only
+  baselines have executed. Retrieval has Kitchen data only (n=12).
+- **Not instrumented**: the receding-horizon protocol, and the ablation
+  columns (Regions Inspected, Candidate Checks, Grounding Time).
 
 ### Traps that have already cost time
 
 - **Run pytest with `env -u PYTHONPATH`.** With ROS sourced, its pytest plugin
   hijacks collection and the suite **exits 0 having tested nothing**.
-- **Expect exactly 5 test failures** (3x Kitchen serving allocator, 2x Kitchen
-  GT execution). Any other failure is a real problem. Do not "fix" the 5
-  without reading `MACHINE_HANDOFF.md`: they are unfinished Kitchen work, not
-  environment faults. The count was 7 until 2026-09-05, when the phase-4
-  inspection and robot-profile self-overlap tests were updated -- both
-  asserted contracts the code had deliberately moved away from, and the
-  inspection one directly contradicted a passing test.
+- **The suite is not clean: expect 57 failures and 12 errors**, and check
+  membership rather than the count. They are `functional_tamp_pipeline`
+  contract tests for the unrun proposed method (26 raise its own
+  `AmbiguousCanonicalizationError` / `MalformedVLMSpecificationError` /
+  `UnmappedFunctionalConceptError`) plus 13 `FileNotFoundError` for generated
+  `runs/` artifacts that are not in version control. Verified identical at
+  `8cba7610` in a throwaway worktree, so they predate the 2026-09-09 work. A
+  failure outside those files is real. The older claim of "exactly 5 failures"
+  is retired.
+- **A runner that rejects a variant in argparse still exits 0** under
+  `--continue-on-error`. This has silently dropped work twice: 40 Living Room
+  episodes and, nearly, 60 Kitchen. After launching a grid, count the
+  artifacts before believing it ran.
+- **ViLaIn vetoes its own successes when the worktree moves.** Its provenance
+  guard rejects a changed HEAD, tracked changes, or unexpected untracked paths,
+  and it fires only when planning **succeeds** -- so it destroys exactly the
+  episodes worth having. An untracked `.tex` file once cost 6. Commit
+  everything and do not commit again while ViLaIn is running.
+- **`find` here is `bfs` 4.1.1**, which mis-parses `-newermt "-N minutes"` and
+  silently reports nothing. A "no results in 40 minutes" alarm was this.
+- **Two robot dialects reach the shared bridge**: `{"workspace", "holding"}`
+  from Living Room and Workshop, `{"location", "held_object", "motion_ready"}`
+  from Kitchen. Bug 1 above was this. Any new consumer must read both.
 - **`[L2RegionScene]` and the `L2_` scene prefix are not variant L2.** Paper
   labels map positionally to internal names: L1 to F0, L3 to F2, L7 to I0.
 - **Only one tunnel can bind port 18000.** A stale `ssh -N` silently blocks a
@@ -112,43 +154,50 @@ measurements that justify it.
 
 ### Open items, highest value first
 
-1. **Infeasible variants cannot be scored.** `success` is physical goal
-   satisfaction, unachievable on an infeasible variant by construction, so a
-   method that correctly rejects the task scores identically to one that
-   blunders through it. `summarize_execution_batch` also pools all variants
-   into one success rate. Carry `outcome_match` into
-   `benchmark_execution_result.json` and partition feasible from infeasible
-   before running L7--L10.
-2. **Self-collision allowances were widened by the phase-4 port** from 2 pairs
+1. **Workshop's Table I functional relations do not exist under those names.**
+   The paper lists `GRASPABLE`, `FITS_TOOL_HEAD`, `FITS_IN`,
+   `NEAR_WORKPIECE`; `predicate_registry.py` implements `CAN_DRIVE_SCREW`,
+   `CAN_FASTEN`, `COMPATIBLE_WITH`, `COMPATIBLE_WITH_TARGET`,
+   `REACHES_TARGET`, `LOCATED_ON`, `OPEN_CAVITY`, `PLANAR_SUPPORT`,
+   `ELONGATED_OBJECT`. Kitchen's and Living Room's four each match exactly.
+   Either the table or the registry is wrong; the researcher decides which.
+2. **Kitchen publishes a seventh region, `serving_area`,** beyond Table I's
+   six (countertop, D1--D2, C1--C2, B1). Decide whether it is a candidate
+   region or a goal region and make the table say so.
+3. **ROBUST-TAMP's largest recoverable failure is reply shape.** 403 of 1570
+   planner calls across both retired legs were rejected for top-level keys
+   other than `status` and `actions`. `fa3b0cbd` makes the rejection name the
+   keys that arrived; the contract is unchanged because the system prompt asks
+   for exactly those two and forbids explanations. Re-read this after the
+   re-runs land.
+4. **ViLaIn's entity resolution never reaches execution.** 0.0% physical plan
+   found in both completed scenes, so its 0% success follows from binding, not
+   from bad plans. 38 `INVALID_CORRECTION` failures are unexplained.
+5. **Self-collision allowances were widened by the phase-4 port** from 2 pairs
    to 5, adding `link_forearm`, `link_wrist`, `link_gripper` at -0.030 in
-   `mujoco_scenes/generic_manipulation.py`. This relaxes a physical validity
-   criterion on the Google robot used by every Living Room episode, and
-   `test_only_the_physical_shoulder_mount_has_a_self_overlap_allowance` still
-   asserts the old set. Undecided: confirm whether the widening is intended and
-   record it in `BASELINE_FIDELITY.md` either way.
-3. **Goal coverage is recomputed, not recorded.** `make_paper_tables` derives it
-   from `latest_observation.json` plus the private role map because the goal
-   verifier collapses a role-matching result to a boolean. Moving it into the
-   verifier would make it first-class.
-4. **OWL-TAMP truncation is still scored as a planning failure.** VLM-TAMP now
-   treats a token-ceiling truncation as a harness fault; OWL-TAMP surfaces the
-   same event as `INVALID_MODEL_OUTPUT` and spends its single planning call. If
-   truncation appears in OWL episodes, that column has the fairness problem
-   VLM-TAMP just had.
-5. **`reports/` and `FINAL_PAPER_GT_EXECUTIONS/` carry ~250 MB of generated
-   HTML and demo video inside committed history.** `reports/` is gitignored now
-   but was committed earlier. Cleaning it means rewriting shared history and
-   needs the collaborator's agreement; deferred deliberately.
+   `mujoco_scenes/generic_manipulation.py`. Confirm whether the widening is
+   intended and record it in `BASELINE_FIDELITY.md` either way.
+6. **`reports/` and `FINAL_PAPER_GT_EXECUTIONS/` carry ~250 MB of generated
+   HTML and demo video inside committed history.** Cleaning it means rewriting
+   shared history and needs the collaborator's agreement; deferred.
 
 ### Regenerating the paper tables
 
+`scripts/paper_metrics_table.py` is the generator for the end-to-end table.
+One module knows how each reported column is defined, and `--validate` asserts
+the definitions against the artifacts: any trial the harness scored a success
+must also score 100% goal coverage, or the coverage derivation is wrong and the
+scene is not reported. That check is what caught bug 2.
+
 ```bash
-env -u PYTHONPATH .venv/bin/python -m baseline_common.make_paper_tables \
-  runs/living_room/execution/<grid>
+.venv/bin/python -m scripts.paper_metrics_table            # readable
+.venv/bin/python -m scripts.paper_metrics_table --latex    # table body
+.venv/bin/python -m scripts.paper_metrics_table --validate # check definitions
 ```
 
-It refuses to pool MuJoCo builds, warns when no GT-infeasible variant is
-present, and assigns each failed trial to exactly one failure category.
+`baseline_common.make_paper_tables` is the older Living-Room-only generator and
+does not know about the Kitchen or Workshop coverage derivations. Prefer the
+above.
 
 ## 1. Immediate orientation
 
@@ -420,12 +469,13 @@ missing/non-JSON content, schema violation, unknown IDs/predicates, or an
 invalid completion claim. HTTP errors, connection failures, and timeouts are
 separate `inference_failed` transport failures.
 
-Physical execution status:
+Physical execution status (superseded 2026-09-09; see section 0):
 
-- Kitchen: adapter exists for K1-K12; only one real K1 VLM episode is retained.
-- Living Room: physically executed baseline adapter. A full L1--L6 x 3 methods
-  x 10 seeds execution grid completed 2026-09-05; see section 0.
-- Workshop: planning-only baseline adapter (manipulation is not implemented).
+- All three scenes now execute physically, over the full Table I variant sets
+  -- Kitchen K1--K12, Living Room L1--L10, Workshop W1--W10 -- at 10 seeds.
+  The claims that Kitchen retained a single K1 episode and that Workshop was
+  planning-only were true when written and are not now: Workshop manipulation
+  is implemented and has completed grids for four methods.
 
 The retained K1 physical smoke is:
 
