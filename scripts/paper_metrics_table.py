@@ -158,11 +158,83 @@ def collect(roots) -> dict:
 
 
 def _coverage(scene: str, episode: Path) -> tuple[int, int]:
+    if (episode / "benchmark/terminal_subgoal_evaluation.json").is_file():
+        return _vilain_coverage(scene, episode)
     return {
         "kitchen": _kitchen_coverage,
         "living_room": _living_room_coverage,
         "workshop": _workshop_coverage,
     }[scene](episode)
+
+
+def _vilain_coverage(scene: str, episode: Path) -> tuple[int, int]:
+    """Goal coverage for ViLaIn, which writes a different artifact layout.
+
+    This column was blank for ViLaIn, and the reason was a wrong assumption of
+    mine rather than missing data: ViLaIn records both a terminal state
+    (`benchmark/terminal_state_snapshot.json`) and a goal decomposition
+    (`benchmark/terminal_subgoal_evaluation.json`), just not under the
+    `latest_observation.json` / `_private_evaluation/` names the other
+    baselines use.
+
+    Its decomposition carries exactly the denominator the other methods are
+    scored against -- 12 conditions in Kitchen against the goal contract's 10
+    effects plus 2 stir targets, 3 in Workshop whose `INSERTED_IN`, `FASTENED`
+    and `ON` map one-to-one onto the fastener/joint/driver conditions, and 5 in
+    the Living Room -- so its own pass count is used directly, and for Workshop
+    it is better than reading the snapshot, which records no fastening relation
+    at all.
+
+    The Living Room is the exception, for the reason established there: its
+    goal is symmetric under exchanging the two place settings, and ViLaIn's
+    subgoals name ground truth's specific assignment ("a2_drink_left on
+    a2_personal_left"). Scoring those literally is the reading that marked 30
+    of 95 correct solves wrong, so the slots are relaxed to (region, role).
+
+    ViLaIn executes no action in any episode of any scene, so whatever this
+    returns is the coverage of the *initial* scene, which it never changed.
+    That is the honest number under the shared definition -- every other
+    method's figure likewise includes anything pre-satisfied -- but it is scene
+    configuration rather than credit the method earned.
+    """
+    evaluation = episode / "benchmark/terminal_subgoal_evaluation.json"
+    try:
+        results = json.loads(evaluation.read_text()).get("results") or []
+    except (OSError, json.JSONDecodeError):
+        return 0, 0
+    if not results:
+        return 0, 0
+    if scene != "living_room":
+        return sum(1 for row in results if row.get("passed")), len(results)
+
+    snapshot = episode / "benchmark/terminal_state_snapshot.json"
+    try:
+        state = json.loads(snapshot.read_text())
+    except (OSError, json.JSONDecodeError):
+        return 0, 0
+
+    def role(name: str) -> str | None:
+        lowered = name.lower()
+        return next((key for key in ("drink", "snack", "remote") if key in lowered), None)
+
+    required: Counter = Counter()
+    for row in results:
+        subgoal = row.get("subgoal") or {}
+        if str(subgoal.get("predicate", "")).upper() != "ON":
+            continue
+        slot = role(str(subgoal.get("subject") or ""))
+        target = subgoal.get("target")
+        if slot and target:
+            required[(target, slot)] += 1
+    if not required:
+        return 0, 0
+    final: Counter = Counter()
+    for name, item in (state.get("objects") or {}).items():
+        slot = role(name)
+        support = item.get("support")
+        if slot and support and not item.get("held"):
+            final[(support, slot)] += 1
+    return sum(min(n, final[k]) for k, n in required.items()), sum(required.values())
 
 
 def _workshop_coverage(episode: Path) -> tuple[int, int]:
