@@ -294,21 +294,19 @@ def _workshop_coverage(episode: Path) -> tuple[int, int]:
 def _kitchen_coverage(episode: Path) -> tuple[int, int]:
     """Goal-contract effects the episode actually produced."""
     contract = episode / "_private_evaluation/goal_contract.json"
-    history = episode / "episode_result.json"
-    if not (contract.is_file() and history.is_file()):
+    if not contract.is_file():
         return 0, 0
     try:
         spec = json.loads(contract.read_text())
-        result = json.loads(history.read_text())
     except (OSError, json.JSONDecodeError):
         return 0, 0
     required = list(spec.get("required_effects") or [])
     stir_targets = list(spec.get("stir_targets") or [])
     if not required and not stir_targets:
         return 0, 0
-    observed: set[str] = set()
-    for action in (result.get("result") or {}).get("action_history") or []:
-        observed.update(action.get("effects") or [])
+    observed = _kitchen_observed_effects(episode)
+    if observed is None:
+        return 0, 0
     hit = sum(1 for effect in required if effect in observed)
     # any tool satisfies a stir target; the contract names the target only
     hit += sum(
@@ -317,6 +315,46 @@ def _kitchen_coverage(episode: Path) -> tuple[int, int]:
                for e in observed)
     )
     return hit, len(required) + len(stir_targets)
+
+
+def _kitchen_observed_effects(episode: Path) -> set[str] | None:
+    """Effects the episode produced, from whichever artifact its runner writes.
+
+    VLM-TAMP and OWL-TAMP record an `episode_result.json` action history;
+    ROBUST-TAMP records `discovery_replanning_events.jsonl` instead.  Reading
+    only the former left Kitchen ROBUST-TAMP as the last unreported coverage
+    cell, which read as a withheld metric rather than as the missing adapter it
+    was.  Returns None when neither artifact is present, so a genuinely
+    unreadable episode is still excluded rather than scored zero.
+    """
+    history = episode / "episode_result.json"
+    if history.is_file():
+        try:
+            result = json.loads(history.read_text())
+        except (OSError, json.JSONDecodeError):
+            return None
+        observed: set[str] = set()
+        for action in (result.get("result") or {}).get("action_history") or []:
+            observed.update(action.get("effects") or [])
+        return observed
+
+    events = episode / "discovery_replanning_events.jsonl"
+    if not events.is_file():
+        return None
+    observed = set()
+    try:
+        lines = events.read_text().splitlines()
+    except OSError:
+        return None
+    for line in lines:
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        # Only committed effects count; a failed skill reports none anyway.
+        if record.get("event") == "discovery_skill_finished" and record.get("success"):
+            observed.update(record.get("effects") or [])
+    return observed
 
 
 def _living_room_coverage(episode: Path) -> tuple[int, int]:
