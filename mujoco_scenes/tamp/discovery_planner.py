@@ -280,7 +280,17 @@ class OpenAIDiscoveryPlanner:
         latency_s: float,
     ) -> PlannerResult:
         if set(payload) != {"status", "actions"}:
-            raise PlanningError("Planner output must contain exactly status and actions")
+            # Name the keys that arrived.  The reply is discarded on a
+            # validation failure, so this rejection -- 403 of 1570 planner
+            # calls across the retired ROBUST-TAMP Kitchen and Workshop legs,
+            # their single largest recoverable failure -- was previously
+            # impossible to attribute to anything.  The contract itself is
+            # unchanged: the system prompt asks for exactly these two keys and
+            # forbids explanations.
+            raise PlanningError(
+                "Planner output must contain exactly status and actions, got "
+                + (", ".join(sorted(map(str, payload))) or "no keys")
+            )
         status_text = payload.get("status")
         try:
             status = PlanStatus(str(status_text))
