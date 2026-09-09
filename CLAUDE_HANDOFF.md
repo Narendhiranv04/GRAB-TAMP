@@ -138,10 +138,17 @@ numbers forward by hand.
   episodes and, nearly, 60 Kitchen. After launching a grid, count the
   artifacts before believing it ran.
 - **ViLaIn vetoes its own successes when the worktree moves.** Its provenance
-  guard rejects a changed HEAD, tracked changes, or unexpected untracked paths,
-  and it fires only when planning **succeeds** -- so it destroys exactly the
-  episodes worth having. An untracked `.tex` file once cost 6. Commit
-  everything and do not commit again while ViLaIn is running.
+  guard rejects a changed HEAD, a branch other than
+  `execution_branch` in `configs/qwen_only.yaml`, tracked changes, or
+  unexpected untracked paths -- and it fires only when planning **succeeds**,
+  so it destroys exactly the episodes worth having and leaves the failures
+  looking like data. An untracked `.tex` file once cost 6 episodes, and
+  switching to `baseline_executions` would have cost the whole Kitchen leg
+  because `execution_branch` still named the old branch.
+
+  Before starting a ViLaIn leg: commit everything, confirm `git status` is
+  empty, and confirm `execution_branch` names the branch you are on. Do not
+  commit while the leg runs.
 - **`find` here is `bfs` 4.1.1**, which mis-parses `-newermt "-N minutes"` and
   silently reports nothing. A "no results in 40 minutes" alarm was this.
 - **Two robot dialects reach the shared bridge**: `{"workspace", "holding"}`
