@@ -54,11 +54,11 @@ OWL-TAMP~\cite{kumar2026owltamp}
 
 ROBUST-TAMP
 & \textit{Native}
-& \multicolumn{8}{c}{\textit{re-running: harness defect corrected 2026-09-09}} \\
+& $120$ & $0.0$ & $0.0$ & $1.9$ & $0.0$ & $36.7$ & $4.98$ & $3.36$ \\
 
 ViLaIn-TAMP~\cite{siburian2025vilaintamp}
 & \textit{Native}
-& -- & -- & -- & -- & -- & -- & -- & -- \\
+& $120$ & $28.3$ & $0.0$ & $0.0$ & $0.0$ & $0.0$ & $6.53$ & $2.92$ \\
 
 \textbf{Ours}
 & \textbf{\textit{Single FM call}}
@@ -83,7 +83,7 @@ ROBUST-TAMP
 
 ViLaIn-TAMP~\cite{siburian2025vilaintamp}
 & \textit{Native}
-& $100$ & $23.0$ & $0.0$ & -- & $0.0$ & $0.0$ & $6.30$ & $2.91$ \\
+& $100$ & $23.0$ & $0.0$ & $6.7$ & $0.0$ & $0.0$ & $6.30$ & $2.91$ \\
 
 \textbf{Ours}
 & \textbf{\textit{Single FM call}}
@@ -96,11 +96,11 @@ ViLaIn-TAMP~\cite{siburian2025vilaintamp}
 
 VLM-TAMP~\cite{yang2025vlmtamp}
 & \textit{Native}
-& \multicolumn{8}{c}{\textit{re-running: harness defect corrected 2026-09-09}} \\
+& $100$ & $16.0$ & $\mathbf{12.5}$ & $15.0$ & $0.0$ & $88.8$ & $9.56$ & $3.83$ \\
 
 OWL-TAMP~\cite{kumar2026owltamp}
 & \textit{Native}
-& $100$ & $\mathbf{13.0}$ & $0.0$ & $0.0$ & $0.0$ & $73.8$ & $\mathbf{3.49}$ & $0.00$ \\
+& $100$ & $13.0$ & $0.0$ & $0.0$ & $0.0$ & $73.8$ & $\mathbf{3.49}$ & $0.00$ \\
 
 ROBUST-TAMP
 & \textit{Native}
@@ -108,7 +108,7 @@ ROBUST-TAMP
 
 ViLaIn-TAMP~\cite{siburian2025vilaintamp}
 & \textit{Native}
-& $100$ & $10.0$ & $0.0$ & -- & $0.0$ & $0.0$ & $7.24$ & $3.00$ \\
+& $100$ & $10.0$ & $0.0$ & $0.0$ & $0.0$ & $0.0$ & $7.24$ & $3.00$ \\
 
 \textbf{Ours}
 & \textbf{\textit{Single FM call}}
@@ -154,18 +154,25 @@ the original grid, which needed no re-run because rejecting an infeasible
 variant requires no pour. Kitchen feasible-task success is $0.0$ for both
 model-driven baselines under the corrected harness: pours now execute and
 commit, but neither method ever emits a \textsc{stir}, which the goal requires.
-Cells marked \textit{re-running} are being re-collected after three harness
-defects were corrected on 2026-09-09, and no value is reported for them. In
-Workshop, method success had been scored on the physical joint state alone,
-which is one clause of a three-clause instruction that also asks that reusable
-equipment be left on the workbench; every episode that fastened ended holding
-the driver, and because the executive stops as soon as its verifier passes,
-the omission that was rewarded was also the omission it caused. In Kitchen,
-\textsc{robust-tamp} read the gripper under a key its runtime does not
-publish, so every placement, pour and stir after a successful pick was
-rejected. In Workshop, \textsc{robust-tamp} additionally ran against a
-serving configuration on which 67 of 100 episodes took a transport fault.
-Receding-horizon conditions and the \emph{Ours} rows are not yet run.
+Three harness defects were corrected on 2026-09-09 and the affected legs
+re-collected. \textsc{vlm-tamp} Workshop had been scored on the physical joint
+state alone, which is one clause of a three-clause instruction that also asks
+that reusable equipment be left on the workbench; every episode that fastened
+ended holding the driver, and because the executive stops as soon as its
+verifier passes, the omission that was rewarded was also the omission it
+caused. \textsc{robust-tamp} Kitchen read the gripper under a key its runtime
+does not publish, so every placement, pour and stir after a successful pick was
+rejected. \textsc{vilain-tamp} Kitchen lost 55 of 120 episodes to a stage
+identifier published to the model under one spelling and resolved internally
+under another. The one cell still marked \textit{re-running} is
+\textsc{robust-tamp} Workshop, whose retired run took a transport fault in 67
+of 100 episodes against a serving configuration since corrected.
+
+\textsc{vilain-tamp} executes no action in any episode of any scene, so its
+goal coverage is that of the initial scene, which it never changes; in the
+Living Room two variants begin with one of five slots already filled.
+Receding-horizon conditions are implemented for \textsc{owl-tamp} only and are
+not reported. The \emph{Ours} rows are not yet run.
 \end{minipage}
 
 \end{table*}
