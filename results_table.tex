@@ -104,7 +104,7 @@ OWL-TAMP~\cite{kumar2026owltamp}
 
 ROBUST-TAMP
 & \textit{Native}
-& \multicolumn{8}{c}{\textit{re-running: harness defect corrected 2026-09-09}} \\
+& $100$ & $1.0$ & $0.0$ & $0.4$ & $0.0$ & $\mathbf{97.5}$ & $6.45$ & $4.23$ \\
 
 ViLaIn-TAMP~\cite{siburian2025vilaintamp}
 & \textit{Native}
@@ -164,13 +164,21 @@ caused. \textsc{robust-tamp} Kitchen read the gripper under a key its runtime
 does not publish, so every placement, pour and stir after a successful pick was
 rejected. \textsc{vilain-tamp} Kitchen lost 55 of 120 episodes to a stage
 identifier published to the model under one spelling and resolved internally
-under another. The one cell still marked \textit{re-running} is
-\textsc{robust-tamp} Workshop, whose retired run took a transport fault in 67
-of 100 episodes against a serving configuration since corrected.
+under another. \textsc{robust-tamp} Workshop was re-collected on a
+corrected serving configuration; its numbers should be read with the caveat
+below.
 
 \textsc{vilain-tamp} executes no action in any episode of any scene, so its
 goal coverage is that of the initial scene, which it never changes; in the
 Living Room two variants begin with one of five slots already filled.
+\textsc{robust-tamp} Workshop reaches the 24576-token ceiling before emitting
+usable output in 18\% of its planner calls, rising to $3.15$ truncations per
+episode on the infeasible variants against $0.94$ on the feasible ones, and
+84.8\% of its decode produces nothing usable. Its $1.0$ outcome correctness is
+therefore bounded by the decoding condition as much as by the method. The
+ceiling is held at 24576 for every method so the comparison does not measure
+the ceiling instead of the method.
+
 Receding-horizon conditions are implemented for \textsc{owl-tamp} only and are
 not reported. The \emph{Ours} rows are not yet run.
 \end{minipage}

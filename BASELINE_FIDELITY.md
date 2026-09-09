@@ -941,3 +941,41 @@ showed VLM-TAMP at "0.0% wasted"; that was missing data, not a finding, and
 must not be reported. To make this a real efficiency column beside "Raw VLM
 requests", add `latency_s` and the response's token usage to every method's
 model-call artifact.
+
+## Workshop ROBUST-TAMP: the ceiling, not the contention (2026-09-09, final)
+
+The section above said the ~30% timeout share of ROBUST-TAMP's wasted decode
+scaled with concurrency and must be re-measured with the leg running alone.
+That re-measurement is done, and it revises the conclusion rather than
+confirming it.
+
+Running alone at 10 workers, request timeouts fell to **0.00/episode** -- so
+that share was indeed contention. But truncation rose in their place, because
+requests that previously died on the clock now run to completion and reach the
+token ceiling instead. Over the full 100-episode leg, 707 planner calls:
+
+| outcome | calls | share |
+|---|---|---|
+| plan validation rejected the plan | 208 | 29% |
+| schema: wrong top-level keys | 158 | 22% |
+| truncated at the 24576 ceiling | 127 | 18% |
+| timeout / unreachable | 54 | 8% |
+| usable | 160 | 23% |
+
+84.8% of its decode produces nothing usable. Truncation concentrates sharply on
+the infeasible variants -- **3.15 per episode on W9--W10 against 0.94 on
+W1--W8** -- which is consistent with their mechanism: an infeasible task has no
+goal state to terminate on, so the planner reasons until something stops it.
+
+**What may be claimed.** Workshop ROBUST-TAMP's 1.0% outcome correctness is
+bounded by the decoding condition as much as by the method, and must be
+reported with that stated. It is not evidence that the approach cannot reject
+an infeasible Workshop task; it is evidence that under a 24576-token ceiling it
+does not get far enough to try -- it recognised 1 of 20. The ceiling is held
+uniform at 24576 for every method precisely so the comparison does not become a
+measurement of the ceiling, and the honest way to report this row is to say so
+rather than to raise it for one method.
+
+The earlier instruction stands with its reason corrected: do not report the
+timeout share as a property of the method, because it was contention. Do report
+the truncation share, because it is not.
