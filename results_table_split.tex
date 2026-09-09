@@ -1,0 +1,115 @@
+% Generated from execution artifacts.  Do not hand-edit the numbers:
+%   .venv/bin/python -m scripts.paper_metrics_table --split --latex
+%   .venv/bin/python -m scripts.paper_metrics_table --validate
+%
+% The feasible and infeasible halves are reported separately and never pooled.
+% A single accuracy over both measured the split as much as the method: the
+% feasible fraction is 50% in Kitchen, 60% in the Living Room and 80% in
+% Workshop, so a constant "always feasible" predictor scored 80% in Workshop
+% against the best method's 16%, and in Kitchen every method lost to either
+% constant.  No column below can be won by guessing -- a method that rejects
+% everything scores 100 on Rejected and is contradicted by 0.0 beside it.
+\begin{table*}[t]
+\centering
+\caption{End-to-end results in the three-view setting using the shared
+Google-Robot execution interface, over the full Table~I variant sets at ten
+seeds each ($N=1{,}280$ episodes). Feasible and infeasible variants are scored
+separately, since they ask different questions and their proportions differ by
+scene. All methods share the \emph{model-native} decoding condition
+(temperature $0.6$, top-$p$ $0.95$, top-$k$ $20$, repetition penalty $1.05$,
+thinking enabled, $24{,}576$-token ceiling) with Qwen3.5-9B substituted for each
+method's published backbone.}
+\label{tab:main_results}
+
+\setlength{\tabcolsep}{4.0pt}
+\renewcommand{\arraystretch}{1.08}
+\scriptsize
+
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}l ccccc ccc cc@{}}
+\toprule
+& \multicolumn{5}{c}{\textbf{Feasible variants}}
+& \multicolumn{3}{c}{\textbf{Infeasible variants}}
+& \multicolumn{2}{c}{\textbf{Cost}} \\
+\cmidrule(lr){2-6}\cmidrule(lr){7-9}\cmidrule(l){10-11}
+\textbf{Method} &
+\textbf{$N$} &
+\makecell{\textbf{Success}\\\textbf{(\%) $\uparrow$}} &
+\makecell{\textbf{Goal cov.}\\\textbf{(\%) $\uparrow$}} &
+\makecell{\textbf{Plan found}\\\textbf{(\%) $\uparrow$}} &
+\makecell{\textbf{Regions}\\\textbf{inspected} $\uparrow$} &
+\textbf{$N$} &
+\makecell{\textbf{Rejected}\\\textbf{(\%) $\uparrow$}} &
+\makecell{\textbf{False compl.}\\\textbf{(\%) $\downarrow$}} &
+\makecell{\textbf{FM}\\\textbf{calls} $\downarrow$} &
+\makecell{\textbf{Re-}\\\textbf{plans} $\downarrow$} \\
+\midrule
+
+\multicolumn{11}{@{}l}{\textbf{Kitchen} \quad\footnotesize\textit{required objects hidden across five storage regions}} \\
+\addlinespace[1pt]
+VLM-TAMP~\cite{yang2025vlmtamp}    & $60$ & $0.0$ & $6.1$ & $\mathbf{100.0}$ & $0.00$ & $60$ & $26.7$ & $0.0$ & $6.84$ & $2.53$ \\
+OWL-TAMP~\cite{kumar2026owltamp}   & $60$ & $0.0$ & $0.0$ & $0.0$ & $0.00$ & $60$ & $0.0$ & $0.0$ & $11.32$ & $0.00$ \\
+ROBUST-TAMP                        & $60$ & $0.0$ & $1.9$ & $36.7$ & $0.02$ & $60$ & $0.0$ & $0.0$ & $\mathbf{4.98}$ & $3.36$ \\
+ViLaIn-TAMP~\cite{siburian2025vilaintamp} & $60$ & $0.0$ & $0.0$ & $0.0$ & $0.00$ & $60$ & $\mathbf{56.7}$ & $0.0$ & $6.53$ & $2.92$ \\
+\textbf{Ours} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} \\
+
+\midrule
+\multicolumn{11}{@{}l}{\textbf{Living room} \quad\footnotesize\textit{no hidden objects; all task objects and regions initially visible}} \\
+\addlinespace[1pt]
+VLM-TAMP~\cite{yang2025vlmtamp}    & $60$ & $86.7$ & $93.6$ & $\mathbf{100.0}$ & -- & $40$ & $20.0$ & $0.0$ & $5.94$ & $2.06$ \\
+OWL-TAMP~\cite{kumar2026owltamp}   & $60$ & $71.7$ & $82.1$ & $93.3$ & -- & $40$ & $42.5$ & $45.0$ & $8.88$ & $\mathbf{0.00}$ \\
+ROBUST-TAMP                        & $60$ & $\mathbf{91.7}$ & $\mathbf{95.7}$ & $\mathbf{100.0}$ & -- & $40$ & $12.5$ & $0.0$ & $\mathbf{3.21}$ & $1.70$ \\
+ViLaIn-TAMP~\cite{siburian2025vilaintamp} & $60$ & $0.0$ & $6.7$ & $0.0$ & -- & $40$ & $\mathbf{57.5}$ & $0.0$ & $6.30$ & $2.91$ \\
+\textbf{Ours} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} \\
+
+\midrule
+\multicolumn{11}{@{}l}{\textbf{Workshop} \quad\footnotesize\textit{drivers and fastener hidden; wooden-hammer distractor}} \\
+\addlinespace[1pt]
+VLM-TAMP~\cite{yang2025vlmtamp}    & $80$ & $\mathbf{12.5}$ & $\mathbf{15.0}$ & $88.8$ & $\mathbf{1.36}$ & $20$ & $30.0$ & $0.0$ & $9.56$ & $3.83$ \\
+OWL-TAMP~\cite{kumar2026owltamp}   & $80$ & $0.0$ & $0.0$ & $73.8$ & $0.00$ & $20$ & $\mathbf{65.0}$ & $0.0$ & $\mathbf{3.49}$ & $\mathbf{0.00}$ \\
+ROBUST-TAMP                        & $80$ & $0.0$ & $0.4$ & $\mathbf{97.5}$ & $0.99$ & $20$ & $5.0$ & $0.0$ & $6.45$ & $4.23$ \\
+ViLaIn-TAMP~\cite{siburian2025vilaintamp} & $80$ & $0.0$ & $0.0$ & $0.0$ & $0.00$ & $20$ & $50.0$ & $0.0$ & $7.24$ & $3.00$ \\
+\textbf{Ours} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} \\
+
+\bottomrule
+\end{tabular*}
+
+\vspace{3pt}
+\begin{minipage}{0.98\textwidth}
+\footnotesize
+\textit{Note:}
+\textbf{Success} is physical satisfaction of the goal on a feasible variant.
+\textbf{Goal coverage} is the percentage of required goal conditions satisfied
+in the recorded terminal state: role slots in the Living Room, whose goal is
+symmetric under exchanging the two place settings; the evaluator's goal
+contract in Kitchen; and the fastener, joint and returned-driver conditions in
+Workshop. Every coverage figure is validated by the constraint that a trial
+scored a success must cover every goal condition.
+\textbf{Plan found} is the percentage of feasible trials in which at least one
+refined action was physically executed, so an executable motion plan
+demonstrably existed.
+\textbf{Regions inspected} is the mean number of storage regions a method opens
+per feasible episode, and is undefined in the Living Room, which hides nothing.
+\textbf{Rejected} is the percentage of infeasible trials correctly reported
+infeasible; \textbf{false completion} the percentage incorrectly reported
+complete. The two halves are never pooled: their proportions differ by scene
+($50\%$, $60\%$ and $80\%$ feasible), so a single accuracy over both would
+reward a constant predictor.
+\\[2pt]
+Two results deserve emphasis. No baseline opens a Kitchen storage region --
+$0.00$, $0.00$ and $0.02$ inspections per episode -- although the required
+cups, bowls and utensils are distributed across five of them; the uniform
+$0.0\%$ Kitchen success is a failure to search rather than a failure to plan.
+And no method both solves and rejects: \textsc{robust-tamp} is the strongest
+solver in the only scene without hidden objects ($91.7\%$) and the weakest
+rejector there ($12.5\%$), while \textsc{vilain-tamp} is the strongest rejector
+in two scenes and never produces an executable plan in any.
+\\[2pt]
+\textsc{robust-tamp} Workshop reaches the $24{,}576$-token ceiling before
+emitting usable output in $18\%$ of its planner calls, rising to $3.15$
+truncations per episode on the infeasible variants; that row is bounded by the
+decoding condition as much as by the method. The ceiling is held uniform across
+methods so the comparison does not measure the ceiling.
+Receding-horizon conditions are implemented for \textsc{owl-tamp} only and are
+not reported. The \emph{Ours} rows are not yet run.
+\end{minipage}
+\end{table*}

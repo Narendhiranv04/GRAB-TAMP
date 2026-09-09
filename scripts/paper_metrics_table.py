@@ -102,7 +102,7 @@ COVERAGE_SCENES = {"living_room", "kitchen", "workshop"}
 
 
 def _cell() -> dict:
-    return dict(n=0, match=0, fs=0, ft=0, fc=0, it=0, ppf=0,
+    return dict(n=0, match=0, fs=0, ft=0, fc=0, it=0, ppf=0, rej=0, insp=0,
                 cov_hit=0, cov_req=0, req=[], rep=[])
 
 
@@ -146,12 +146,14 @@ def collect(roots) -> dict:
                 c["ft"] += 1
                 c["fs"] += bool(row.get("success"))
                 c["ppf"] += (row.get("executed_actions") or 0) > 0
+                c["insp"] += _inspections(path.parent)
                 if scene in COVERAGE_SCENES:
                     hit, req = _coverage(scene, path.parent)
                     c["cov_hit"] += hit
                     c["cov_req"] += req
             elif row.get("expected_outcome") == "INFEASIBLE":
                 c["it"] += 1
+                c["rej"] += row.get("predicted_outcome") == "INFEASIBLE"
                 if row.get("predicted_outcome") == "FEASIBLE" or row.get("success"):
                     c["fc"] += 1
     return cells
@@ -317,6 +319,54 @@ def _kitchen_coverage(episode: Path) -> tuple[int, int]:
     return hit, len(required) + len(stir_targets)
 
 
+# The Living Room hides nothing -- Table I lists its objects and regions as
+# initially visible -- so an inspection count there measures nothing.
+DISCOVERY_SCENES = {"kitchen", "workshop"}
+
+
+def _inspections(episode: Path) -> int:
+    """Successful INSPECT actions, however the episode's runner records them.
+
+    This is the column that explains the Kitchen result.  Kitchen distributes
+    required cups, bowls and utensils across five closed storage regions, and
+    the baselines collectively open them almost never; without this the reader
+    sees 0.0% feasible success with no way to tell that the methods never
+    looked.
+    """
+    history = episode / "episode_result.json"
+    if history.is_file():
+        try:
+            result = json.loads(history.read_text())
+        except (OSError, json.JSONDecodeError):
+            return 0
+        return sum(
+            1
+            for action in (result.get("result") or {}).get("action_history") or []
+            for effect in (action.get("effects") or [])
+            if str(effect).startswith("inspected(")
+        )
+    events = episode / "discovery_replanning_events.jsonl"
+    if not events.is_file():
+        return 0
+    total = 0
+    try:
+        lines = events.read_text().splitlines()
+    except OSError:
+        return 0
+    for line in lines:
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if (
+            record.get("event") == "discovery_skill_finished"
+            and record.get("success")
+            and "INSPECT" in str(record.get("action"))
+        ):
+            total += 1
+    return total
+
+
 def _kitchen_observed_effects(episode: Path) -> set[str] | None:
     """Effects the episode produced, from whichever artifact its runner writes.
 
@@ -442,9 +492,58 @@ def render(cells, latex: bool) -> str:
     return "\n".join(out)
 
 
+def render_split(cells, latex: bool) -> str:
+    """The feasible and infeasible halves reported separately.
+
+    `outcome_match` pooled both over a split that is 50/50 in Kitchen, 60/40 in
+    the Living Room and 80/20 in Workshop, so it measured the split as much as
+    the method: a constant "always feasible" predictor scores 80% in Workshop
+    against the best method's 16%, and in Kitchen every method loses to either
+    constant.  Reporting the halves separately removes that, and no column here
+    can be won by guessing -- a method that rejects everything scores 100% on
+    `rej` and is contradicted by 0.0 beside it in `succ`.
+    """
+    rows: list[str] = []
+    if not latex:
+        rows.append(f"  {'':30s} {'---- FEASIBLE ----':^27s}  {'-- INFEASIBLE --':^15s}  {'cost':^12s}")
+        rows.append(f"  {'scene / method':30s} {'n':>3s} {'succ':>6s} {'cov':>6s} {'plan':>6s} {'insp':>5s}  "
+                    f"{'n':>3s} {'rej':>6s} {'fcompl':>6s}  {'reqs':>6s} {'repl':>5s}")
+        rows.append("  " + "-" * 96)
+    for scene in SCENES:
+        for method in ORDER:
+            c = cells.get((scene, method))
+            if not c:
+                continue
+            if c["n"] < GRID_TRIALS[scene]:
+                rows.append(f"  {SCENE_LABEL[scene] + ' / ' + method:30s} incomplete: {c['n']}/{GRID_TRIALS[scene]}")
+                continue
+            insp = f"{c['insp'] / c['ft']:.2f}" if (c["ft"] and scene in DISCOVERY_SCENES) else "--"
+            values = (
+                _pct(c["fs"], c["ft"]), _pct(c["cov_hit"], c["cov_req"]),
+                _pct(c["ppf"], c["ft"]), insp,
+                _pct(c["rej"], c["it"]), _pct(c["fc"], c["it"]),
+                _mean(c["req"]), _mean(c["rep"]),
+            )
+            if latex:
+                rows.append(
+                    f"{method} & ${c['ft']}$ & " + " & ".join(f"${v}$" for v in values[:4])
+                    + f" & ${c['it']}$ & " + " & ".join(f"${v}$" for v in values[4:]) + r" \\"
+                )
+            else:
+                rows.append(
+                    f"  {SCENE_LABEL[scene] + ' / ' + method:30s} {c['ft']:3d} "
+                    + " ".join(f"{v:>6s}" for v in values[:3]) + f" {insp:>5s}  "
+                    + f"{c['it']:3d} " + " ".join(f"{v:>6s}" for v in values[4:6])
+                    + f"  {values[6]:>6s} {values[7]:>5s}"
+                )
+    return "\n".join(rows)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--latex", action="store_true", help="emit LaTeX rows")
+    parser.add_argument("--split", action="store_true",
+                        help="report the feasible and infeasible halves separately")
     parser.add_argument("--roots", nargs="*", default=None, help="override the run roots")
     parser.add_argument("--validate", action="store_true",
                         help="assert every successful trial scores 100% coverage")
@@ -452,7 +551,8 @@ def main() -> None:
     roots = args.roots or DEFAULT_ROOTS
     if args.validate:
         _validate(roots)
-    print(render(collect(roots), args.latex))
+    cells = collect(roots)
+    print(render_split(cells, args.latex) if args.split else render(cells, args.latex))
 
 
 def _validate(roots) -> None:
