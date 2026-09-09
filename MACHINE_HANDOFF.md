@@ -57,14 +57,16 @@ Everything else in the table above can be rebuilt; these cannot.
 ```bash
 git clone https://github.com/Narendhiranv04/icra-we-ball.git
 cd icra-we-ball/V1
-git checkout baseline_execution
+git checkout baseline_executions
 
 # uv fetches a standalone CPython 3.11 -- no system Python 3.11 required, and
 # distributions shipping only 3.12 are common.
 uv venv --python 3.11
 # requirements-dev.txt, NOT requirements.txt: it adds mink, without which the
 # three backend="mink" tests in mujoco_scenes/tests/test_ik.py error out and
-# the suite shows ten failures instead of the expected seven.  --torch-backend
+# the suite errors out on three more tests than it otherwise would.  Judge the
+# suite by which files fail, not by a count; see the note further down.
+# --torch-backend
 # cpu skips the CUDA wheels; CLIP and YOLO both default to device="cpu" here
 # and physical execution never touches the GPU.
 uv pip install --torch-backend cpu \
@@ -95,17 +97,26 @@ env -u PYTHONPATH PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 .venv/bin/python -m pytest \
   retrieval_baseline/tests mujoco_scenes/tests -q
 ```
 
-Expect **5 failures, all Kitchen**, and everything else passing (verified
-2026-09-05: 5 failed, 1032 passed, 1 skipped, with `llm3_baseline/tests`
-included). That is the known-good state, not a broken checkout:
+**The "5 failures, all Kitchen" figure below is retired** (it was verified
+2026-09-05 and is no longer what the suite does). As of 2026-09-09 the full
+suite fails 57 with 12 errors, and the right test is *which files* fail, not
+how many: they are `functional_tamp_pipeline` contract tests for the proposed
+method, which has never been run, plus `FileNotFoundError` for generated
+`runs/` artifacts that are outside version control. Verified identical at
+`8cba7610` in a throwaway worktree, so they predate the 2026-09-09 baseline
+work. Section 0 of `CLAUDE_HANDOFF.md` enumerates them; a failure outside those
+files is real.
+
+The historical Kitchen five, still expected among them:
 
 - 2x `test_kitchen_ground_truth_execution` -- hidden-soup serving order,
   countertop utensil validation
 - 3x `test_kitchen_phase_b_execution` -- serving allocator determinism,
   persistent occupied state, allocator sequence
 
-These are genuine unfinished Kitchen work, which is consistent with Kitchen
-having no execution data (see "Open items").
+These are genuine unfinished Kitchen work. The claim beside them that Kitchen
+has no execution data is also retired: Kitchen now has four completed
+120-episode legs.
 
 The 1 skip is intentional: `test_kitchen_ground_truth_execution.py:461` is
 gated on `PHASE4_K1_HANDOFF`.
@@ -228,6 +239,10 @@ grid.
 Regenerate the paper tables at any point:
 
 ```bash
+# `scripts/paper_metrics_table.py` supersedes this for the end-to-end table:
+# it knows the Kitchen, Living Room and Workshop coverage derivations and
+# `--validate` checks each one against the artifacts.  `make_paper_tables` is
+# Living-Room-only and does not.
 env -u PYTHONPATH .venv/bin/python -m baseline_common.make_paper_tables \
   runs/living_room/execution/<name>
 ```

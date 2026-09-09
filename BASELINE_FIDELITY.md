@@ -892,3 +892,52 @@ condition as every other method, and its output-format brittleness under that
 condition is part of the result. It may not be reported as though it ran under
 a different ceiling, and the other methods' numbers may not be re-run at a
 higher one for comparison.
+
+## Measured: where ROBUST-TAMP's decode actually goes (2026-09-09)
+
+Alongside the 24576-ceiling limitation above. Measured from `latency_s` in
+`model_calls/*.json` across the two ROBUST-TAMP re-run legs, over 48.7
+GPU-hours of recorded decode:
+
+| cause | calls | hours | % of all decode |
+|---|---|---|---|
+| transport: timeout/unreachable | 88 | 14.7 | 30.1% |
+| schema: wrong top-level keys | 182 | 11.5 | 23.5% |
+| plan validation: gripper occupied | 195 | 11.0 | 22.5% |
+| plan validation: not visible | 44 | 3.7 | 7.5% |
+| plan validation: not holding | 51 | 2.7 | 5.5% |
+| truncated at the 24576 ceiling | 1 | 0.1 | 0.3% |
+| **total producing nothing usable** | **565** | **43.7** | **89.8%** |
+
+**Read it in two parts; they have different owners.**
+
+About 59% is the method's own invalid output -- schema non-compliance plus
+plans rejected by precondition validation. This is a property of ROBUST-TAMP
+under the fixed decoding condition and may be reported as such. The schema
+share is near-misses rather than nonsense: of 54 rejections inspected, 19
+omitted `status`, 13 used `plan` where the contract says `actions`, 5 sent
+`plan, status`, 5 echoed `output_schema`, 2 sent a bare unwrapped action, and 1
+used `PLAN`. The model gets the structure right and the key names wrong.
+
+About 30% is request timeouts, which scale with concurrency and are therefore
+partly an artifact of how the grid was scheduled: Workshop ROBUST-TAMP reached
+1.45 timeouts/episode at 8 workers among 23 concurrent episodes, 1.00 at 4
+workers, and 0.53 at 10 workers with the GPU to itself -- the last matching the
+retired run's 0.54. **This share may not be reported as a property of the
+method.** Report the figure measured with the leg running alone.
+
+Truncation at the ceiling is 0.3% of decode, against 0.53 per episode in the
+retired Kitchen leg. So the token ceiling -- the thing originally suspected of
+holding ROBUST-TAMP back -- is not where it loses its compute. Output
+discipline is. That is the substantive reason `--max-tokens` stays at 24576 for
+every method, beyond the fairness argument.
+
+### Instrumentation gap: this comparison cannot yet be made across methods
+
+VLM-TAMP and OWL-TAMP record no usable `latency_s` (0 of 395 calls in the
+Workshop VLM-TAMP leg), and no method records token usage at all. So wasted
+decode is measurable only *within* ROBUST-TAMP. An earlier working table
+showed VLM-TAMP at "0.0% wasted"; that was missing data, not a finding, and
+must not be reported. To make this a real efficiency column beside "Raw VLM
+requests", add `latency_s` and the response's token usage to every method's
+model-call artifact.

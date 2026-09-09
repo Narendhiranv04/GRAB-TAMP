@@ -141,9 +141,11 @@ MUJOCO_GL=egl PYOPENGL_PLATFORM=egl .venv/bin/python -m \
 
 `receding_horizon` is currently OWL-TAMP-only. Each completed episode writes
 `benchmark_execution_result.json`, which `summarize_execution_batch` accepts.
-Living Room and Workshop baseline runtimes remain planning-only: their
-rendered/proxy observations are not yet generated from the exact live physical
-executor instance, so they are intentionally excluded from this batch runner.
+Living Room and Workshop baseline runtimes were planning-only when this was
+written and are not now (retired 2026-09-09): all three scenes execute
+physically through the shared Google-Robot interface, and both have completed
+grids for four methods. Use `baseline_common.run_baseline_execution_batch`,
+which drives every scene and method.
 
 ## Primary reporting
 
