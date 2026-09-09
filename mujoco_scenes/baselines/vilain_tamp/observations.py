@@ -254,9 +254,7 @@ def prompt_observation_payload(
             if observation.opened_region_id
             else None
         )
-        public_stage_id = _public_stage_id(
-            observation.stage_id, observation.inspection_ordinal, alias
-        )
+        public_stage_id = public_stage_id_for(observation)
         stages.append(
             {
                 "stage_id": public_stage_id,
@@ -289,6 +287,35 @@ def public_region_alias(domain: Domain | str, region_id: str) -> str:
             f"no published alias for region {region_id!r} in domain {Domain(domain).value!r}; "
             "refusing to publish the canonical name, which would disclose the scene layout"
         ) from error
+
+
+def public_stage_id_for(observation: ViLaInObservation) -> str:
+    """The stage id the model was shown for this observation.
+
+    The observation payload publishes leak-safe stage ids -- an inspection of
+    Kitchen D1 is announced as `004_region_0001`, never `004_d1` -- while the
+    stage directories on disk keep the canonical names.  Anything that resolves
+    a model-supplied stage reference has to use this rather than
+    `observation.stage_id`, because the model can only ever name the published
+    spelling.
+
+    Keying on the canonical name instead cost 55 of 120 ViLaIn Kitchen
+    episodes: every detection that cited an inspection stage failed with
+    "detection references unknown frame '004_region_0001'", the episode exited
+    1, and `--continue-on-error` recorded it as a run and moved on.  Kitchen is
+    the only domain where it bites, because it is the only one whose published
+    alias is structurally different from the canonical region id -- Living Room
+    publishes no aliases and Workshop's are the region labels themselves, which
+    is why both completed 100/100.
+    """
+    alias = (
+        public_region_alias(observation.domain, observation.opened_region_id)
+        if observation.opened_region_id
+        else None
+    )
+    return _public_stage_id(
+        observation.stage_id, observation.inspection_ordinal, alias
+    )
 
 
 def _public_stage_id(stage_id: str, ordinal: int | None, alias: str | None) -> str:

@@ -23,6 +23,7 @@ from .contracts import (
 )
 from .domains.registry import DomainDefinition
 from .fm import FMCallRecord, FMCallType, FMRequest, RecordedFMClient
+from .observations import public_stage_id_for
 from .fact_selection import (
     FactSelectionError,
     compile_problem,
@@ -639,8 +640,13 @@ def normalize_object_estimates(
         raise InterpreterOutputError("object response must contain an objects array")
 
     frame_index = _frame_index(observations)
+    # Keyed by the published stage id, not the canonical one: the model can
+    # only name what it was shown, and keying on the canonical name made every
+    # detection citing an inspection stage unresolvable.  It also keeps the
+    # canonical region names out of `observation_stage_ids` downstream.
     stage_order = {
-        observation.stage_id: index for index, observation in enumerate(observations)
+        public_stage_id_for(observation): index
+        for index, observation in enumerate(observations)
     }
     normalized_rows: list[dict[str, Any]] = []
     for row in loaded["objects"]:
@@ -989,7 +995,7 @@ def _frame_index(
     result: dict[tuple[str, str], Any] = {}
     for observation in observations:
         for frame in observation.camera_frames:
-            key = (observation.stage_id, frame.camera_id)
+            key = (public_stage_id_for(observation), frame.camera_id)
             if key in result:
                 raise InterpreterOutputError(f"duplicate observation frame {key!r}")
             result[key] = frame
