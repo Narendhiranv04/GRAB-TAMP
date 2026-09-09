@@ -18,6 +18,7 @@ from baseline_common.physical_benchmark import (
 from mujoco_scenes.baseline_workshop_runtime import (
     MirroredWorkshopExecutor,
     WorkshopPhysicalExecutor,
+    workshop_goal_reached,
 )
 
 from vlm_tamp_baseline.workshop_runtime import (
@@ -241,10 +242,7 @@ def main() -> None:
         backend_by_id = {**runtime.object_by_backend, **runtime.region_by_backend}
         predicted = canonical_workshop_actions(history, backend_by_id)
         expected = load_expected("workshop", runtime.variant)
-        goal_reached = (
-            physical.goal_satisfied if physical is not None
-            else runtime.goal_verifier()
-        )
+        goal_reached = workshop_goal_reached(physical, runtime)
         predicted_outcome = (
             "FEASIBLE" if goal_reached
             else "INFEASIBLE" if runtime.infeasibility_proven()

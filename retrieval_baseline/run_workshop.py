@@ -30,6 +30,7 @@ from baseline_common.physical_benchmark import (
 from mujoco_scenes.baseline_workshop_runtime import (
     MirroredWorkshopExecutor,
     WorkshopPhysicalExecutor,
+    workshop_goal_reached,
 )
 from vlm_tamp_baseline.workshop_runtime import (
     DEFAULT_EXPECTED_ROOT,
@@ -223,9 +224,7 @@ def main() -> None:
             "gt_was_model_input": False,
         })
 
-        physical_goal_satisfied = bool(
-            physical is not None and physical.goal_satisfied
-        )
+        physical_goal_satisfied = workshop_goal_reached(physical, runtime)
         write_json(output / "retrieval_trace.json", {
             "schema_version": 1,
             "roles": [

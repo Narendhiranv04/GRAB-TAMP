@@ -19,6 +19,7 @@ from baseline_common.physical_benchmark import (
 from mujoco_scenes.baseline_workshop_runtime import (
     MirroredWorkshopExecutor,
     WorkshopPhysicalExecutor,
+    workshop_goal_reached,
 )
 
 from .executive import ObservationFrame, VLMTAMPExecutive
@@ -184,7 +185,7 @@ def main() -> None:
             physical, WorkshopSymbolicExecutor(runtime)
         )
         def goal_verifier(_observation: Any = None) -> bool:
-            return physical.goal_satisfied
+            return workshop_goal_reached(physical, runtime)
     episode_started = time.monotonic()
     executive = VLMTAMPExecutive(
         planner, observe, executor, refiner=refiner,

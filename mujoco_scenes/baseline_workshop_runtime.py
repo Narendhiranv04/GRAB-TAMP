@@ -350,6 +350,30 @@ class WorkshopPhysicalExecutor:
             recorder_close()
 
 
+def workshop_goal_reached(physical: Any | None, runtime: Any) -> bool:
+    """Report the Workshop goal as the model is actually asked for it.
+
+    The goal has three clauses -- identify the compatible components, complete
+    the fastening, and leave any reusable equipment used for the task on the
+    workbench -- and only the fastening shows up in the physical joint state.
+    `WorkshopPhysicalExecutor.goal_satisfied` is therefore not the goal; it is
+    the fastening clause of it.
+
+    Scoring on that clause alone did two things.  It credited episodes that
+    ended with the driver still in the gripper, and -- because the executive
+    returns the moment its verifier passes -- it cut those same episodes off
+    before the tool could be put back, so the omission it rewarded was also
+    the omission it caused.  Every episode that ever fastened, 8 of 400,
+    terminated holding the driver.
+
+    So the physical scene stays authoritative on the fastening and the
+    runtime's own predicate carries the clauses the joint cannot see.
+    """
+    if physical is None:
+        return bool(runtime.goal_verifier())
+    return bool(physical.goal_satisfied and runtime.goal_verifier())
+
+
 class MirroredWorkshopExecutor:
     """Physical execution that keeps a planning runtime's view in step.
 
