@@ -1,0 +1,45 @@
+% Robust variant: needs ONLY \usepackage{booktabs}.
+% No \makecell, no \cmidrule, no \multicolumn in the header -- headers are
+% single-line, so nothing here can be undefined in a standard preamble.
+% Numbers are generated; regenerate with
+%   .venv/bin/python -m scripts.paper_metrics_table --split --latex
+\begin{table*}[t]
+\centering
+\caption{End-to-end results in the three-view setting using the shared
+Google-Robot execution interface, over the full Table~I variant sets at ten
+seeds each ($N=1{,}280$ episodes). Feasible and infeasible variants are scored
+separately, since they ask different questions and their proportions differ by
+scene. All methods share the \emph{model-native} decoding condition
+(temperature $0.6$, top-$p$ $0.95$, top-$k$ $20$, repetition penalty $1.05$,
+thinking enabled, $24{,}576$-token ceiling) with Qwen3.5-9B substituted for each
+method's published backbone.}
+\label{tab:main_results}
+\setlength{\tabcolsep}{4pt}
+\scriptsize
+\begin{tabular}{lccccccccc}
+\toprule
+Method & $N_f$ & Succ.\ $\uparrow$ & Cov.\ $\uparrow$ & Plan $\uparrow$ & Insp.\ $\uparrow$ & $N_i$ & Rej.\ $\uparrow$ & F.compl.\ $\downarrow$ & Calls $\downarrow$ \\
+\midrule
+\textit{Kitchen} & & & & & & & & & \\
+VLM-TAMP & $60$ & $0.0$ & $6.1$ & $\mathbf{100.0}$ & $0.00$ & $60$ & $26.7$ & $0.0$ & $6.84$ \\
+OWL-TAMP & $60$ & $0.0$ & $0.0$ & $0.0$ & $0.00$ & $60$ & $0.0$ & $0.0$ & $11.32$ \\
+ROBUST-TAMP & $60$ & $0.0$ & $1.9$ & $36.7$ & $0.02$ & $60$ & $0.0$ & $0.0$ & $\mathbf{4.98}$ \\
+ViLaIn-TAMP & $60$ & $0.0$ & $0.0$ & $0.0$ & $0.00$ & $60$ & $\mathbf{56.7}$ & $0.0$ & $6.53$ \\
+\textbf{Ours} & -- & -- & -- & -- & -- & -- & -- & -- & -- \\
+\midrule
+\textit{Living room} & & & & & & & & & \\
+VLM-TAMP & $60$ & $86.7$ & $93.6$ & $\mathbf{100.0}$ & -- & $40$ & $20.0$ & $0.0$ & $5.94$ \\
+OWL-TAMP & $60$ & $71.7$ & $82.1$ & $93.3$ & -- & $40$ & $42.5$ & $45.0$ & $8.88$ \\
+ROBUST-TAMP & $60$ & $\mathbf{91.7}$ & $\mathbf{95.7}$ & $\mathbf{100.0}$ & -- & $40$ & $12.5$ & $0.0$ & $\mathbf{3.21}$ \\
+ViLaIn-TAMP & $60$ & $0.0$ & $6.7$ & $0.0$ & -- & $40$ & $\mathbf{57.5}$ & $0.0$ & $6.30$ \\
+\textbf{Ours} & -- & -- & -- & -- & -- & -- & -- & -- & -- \\
+\midrule
+\textit{Workshop} & & & & & & & & & \\
+VLM-TAMP & $80$ & $\mathbf{12.5}$ & $\mathbf{15.0}$ & $88.8$ & $\mathbf{1.36}$ & $20$ & $30.0$ & $0.0$ & $9.56$ \\
+OWL-TAMP & $80$ & $0.0$ & $0.0$ & $73.8$ & $0.00$ & $20$ & $\mathbf{65.0}$ & $0.0$ & $\mathbf{3.49}$ \\
+ROBUST-TAMP & $80$ & $0.0$ & $0.4$ & $\mathbf{97.5}$ & $0.99$ & $20$ & $5.0$ & $0.0$ & $6.45$ \\
+ViLaIn-TAMP & $80$ & $0.0$ & $0.0$ & $0.0$ & $0.00$ & $20$ & $50.0$ & $0.0$ & $7.24$ \\
+\textbf{Ours} & -- & -- & -- & -- & -- & -- & -- & -- & -- \\
+\bottomrule
+\end{tabular}
+\end{table*}
