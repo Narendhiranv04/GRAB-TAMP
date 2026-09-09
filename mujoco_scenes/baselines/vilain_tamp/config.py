@@ -93,7 +93,6 @@ class BaselineConfig:
     # checkout could execute at all.  Declaring it in configuration keeps
     # the guarantee -- results are attributable to a named branch and a
     # clean tree -- while letting the experiment host be chosen.
-    execution_branch: str = "naren/ViLaIn-TAMP"
 
     def __post_init__(self) -> None:
         if not 0 <= self.max_cp_corrections <= 3:
@@ -148,9 +147,6 @@ class BaselineConfig:
             served_revision=_optional_text(data.get("served_revision")),
             independent_model_calls=bool(data.get("independent_model_calls", True)),
             execute_by_default=bool(data.get("execute_by_default", False)),
-            execution_branch=str(
-                data.get("execution_branch", "naren/ViLaIn-TAMP")
-            ),
             require_clean_execution_provenance=bool(
                 data.get("require_clean_execution_provenance", True)
             ),

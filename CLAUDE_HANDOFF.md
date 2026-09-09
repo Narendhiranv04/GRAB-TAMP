@@ -137,18 +137,22 @@ numbers forward by hand.
   `--continue-on-error`. This has silently dropped work twice: 40 Living Room
   episodes and, nearly, 60 Kitchen. After launching a grid, count the
   artifacts before believing it ran.
-- **ViLaIn vetoes its own successes when the worktree moves.** Its provenance
-  guard rejects a changed HEAD, a branch other than
-  `execution_branch` in `configs/qwen_only.yaml`, tracked changes, or
-  unexpected untracked paths -- and it fires only when planning **succeeds**,
-  so it destroys exactly the episodes worth having and leaves the failures
-  looking like data. An untracked `.tex` file once cost 6 episodes, and
-  switching to `baseline_executions` would have cost the whole Kitchen leg
-  because `execution_branch` still named the old branch.
+- **ViLaIn's provenance guard was narrowed on 2026-09-09; the old advice is
+  retired.** It used to reject a changed HEAD, a branch other than a configured
+  `execution_branch`, tracked changes *and* unexpected untracked paths -- while
+  running only on episodes where planning succeeded, so it destroyed exactly
+  the episodes worth keeping and left every failure in place looking like data.
+  An untracked `.tex` file cost 6 episodes; a branch rename would have cost the
+  whole 120-episode Kitchen leg at the same commit with identical files.
 
-  Before starting a ViLaIn leg: commit everything, confirm `git status` is
-  empty, and confirm `execution_branch` names the branch you are on. Do not
-  commit while the leg runs.
+  Now: a clean worktree is a **precondition at run start**, so it fails in a
+  second and uniformly for every episode; HEAD must not move during a run; and
+  `verify_artifact_manifest` hashes the config, PDDL domain, knowledge file and
+  the run's own artifacts, which is what actually establishes that a plan came
+  from a given domain. Branch name and untracked files no longer gate anything,
+  and `execution_branch` is gone. Committing during a ViLaIn leg is still
+  inadvisable -- HEAD moving will veto whatever is mid-flight -- but it no
+  longer destroys a leg for a rename.
 - **`find` here is `bfs` 4.1.1**, which mis-parses `-newermt "-N minutes"` and
   silently reports nothing. A "no results in 40 minutes" alarm was this.
 - **Two robot dialects reach the shared bridge**: `{"workspace", "holding"}`

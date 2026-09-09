@@ -14,6 +14,7 @@ from .artifacts import (
     build_manifest,
     repository_provenance,
     verify_artifact_manifest,
+    verify_clean_worktree,
     verify_repository_provenance,
 )
 from .config import (
@@ -48,10 +49,11 @@ from .interpreter import InterpretationResult
 from .observations import ObservationAcquisitionResult
 
 
-# Retained for reference only; the enforced branch comes from configuration
-# (`BaselineConfig.execution_branch`) so any host can run the baseline.
+# The branch a run happens to be on, and which files are untracked, no longer
+# gate execution: neither can alter a PDDL plan, and enforcing them destroyed
+# episodes that were otherwise sound.  What is enforced is a clean worktree at
+# run start, an unchanged HEAD across the run, and the artifact hashes.
 TARGET_BRANCH = "naren/ViLaIn-TAMP"
-LOCAL_PLAN_PATH = "vilain-tamp.md"
 
 
 class RunnerContractError(ValueError):
@@ -230,6 +232,10 @@ class BaselineRunner:
         run_root.mkdir(parents=True, exist_ok=True)
         started = self.clock()
         initial_provenance = repository_provenance(self.repository_root)
+        if self.config.require_clean_execution_provenance:
+            # Fails here, in a second, for every episode -- rather than at the
+            # execution boundary, which only successful episodes reach.
+            verify_clean_worktree(initial_provenance)
         domain = load_domain(options.domain.value)
         run_config_path = atomic_write_json(
             run_root / "run_config.json",
@@ -610,12 +616,8 @@ class BaselineRunner:
         run_root: Path,
     ) -> None:
         if self.config.require_clean_execution_provenance:
-            current = repository_provenance(self.repository_root)
             verify_repository_provenance(
-                initial_provenance,
-                current,
-                required_branch=self.config.execution_branch,
-                allowed_untracked_paths=(LOCAL_PLAN_PATH,),
+                initial_provenance, repository_provenance(self.repository_root)
             )
         verify_artifact_manifest(
             locked_repository_artifacts, root=self.repository_root

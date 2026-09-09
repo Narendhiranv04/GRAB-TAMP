@@ -155,31 +155,49 @@ def repository_provenance(repository_root: str | Path) -> dict[str, Any]:
     }
 
 
+def verify_clean_worktree(provenance: Mapping[str, Any]) -> None:
+    """Refuse to start a run whose code is being edited.
+
+    This is deliberately a *precondition*, not a boundary check.  The boundary
+    check below runs only on episodes where planning succeeded, so enforcing
+    worktree cleanliness there destroyed exactly the episodes worth keeping and
+    left every failure in place looking like data -- silently, and only after
+    the run had already spent its planning budget.  Asking the same question at
+    run start makes the answer uniform across episodes and immediate.
+    """
+    tracked = tuple(provenance.get("tracked_changes", ()))
+    if tracked:
+        raise ValueError(
+            "execution requires a clean worktree; tracked changes present: "
+            + ", ".join(sorted(str(item) for item in tracked)[:5])
+        )
+
+
 def verify_repository_provenance(
     expected: Mapping[str, Any],
     current: Mapping[str, Any],
-    *,
-    required_branch: str,
-    allowed_untracked_paths: Iterable[str] = (),
 ) -> None:
-    """Reject changed commits, branches, tracked files, or unknown local files."""
+    """Reject a run whose code changed underneath it.
+
+    Two things here bear on whether the recorded artifact is honest: the commit
+    the run started from, and whether tracked files were edited while it ran.
+
+    The branch *name* and the set of untracked files do not, and enforcing them
+    cost real data twice.  An untracked results table vetoed 6 episodes.  A
+    branch rename -- same commit, byte-identical files -- would have destroyed a
+    120-episode Kitchen leg, and was caught only because it happened to be
+    noticed before the first episode finished.  Neither can change a PDDL plan.
+
+    The guarantee that matters is `verify_artifact_manifest`, which hashes the
+    config, the PDDL domain, the knowledge file and the run's own artifacts.
+    That is what establishes "this plan came from that domain", it is exact, and
+    it is unconditional.
+    """
     if current.get("head") != expected.get("head"):
         raise ValueError("repository HEAD changed after the run started")
-    if current.get("branch") != required_branch:
-        raise ValueError(
-            f"execution requires branch {required_branch!r}; "
-            f"found {current.get('branch')!r}"
-        )
     tracked = tuple(current.get("tracked_changes", ()))
     if tracked:
         raise ValueError("execution requires no tracked repository changes")
-    allowed = set(allowed_untracked_paths)
-    unexpected = set(current.get("untracked_paths", ())).difference(allowed)
-    if unexpected:
-        raise ValueError(
-            "execution found unexpected untracked paths: "
-            + ", ".join(sorted(unexpected))
-        )
 
 
 def verify_artifact_manifest(

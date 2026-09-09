@@ -44,13 +44,4 @@ symbolic_planner: Fast Downward
 search_configuration: lama-first
 independent_model_calls: true
 execute_by_default: false
-# All baseline experimentation runs on this host and branch, so the
-# provenance guard is pointed at it rather than at the branch the
-# baseline was originally developed on.
-#
-# This must be updated whenever the working branch changes, and the failure is
-# silent until it is expensive: `verify_repository_provenance` rejects a branch
-# mismatch only on episodes where planning SUCCEEDED, so a stale value here
-# destroys exactly the episodes worth keeping and leaves the failures intact.
-execution_branch: baseline_executions
 require_clean_execution_provenance: true
