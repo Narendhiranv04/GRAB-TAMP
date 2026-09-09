@@ -105,3 +105,59 @@ def test_precheck_requires_the_observed_held_object_for_place():
 
     assert result is not None
     assert result.failure_code is FailureCode.PRECONDITION_FAILED
+
+
+def _kitchen_dialect_observation(*, held_object=None):
+    """The robot dict the Kitchen runtime actually publishes.
+
+    Kitchen reaches this bridge through `RobotObservation.as_dict()`, which
+    spells the grasp `held_object` and the pose `location`, where the Living
+    Room and Workshop runtimes spell them `holding` and `workspace`.  Every
+    fixture above uses only the latter dialect, which is how the bridge came to
+    read `holding` alone.
+    """
+    return Observation(
+        "kitchen",
+        1,
+        (
+            Entity("mug", "object", "mug", {"region_id": "countertop"}),
+            Entity("spoon", "object", "spoon", {"region_id": "countertop"}),
+        ),
+        (Region("countertop", "countertop", "open", True),),
+        {"location": "home", "held_object": held_object, "motion_ready": True},
+    )
+
+
+def test_bridge_reads_the_kitchen_held_object_dialect():
+    state = observation_to_observed_state(
+        _kitchen_dialect_observation(held_object="spoon")
+    )
+    assert state.robot.held_object == "spoon"
+    assert state.robot.location == "home"
+
+
+def test_precheck_admits_a_pour_the_kitchen_dialect_reports_as_held():
+    """A pour after a successful pick must not be rejected as empty-handed.
+
+    Reading `holding` alone made every Kitchen observation arrive with an empty
+    gripper, so this precheck rejected every PLACE, POUR and STIR that followed
+    a pick -- which is every one of them.
+    """
+    state = observation_to_observed_state(
+        _kitchen_dialect_observation(held_object="spoon")
+    )
+    assert (
+        observed_skill_precheck(
+            SkillAction("POUR", {"source_id": "spoon", "target_id": "mug"}), state
+        )
+        is None
+    )
+
+
+def test_precheck_still_rejects_a_pour_with_a_genuinely_empty_gripper():
+    state = observation_to_observed_state(_kitchen_dialect_observation())
+    result = observed_skill_precheck(
+        SkillAction("POUR", {"source_id": "spoon", "target_id": "mug"}), state
+    )
+    assert result is not None
+    assert result.failure_code is FailureCode.PRECONDITION_FAILED

@@ -29,7 +29,14 @@ def observation_to_observed_state(
         else frozenset(str(item) for item in camera_visible_object_ids)
     )
     robot = dict(observation.robot)
-    held_object = _string_or_none(robot.get("holding"))
+    # Two robot dialects reach this bridge.  The Living Room and Workshop
+    # runtimes publish {"workspace", "holding"}; the Kitchen runtime publishes
+    # RobotObservation.as_dict(), which is {"location", "held_object",
+    # "motion_ready"}.  The location lookup below already reads both spellings
+    # -- the grasp did not, so every Kitchen observation arrived here with an
+    # empty gripper and `observed_skill_precheck` rejected every PLACE, POUR
+    # and STIR that followed a successful pick.
+    held_object = _string_or_none(robot.get("holding") or robot.get("held_object"))
     objects = {
         entity.entity_id: ObjectObservation(
             entity.entity_id,
