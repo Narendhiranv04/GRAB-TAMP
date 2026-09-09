@@ -12,18 +12,16 @@ from typing import Any
 from .artifacts import write_json
 
 
-GOALS = {
-    "kitchen": (
-        "Prepare and serve coffee and soup for two people using the available "
-        "kitchenware. Stir both coffees and provide each soup bowl with a "
-        "suitable utensil."
-    ),
-    "living_room": (
-        "Prepare the living room for two people watching television. Place one "
-        "cup and one saucer on each person's fixed individual side table, and "
-        "place the TV remote on the fixed shared coffee table."
-    ),
-}
+# The published Table I instructions, imported rather than restated.  This
+# driver kept its own copies, and they had drifted: the Kitchen text dropped
+# "one coffee and one soup for each of two people" and the Living Room text
+# still opened with "Prepare the living room for two people watching
+# television".  A reproduction run launched from here would therefore have
+# stated the task differently from the reported grids, which are launched from
+# `run_baseline_execution_batch`.
+from mujoco_scenes.benchmark_task_instructions import TASK_INSTRUCTIONS
+
+GOALS = dict(TASK_INSTRUCTIONS)
 
 
 def _csv(value: str) -> tuple[str, ...]:
@@ -97,8 +95,14 @@ def _command(
 def main() -> None:
     parser = build_parser()
     arguments = parser.parse_args()
-    default_count = 6
-    prefix = "K" if arguments.environment == "kitchen" else "L"
+    # Table I: Kitchen 6 feasible + 6 infeasible, Living Room 6 + 4,
+    # Workshop 8 + 2.  A short default silently drops the infeasible half,
+    # and a batch that skips work still exits 0.
+    prefix, default_count = {
+        "kitchen": ("K", 12),
+        "living_room": ("L", 10),
+        "workshop": ("W", 10),
+    }[arguments.environment]
     variants = arguments.variants or tuple(
         f"{prefix}{index}" for index in range(1, default_count + 1)
     )
