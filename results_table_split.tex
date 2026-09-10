@@ -97,8 +97,12 @@ reward a constant predictor.
 \\[2pt]
 Two results deserve emphasis. No baseline opens a Kitchen storage region --
 $0.00$, $0.00$ and $0.02$ inspections per episode -- although the required
-cups, bowls and utensils are distributed across five of them; the uniform
-$0.0\%$ Kitchen success is a failure to search rather than a failure to plan.
+cups, bowls and utensils are distributed across five of them. This is not,
+however, what produces the uniform $0.0\%$: $90\%$ of feasible Kitchen
+episodes terminate on a manipulation-controller failure before search could
+matter, and the all-visible variant, which requires no search at all, fails
+the same way. The Kitchen column is bounded by physical execution and is not
+a clean measurement of task capability; see the note below.
 And no method both solves and rejects: \textsc{robust-tamp} is the strongest
 solver in the only scene without hidden objects ($91.7\%$) and the weakest
 rejector there ($12.5\%$), while \textsc{vilain-tamp} is the strongest rejector
@@ -109,6 +113,20 @@ emitting usable output in $18\%$ of its planner calls, rising to $3.15$
 truncations per episode on the infeasible variants; that row is bounded by the
 decoding condition as much as by the method. The ceiling is held uniform across
 methods so the comparison does not measure the ceiling.
+\\[2pt]
+The Kitchen \textbf{coverage} and \textbf{feasible success} columns are
+bounded by the manipulation controller rather than by the methods. The
+ground-truth oracle completes $5$ of the $6$ feasible Kitchen variants
+end-to-end, so the plans are executable in principle, but it does so under an
+assisted-recovery profile the baselines do not receive: it supplies
+pre-validated countertop placement coordinates, catches a controller timeout
+instead of ending the episode, and accepts a release the physics verifies
+after the planned placement failed. Through the baseline path the same
+\textsc{place} skill fails $52$ of $55$ attempts, $43$ of them on a $60$-simulated-second
+controller timeout that is raised as an unhandled exception and ends the
+episode. Reported as measured, and marked here as a harness limitation rather
+than a capability result.
+\\[2pt]
 Receding-horizon conditions are implemented for \textsc{owl-tamp} only and are
 not reported. The \emph{Ours} rows are not yet run.
 \end{minipage}

@@ -979,3 +979,99 @@ rather than to raise it for one method.
 The earlier instruction stands with its reason corrected: do not report the
 timeout share as a property of the method, because it was contention. Do report
 the truncation share, because it is not.
+
+## Kitchen is bounded by the manipulation controller, not by the methods (2026-09-10)
+
+An earlier note here, and the caption of `results_table_split.tex`, said the
+uniform $0.0\%$ Kitchen feasible success was "a failure to search rather than
+a failure to plan". That claim is withdrawn. Search *is* required and *is*
+never performed, but it is not what produces the zero.
+
+Ground truth was re-run on the current tree to establish whether the plans are
+executable at all (`runs/gt_recheck_20260910`, `runs/gt_workshop_recheck_20260910`):
+
+| suite | result |
+| --- | --- |
+| Kitchen GT, 6 feasible variants | 5 SUCCESS; F2_HIDDEN_SOUP_BOWL fails `GRASP_FAILED` at 22/25 |
+| Workshop GT, 8 feasible + 2 infeasible | 10/10; every feasible variant completes, both infeasible correctly confirmed |
+
+This reproduces `runs/gt_kitchen_locked` (2026-09-07) exactly, so the outcome
+is stable, not a lucky seed.
+
+**Ground truth succeeding does not mean the executor will run any plan.** The
+Kitchen GT runner records its profile as
+`PHYSICAL_PRIMITIVES_WITH_ASSISTED_RECOVERY`, and that name is accurate. Three
+things it does that a baseline does not:
+
+1. **Pre-validated placement coordinates.** `_allocate_staging_spot` in
+   `mujoco_scenes/kitchen_ground_truth_execution.py:583` selects a countertop
+   XY from a per-role table whose comments record that the coordinates were
+   found by physical trial ("Reuse the source-return locations physically
+   proven by K1"). A baseline calls `phase_b.place(object_id, "countertop")`
+   and gets whatever `placement_resolver.resolve` returns.
+2. **The controller timeout is caught.** GT wraps `phase_b.place` in
+   `try/except Exception` (`kitchen_ground_truth_execution.py:1763`) and
+   downgrades a timeout to a failed action. The baseline path
+   (`kitchen_phase_b_execution.py:280` -> `kitchen_object_manipulation.py:4478`)
+   calls `_step_until_stable_mode()` unguarded, so `RuntimeError(
+   "MANIPULATION_EXECUTION_TIMEOUT")` propagates to the dispatcher's generic
+   handler and ends the episode as `internal_error`. `PICK` does wrap it
+   (`kitchen_object_manipulation.py:4176`); `PLACE` does not. The asymmetry is
+   the whole difference between a recoverable action failure and a dead
+   episode.
+3. **A verified release is accepted.** When the planned placement fails but the
+   object left the gripper, GT runs `validate_stable_placement` and returns
+   `RELEASED_PLACEMENT_VERIFIED`. The baseline has no such route.
+
+Measured through the baseline path, over the 60 feasible VLM-TAMP Kitchen
+episodes in `runs/kitchen/execution/pour_rerun_20260908`:
+
+| skill | ok | failed |
+| --- | --- | --- |
+| PICK | 60 | 11 |
+| POUR | 44 | 11 |
+| PLACE | 3 | 52 |
+
+54 of 60 episodes (90%) terminate on a physical manipulation failure: 43
+`MANIPULATION_EXECUTION_TIMEOUT`, 10 `POUR_ALIGNMENT_FAILED`. `F0_ALL_VISIBLE`,
+which requires no search whatsoever, fails identically. ROBUST-TAMP dies the
+same way, on the same action shape: PICK ok, POUR ok, `PLACE(_, countertop)` ->
+`MANIPULATION_EXECUTION_TIMEOUT`, three actions into a 19-action accepted plan.
+
+`_step_until_stable_mode(maximum_steps=30000)` at a 0.002 s timestep is 60
+seconds of simulated time, so this is not a tight budget being missed; the
+executor never reaches `holding`, `idle` or `failed` at all.
+
+Two further corrections to earlier claims:
+
+- **STIR is proposed.** A previous session recorded that the baselines never
+  emit STIR. They do: VLM-TAMP's K1 plan contains
+  `STIRRED{target_id: object_0003, tool_id: object_0008}`, and six episodes
+  terminate on the `STIRRED` subgoal. `stirred` is 0/120 because the action
+  times out, not because it is never attempted.
+- **`placed` cannot be scored from these runs even if PLACE worked.** 51 of 55
+  baseline PLACE attempts target `countertop`; none targets `serving_area`,
+  which is the only destination `baseline_kitchen_runtime.py:263` scores as a
+  `placed` effect. The Kitchen `placed` denominator of 0/360 is therefore
+  jointly bounded by the controller failure and by plan content.
+
+What may be claimed: Kitchen feasible success and goal coverage are reported as
+measured, and are a lower bound on method capability bounded by a harness
+limitation. What may not be claimed: that Kitchen distinguishes the methods'
+planning ability. Use the plan-level coverage in `scripts/planning_metrics.py`
+for that, which scores the same goal conditions against the plan.
+
+### Workshop is not the same story
+
+Workshop separates the baselines at four different stages, and only one of them
+is execution-bounded:
+
+| method | where it stops |
+| --- | --- |
+| VLM-TAMP | reaches execution: 139 inspections, PICK 78 ok/89 fail, PLACE 36 ok/13 fail, FASTEN 10 ok |
+| OWL-TAMP | emits a sketch containing only `INSPECT`; 216 inspections, zero manipulation actions ever proposed |
+| ROBUST-TAMP | 72 of 100 episodes execute exactly one action, then `inference_failed` under the 24,576-token ceiling |
+| ViLaIn-TAMP | `execution_status: NOT_RUN_NO_SELECTED_PLAN` in all 100; its 10 correct outcomes are all infeasible rejections |
+
+Workshop GT passing 10/10 on the current tree confirms the scene's physics is
+not the constraint there.
