@@ -24,6 +24,7 @@ from .config import (
     ModelCondition,
     ObservationMode,
 )
+from .execution.workshop import WorkshopExecutionContractError
 from .contracts import (
     BaselineExecutionPlan,
     BaselineRunResult,
@@ -376,35 +377,59 @@ class BaselineRunner:
                     material_entries,
                     run_root,
                 )
-                stage_started = self.clock()
-                execution_result = components.execution.execute(
-                    domain=options.domain.value,
-                    variant=options.variant,
-                    execution_plan=execution_plan,
-                    projections=projections,
-                    output_root=run_root / "execution",
-                )
-                stage_times["execution_seconds"] = self.clock() - stage_started
-                _validate_execution_result(execution_result, options.domain)
-                record_event("EXECUTION_COMPLETE", status=execution_result.status)
-                execution_status = execution_result.status
-                artifact_paths.update(execution_result.artifact_paths)
-                generated_goal_evaluation = (
-                    components.generated_goal_evaluator.evaluate(
-                        problem=selected_problem,
-                        terminal_state=execution_result.terminal_state,
-                        effect_ledger=execution_result.effect_ledger,
+                try:
+                    stage_started = self.clock()
+                    execution_result = components.execution.execute(
+                        domain=options.domain.value,
+                        variant=options.variant,
+                        execution_plan=execution_plan,
+                        projections=projections,
+                        output_root=run_root / "execution",
                     )
-                )
-                if not isinstance(generated_goal_evaluation, Mapping):
-                    raise RunnerContractError(
-                        "generated-goal evaluator returned an invalid result"
+                    stage_times["execution_seconds"] = self.clock() - stage_started
+                    _validate_execution_result(execution_result, options.domain)
+                    record_event("EXECUTION_COMPLETE", status=execution_result.status)
+                    execution_status = execution_result.status
+                    artifact_paths.update(execution_result.artifact_paths)
+                    generated_goal_evaluation = (
+                        components.generated_goal_evaluator.evaluate(
+                            problem=selected_problem,
+                            terminal_state=execution_result.terminal_state,
+                            effect_ledger=execution_result.effect_ledger,
+                        )
                     )
-                generated_goal_status = str(
-                    generated_goal_evaluation.get("status", "UNKNOWN")
-                )
-                terminal_state = execution_result.terminal_state
-                effect_ledger = execution_result.effect_ledger
+                    if not isinstance(generated_goal_evaluation, Mapping):
+                        raise RunnerContractError(
+                            "generated-goal evaluator returned an invalid result"
+                        )
+                    generated_goal_status = str(
+                        generated_goal_evaluation.get("status", "UNKNOWN")
+                    )
+                    terminal_state = execution_result.terminal_state
+                    effect_ledger = execution_result.effect_ledger
+                except WorkshopExecutionContractError as error:
+                    # A plan this domain's executor cannot run is the
+                    # baseline's own output, so it is an episode to record,
+                    # not a crash.  `production_execution` says exactly that
+                    # in its own comment and then raises anyway, and nothing
+                    # caught it: the episode died before writing
+                    # `benchmark_execution_result.json` and disappeared from
+                    # the grid.  One missing seed makes the whole cell render
+                    # as incomplete, so losing the record costs more than
+                    # reporting the failure it stands for.  Scored exactly
+                    # like a run that selected no plan, because that is what
+                    # it amounts to.
+                    stage_times["execution_seconds"] = self.clock() - stage_started
+                    record_event(
+                        "EXECUTION_CONTRACT_UNMET", detail=str(error)
+                    )
+                    terminal_state = components.execution.terminal_without_execution(
+                        domain=options.domain.value,
+                        variant=options.variant,
+                        predicted_infeasible=False,
+                    )
+                    effect_ledger = ()
+                    execution_status = "NOT_RUN_PLAN_NOT_EXECUTABLE"
             else:
                 # Exhausting the corrective loop is ViLaIn's own infeasibility
                 # signal -- on a variant whose required tool is absent it plans
