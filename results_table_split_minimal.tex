@@ -1,3 +1,24 @@
+% SUPERSEDED 2026-09-10 -- DO NOT SUBMIT THESE NUMBERS.
+% Every Kitchen figure here, and every OWL-TAMP, ROBUST-TAMP and ViLaIn-TAMP
+% figure in any scene, was produced before the five harness faults recorded in
+% BASELINE_FIDELITY.md were fixed at f352eebe.  Three of the four Kitchen
+% zeros were ours, not the methods': OWL-TAMP read an object's region under a
+% key Kitchen does not publish, its Executed(i) search could not reach the
+% depth a Kitchen sketch needs, ViLaIn's detection depth was the median of a
+% mostly background box, and Kitchen's PLACE let a controller timeout escape
+% as an unhandled exception.
+%
+% The affected cells are being re-run into runs/*/execution/fixed_20260910.
+% Regenerate with:
+%     .venv/bin/python scripts/paper_metrics_table.py --split --latex
+% after moving DEFAULT_ROOTS onto the fixed_20260910 roots, keeping VLM-TAMP
+% Living Room and VLM-TAMP Workshop on their existing roots -- an import-graph
+% check confirms neither reaches any changed file.
+%
+% The pooled variant (results_table.tex) was deleted rather than updated: a
+% constant predictor beats its pooled outcome accuracy in two scenes, so the
+% split table replaces it outright.
+
 % Robust variant: needs ONLY \usepackage{booktabs}.
 % No \makecell, no \cmidrule, no \multicolumn in the header -- headers are
 % single-line, so nothing here can be undefined in a standard preamble.
