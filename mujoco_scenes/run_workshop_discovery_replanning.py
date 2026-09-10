@@ -141,6 +141,15 @@ def run_episode(
             "physical_execution": True,
             "planning_latency_s": round(executive.planning_latency_s, 6),
             "elapsed_seconds": round(time.monotonic() - started, 6),
+            # The Kitchen and Living Room runners both record these; this one
+            # did not, so every Workshop ROBUST-TAMP episode wrote an empty
+            # `history` while its event log held the skills that actually ran
+            # -- 109 of 338 episodes across the grid.  Any consumer reading
+            # the result file rather than the JSONL undercounted the run.
+            "history": list(executive.history),
+            "last_event": (
+                executive.last_event.as_dict() if executive.last_event else None
+            ),
             "terminal_failure": executive.terminal_failure,
             "mirror_divergences": list(executor.mirror_divergences),
             "events_path": str(output / "discovery_replanning_events.jsonl"),

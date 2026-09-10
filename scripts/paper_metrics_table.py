@@ -387,6 +387,10 @@ def _inspections(episode: Path) -> int:
             for effect in (action.get("effects") or [])
             if str(effect).startswith("inspected(")
         )
+    # OWL-TAMP's Kitchen domain names the search operator OPEN, not INSPECT;
+    # every other runner and every other scene uses INSPECT.  Counting only
+    # the latter reported OWL as never having looked in a drawer when its
+    # sketches contain 58 OPEN actions, so both spellings count.
     events = episode / "discovery_replanning_events.jsonl"
     if not events.is_file():
         return 0
@@ -403,7 +407,7 @@ def _inspections(episode: Path) -> int:
         if (
             record.get("event") == "discovery_skill_finished"
             and record.get("success")
-            and "INSPECT" in str(record.get("action"))
+            and any(name in str(record.get("action")) for name in ("INSPECT", "OPEN"))
         ):
             total += 1
     return total

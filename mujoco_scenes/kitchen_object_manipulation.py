@@ -3303,6 +3303,24 @@ class KitchenObjectManipulationExecutor:
             "search": "BOUNDED_HOME_PAYLOAD_SAFE_STRICT_PLACE_IK",
         }
 
+    def _recover_from_place_timeout(self, backend: str) -> str:
+        """Reconcile the executor with the gripper after a stranded place.
+
+        Returns the resolution taken so the caller can record it.
+        """
+        weld_id = mujoco.mj_name2id(
+            self.scene.model,
+            mujoco.mjtObj.mjOBJ_EQUALITY,
+            f"google:pick_weld_{backend}",
+        )
+        still_held = weld_id >= 0 and bool(self.scene.data.eq_active[weld_id])
+        if still_held:
+            self.executor.mode = "holding"
+            return "RETAINED_GRASP"
+        self.executor.held_object = None
+        self.executor.mode = "idle"
+        return "RELEASED_DURING_TIMEOUT"
+
     def _step_until_stable_mode(self, maximum_steps: int = 30000) -> int:
         for step in range(1, maximum_steps + 1):
             self.executor.update()
@@ -4478,6 +4496,17 @@ class KitchenObjectManipulationExecutor:
         try:
             steps = self._step_until_stable_mode()
         except RuntimeError as error:
+            # Leave the executor in a mode a later action can start from.  The
+            # timeout strands it mid-place: `held_object` is still set, so the
+            # observation keeps reporting the object as held and the planner
+            # keeps proposing PLACE, but `can_place` requires mode == holding
+            # and the retry is refused with "Pick a place-supported object
+            # before placement" until the episode's budget runs out.  Which
+            # way to resolve it is decided by the gripper, not by the symbolic
+            # state: if the grasp weld survived, the object really is still
+            # held and a retry is legitimate; if it did not, the object was
+            # dropped and the observation must say so.
+            recovery = self._recover_from_place_timeout(backend)
             # A controller that never settles is a failed PLACE, not a dead
             # episode.  `pick` has always converted this timeout into a
             # GRASP_FAILED result; `place` let the RuntimeError escape to the
@@ -4497,7 +4526,8 @@ class KitchenObjectManipulationExecutor:
                 ObjectExecutionFailureCode.PLACEMENT_FAILED.value,
                 f"{error}; mode={self.executor.mode}; "
                 f"status={self.executor.status}; "
-                f"failure={self.executor.failure}",
+                f"failure={self.executor.failure}; "
+                f"recovery={recovery}",
                 30000, time.perf_counter() - started,
                 False, False, False, False, False,
                 placement_stance=placement_stance,

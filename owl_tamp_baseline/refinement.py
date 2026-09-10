@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import heapq
+import itertools
+
 from collections import deque
 from dataclasses import dataclass
 import re
@@ -43,7 +46,18 @@ def _initial_state(observation: Observation) -> _State:
     holding = str(holding) if holding else None
     locations = []
     for entity in observation.entities:
-        location = entity.facts.get("region_id") or entity.facts.get("location")
+        location = (
+            entity.facts.get("region_id")
+            or entity.facts.get("location")
+            # Kitchen publishes an object's region as `source_region`; the
+            # Living Room and the Workshop publish `region_id`.  Reading only
+            # the latter two left every Kitchen object with no location, so
+            # PICK was never applicable and the search dead-ended after 32
+            # expansions with only the region OPENs reachable -- which is the
+            # whole of OWL-TAMP's 0.0% Kitchen result.  Same dialect split as
+            # the `holding`/`held_object` bridge bug.
+            or entity.facts.get("source_region")
+        )
         if location and location != "held":
             locations.append((entity.entity_id, str(location)))
     opened = frozenset(
@@ -129,6 +143,10 @@ _PREDICATE_ARITY = {
     "poured": 2,
     "stirred": 2,
     "served_with": 2,
+    # The Kitchen goal contract states its placements as `placed(object,
+    # region)`, and the model emits exactly that.  Without it here its own
+    # required goal effect was rejected as an unsupported literal.
+    "placed": 2,
     "inserted": 2,
     "fastened": 3,
 }
@@ -143,6 +161,14 @@ def _goal_facts(literals: Sequence[str], observation: Observation) -> frozenset[
             raise ValueError(f"unsupported goal literal syntax {literal!r}")
         predicate = match.group(1).lower()
         arguments = tuple(part for part in match.group(2).split(",") if part)
+        # The goal contract names a placement `placed(object, destination)`;
+        # the transition model records the same state as `at(object,
+        # destination)`, which is what PLACE and PLACE_SERVING_UTENSIL add.
+        # Accepting the contract's spelling and normalizing it here keeps the
+        # goal expressible without giving the operators a second effect that
+        # means the same thing.
+        if predicate == "placed":
+            predicate = "at"
         if predicate not in _PREDICATE_ARITY or len(arguments) != _PREDICATE_ARITY[predicate]:
             raise ValueError(f"unsupported goal literal {literal!r}")
         if any(argument not in known for argument in arguments):
@@ -157,25 +183,63 @@ def constrained_breadth_first_search(
     sketch: Sequence[Action],
     goal_literals: Sequence[str] = (),
     *,
-    max_expansions: int = 100_000,
+    # Bounded so a sketch that has genuinely stalled fails in seconds rather
+    # than grinding.  With the sketch-first rule above, an executable sketch
+    # never approaches this; only the fall-back branching does, and there the
+    # extra expansions buy almost nothing because the branching factor is the
+    # whole grounded set.
+    max_expansions: int = 20_000,
 ) -> tuple[Action, ...] | None:
-    """Find the shortest plan containing the VLM sketch as a subsequence."""
+    """Find a plan containing the VLM sketch as a subsequence.
+
+    Ordered by how much of the sketch a state has executed, then by plan
+    length.  Breadth-first over the whole grounded set cannot reach the depth
+    a Kitchen sketch needs: with 365 grounded actions and a 14-action sketch,
+    the 100,000-expansion budget is spent at sketch progress 3 of 14, so every
+    Kitchen episode returned "no plan satisfies the Executed(i) subsequence
+    constraints" for want of search, not for want of a plan.  Expanding
+    sketch-advancing states first makes the common case -- a sketch that is
+    already executable, which is what the model is asked for -- close to
+    linear, while still returning a plan that contains the sketch as a
+    subsequence and satisfies the goal.
+
+    The trade is that the returned plan is no longer guaranteed shortest.
+    OWL-TAMP needs a skeleton to hand to continuous sampling, not a minimal
+    one, and the budget is retained so a genuinely unreachable goal still
+    terminates.
+    """
     initial = _initial_state(observation)
     goals = _goal_facts(goal_literals, observation)
-    queue = deque([(initial, ())])
+    counter = itertools.count()
+    queue = [(-initial.executed, 0, next(counter), initial, ())]
     visited = {initial}
     expansions = 0
     while queue and expansions < max_expansions:
-        state, path = queue.popleft()
+        _, depth, _, state, path = heapq.heappop(queue)
         expansions += 1
         if state.executed == len(sketch) and goals <= state.facts:
             return path
-        for action in grounded_actions:
+        # When the next sketch action is applicable, take it and nothing else.
+        # The model is asked for a directly executable sequence, so in the
+        # common case this walks the sketch in a straight line instead of
+        # branching over all 365 grounded actions at every step.  Branching is
+        # kept for states where the sketch has stalled, which is where a
+        # gap-filling action is actually needed.
+        if state.executed < len(sketch) and _transition(
+            state, sketch[state.executed], sketch
+        ) is not None:
+            successors = [sketch[state.executed]]
+        else:
+            successors = list(grounded_actions)
+        for action in successors:
             successor = _transition(state, action, sketch)
             if successor is None or successor in visited:
                 continue
             visited.add(successor)
-            queue.append((successor, path + (action,)))
+            heapq.heappush(queue, (
+                -successor.executed, depth + 1, next(counter),
+                successor, path + (action,),
+            ))
     return None
 
 

@@ -921,6 +921,12 @@ def _normalize_detections(
     return tuple(detections)
 
 
+# Depth spread accepted as belonging to one object rather than to whatever
+# sits behind it.  0.15 m clears every graspable object in the three scenes
+# while still separating a cup from the counter it stands on.
+_FOREGROUND_BAND_M = 0.15
+
+
 def _detection_centroid(
     detection: Mapping[str, Any],
     *,
@@ -944,7 +950,23 @@ def _detection_centroid(
     usable = crop[np.isfinite(crop) & (crop > 0)]
     if usable.size == 0:
         return None
-    z = float(np.median(usable))
+    # Take the depth of the near surface inside the box, not the median of
+    # the whole box.  A detection box around a small object on a counter is
+    # mostly background, so the plain median returned the distance to the
+    # floor behind it: five of nine Kitchen objects back-projected to z = 0
+    # and, because the ray simply ran further, landed one to two metres out
+    # in x as well.  Nothing then fell inside the 0.75 m identity-resolution
+    # radius, and ViLaIn failed ENTITY_RESOLUTION with zero candidates in
+    # every episode of all three scenes.
+    #
+    # The object owns the nearest coherent depth band in its own box, so the
+    # near quartile is located first and the median is taken over the band
+    # within one object-depth of it.  The band tolerance is generous because
+    # it only has to separate an object from its supporting surface, not
+    # resolve the object's own thickness.
+    near = float(np.percentile(usable, 10.0))
+    band = usable[usable <= near + _FOREGROUND_BAND_M]
+    z = float(np.median(band if band.size else usable))
     intrinsics = np.asarray(calibration["intrinsics"], dtype=float)
     extrinsics = np.asarray(calibration["extrinsics"], dtype=float)
     if intrinsics.shape != (3, 3) or extrinsics.shape != (4, 4):
