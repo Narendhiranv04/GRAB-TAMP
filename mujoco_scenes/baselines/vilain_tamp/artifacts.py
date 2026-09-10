@@ -223,14 +223,30 @@ def verify_artifact_manifest(
             raise ValueError(f"required artifact hash changed: {relative}")
 
 
+# Every episode takes repository provenance, and every one of those shells out
+# to git.  Ten seconds is ample for one episode on an idle machine and not
+# ample for one of eighteen concurrent episodes competing for the same disk:
+# `git branch --show-current` blew the limit and killed the episode with a
+# TimeoutExpired, which reads like a broken repository rather than a loaded
+# one.  The guard is about the tree not moving under a run, so waiting longer
+# costs nothing and a timeout here must never be the reason an episode dies.
+_GIT_TIMEOUT_S = 300
+
+
 def _git_output(repository_root: Path, *arguments: str) -> str:
-    completed = subprocess.run(
-        ("git", "-C", str(repository_root), *arguments),
-        check=False,
-        capture_output=True,
-        text=True,
-        timeout=10,
-    )
+    try:
+        completed = subprocess.run(
+            ("git", "-C", str(repository_root), *arguments),
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=_GIT_TIMEOUT_S,
+        )
+    except subprocess.TimeoutExpired as error:
+        raise ValueError(
+            "unable to inspect repository provenance: "
+            f"git {' '.join(arguments)} exceeded {_GIT_TIMEOUT_S}s"
+        ) from error
     if completed.returncode != 0:
         detail = completed.stderr.strip() or completed.stdout.strip()
         raise ValueError(f"unable to inspect repository provenance: {detail}")

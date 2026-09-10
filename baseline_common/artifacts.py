@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -23,9 +24,19 @@ def write_json(path: str | Path, value: Any) -> None:
     """Atomically replace a JSON artifact so interrupted runs stay readable."""
     destination = Path(path)
     destination.parent.mkdir(parents=True, exist_ok=True)
-    temporary = destination.with_name(f".{destination.name}.tmp")
-    temporary.write_text(
-        json.dumps(value, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
-    temporary.replace(destination)
+    # The scratch name carries the writer's pid.  A fixed `.name.tmp` is only
+    # atomic against one writer: four Kitchen legs sharing an output root all
+    # staged `protocol_manifest.json` through the same scratch path, and
+    # whichever renamed first left the others calling replace() on a file that
+    # no longer existed.  That killed the OWL-TAMP and VLM-TAMP legs at
+    # startup with a FileNotFoundError naming the temp file, which reads like
+    # a missing artifact rather than a race.
+    temporary = destination.with_name(f".{destination.name}.{os.getpid()}.tmp")
+    try:
+        temporary.write_text(
+            json.dumps(value, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        temporary.replace(destination)
+    finally:
+        temporary.unlink(missing_ok=True)
