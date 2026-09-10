@@ -90,11 +90,36 @@ def _normalize_reply_shape(
                 normalized["status"] = normalized.pop(alias)
                 repairs.append(f"status<-{alias}")
                 break
+    # A `plan` that is itself an object usually wraps the list one level down.
+    if not isinstance(normalized.get("actions"), list):
+        for alias in _ACTION_ALIASES[1:]:
+            nested = normalized.get(alias)
+            if isinstance(nested, Mapping) and isinstance(nested.get("actions"), list):
+                normalized["actions"] = list(nested["actions"])
+                if "status" not in normalized and isinstance(nested.get("status"), str):
+                    normalized["status"] = nested["status"]
+                normalized.pop(alias)
+                repairs.append(f"actions<-{alias}.actions")
+                break
+
     if "status" not in normalized and isinstance(normalized.get("actions"), list):
         # A reply that carries an action list and no verdict is proposing a
         # plan; that is the only status consistent with what it sent.
         normalized["status"] = PlanStatus.PLAN.value
         repairs.append("status<-implied_by_actions")
+
+    # Once both required keys are present and correctly typed, anything else
+    # the model attached is commentary.  Enumerating those keys was a losing
+    # game -- `GOAL_COMPLETE` as a key rather than a status value was one that
+    # still got through -- so the rule is positional: the contract is
+    # satisfied, drop the rest.
+    if isinstance(normalized.get("actions"), list) and isinstance(
+        normalized.get("status"), str
+    ):
+        for key in list(normalized):
+            if key not in {"status", "actions"}:
+                normalized.pop(key)
+                repairs.append(f"dropped:{key}")
 
     return normalized, repairs
 

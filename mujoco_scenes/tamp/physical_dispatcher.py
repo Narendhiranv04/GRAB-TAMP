@@ -36,6 +36,17 @@ _FAILURE_CODES = {
     "VISIBLE": FailureCode.OBJECT_NOT_VISIBLE,
     "RESOLUTION": FailureCode.OBJECT_NOT_VISIBLE,
     "UNSUPPORTED": FailureCode.PRECONDITION_FAILED,
+    # POUR and STIR report their own statuses, and none of them contained a
+    # token above, so every one fell through to INTERNAL_ERROR -- which
+    # `result_to_skill` treats as non-recoverable and which therefore ended
+    # the episode.  `POUR_ALIGNMENT_FAILED` alone killed 10 of 60 feasible
+    # VLM-TAMP Kitchen episodes that way.  A pour that misses its target is a
+    # failed action the planner can route around, exactly like a failed grasp.
+    "ALIGNMENT": FailureCode.EFFECT_NOT_OBSERVED,
+    "DISTURBED": FailureCode.EFFECT_NOT_OBSERVED,
+    "LEDGER": FailureCode.EFFECT_NOT_OBSERVED,
+    "POUR": FailureCode.EFFECT_NOT_OBSERVED,
+    "STIR": FailureCode.EFFECT_NOT_OBSERVED,
 }
 
 
