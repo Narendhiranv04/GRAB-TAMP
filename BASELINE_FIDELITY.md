@@ -1168,3 +1168,23 @@ So the expected effect of the re-run on ViLaIn is that its failures move from
 actually does once its perception is placed correctly -- which may still be a
 low number. The claim that changes is the attribution, not necessarily the
 score.
+
+### Operational note: restarting a leg discards its in-flight episodes (2026-09-10)
+
+`run_baseline_execution_batch` has no way to change worker count in place, so
+every rebalance is a stop and relaunch, and `--resume` only protects episodes
+that already finished. Partial ones are moved to `seed_NNN.interrupted_NNN`
+and started again from scratch.
+
+Measured during the re-run: **42 episodes discarded against 94 completed**,
+roughly 7 worker-hours. Kitchen VLM-TAMP discarded 12 while completing 6.
+Workshop ROBUST-TAMP was worst hit -- its episodes take about 1832 s and the
+rebalances landed at roughly 30-minute intervals, so four workers were
+repeatedly killed shortly before finishing and the leg advanced from 1
+completed episode to 2 across an hour.
+
+The rule this implies: rebalance at most once, early, on measured per-episode
+wall clock, and then leave the grid alone. Chasing balance costs more than
+the imbalance does once a leg's episodes are longer than the interval between
+adjustments. If worker counts must change often, the runner needs to read its
+concurrency from a file it re-checks between episodes rather than from argv.
