@@ -4475,7 +4475,33 @@ class KitchenObjectManipulationExecutor:
             ))
         self.executor.base_manipulation_target = self.executor.base_stance + local
         self.executor.request_place_world(position, rotation)
-        steps = self._step_until_stable_mode()
+        try:
+            steps = self._step_until_stable_mode()
+        except RuntimeError as error:
+            # A controller that never settles is a failed PLACE, not a dead
+            # episode.  `pick` has always converted this timeout into a
+            # GRASP_FAILED result; `place` let the RuntimeError escape to the
+            # skill dispatcher's generic handler, which reports it as
+            # `internal_error` and ends the run.  The asymmetry meant a single
+            # unsettled placement terminated the episode with no chance to
+            # replan: 53 of 60 feasible VLM-TAMP Kitchen episodes and 19 of 60
+            # ROBUST-TAMP ones ended this way, against zero such terminations
+            # in the Living Room or the Workshop.  The mode and status are
+            # carried into the message because a timeout that leaves the
+            # executor mid-descent and one that leaves it mid-retreat are
+            # different faults and were previously indistinguishable.
+            return PhysicalPlaceResult(
+                generic_object_id, backend, symbolic_destination,
+                self._target_dict(target), False,
+                "PLACEMENT_TIMEOUT",
+                ObjectExecutionFailureCode.PLACEMENT_FAILED.value,
+                f"{error}; mode={self.executor.mode}; "
+                f"status={self.executor.status}; "
+                f"failure={self.executor.failure}",
+                30000, time.perf_counter() - started,
+                False, False, False, False, False,
+                placement_stance=placement_stance,
+            )
         if self.executor.mode != "idle":
             return PhysicalPlaceResult(
                 generic_object_id, backend, symbolic_destination, self._target_dict(target), False,

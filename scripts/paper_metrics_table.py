@@ -195,15 +195,33 @@ def _vilain_coverage(scene: str, episode: Path) -> tuple[int, int]:
 
     ViLaIn executes no action in any episode of any scene, so whatever this
     returns is the coverage of the *initial* scene, which it never changed.
-    That is the honest number under the shared definition -- every other
-    method's figure likewise includes anything pre-satisfied -- but it is scene
-    configuration rather than credit the method earned.
+
+    An earlier version of this docstring claimed that was fine because "every
+    other method's figure likewise includes anything pre-satisfied".  That is
+    wrong, and it inflated ViLaIn.  The other methods' Living Room denominator
+    is built from ground truth's PLACE actions, and ground truth does not place
+    an object that already sits on its target -- so L2 and L5, which start with
+    one saucer already on the left personal table, give the other methods a
+    denominator of 4 with the pre-placed slot excluded.  ViLaIn's own subgoal
+    list keeps all 5 and marks the pre-placed one passed, which is where its
+    entire Living Room coverage of 6.7% came from: 20 episodes scoring 1/5 for
+    a scene they never touched.
+
+    Subgoals already satisfied in the initial state are therefore dropped from
+    both the numerator and the denominator, which puts ViLaIn on the same
+    denominator as everyone else.  In Kitchen and Workshop the initial state
+    satisfies nothing, so this changes neither.
     """
     evaluation = episode / "benchmark/terminal_subgoal_evaluation.json"
     try:
         results = json.loads(evaluation.read_text()).get("results") or []
     except (OSError, json.JSONDecodeError):
         return 0, 0
+    presatisfied = _vilain_presatisfied(episode)
+    results = [
+        row for row in results
+        if _subgoal_key(row.get("subgoal") or {}) not in presatisfied
+    ]
     if not results:
         return 0, 0
     if scene != "living_room":
@@ -237,6 +255,30 @@ def _vilain_coverage(scene: str, episode: Path) -> tuple[int, int]:
         if slot and support and not item.get("held"):
             final[(support, slot)] += 1
     return sum(min(n, final[k]) for k, n in required.items()), sum(required.values())
+
+
+def _subgoal_key(subgoal: dict) -> tuple:
+    return (
+        str(subgoal.get("predicate") or ""),
+        str(subgoal.get("subject") or ""),
+        str(subgoal.get("target") or ""),
+    )
+
+
+def _vilain_presatisfied(episode: Path) -> set[tuple]:
+    """Subgoals already true before the robot moved.
+
+    ViLaIn records the initial evaluation alongside the terminal one, so the
+    scene's starting credit can be identified exactly rather than estimated.
+    """
+    initial = episode / "benchmark/initial_subgoal_evaluation.json"
+    try:
+        rows = json.loads(initial.read_text()).get("results") or []
+    except (OSError, json.JSONDecodeError):
+        return set()
+    return {
+        _subgoal_key(row.get("subgoal") or {}) for row in rows if row.get("passed")
+    }
 
 
 def _workshop_coverage(episode: Path) -> tuple[int, int]:
