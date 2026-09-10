@@ -243,7 +243,18 @@ def main() -> None:
     )
     parser.add_argument("--max-actions", type=int, default=40)
     parser.add_argument("--max-tokens", type=int, default=8192)
-    parser.add_argument("--timeout-seconds", type=float, default=600.0)
+    parser.add_argument(
+        "--timeout-seconds", type=float, default=1800.0,
+        help=(
+            "Model-call deadline.  Raised from 600s on 2026-09-10: under the "
+            "re-run's concurrency the served median climbed from 174s to 265s "
+            "with a p90 of exactly 600s, so 6.2%% of ROBUST-TAMP calls were "
+            "being discarded at the deadline and charged to the replan budget. "
+            "A deadline that binds makes the result depend on how many "
+            "episodes happened to be scheduled alongside it rather than on "
+            "the method."
+        ),
+    )
     parser.add_argument(
         "--decoding",
         choices=("paper", "model-native"),

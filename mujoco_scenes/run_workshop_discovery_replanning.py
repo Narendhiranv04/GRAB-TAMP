@@ -201,7 +201,18 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--max-actions", type=int, default=80)
     parser.add_argument("--max-tokens", type=int, default=4096)
-    parser.add_argument("--timeout-seconds", type=float, default=600.0)
+    parser.add_argument(
+        "--timeout-seconds", type=float, default=1800.0,
+        help=(
+            "Model-call deadline.  Raised from 600s on 2026-09-10: under the "
+            "re-run's concurrency the served median climbed from 174s to 265s "
+            "with a p90 of exactly 600s, so 6.2%% of ROBUST-TAMP calls were "
+            "being discarded at the deadline and charged to the replan budget. "
+            "A deadline that binds makes the result depend on how many "
+            "episodes happened to be scheduled alongside it rather than on "
+            "the method."
+        ),
+    )
     parser.add_argument("--camera-count", type=int, choices=(1, 3, 5), default=5)
     parser.add_argument("--image-width", type=int, default=960)
     parser.add_argument("--image-height", type=int, default=540)

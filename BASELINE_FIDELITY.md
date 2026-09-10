@@ -1188,3 +1188,37 @@ wall clock, and then leave the grid alone. Chasing balance costs more than
 the imbalance does once a leg's episodes are longer than the interval between
 adjustments. If worker counts must change often, the runner needs to read its
 concurrency from a file it re-checks between episodes rather than from argv.
+
+### The model-call deadline was binding, and is raised to 1800 s (2026-09-10)
+
+Measured during the re-run, model-call latency climbed with load:
+
+| 30-min bucket | n | median | p90 |
+| --- | --- | --- | --- |
+| 0 | 70 | 205 s | 333 s |
+| 1 | 69 | 201 s | 352 s |
+| 2 | 56 | 249 s | 417 s |
+| 3 | 48 | 265 s | **600 s** |
+
+The deadline was 600 s for both VLM-TAMP (`VLM_TAMP_TIMEOUT_SECONDS`) and
+ROBUST-TAMP (the `--timeout-seconds` default in the three
+`run_*_discovery_replanning.py` runners), and by the fourth bucket the p90 had
+reached it exactly. Every ROBUST-TAMP timeout in the run landed at 600.1 s.
+6.2% of ROBUST-TAMP calls and 5.8% of VLM-TAMP calls were being discarded at
+the deadline, and a discarded call still consumes one of the five model calls
+an episode is allowed.
+
+That matters most for ROBUST-TAMP, whose dominant terminal failure is
+"replan budget exhausted": a deadline that binds spends the budget on calls
+the server would have answered. It also makes the result depend on how many
+episodes happened to be scheduled alongside it, which is a property of the
+operator, not of the method.
+
+Raised to 1800 s. This is a protocol change and is uniform across methods, so
+it does not bias the comparison; what it removes is a load-dependent artifact.
+The decoding condition itself is untouched -- 24,576 tokens, temperature 0.6,
+top_p 0.95, top_k 20, min_p 0.0, repetition penalty 1.05, thinking enabled.
+
+ViLaIn-TAMP was checked and is not affected: its recorded latencies run to a
+805 s maximum with a single transport failure across the run, so the 120 s
+default in `live_fm.py` is overridden in the path the benchmark uses.
