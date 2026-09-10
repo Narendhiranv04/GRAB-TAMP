@@ -1,17 +1,54 @@
 # Claude Project Handoff
 
-Updated: 2026-09-09 (Asia/Kolkata)
+Updated: 2026-09-10 (Asia/Kolkata)
 
 This is the current-state handoff for continuing work on this repository with
 Claude or another coding agent. Read this file before changing code. Then read
 the current Git status and the narrowly relevant runbook/source files. Do not
 assume that every older status statement in `CODEX_HANDOFF.md` is still true.
 
-## 0. Read first: state as of 2026-09-09
+## 0. Read first: state as of 2026-09-10
 
-This section supersedes any older statement in this file that conflicts with
-it. The rest of the document remains accurate about architecture, boundaries,
-and scene design, but its status claims predate the work below.
+The 2026-09-09 section below remains accurate about the grid, the protocol and
+the branch. What changed on 2026-09-10:
+
+An audit of every JSON artifact in the canonical roots
+(`scripts/audit/check_episodes.py`, `check_protocol.py`,
+`check_consistency.py`) found that **three of the four Kitchen zeros were
+harness faults, not method results**. `BASELINE_FIDELITY.md` carries the full
+table; the short version is that OWL-TAMP read an object's region under a key
+Kitchen does not publish, its Executed(i) search could not reach the depth a
+Kitchen sketch needs, ViLaIn's detection depth was the median of a mostly
+background box, and Kitchen's PLACE let a controller timeout escape as an
+unhandled exception. All are fixed at `f352eebe`; the test suite is unchanged
+at 52 failed / 1267 passed / 12 errors before and after.
+
+The affected cells are being re-run into `runs/*/execution/fixed_20260910`.
+VLM-TAMP Living Room and VLM-TAMP Workshop are **not** re-run: an import-graph
+check confirms neither reaches any changed file, so their existing roots stay
+canonical. Retrieval remains excluded -- its Kitchen goal contract is the
+sentinel `__planning_goal_unset__` in every variant and it has one seed per
+variant.
+
+Two new tools:
+
+- `scripts/planning_metrics.py` scores the goal conditions against the plan
+  rather than the terminal state, which separates a decomposition failure from
+  an execution failure. Kitchen's gap under the old code was ~51 points.
+- `scripts/audit/` holds the three artifact checkers. Run them after any grid.
+
+What the audit cleared, so it need not be re-checked: every file parses, the
+Table I goal string is byte-identical in all 1,292 episodes, all 2,371
+requests went out at 24,576 tokens to `qwen35-9b` with thinking enabled under
+one sampling configuration, and no private artifact or internal variant name
+appears in anything the model was shown.
+
+## 0b. State as of 2026-09-09
+
+Section 0 above supersedes this one where they conflict. This section
+supersedes any older statement further down the file. The rest of the
+document remains accurate about architecture, boundaries, and scene design,
+but its status claims predate the work below.
 
 Working branch is `baseline_executions`. It is not pushed: `origin` is an
 HTTPS remote with no stored credential on this host and the SSH key is not
@@ -165,6 +202,12 @@ numbers forward by hand.
 
 ### Open items, highest value first
 
+**Read `BASELINE_FIDELITY.md` first.** Its 2026-09-10 sections carry the
+artifact audit over all 51,696 JSON files in the canonical roots, the five
+harness faults it found, and what each one invalidates. Items 3 and 4 below
+were closed by that work and are kept only so the reasoning is not
+rediscovered.
+
 1. **Workshop's Table I functional relations do not exist under those names.**
    The paper lists `GRASPABLE`, `FITS_TOOL_HEAD`, `FITS_IN`,
    `NEAR_WORKPIECE`; `predicate_registry.py` implements `CAN_DRIVE_SCREW`,
@@ -175,15 +218,23 @@ numbers forward by hand.
 2. **Kitchen publishes a seventh region, `serving_area`,** beyond Table I's
    six (countertop, D1--D2, C1--C2, B1). Decide whether it is a candidate
    region or a goal region and make the table say so.
-3. **ROBUST-TAMP's largest recoverable failure is reply shape.** 403 of 1570
-   planner calls across both retired legs were rejected for top-level keys
-   other than `status` and `actions`. `fa3b0cbd` makes the rejection name the
-   keys that arrived; the contract is unchanged because the system prompt asks
-   for exactly those two and forbids explanations. Re-read this after the
-   re-runs land.
-4. **ViLaIn's entity resolution never reaches execution.** 0.0% physical plan
-   found in both completed scenes, so its 0% success follows from binding, not
-   from bad plans. 38 `INVALID_CORRECTION` failures are unexplained.
+3. **RESOLVED 2026-09-10 -- ROBUST-TAMP reply shape.** Measured over the whole
+   grid it was 394 of 923 replan requests, and the breakdown is entirely
+   naming: 111 replies put the action list under `plan`, 120 omitted `status`
+   while carrying `actions`, 47 sent `plan` beside a valid `status`. No plan
+   was judged in any of them. `_normalize_reply_shape` in
+   `mujoco_scenes/tamp/discovery_planner.py` now accepts unambiguous aliases
+   and counts every repair on `DiscoveryPlanner.shape_repairs`. This is a
+   fidelity decision, not a pure fix -- the two-key contract was ours -- so
+   the count must be reported alongside any ROBUST-TAMP improvement.
+4. **RESOLVED 2026-09-10 -- ViLaIn's entity resolution.** It was our depth
+   estimation, not the method's binding. `_detection_centroid` took the median
+   depth over a whole detection box, which for a small object on a counter is
+   mostly background, so objects back-projected to the floor one to two metres
+   out. Fixed by locating the near depth band first; the K1 smoke now
+   localizes to within 0.077 m. ViLaIn still fails resolution when the model
+   mislabels an object's `pddl_type`, and that failure is left alone because
+   it is the method's.
 5. **Self-collision allowances were widened by the phase-4 port** from 2 pairs
    to 5, adding `link_forearm`, `link_wrist`, `link_gripper` at -0.030 in
    `mujoco_scenes/generic_manipulation.py`. Confirm whether the widening is
