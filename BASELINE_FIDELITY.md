@@ -1142,3 +1142,29 @@ invisible leniency.
 - One Kitchen PLACE timeout costs 796 s of wall clock (measured,
   `runs/placefix_smoke`). Kitchen's cost is dominated by this, not by
   inference.
+
+### What the ViLaIn depth fix did and did not fix (2026-09-10)
+
+The fix works: on the Kitchen K1 smoke the model's `blue_pitcher_1` now
+localizes to (-0.607, -0.317, 0.580), which is **0.077 m** from
+`ab3_narrow_deep_cup`. Before the fix the same class of estimate was one to
+two metres out and on the floor.
+
+ViLaIn still fails entity resolution on that episode, and the reason is now a
+genuine method failure rather than a harness artifact. The object it
+localized correctly is a narrow deep cup; the model labelled it a "blue
+pitcher" and typed it `source`. The type filter therefore rejects the entity
+0.077 m away, and the only `source`-typed entities in the scene -- the kettle
+and the coffee jar -- are 0.907 m and 1.125 m away, outside the 0.75 m
+radius.
+
+That filter is ViLaIn's own semantics and is left alone. A mislabelled object
+producing an unresolvable PDDL problem is the failure mode ViLaIn-TAMP should
+be measured on. What was not defensible was failing it for a localization
+error the harness introduced.
+
+So the expected effect of the re-run on ViLaIn is that its failures move from
+`UNRESOLVED_ENTITY` caused by our depth estimation to whatever the method
+actually does once its perception is placed correctly -- which may still be a
+low number. The claim that changes is the attribution, not necessarily the
+score.
