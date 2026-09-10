@@ -1075,3 +1075,70 @@ is execution-bounded:
 
 Workshop GT passing 10/10 on the current tree confirms the scene's physics is
 not the constraint there.
+
+## Five harness faults fixed, and what they invalidate (2026-09-10)
+
+A line-by-line audit of the 51,696 JSON artifacts in the canonical roots
+(`scripts/audit/`) established that three of the four Kitchen zeros were ours,
+not the methods'. What the audit cleared, and what it found:
+
+**Clean.** Every file parses. The Table I goal string is byte-identical in all
+1,292 episodes. All 2,371 requests went out at 24,576 tokens to `qwen35-9b`
+with thinking enabled under one sampling configuration. No private artifact,
+goal contract, ground-truth action file or internal variant name -- key or
+value -- appears in anything the model was shown. `outcome_match` never
+contradicts its two outcomes, no success is recorded without full coverage,
+none on an infeasible variant, no duplicate trials, seeds 0-9 complete
+everywhere except Retrieval.
+
+**Fixed.**
+
+| # | fault | what it invalidated |
+| --- | --- | --- |
+| 1 | OWL read an object's region from `region_id`/`location`; Kitchen publishes `source_region` | all 120 OWL Kitchen episodes |
+| 2 | OWL's Executed(i) search was breadth-first over the grounded set | OWL Kitchen, and any long-sketch scene |
+| 3 | ViLaIn's detection depth was the box median, which is background | every ViLaIn episode in all three scenes |
+| 4 | Kitchen PLACE stranded the executor after a timeout | VLM and ROBUST Kitchen |
+| 5 | Workshop ROBUST never wrote `history`; ROBUST discarded replies for key naming | ROBUST Workshop telemetry, and 43% of all ROBUST replies |
+
+Fault 1 is the third instance of the same class: Kitchen speaks a different
+observation dialect from the Living Room and the Workshop, and each consumer
+that reads only one spelling fails silently. The earlier two were
+`holding`/`held_object` in `baseline_observation_bridge.py` and the ViLaIn
+stage-id mismatch. **The three scenes should be made to publish one
+vocabulary**; until they are, every new consumer is a candidate for the same
+bug.
+
+Fault 2 is worth separating from fault 1 because it only became visible after
+fault 1 was fixed: with an empty world model the search dead-ended after 32
+expansions and looked like an unreachable goal; with locations restored it ran
+out of budget at sketch progress 3 of 14. Replaying the recorded sketches,
+31 of 56 feasible Kitchen sketches now yield a skeleton where 0 of 120 did.
+
+Fault 5's second half is a fidelity decision rather than a defect, and is
+recorded as one: the two-key reply contract is ours, the system prompt asks
+for exactly `status` and `actions`, and 394 of 923 replan requests were
+rejections for naming alone -- 111 replies put the action list under `plan`,
+120 omitted `status` while carrying `actions`, 47 sent `plan` beside a valid
+`status`. No plan was judged in any of them. Unambiguous aliases are now
+accepted; every repair is counted on `DiscoveryPlanner.shape_repairs` so the
+effect on the reported numbers stays measurable rather than becoming
+invisible leniency.
+
+**Known and not fixed.**
+
+- Retrieval's Kitchen goal contract is the sentinel `__planning_goal_unset__`
+  in every variant, it has one seed per variant and no Living Room or Workshop
+  runs. It was never wired up and cannot be reported.
+- 12 OWL Workshop episodes (W1 all seeds, W2 seeds 0-1) ran with
+  `shared_observation_contract.physical_execution: false` while the result
+  file says `true`; the flag flipped mid-leg. Behaviour is indistinguishable
+  because OWL Workshop never manipulates, but the leg was not run under one
+  configuration. Covered by the re-run.
+- `predicted_outcome` takes a third value, `UNRESOLVED`, and it dominates the
+  infeasible trials -- ROBUST 35/40, VLM 32/40, ViLaIn 17/40, OWL 5/40. It is
+  neither a rejection nor a false completion, so those two columns correctly
+  do not sum to 100. The caption must say so.
+- One Kitchen PLACE timeout costs 796 s of wall clock (measured,
+  `runs/placefix_smoke`). Kitchen's cost is dominated by this, not by
+  inference.
