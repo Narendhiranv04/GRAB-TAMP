@@ -1222,3 +1222,126 @@ top_p 0.95, top_k 20, min_p 0.0, repetition penalty 1.05, thinking enabled.
 ViLaIn-TAMP was checked and is not affected: its recorded latencies run to a
 805 s maximum with a single transport failure across the run, so the 120 s
 default in `live_fm.py` is overridden in the path the benchmark uses.
+# PDDLStream shared temp directory (found 2026-09-11, mid re-run)
+
+**Untracked on purpose.** Folding this into `BASELINE_FIDELITY.md` needs a
+commit, and a commit moves HEAD, which makes ViLaIn's provenance guard veto
+every in-flight ViLaIn episode. Merge it in once the grid is finished.
+
+## What it is
+
+`.paper_deps/pddlstream/pddlstream/algorithms/downward.py` had:
+
+    TEMP_DIR = 'temp/'
+
+relative to the CWD, and every episode runs from the repository root, so all
+concurrent PDDLStream solves shared one `<repo>/temp/`. `write_pddl` calls
+`clear_dir(temp_dir)` — it deletes and recreates that directory before writing
+`domain.pddl` and `problem.pddl`.
+
+Two consequences:
+
+- **Seen:** `FileExistsError: [Errno 17] File exists: 'temp'` when two
+  processes race on the `makedirs`. One occurrence, in `kitchen/vlm_tamp`,
+  shortly after that leg was split from 3 to 6 concurrent workers.
+- **Unseen risk:** one process's `domain.pddl` being deleted while another
+  process's translator is reading it.
+
+## Why the second risk is probably small
+
+`clear_dir` is followed immediately by the writes, and the translator reads
+straight after, so the window is short. More importantly the failure is loud:
+a missing or half-written PDDL file makes the translator error out, it does not
+silently return a different plan. Across roughly 800 episodes of this re-run
+the race manifested once. It is a real hazard, not a silent corruption engine.
+
+## Fix
+
+    TEMP_DIR = 'temp-%d/' % os.getpid()
+
+Every default argument in `search.py`, `diverse.py` and `temporal.py` binds
+`TEMP_DIR` at import time, and each episode is its own process, so a
+per-process value is sufficient. No leg restart was needed: the batch runner
+spawns a fresh process per episode, so episodes started after the edit pick it
+up automatically.
+
+`.paper_deps` is git-ignored, so this change is **not** in version control.
+Anyone reproducing from a clean checkout of PDDLStream will hit the same race
+under concurrency. That needs to be stated wherever the setup is documented —
+`MACHINE_HANDOFF.md` is the right place.
+
+Side effect: `temp-<pid>/` directories accumulate in the repository root. They
+hold only PDDL text and are safe to delete when nothing is running.
+
+## Affects
+
+VLM-TAMP in all three scenes and OWL-TAMP in the Living Room
+(`owl_tamp_baseline/run_living_room.py` imports pddlstream). Any concurrent
+run of those, including the original grid, was exposed.
+
+## The interpreter lived inside a VS Code snap, and the snap deleted it (2026-09-11)
+
+The 2026-09-10 re-run stopped at 03:05 with every leg exiting 127. Nothing
+crashed: the machine had been up six days, `systemd --user` had not restarted,
+and linger was still enabled. Both virtualenvs symlinked `bin/python` into
+`snap/code/258/`, the VS Code snap refreshed 258 -> 261 -> 263, and snap
+garbage-collected the old revision out from under the running jobs.
+
+The trap is that the surviving revisions look like they contain the
+interpreter. They do not:
+
+    snap/code/263/.../cpython-3.11-linux-x86_64-gnu -> snap/code/258/...   dangling
+    snap/code/263/.../cpython-3.11.16-linux-x86_64-gnu/bin/python3.11      real
+
+Only the fully-versioned directory is a real install; the short alias in every
+revision points back at 258.
+
+Fixed by copying the real interpreter to
+`~/.local/share/uv/python/cpython-3.11.16-linux-x86_64-gnu` (97 MB, outside the
+snap) and repointing both venvs' `bin/python*` symlinks and `pyvenv.cfg`.
+Pointing them at revision 263 would have worked that day and broken again at
+the next refresh, mid-run.
+
+Cost: the run stopped at 821 of 1080 and 23 episodes died mid-flight. No data
+was corrupted -- every completed episode passed the full audit afterwards.
+
+**A completion message is not evidence.** The orchestrating script logged
+`ALL DONE at 03:07` while its phase-C and sweep passes were starting legs that
+instantly died with 127; its wait loop saw an empty list and moved on. Judge a
+grid by counting canonical seed paths, never by a runner's exit code or its own
+report.
+
+## The Living Room instruction was rewritten, and four copies existed (2026-09-11)
+
+The published Living Room instruction is now:
+
+> Prepare the living room for two people to enjoy refreshments while watching
+> television. Provide each person with their own refreshment setting nearby,
+> and place the entertainment control where it is accessible to both people.
+
+It replaces the earlier "Place one cup and one saucer on each of two fixed
+personal side tables and place the TV remote on the fixed shared coffee table",
+which the proposed pipeline had been developed against. Every Living Room cell
+is therefore re-run under `runs/living_room/execution/newgoal_20260911`, VLM-TAMP
+included, and the old roots are retired in place as
+`*.old_goal_superseded_20260911`.
+
+Applying it exposed **four** copies of the instruction, three of which had
+already drifted from the published text:
+
+| location | state |
+| --- | --- |
+| `configs/living_room_variants.yaml` | canonical, updated |
+| `living_room_region_scene.py:L2_INTEGRATED_GOAL` | said "each person's fixed individual side table"; now imports |
+| `configs/l2_integrated_region_function_task.yaml` | stale copy; synced, provenance noted inline |
+| `functional_tamp_pipeline/domains/living_room.py:TASK` | worst drift -- named the objects and destinations; now imports |
+
+The last one mattered most: it handed the **proposed method** a more explicit
+instruction than the baselines received, which is the mirror image of the
+Workshop drift `benchmark_task_instructions` was written to stop, and it would
+have biased the comparison toward our own pipeline.
+
+`test_living_room_goal_defaults_to_the_frozen_goal` asserted the phrases "side
+table" and "coffee table". That pinned the test to one wording instead of to
+the invariant, so it failed on a legitimate change and told the reader nothing.
+It now asserts equality with `TASK_INSTRUCTIONS["living_room"]`.

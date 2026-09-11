@@ -19,9 +19,16 @@ from ..models import FunctionalSpecification, PipelineResult
 from ..scene_graph import ObservedNode, ObservedObject, ObservedRelation, ObservedSceneGraph
 
 
-TASK = (
-    "Prepare the living room for two people watching television: put one cup "
-    "and saucer on each personal support and the remote on a shared support."
+# Imported, not restated.  This copy had drifted furthest of the four that
+# existed -- it prescribed "one cup and saucer on each personal support and the
+# remote on a shared support", naming the objects and their destinations, where
+# the published instruction says only that each person gets a refreshment
+# setting and the control is reachable by both.  Handing the proposed method a
+# more explicit instruction than the baselines get would bias the comparison in
+# its favour, which is the mirror of the Workshop drift this module's docstring
+# already records.
+from ...benchmark_task_instructions import (  # noqa: E402
+    LIVING_ROOM_TASK_INSTRUCTION as TASK,
 )
 LOCAL_MODEL = Path(__file__).resolve().parents[3] / "semantic_model_cache/yolov8m-worldv2.pt"
 

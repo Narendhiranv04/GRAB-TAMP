@@ -70,19 +70,27 @@ EXCLUDED = (".interrupted", ".timeout_", ".transport_", ".provenance_")
 # filtered, because a re-run that fails to produce an artifact would otherwise
 # let the retired episode win the de-duplication below on mtime.
 DEFAULT_ROOTS = (
-    "runs/kitchen/execution/grid_20260907b",
-    "runs/kitchen/execution/pour_rerun_20260908",
-    "runs/kitchen/execution/robust_kitchen_20260909b",
-    "runs/kitchen/execution/vilain_kitchen_20260909",
-    "runs/workshop/execution/grid_20260907b",
+    # The 2026-09-10/11 re-run, produced after the nine harness faults recorded
+    # in BASELINE_FIDELITY.md were fixed.  Every cell here is 120/120 or
+    # 100/100 with no gaps, verified by enumerating variant x seed rather than
+    # by counting files.
+    "runs/kitchen/execution/fixed_20260910",
+    "runs/living_room/execution/newgoal_20260911",
+    "runs/workshop/execution/fixed_20260910",
+    # VLM-TAMP Workshop was deliberately NOT re-run for the harness fixes: an
+    # import-graph check confirms it reaches none of the changed files, so its
+    # existing root remains canonical.  Kitchen VLM-TAMP was re-run and lives
+    # in fixed_20260910 above.  VLM-TAMP Living Room is NOT here because the
+    # instruction change forces it back into newgoal_20260911 with the rest of
+    # that scene.
     "runs/workshop/execution/vlm_rerun_20260909",
-    "runs/workshop/execution/robust_rerun_20260909",
-    "runs/workshop/execution/vilain_20260908d",
-    "runs/living_room/execution/grid_20260907b",
-    "runs/living_room/execution/robust_tamp_20260908",
-    "runs/living_room/execution/vilain_20260908d",
-    "runs/retrieval_grid_20260908_headless",
 )
+# The Living Room instruction was rewritten on 2026-09-11 -- the pipeline had
+# been tested against a different one -- so every Living Room cell including
+# VLM-TAMP is re-run under `newgoal_20260911`.  The old roots are retired in
+# place as `*.old_goal_superseded_20260911` and must never be listed here: they
+# answer a different question and would silently mix two instructions into one
+# column.
 LABEL = {
     "vlm_tamp": "VLM-TAMP", "owl_tamp": "OWL-TAMP", "retrieval": "Retrieval",
     "vilain_tamp": "ViLaIn-TAMP", "discovery_replanning": "ROBUST-TAMP",

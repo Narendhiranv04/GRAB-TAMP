@@ -152,10 +152,23 @@ def test_living_room_variants_are_validated_against_the_environment():
 
 
 def test_living_room_goal_defaults_to_the_frozen_goal():
+    """The default goal is whatever the single source says, byte for byte.
+
+    This used to assert the phrases "side table" and "coffee table", which
+    pinned the test to one wording rather than to the invariant that matters.
+    When the Living Room instruction was rewritten on 2026-09-11 the assertion
+    failed for the right reason but told the reader nothing useful, and a test
+    that must be edited every time the text changes is one that will eventually
+    be edited to match a stale copy.  What has to hold is that the batch runner
+    ships the instruction `benchmark_task_instructions` loads from the scene
+    YAML, and nothing of its own.
+    """
+    from mujoco_scenes.benchmark_task_instructions import TASK_INSTRUCTIONS
+
     args = _args(environment="living_room", variants=("L1",), goal=None)
     command = _command("owl_tamp", "L1", 3, 0, Path("runs/out"), args)
     goal = command[command.index("--goal") + 1]
-    assert "side table" in goal and "coffee table" in goal
+    assert goal == TASK_INSTRUCTIONS["living_room"]
 
 
 def test_receding_horizon_forwards_the_no_plan_retry_flag():

@@ -83,10 +83,14 @@ L2_ABLATION3_GOAL = (
     "Place one drink-and-snack set on a suitable surface beside each "
     "person’s seating position."
 )
-L2_INTEGRATED_GOAL = (
-    "Prepare the living room for two people watching television. Place one "
-    "cup and one saucer on each person's fixed individual side table, and "
-    "place the TV remote on the fixed shared coffee table."
+# Imported, not restated.  This constant used to carry its own copy of the
+# instruction, and it had already drifted from the published one -- it said
+# "each person's fixed individual side table" where Table I said "two fixed
+# personal side tables".  A second copy is exactly the failure
+# `benchmark_task_instructions` exists to prevent, and it would have silently
+# survived the 2026-09-11 goal change while the YAML moved on without it.
+from .benchmark_task_instructions import (  # noqa: E402
+    LIVING_ROOM_TASK_INSTRUCTION as L2_INTEGRATED_GOAL,
 )
 
 # Canonical integrated-room construction coordinates.  They are used only to

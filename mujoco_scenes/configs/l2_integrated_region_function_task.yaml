@@ -1,7 +1,11 @@
 schema_version: 1
 task_id: l2_integrated_living_room_region_function_phase1
 requirement_entity_kind: REGION
-natural_language_goal: "Prepare the living room for two people watching television. Place one cup and one saucer on each person's fixed individual side table, and place the TV remote on the fixed shared coffee table."
+# Mirrors living_room_variants.yaml `task:`, which is the single source
+# loaded by benchmark_task_instructions.  Keep the two identical; the
+# 2026-09-11 goal change had to be applied here by hand because this file
+# is read directly rather than through that module.
+natural_language_goal: "Prepare the living room for two people to enjoy refreshments while watching television. Provide each person with their own refreshment setting nearby, and place the entertainment control where it is accessible to both people."
 specification_source: manual_future_fm_contract
 generated_from_foundation_model: false
 
