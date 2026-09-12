@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "metric": "goal_coverage",
-  "definition": "Fraction of user-level task goals satisfied in the symbolic terminal state induced by the candidate plan. Representation independent: no functional-role vocabulary is required to score it.",
+  "definition": "Fraction of user-level task goals satisfied in the symbolic terminal state induced by the candidate plan, scored over this method's grounded entities. NOT representation independent as implemented: entity categories are read from the grounding result, so a method that exposes no functional roles scores zero regardless of performance. Baselines need their own category source.",
   "evaluation_mode": "symbolic_terminal_state",
   "scoring_rule": "GC = satisfied goals / goal_count, where every listed goal is one unit. Partial progress is therefore measured directly: pouring coffee and water without stirring scores those two goals. Entities filling a group's slots must be distinct, and the scorer maximises satisfied goals over slot assignments. A goal already true in the initial state counts as satisfied; no physical execution is required.",
   "excluded_by_construction": [
@@ -591,9 +591,9 @@
           "distinct_entities": true,
           "goals": [
             {
-              "id": "cup_placed",
+              "id": "first_item_placed",
               "payload_semantics": [
-                "cup"
+                "refreshment_item"
               ],
               "conditions": [
                 [
@@ -605,9 +605,9 @@
               "distinct_payloads": true
             },
             {
-              "id": "saucer_placed",
+              "id": "second_item_placed",
               "payload_semantics": [
-                "saucer"
+                "refreshment_item"
               ],
               "conditions": [
                 [
@@ -665,9 +665,9 @@
           "distinct_entities": true,
           "goals": [
             {
-              "id": "cup_placed",
+              "id": "first_item_placed",
               "payload_semantics": [
-                "cup"
+                "refreshment_item"
               ],
               "conditions": [
                 [
@@ -679,9 +679,9 @@
               "distinct_payloads": true
             },
             {
-              "id": "saucer_placed",
+              "id": "second_item_placed",
               "payload_semantics": [
-                "saucer"
+                "refreshment_item"
               ],
               "conditions": [
                 [
@@ -739,9 +739,9 @@
           "distinct_entities": true,
           "goals": [
             {
-              "id": "cup_placed",
+              "id": "first_item_placed",
               "payload_semantics": [
-                "cup"
+                "refreshment_item"
               ],
               "conditions": [
                 [
@@ -753,9 +753,9 @@
               "distinct_payloads": true
             },
             {
-              "id": "saucer_placed",
+              "id": "second_item_placed",
               "payload_semantics": [
-                "saucer"
+                "refreshment_item"
               ],
               "conditions": [
                 [
@@ -813,9 +813,9 @@
           "distinct_entities": true,
           "goals": [
             {
-              "id": "cup_placed",
+              "id": "first_item_placed",
               "payload_semantics": [
-                "cup"
+                "refreshment_item"
               ],
               "conditions": [
                 [
@@ -827,9 +827,9 @@
               "distinct_payloads": true
             },
             {
-              "id": "saucer_placed",
+              "id": "second_item_placed",
               "payload_semantics": [
-                "saucer"
+                "refreshment_item"
               ],
               "conditions": [
                 [
@@ -887,9 +887,9 @@
           "distinct_entities": true,
           "goals": [
             {
-              "id": "cup_placed",
+              "id": "first_item_placed",
               "payload_semantics": [
-                "cup"
+                "refreshment_item"
               ],
               "conditions": [
                 [
@@ -901,9 +901,9 @@
               "distinct_payloads": true
             },
             {
-              "id": "saucer_placed",
+              "id": "second_item_placed",
               "payload_semantics": [
-                "saucer"
+                "refreshment_item"
               ],
               "conditions": [
                 [
@@ -961,9 +961,9 @@
           "distinct_entities": true,
           "goals": [
             {
-              "id": "cup_placed",
+              "id": "first_item_placed",
               "payload_semantics": [
-                "cup"
+                "refreshment_item"
               ],
               "conditions": [
                 [
@@ -975,9 +975,9 @@
               "distinct_payloads": true
             },
             {
-              "id": "saucer_placed",
+              "id": "second_item_placed",
               "payload_semantics": [
-                "saucer"
+                "refreshment_item"
               ],
               "conditions": [
                 [

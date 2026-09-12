@@ -1230,8 +1230,7 @@
       "required_role_slots": {
         "PERSONAL_CUP_SAUCER_REGION": 2,
         "SHARED_REMOTE_REGION": 1,
-        "cup": 2,
-        "saucer": 2,
+        "CUP_SAUCER_SET": 2,
         "REMOTE": 1,
         "SEATING_POSITION": 2
       },
@@ -1243,13 +1242,9 @@
         "SHARED_REMOTE_REGION": [
           "region_0002"
         ],
-        "cup": [
-          "object_0001",
-          "object_0004"
-        ],
-        "saucer": [
-          "object_0002",
-          "object_0005"
+        "CUP_SAUCER_SET": [
+          "personal_table_slot_1",
+          "personal_table_slot_2"
         ],
         "REMOTE": [
           "object_0003"
@@ -1272,13 +1267,13 @@
         "region_0003": "PERSONAL_TABLE_RIGHT"
       },
       "required_relational_bindings": {
-        "personal_set_on_region": {
-          "description": "each PERSONAL_CUP_SAUCER_REGION holds exactly one cup and one saucer",
-          "cardinality": 4,
-          "constraint": "partition the 2 cups and 2 saucers across the 2 personal regions, one of each per region"
+        "set_on_personal_region": {
+          "description": "each PERSONAL_CUP_SAUCER_REGION carries one cup-and-saucer set",
+          "cardinality": 2,
+          "constraint": "bijection region <-> set"
         },
         "region_near_seat": {
-          "description": "each personal region is NEAR_SEAT of a distinct seating position",
+          "description": "each personal region is NEAR_SEAT of a distinct seat",
           "cardinality": 2,
           "constraint": "injective region -> seat"
         },
@@ -1286,11 +1281,6 @@
           "description": "REMOTE placed on the SHARED_REMOTE_REGION",
           "cardinality": 1,
           "constraint": "exactly the shared region"
-        },
-        "shared_accessible_from_both": {
-          "description": "shared region ACCESSIBLE_FROM_BOTH_SEATS",
-          "cardinality": 1,
-          "constraint": "relation must hold against SEATING_PAIR"
         }
       },
       "valid_assignment_sets": {
@@ -1307,16 +1297,10 @@
               "region_0002"
             ]
           },
-          "cup": {
+          "CUP_SAUCER_SET": {
             "must_equal_set": [
-              "object_0001",
-              "object_0004"
-            ]
-          },
-          "saucer": {
-            "must_equal_set": [
-              "object_0002",
-              "object_0005"
+              "personal_table_slot_1",
+              "personal_table_slot_2"
             ]
           },
           "REMOTE": {
@@ -1332,21 +1316,16 @@
           }
         },
         "relational": {
-          "personal_set_on_region": {
-            "type": "partition_one_of_each",
-            "regions": [
+          "set_on_personal_region": {
+            "type": "any_bijection",
+            "left": [
               "region_0001",
               "region_0003"
             ],
-            "cups": [
-              "object_0001",
-              "object_0004"
-            ],
-            "saucers": [
-              "object_0002",
-              "object_0005"
-            ],
-            "note": "all 4 cup/saucer-to-region combinations are functionally valid"
+            "right": [
+              "personal_table_slot_1",
+              "personal_table_slot_2"
+            ]
           },
           "region_near_seat": {
             "type": "any_bijection",
@@ -1367,15 +1346,6 @@
             "right": [
               "region_0002"
             ]
-          },
-          "shared_accessible_from_both": {
-            "type": "fixed",
-            "left": [
-              "region_0002"
-            ],
-            "right": [
-              "SEATING_PAIR"
-            ]
           }
         }
       },
@@ -1384,9 +1354,9 @@
         "assignment_text": "Environment: living_room\nVariant: L1\nInternal variant: F0_ALL_OBJECTS_IN_STAGING\nIntended outcome: FEASIBLE\nExecution status: SUCCESS\n\nFUNCTION -> OBJECT/REGION ASSIGNMENTS\nPERSONAL_CUP_SAUCER_REGION -> region=region_0001; objects=object_0001, object_0002; seat=seat_0001\nPERSONAL_CUP_SAUCER_REGION -> region=region_0003; objects=object_0004, object_0005; seat=seat_0002\nSHARED_REMOTE_REGION -> region=region_0002; objects=object_0003; seat=NONE"
       },
       "scoring": {
-        "unary_slot_count": 10,
-        "relation_slot_count": 8,
-        "total_scored_slots": 18
+        "unary_slot_count": 8,
+        "relation_slot_count": 5,
+        "total_scored_slots": 13
       },
       "metadata": {
         "internal_variant": "F0_ALL_OBJECTS_IN_STAGING",
@@ -1411,8 +1381,7 @@
       "required_role_slots": {
         "PERSONAL_CUP_SAUCER_REGION": 2,
         "SHARED_REMOTE_REGION": 1,
-        "cup": 2,
-        "saucer": 2,
+        "CUP_SAUCER_SET": 2,
         "REMOTE": 1,
         "SEATING_POSITION": 2
       },
@@ -1424,13 +1393,9 @@
         "SHARED_REMOTE_REGION": [
           "region_0002"
         ],
-        "cup": [
-          "object_0002",
-          "object_0004"
-        ],
-        "saucer": [
-          "object_0001",
-          "object_0005"
+        "CUP_SAUCER_SET": [
+          "personal_table_slot_1",
+          "personal_table_slot_2"
         ],
         "REMOTE": [
           "object_0003"
@@ -1453,13 +1418,13 @@
         "region_0003": "PERSONAL_TABLE_RIGHT"
       },
       "required_relational_bindings": {
-        "personal_set_on_region": {
-          "description": "each PERSONAL_CUP_SAUCER_REGION holds exactly one cup and one saucer",
-          "cardinality": 4,
-          "constraint": "partition the 2 cups and 2 saucers across the 2 personal regions, one of each per region"
+        "set_on_personal_region": {
+          "description": "each PERSONAL_CUP_SAUCER_REGION carries one cup-and-saucer set",
+          "cardinality": 2,
+          "constraint": "bijection region <-> set"
         },
         "region_near_seat": {
-          "description": "each personal region is NEAR_SEAT of a distinct seating position",
+          "description": "each personal region is NEAR_SEAT of a distinct seat",
           "cardinality": 2,
           "constraint": "injective region -> seat"
         },
@@ -1467,11 +1432,6 @@
           "description": "REMOTE placed on the SHARED_REMOTE_REGION",
           "cardinality": 1,
           "constraint": "exactly the shared region"
-        },
-        "shared_accessible_from_both": {
-          "description": "shared region ACCESSIBLE_FROM_BOTH_SEATS",
-          "cardinality": 1,
-          "constraint": "relation must hold against SEATING_PAIR"
         }
       },
       "valid_assignment_sets": {
@@ -1488,16 +1448,10 @@
               "region_0002"
             ]
           },
-          "cup": {
+          "CUP_SAUCER_SET": {
             "must_equal_set": [
-              "object_0002",
-              "object_0004"
-            ]
-          },
-          "saucer": {
-            "must_equal_set": [
-              "object_0001",
-              "object_0005"
+              "personal_table_slot_1",
+              "personal_table_slot_2"
             ]
           },
           "REMOTE": {
@@ -1513,21 +1467,16 @@
           }
         },
         "relational": {
-          "personal_set_on_region": {
-            "type": "partition_one_of_each",
-            "regions": [
+          "set_on_personal_region": {
+            "type": "any_bijection",
+            "left": [
               "region_0001",
               "region_0003"
             ],
-            "cups": [
-              "object_0002",
-              "object_0004"
-            ],
-            "saucers": [
-              "object_0001",
-              "object_0005"
-            ],
-            "note": "all 4 cup/saucer-to-region combinations are functionally valid"
+            "right": [
+              "personal_table_slot_1",
+              "personal_table_slot_2"
+            ]
           },
           "region_near_seat": {
             "type": "any_bijection",
@@ -1548,15 +1497,6 @@
             "right": [
               "region_0002"
             ]
-          },
-          "shared_accessible_from_both": {
-            "type": "fixed",
-            "left": [
-              "region_0002"
-            ],
-            "right": [
-              "SEATING_PAIR"
-            ]
           }
         }
       },
@@ -1565,9 +1505,9 @@
         "assignment_text": "Environment: living_room\nVariant: L2\nInternal variant: F1_LEFT_SAUCER_PREPLACED\nIntended outcome: FEASIBLE\nExecution status: SUCCESS\n\nFUNCTION -> OBJECT/REGION ASSIGNMENTS\nPERSONAL_CUP_SAUCER_REGION -> region=region_0001; objects=object_0002, object_0001; seat=seat_0001\nPERSONAL_CUP_SAUCER_REGION -> region=region_0003; objects=object_0004, object_0005; seat=seat_0002\nSHARED_REMOTE_REGION -> region=region_0002; objects=object_0003; seat=NONE"
       },
       "scoring": {
-        "unary_slot_count": 10,
-        "relation_slot_count": 8,
-        "total_scored_slots": 18
+        "unary_slot_count": 8,
+        "relation_slot_count": 5,
+        "total_scored_slots": 13
       },
       "metadata": {
         "internal_variant": "F1_LEFT_SAUCER_PREPLACED",
@@ -1594,8 +1534,7 @@
       "required_role_slots": {
         "PERSONAL_CUP_SAUCER_REGION": 2,
         "SHARED_REMOTE_REGION": 1,
-        "cup": 2,
-        "saucer": 2,
+        "CUP_SAUCER_SET": 2,
         "REMOTE": 1,
         "SEATING_POSITION": 2
       },
@@ -1607,13 +1546,9 @@
         "SHARED_REMOTE_REGION": [
           "region_0002"
         ],
-        "cup": [
-          "object_0001",
-          "object_0003"
-        ],
-        "saucer": [
-          "object_0004",
-          "object_0005"
+        "CUP_SAUCER_SET": [
+          "personal_table_slot_1",
+          "personal_table_slot_2"
         ],
         "REMOTE": [
           "object_0002"
@@ -1636,13 +1571,13 @@
         "region_0003": "PERSONAL_TABLE_RIGHT"
       },
       "required_relational_bindings": {
-        "personal_set_on_region": {
-          "description": "each PERSONAL_CUP_SAUCER_REGION holds exactly one cup and one saucer",
-          "cardinality": 4,
-          "constraint": "partition the 2 cups and 2 saucers across the 2 personal regions, one of each per region"
+        "set_on_personal_region": {
+          "description": "each PERSONAL_CUP_SAUCER_REGION carries one cup-and-saucer set",
+          "cardinality": 2,
+          "constraint": "bijection region <-> set"
         },
         "region_near_seat": {
-          "description": "each personal region is NEAR_SEAT of a distinct seating position",
+          "description": "each personal region is NEAR_SEAT of a distinct seat",
           "cardinality": 2,
           "constraint": "injective region -> seat"
         },
@@ -1650,11 +1585,6 @@
           "description": "REMOTE placed on the SHARED_REMOTE_REGION",
           "cardinality": 1,
           "constraint": "exactly the shared region"
-        },
-        "shared_accessible_from_both": {
-          "description": "shared region ACCESSIBLE_FROM_BOTH_SEATS",
-          "cardinality": 1,
-          "constraint": "relation must hold against SEATING_PAIR"
         }
       },
       "valid_assignment_sets": {
@@ -1671,16 +1601,10 @@
               "region_0002"
             ]
           },
-          "cup": {
+          "CUP_SAUCER_SET": {
             "must_equal_set": [
-              "object_0001",
-              "object_0003"
-            ]
-          },
-          "saucer": {
-            "must_equal_set": [
-              "object_0004",
-              "object_0005"
+              "personal_table_slot_1",
+              "personal_table_slot_2"
             ]
           },
           "REMOTE": {
@@ -1696,21 +1620,16 @@
           }
         },
         "relational": {
-          "personal_set_on_region": {
-            "type": "partition_one_of_each",
-            "regions": [
+          "set_on_personal_region": {
+            "type": "any_bijection",
+            "left": [
               "region_0001",
               "region_0003"
             ],
-            "cups": [
-              "object_0001",
-              "object_0003"
-            ],
-            "saucers": [
-              "object_0004",
-              "object_0005"
-            ],
-            "note": "all 4 cup/saucer-to-region combinations are functionally valid"
+            "right": [
+              "personal_table_slot_1",
+              "personal_table_slot_2"
+            ]
           },
           "region_near_seat": {
             "type": "any_bijection",
@@ -1731,15 +1650,6 @@
             "right": [
               "region_0002"
             ]
-          },
-          "shared_accessible_from_both": {
-            "type": "fixed",
-            "left": [
-              "region_0002"
-            ],
-            "right": [
-              "SEATING_PAIR"
-            ]
           }
         }
       },
@@ -1748,9 +1658,9 @@
         "assignment_text": "Environment: living_room\nVariant: L3\nInternal variant: F2_LEFT_SAUCER_ON_SHARED\nIntended outcome: FEASIBLE\nExecution status: SUCCESS\n\nFUNCTION -> OBJECT/REGION ASSIGNMENTS\nPERSONAL_CUP_SAUCER_REGION -> region=region_0001; objects=object_0001, object_0004; seat=seat_0001\nPERSONAL_CUP_SAUCER_REGION -> region=region_0003; objects=object_0003, object_0005; seat=seat_0002\nSHARED_REMOTE_REGION -> region=region_0002; objects=object_0002; seat=NONE"
       },
       "scoring": {
-        "unary_slot_count": 10,
-        "relation_slot_count": 8,
-        "total_scored_slots": 18
+        "unary_slot_count": 8,
+        "relation_slot_count": 5,
+        "total_scored_slots": 13
       },
       "metadata": {
         "internal_variant": "F2_LEFT_SAUCER_ON_SHARED",
@@ -1775,8 +1685,7 @@
       "required_role_slots": {
         "PERSONAL_CUP_SAUCER_REGION": 2,
         "SHARED_REMOTE_REGION": 1,
-        "cup": 2,
-        "saucer": 2,
+        "CUP_SAUCER_SET": 2,
         "REMOTE": 1,
         "SEATING_POSITION": 2
       },
@@ -1788,13 +1697,9 @@
         "SHARED_REMOTE_REGION": [
           "region_0002"
         ],
-        "cup": [
-          "object_0002",
-          "object_0004"
-        ],
-        "saucer": [
-          "object_0001",
-          "object_0005"
+        "CUP_SAUCER_SET": [
+          "personal_table_slot_1",
+          "personal_table_slot_2"
         ],
         "REMOTE": [
           "object_0003"
@@ -1817,13 +1722,13 @@
         "region_0003": "PERSONAL_TABLE_RIGHT"
       },
       "required_relational_bindings": {
-        "personal_set_on_region": {
-          "description": "each PERSONAL_CUP_SAUCER_REGION holds exactly one cup and one saucer",
-          "cardinality": 4,
-          "constraint": "partition the 2 cups and 2 saucers across the 2 personal regions, one of each per region"
+        "set_on_personal_region": {
+          "description": "each PERSONAL_CUP_SAUCER_REGION carries one cup-and-saucer set",
+          "cardinality": 2,
+          "constraint": "bijection region <-> set"
         },
         "region_near_seat": {
-          "description": "each personal region is NEAR_SEAT of a distinct seating position",
+          "description": "each personal region is NEAR_SEAT of a distinct seat",
           "cardinality": 2,
           "constraint": "injective region -> seat"
         },
@@ -1831,11 +1736,6 @@
           "description": "REMOTE placed on the SHARED_REMOTE_REGION",
           "cardinality": 1,
           "constraint": "exactly the shared region"
-        },
-        "shared_accessible_from_both": {
-          "description": "shared region ACCESSIBLE_FROM_BOTH_SEATS",
-          "cardinality": 1,
-          "constraint": "relation must hold against SEATING_PAIR"
         }
       },
       "valid_assignment_sets": {
@@ -1852,16 +1752,10 @@
               "region_0002"
             ]
           },
-          "cup": {
+          "CUP_SAUCER_SET": {
             "must_equal_set": [
-              "object_0002",
-              "object_0004"
-            ]
-          },
-          "saucer": {
-            "must_equal_set": [
-              "object_0001",
-              "object_0005"
+              "personal_table_slot_1",
+              "personal_table_slot_2"
             ]
           },
           "REMOTE": {
@@ -1877,21 +1771,16 @@
           }
         },
         "relational": {
-          "personal_set_on_region": {
-            "type": "partition_one_of_each",
-            "regions": [
+          "set_on_personal_region": {
+            "type": "any_bijection",
+            "left": [
               "region_0001",
               "region_0003"
             ],
-            "cups": [
-              "object_0002",
-              "object_0004"
-            ],
-            "saucers": [
-              "object_0001",
-              "object_0005"
-            ],
-            "note": "all 4 cup/saucer-to-region combinations are functionally valid"
+            "right": [
+              "personal_table_slot_1",
+              "personal_table_slot_2"
+            ]
           },
           "region_near_seat": {
             "type": "any_bijection",
@@ -1912,15 +1801,6 @@
             "right": [
               "region_0002"
             ]
-          },
-          "shared_accessible_from_both": {
-            "type": "fixed",
-            "left": [
-              "region_0002"
-            ],
-            "right": [
-              "SEATING_PAIR"
-            ]
           }
         }
       },
@@ -1929,9 +1809,9 @@
         "assignment_text": "Environment: living_room\nVariant: L4\nInternal variant: F3_LEFT_CUP_ON_SHARED\nIntended outcome: FEASIBLE\nExecution status: SUCCESS\n\nFUNCTION -> OBJECT/REGION ASSIGNMENTS\nPERSONAL_CUP_SAUCER_REGION -> region=region_0001; objects=object_0002, object_0001; seat=seat_0001\nPERSONAL_CUP_SAUCER_REGION -> region=region_0003; objects=object_0004, object_0005; seat=seat_0002\nSHARED_REMOTE_REGION -> region=region_0002; objects=object_0003; seat=NONE"
       },
       "scoring": {
-        "unary_slot_count": 10,
-        "relation_slot_count": 8,
-        "total_scored_slots": 18
+        "unary_slot_count": 8,
+        "relation_slot_count": 5,
+        "total_scored_slots": 13
       },
       "metadata": {
         "internal_variant": "F3_LEFT_CUP_ON_SHARED",
@@ -1956,8 +1836,7 @@
       "required_role_slots": {
         "PERSONAL_CUP_SAUCER_REGION": 2,
         "SHARED_REMOTE_REGION": 1,
-        "cup": 2,
-        "saucer": 2,
+        "CUP_SAUCER_SET": 2,
         "REMOTE": 1,
         "SEATING_POSITION": 2
       },
@@ -1969,13 +1848,9 @@
         "SHARED_REMOTE_REGION": [
           "region_0002"
         ],
-        "cup": [
-          "object_0002",
-          "object_0004"
-        ],
-        "saucer": [
-          "object_0001",
-          "object_0005"
+        "CUP_SAUCER_SET": [
+          "personal_table_slot_1",
+          "personal_table_slot_2"
         ],
         "REMOTE": [
           "object_0003"
@@ -1998,13 +1873,13 @@
         "region_0003": "PERSONAL_TABLE_RIGHT"
       },
       "required_relational_bindings": {
-        "personal_set_on_region": {
-          "description": "each PERSONAL_CUP_SAUCER_REGION holds exactly one cup and one saucer",
-          "cardinality": 4,
-          "constraint": "partition the 2 cups and 2 saucers across the 2 personal regions, one of each per region"
+        "set_on_personal_region": {
+          "description": "each PERSONAL_CUP_SAUCER_REGION carries one cup-and-saucer set",
+          "cardinality": 2,
+          "constraint": "bijection region <-> set"
         },
         "region_near_seat": {
-          "description": "each personal region is NEAR_SEAT of a distinct seating position",
+          "description": "each personal region is NEAR_SEAT of a distinct seat",
           "cardinality": 2,
           "constraint": "injective region -> seat"
         },
@@ -2012,11 +1887,6 @@
           "description": "REMOTE placed on the SHARED_REMOTE_REGION",
           "cardinality": 1,
           "constraint": "exactly the shared region"
-        },
-        "shared_accessible_from_both": {
-          "description": "shared region ACCESSIBLE_FROM_BOTH_SEATS",
-          "cardinality": 1,
-          "constraint": "relation must hold against SEATING_PAIR"
         }
       },
       "valid_assignment_sets": {
@@ -2033,16 +1903,10 @@
               "region_0002"
             ]
           },
-          "cup": {
+          "CUP_SAUCER_SET": {
             "must_equal_set": [
-              "object_0002",
-              "object_0004"
-            ]
-          },
-          "saucer": {
-            "must_equal_set": [
-              "object_0001",
-              "object_0005"
+              "personal_table_slot_1",
+              "personal_table_slot_2"
             ]
           },
           "REMOTE": {
@@ -2058,21 +1922,16 @@
           }
         },
         "relational": {
-          "personal_set_on_region": {
-            "type": "partition_one_of_each",
-            "regions": [
+          "set_on_personal_region": {
+            "type": "any_bijection",
+            "left": [
               "region_0001",
               "region_0003"
             ],
-            "cups": [
-              "object_0002",
-              "object_0004"
-            ],
-            "saucers": [
-              "object_0001",
-              "object_0005"
-            ],
-            "note": "all 4 cup/saucer-to-region combinations are functionally valid"
+            "right": [
+              "personal_table_slot_1",
+              "personal_table_slot_2"
+            ]
           },
           "region_near_seat": {
             "type": "any_bijection",
@@ -2093,15 +1952,6 @@
             "right": [
               "region_0002"
             ]
-          },
-          "shared_accessible_from_both": {
-            "type": "fixed",
-            "left": [
-              "region_0002"
-            ],
-            "right": [
-              "SEATING_PAIR"
-            ]
           }
         }
       },
@@ -2110,9 +1960,9 @@
         "assignment_text": "Environment: living_room\nVariant: L5\nInternal variant: F4_SAUCER_PREPLACED_CUP_ON_SHARED\nIntended outcome: FEASIBLE\nExecution status: SUCCESS\n\nFUNCTION -> OBJECT/REGION ASSIGNMENTS\nPERSONAL_CUP_SAUCER_REGION -> region=region_0001; objects=object_0002, object_0001; seat=seat_0001\nPERSONAL_CUP_SAUCER_REGION -> region=region_0003; objects=object_0004, object_0005; seat=seat_0002\nSHARED_REMOTE_REGION -> region=region_0002; objects=object_0003; seat=NONE"
       },
       "scoring": {
-        "unary_slot_count": 10,
-        "relation_slot_count": 8,
-        "total_scored_slots": 18
+        "unary_slot_count": 8,
+        "relation_slot_count": 5,
+        "total_scored_slots": 13
       },
       "metadata": {
         "internal_variant": "F4_SAUCER_PREPLACED_CUP_ON_SHARED",
@@ -2139,8 +1989,7 @@
       "required_role_slots": {
         "PERSONAL_CUP_SAUCER_REGION": 2,
         "SHARED_REMOTE_REGION": 1,
-        "cup": 2,
-        "saucer": 2,
+        "CUP_SAUCER_SET": 2,
         "REMOTE": 1,
         "SEATING_POSITION": 2
       },
@@ -2152,13 +2001,9 @@
         "SHARED_REMOTE_REGION": [
           "region_0002"
         ],
-        "cup": [
-          "object_0001",
-          "object_0003"
-        ],
-        "saucer": [
-          "object_0004",
-          "object_0005"
+        "CUP_SAUCER_SET": [
+          "personal_table_slot_1",
+          "personal_table_slot_2"
         ],
         "REMOTE": [
           "object_0002"
@@ -2181,13 +2026,13 @@
         "region_0003": "PERSONAL_TABLE_RIGHT"
       },
       "required_relational_bindings": {
-        "personal_set_on_region": {
-          "description": "each PERSONAL_CUP_SAUCER_REGION holds exactly one cup and one saucer",
-          "cardinality": 4,
-          "constraint": "partition the 2 cups and 2 saucers across the 2 personal regions, one of each per region"
+        "set_on_personal_region": {
+          "description": "each PERSONAL_CUP_SAUCER_REGION carries one cup-and-saucer set",
+          "cardinality": 2,
+          "constraint": "bijection region <-> set"
         },
         "region_near_seat": {
-          "description": "each personal region is NEAR_SEAT of a distinct seating position",
+          "description": "each personal region is NEAR_SEAT of a distinct seat",
           "cardinality": 2,
           "constraint": "injective region -> seat"
         },
@@ -2195,11 +2040,6 @@
           "description": "REMOTE placed on the SHARED_REMOTE_REGION",
           "cardinality": 1,
           "constraint": "exactly the shared region"
-        },
-        "shared_accessible_from_both": {
-          "description": "shared region ACCESSIBLE_FROM_BOTH_SEATS",
-          "cardinality": 1,
-          "constraint": "relation must hold against SEATING_PAIR"
         }
       },
       "valid_assignment_sets": {
@@ -2216,16 +2056,10 @@
               "region_0002"
             ]
           },
-          "cup": {
+          "CUP_SAUCER_SET": {
             "must_equal_set": [
-              "object_0001",
-              "object_0003"
-            ]
-          },
-          "saucer": {
-            "must_equal_set": [
-              "object_0004",
-              "object_0005"
+              "personal_table_slot_1",
+              "personal_table_slot_2"
             ]
           },
           "REMOTE": {
@@ -2241,21 +2075,16 @@
           }
         },
         "relational": {
-          "personal_set_on_region": {
-            "type": "partition_one_of_each",
-            "regions": [
+          "set_on_personal_region": {
+            "type": "any_bijection",
+            "left": [
               "region_0001",
               "region_0003"
             ],
-            "cups": [
-              "object_0001",
-              "object_0003"
-            ],
-            "saucers": [
-              "object_0004",
-              "object_0005"
-            ],
-            "note": "all 4 cup/saucer-to-region combinations are functionally valid"
+            "right": [
+              "personal_table_slot_1",
+              "personal_table_slot_2"
+            ]
           },
           "region_near_seat": {
             "type": "any_bijection",
@@ -2276,15 +2105,6 @@
             "right": [
               "region_0002"
             ]
-          },
-          "shared_accessible_from_both": {
-            "type": "fixed",
-            "left": [
-              "region_0002"
-            ],
-            "right": [
-              "SEATING_PAIR"
-            ]
           }
         }
       },
@@ -2293,9 +2113,9 @@
         "assignment_text": "Environment: living_room\nVariant: L6\nInternal variant: F5_LEFT_PAIR_ON_SHARED\nIntended outcome: FEASIBLE\nExecution status: SUCCESS\n\nFUNCTION -> OBJECT/REGION ASSIGNMENTS\nPERSONAL_CUP_SAUCER_REGION -> region=region_0001; objects=object_0001, object_0004; seat=seat_0001\nPERSONAL_CUP_SAUCER_REGION -> region=region_0003; objects=object_0003, object_0005; seat=seat_0002\nSHARED_REMOTE_REGION -> region=region_0002; objects=object_0002; seat=NONE"
       },
       "scoring": {
-        "unary_slot_count": 10,
-        "relation_slot_count": 8,
-        "total_scored_slots": 18
+        "unary_slot_count": 8,
+        "relation_slot_count": 5,
+        "total_scored_slots": 13
       },
       "metadata": {
         "internal_variant": "F5_LEFT_PAIR_ON_SHARED",

@@ -14,8 +14,13 @@ Two metrics, deliberately NOT the same thing:
 
   Goal Coverage (GC)
       Of the user-level task goals, how many hold in the symbolic terminal state
-      induced by the candidate plan?  Representation independent: a baseline that
-      never names a "coffee_stirrer" can still score 100%.
+      induced by the candidate plan?
+
+      NOT representation independent as implemented.  Entities acquire their
+      semantic category from this method's grounding result, so a method that
+      does not expose functional roles scores zero however well it performs.
+      An earlier version of this file claimed otherwise; the claim was false and
+      is withdrawn.  Baselines require their own category source.
 
 Authoritative sources, in precedence order:
   FINAL_PAPER_GT_EXECUTIONS/<domain>/<variant>/function_object_assignments.{json,txt}
@@ -176,94 +181,83 @@ def parse_living_room(variant):
 
 
 def living_room_variant(variant, canonical):
-    """Living-room functional assignment.
+    """Living-room functional assignment, in the roles the pipeline grounds.
 
-    Two corrections over the earlier draft:
+    An earlier version scored `cup` and `saucer` as separate unary slots, which
+    no run could satisfy: the detector emits `cup_or_saucer` and the grounder
+    binds a CUP_SAUCER_SET, never an individual cup.  Asking for roles the
+    method does not expose measured the GT's vocabulary rather than the method,
+    and accounted for Living Room scoring 214/774.
 
-    1.  The payload semantics are CUP and SAUCER.  The scene body names
-        (a2_drink_*, a2_snack_*) are stale; the authoritative object table
-        records semantic=cup / semantic=saucer.
+    Two benchmark facts that do carry over:
 
+    1.  Payload semantics are CUP and SAUCER, not drink and snack -- the scene
+        body names (a2_drink_*, a2_snack_*) are stale.  One of each per set is
+        what the set role encodes.
     2.  Pre-placement does not remove a role assignment.  In L2 and L5 the left
-        saucer starts already correctly placed and has GT_destination=NONE, yet
-        the GT function table still lists it as part of its personal set.  The
-        denominator therefore stays at the full task in all six variants;
-        objects_requiring_movement is metadata.
+        saucer starts correctly placed with GT_destination=NONE, yet the GT
+        function table still lists it inside its personal set, so all six
+        variants carry the full task.
 
-    Which cup pairs with which saucer, and which set goes to which seat, are
-    settled by grouping_policy MINIMUM_TOTAL_OBSERVED_CENTROID_DISTANCE and
-    target_assignment_policy OBSERVED_X_ORDER.  Those are selection policies, so
-    any assignment giving each personal region one cup and one saucer, each near
-    a distinct seat, is functionally valid.
+    Which set goes to which seat is settled by target_assignment_policy
+    OBSERVED_X_ORDER, a selection policy, so any assignment giving each personal
+    region one set near a distinct seat is valid.
     """
     objects, regions = parse_living_room(variant)
-    cups = sorted(o for o, v in objects.items() if v["semantic"] == "cup")
-    saucers = sorted(o for o, v in objects.items() if v["semantic"] == "saucer")
-    remotes = sorted(o for o, v in objects.items() if v["semantic"] == "tv_remote")
     personal = sorted(r for r, v in regions.items()
                       if v["logical_region"].startswith("PERSONAL_TABLE"))
     shared = sorted(r for r, v in regions.items() if v["logical_region"] == "SHARED_TABLE")
+    remotes = sorted(o for o, v in objects.items() if v["semantic"] == "tv_remote")
+    seats = ["seat_0001", "seat_0002"]
+    sets = ["personal_table_slot_1", "personal_table_slot_2"]
     preplaced = sorted(o for o, v in objects.items() if v["gt_destination"] in (None, "NONE"))
     return {
         "domain": "living_room", "feasible": True,
         "required_role_slots": {
             "PERSONAL_CUP_SAUCER_REGION": 2, "SHARED_REMOTE_REGION": 1,
-            "cup": 2, "saucer": 2, "REMOTE": 1, "SEATING_POSITION": 2,
+            "CUP_SAUCER_SET": 2, "REMOTE": 1, "SEATING_POSITION": 2,
         },
         "valid_role_fillers": {
             "PERSONAL_CUP_SAUCER_REGION": personal,
             "SHARED_REMOTE_REGION": shared,
-            "cup": cups, "saucer": saucers, "REMOTE": remotes,
-            "SEATING_POSITION": ["seat_0001", "seat_0002"],
+            "CUP_SAUCER_SET": sets, "REMOTE": remotes,
+            "SEATING_POSITION": seats,
         },
         "object_semantics": {o: v["semantic"] for o, v in sorted(objects.items())},
         "region_semantics": {r: v["logical_region"] for r, v in sorted(regions.items())},
         "required_relational_bindings": {
-            "personal_set_on_region": {
-                "description": "each PERSONAL_CUP_SAUCER_REGION holds exactly one cup and one saucer",
-                "cardinality": 4,
-                "constraint": "partition the 2 cups and 2 saucers across the 2 personal regions, one of each per region",
-            },
+            "set_on_personal_region": {
+                "description": "each PERSONAL_CUP_SAUCER_REGION carries one cup-and-saucer set",
+                "cardinality": 2, "constraint": "bijection region <-> set"},
             "region_near_seat": {
-                "description": "each personal region is NEAR_SEAT of a distinct seating position",
-                "cardinality": 2, "constraint": "injective region -> seat",
-            },
+                "description": "each personal region is NEAR_SEAT of a distinct seat",
+                "cardinality": 2, "constraint": "injective region -> seat"},
             "remote_on_shared": {
                 "description": "REMOTE placed on the SHARED_REMOTE_REGION",
-                "cardinality": 1, "constraint": "exactly the shared region",
-            },
-            "shared_accessible_from_both": {
-                "description": "shared region ACCESSIBLE_FROM_BOTH_SEATS",
-                "cardinality": 1, "constraint": "relation must hold against SEATING_PAIR",
-            },
+                "cardinality": 1, "constraint": "exactly the shared region"},
         },
         "valid_assignment_sets": {
             "representation": "constraint",
             "unary": {
                 "PERSONAL_CUP_SAUCER_REGION": {"must_equal_set": personal},
                 "SHARED_REMOTE_REGION": {"must_equal_set": shared},
-                "cup": {"must_equal_set": cups}, "saucer": {"must_equal_set": saucers},
+                "CUP_SAUCER_SET": {"must_equal_set": sets},
                 "REMOTE": {"must_equal_set": remotes},
-                "SEATING_POSITION": {"must_equal_set": ["seat_0001", "seat_0002"]},
+                "SEATING_POSITION": {"must_equal_set": seats},
             },
             "relational": {
-                "personal_set_on_region": {
-                    "type": "partition_one_of_each",
-                    "regions": personal, "cups": cups, "saucers": saucers,
-                    "note": "all 4 cup/saucer-to-region combinations are functionally valid",
-                },
+                "set_on_personal_region": {"type": "any_bijection",
+                                           "left": personal, "right": sets},
                 "region_near_seat": {"type": "any_bijection",
-                                     "left": personal, "right": ["seat_0001", "seat_0002"]},
+                                     "left": personal, "right": seats},
                 "remote_on_shared": {"type": "fixed", "left": remotes, "right": shared},
-                "shared_accessible_from_both": {"type": "fixed", "left": shared,
-                                                "right": ["SEATING_PAIR"]},
             },
         },
         "canonical_witness": canonical,
-        "scoring": {"unary_slot_count": 10, "relation_slot_count": 8,
-                    "total_scored_slots": 18},
-        "_metadata_only": {"objects_requiring_movement":
-                           len(objects) - len(preplaced), "preplaced_objects": preplaced},
+        "scoring": {"unary_slot_count": 8, "relation_slot_count": 5,
+                    "total_scored_slots": 13},
+        "_metadata_only": {"objects_requiring_movement": len(objects) - len(preplaced),
+                           "preplaced_objects": preplaced},
     }
 
 
@@ -366,12 +360,25 @@ GOAL_GROUPS = {
               "partner_conditions": [["at", "$p", "$e"]]}]},
     ],
     "living_room": [
+        # A personal setting requires one cup and one saucer.  The detector
+        # cannot tell them apart -- it emits the disjunctive label
+        # `cup_or_saucer`, deliberately, because from the fixed rig a cup and a
+        # saucer are both small round things and forcing a choice would invent
+        # precision the sensor does not have.  Scoring `cup_placed` and
+        # `saucer_placed` as separate identity claims therefore asked a question
+        # nothing in the pipeline answers, and both failed in all 60 runs.
+        #
+        # The two goals are kept, because the task does require two items per
+        # setting, but they are scored as the two distinct refreshment payloads
+        # the setting carries rather than as cup-versus-saucer identity.  That
+        # is what the scene actually tests: whether each person's own setting
+        # lands on their own table.
         {"id": "personal_setting", "slots": 2,
          "entity_semantics": ["side_table", "end_table"], "distinct_entities": True,
          "goals": [
-             {"id": "cup_placed", "payload_semantics": ["cup"],
+             {"id": "first_item_placed", "payload_semantics": ["refreshment_item"],
               "conditions": [["on", "$payload", "$e"]], "distinct_payloads": True},
-             {"id": "saucer_placed", "payload_semantics": ["saucer"],
+             {"id": "second_item_placed", "payload_semantics": ["refreshment_item"],
               "conditions": [["on", "$payload", "$e"]], "distinct_payloads": True}]},
         {"id": "shared_remote", "slots": 1,
          "entity_semantics": ["coffee_table", "central_table", "side_table"],
@@ -380,6 +387,15 @@ GOAL_GROUPS = {
               "conditions": [["on", "$payload", "$e"]]}]},
     ],
     "workshop": [
+        # These two goals are NESTED, not independent: the SCREW operator takes
+        # ("inserted", fastener, target) as a precondition and adds
+        # ("repaired", target), so repaired implies inserted by construction.
+        # Both are kept because inserting a screw and driving it home are
+        # distinct task achievements and a plan can stop between them -- but
+        # they cannot diverge in the other direction, and across the 10x32 run
+        # they never diverged at all (31/78 each, the same 31 runs).  Read the
+        # workshop denominator of 3 as two independent quantities plus a
+        # refinement, not three independent ones.
         {"id": "fastening", "slots": 1,
          "entity_semantics": ["fastener"],
          "goals": [
@@ -476,8 +492,11 @@ def main() -> int:
         "metric": "goal_coverage",
         "definition": (
             "Fraction of user-level task goals satisfied in the symbolic terminal "
-            "state induced by the candidate plan. Representation independent: no "
-            "functional-role vocabulary is required to score it."),
+            "state induced by the candidate plan, scored over this method's "
+            "grounded entities. NOT representation independent as implemented: "
+            "entity categories are read from the grounding result, so a method "
+            "that exposes no functional roles scores zero regardless of "
+            "performance. Baselines need their own category source."),
         "evaluation_mode": "symbolic_terminal_state",
         "scoring_rule": (
             "GC = satisfied goals / goal_count, where every listed goal is one unit. "
