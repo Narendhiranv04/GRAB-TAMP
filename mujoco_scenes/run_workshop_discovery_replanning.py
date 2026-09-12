@@ -126,7 +126,7 @@ def run_episode(
         success = executive.mode == "complete"
         result = {
             "scene": "workshop",
-            "method": "discovery_replanning",
+            "method": "robust_tamp",
             "protocol": protocol,
             "variant": runtime.variant,
             "goal": task_goal,

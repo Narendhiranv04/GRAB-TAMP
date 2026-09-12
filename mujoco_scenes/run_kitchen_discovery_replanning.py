@@ -200,7 +200,7 @@ def run_episode(
         runtime.sync(executive.status)
         result = {
             "scene": "kitchen",
-            "method": "discovery_replanning",
+            "method": "robust_tamp",
             "protocol": protocol,
             "variant": variant,
             "goal": goal,

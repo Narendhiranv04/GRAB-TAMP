@@ -313,11 +313,10 @@ def _living_room_planned(episode: Path, facts: set[tuple]) -> tuple[int, int]:
     return sum(min(n, proposed[k]) for k, n in required.items()), sum(required.values())
 
 
-SCORERS = {
-    "kitchen": _kitchen_planned,
-    "workshop": _workshop_planned,
-    "living_room": _living_room_planned,
-}
+# The goal-coverage definition lives in `goal_coverage.py` so the plan-scored
+# and execution-scored numbers cannot drift apart, and so the denominator is
+# the goal rather than whatever the ground-truth action list happened to omit.
+from goal_coverage import SCORERS, TOTALS  # noqa: E402,F401
 
 
 def collect(roots) -> dict:

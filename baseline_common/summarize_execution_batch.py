@@ -35,7 +35,7 @@ def main() -> None:
             _attach_gt_outcome(row, path.parent)
             grouped[(
                 str(row.get("scene")),
-                str(row.get("method", "discovery_replanning")),
+                str(row.get("method", "robust_tamp")),
                 str(row.get("protocol", "native")),
                 int(row.get("camera_count", 5)),
             )].append(row)

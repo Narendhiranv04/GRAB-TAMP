@@ -81,6 +81,10 @@ class IdentityResolutionResult(SerializableContract):
     bindings: tuple[EntityBinding, ...]
     maximum_distance_m: float
     ambiguity_margin_m: float
+    #: Estimates the model produced that match no visible scene entity.  They
+    #: are reported rather than silently discarded, because how many of them
+    #: there were is part of reading the episode.
+    unresolved_object_ids: tuple[str, ...] = ()
 
     def by_object_id(self) -> dict[str, EntityBinding]:
         return {binding.object_id: binding for binding in self.bindings}
@@ -136,6 +140,7 @@ class BaselineIdentityResolver:
             )
 
         edges: dict[str, tuple[tuple[float, EntityCandidate], ...]] = {}
+        unresolved: list[str] = []
         estimates_by_id = {item.object_id: item for item in object_estimates}
         for estimate in sorted(object_estimates, key=lambda item: item.object_id):
             if (
@@ -176,11 +181,20 @@ class BaselineIdentityResolver:
                     compatible.append((distance, candidate))
             compatible.sort(key=lambda item: (item[0], item[1].entity_name))
             if not compatible:
-                raise IdentityResolutionError(
-                    "UNRESOLVED_ENTITY",
-                    f"no class-compatible visible entity is close enough to {estimate.object_id!r}",
-                    object_ids=(estimate.object_id,),
-                )
+                # ViLaIn-TAMP writes its own object list from the images, and
+                # that list contains things the scene does not have: Kitchen
+                # episodes report a `green_cloth` (22 times) and a
+                # `blue_container` (15) that do not exist, and `brown_box`, a
+                # fixture, back-projects to the floor in 36 of its 41
+                # detections.  Failing the episode on the first such estimate
+                # threw away every correct binding beside it: 179 of 320
+                # episodes had usable detections *and* unusable ones and died
+                # on the unusable ones, against 11 where every detection was
+                # bad.  A detection that matches nothing visible is dropped and
+                # recorded; if the goal needed that object, planning fails on
+                # its own terms, which is the honest place for it to fail.
+                unresolved.append(estimate.object_id)
+                continue
             if (
                 len(compatible) > 1
                 and compatible[1][0] - compatible[0][0] <= self.ambiguity_margin_m
@@ -196,6 +210,14 @@ class BaselineIdentityResolver:
                 )
             edges[estimate.object_id] = tuple(compatible)
 
+        if not edges:
+            # Dropping unmatched estimates is a tolerance for a noisy object
+            # list, not a licence to plan against nothing.
+            raise IdentityResolutionError(
+                "UNRESOLVED_ENTITY",
+                "no estimate matched any visible scene entity",
+                object_ids=tuple(sorted(unresolved)),
+            )
         assignments = _complete_assignments(edges, limit=2)
         if not assignments:
             raise IdentityResolutionError(
@@ -262,6 +284,7 @@ class BaselineIdentityResolver:
             bindings=tuple(bindings),
             maximum_distance_m=self.maximum_distance_m,
             ambiguity_margin_m=self.ambiguity_margin_m,
+            unresolved_object_ids=tuple(sorted(unresolved)),
         )
 
 

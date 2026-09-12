@@ -128,7 +128,7 @@ def main() -> None:
         root / "protocol_manifest.json",
         {
             "schema_version": 1,
-            "method": "discovery_replanning",
+            "method": "robust_tamp",
             "protocol": arguments.protocol,
             "environment": arguments.environment,
             "model": arguments.model,
@@ -178,7 +178,7 @@ def _row(
     result: dict[str, Any] | None,
 ) -> dict[str, Any]:
     return {
-        "method": "discovery_replanning",
+        "method": "robust_tamp",
         "protocol": arguments.protocol,
         "environment": arguments.environment,
         "variant": variant,

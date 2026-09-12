@@ -124,8 +124,17 @@ def test_main_dispatches_every_requested_trial(tmp_path, monkeypatch):
     assert len(commands) == 8
     # Every episode is bounded, so one hang cannot stall an unattended grid.
     assert timeouts and all(value == 3600.0 for value in timeouts)
-    summary = json.loads((tmp_path / "batch" / "batch_summary.json").read_text())
-    assert len(summary["runs"]) == 8
+    # Root-level files are named per leg.  Concurrent legs share a run root and
+    # used to write fixed names, so the last writer replaced what the others
+    # recorded: the four-method Kitchen root ended up claiming a single method
+    # and one variant.
+    summaries = sorted((tmp_path / "batch").glob("batch_summary.*.json"))
+    assert summaries, "expected a per-leg batch summary"
+    runs = [row for path in summaries
+            for row in json.loads(path.read_text())["runs"]]
+    assert len(runs) == 8
+    manifests = sorted((tmp_path / "batch").glob("protocol_manifest.*.json"))
+    assert manifests, "expected a per-leg protocol manifest"
 
 
 def test_living_room_vlm_tamp_uses_variant_plus_physical_execution():

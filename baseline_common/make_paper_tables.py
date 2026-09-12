@@ -208,7 +208,8 @@ def main() -> None:
         "owl_tamp": "OWL-TAMP (single-shot)",
         "retrieval": "Retrieval (CLIP, no FM)",
         "vilain_tamp": "ViLaIn-TAMP",
-        "discovery_replanning": "ROBUST-TAMP",
+        "discovery_replanning": "ROBUST-TAMP",  # legacy artifacts
+        "robust_tamp": "ROBUST-TAMP",
         "functional_tamp": "Ours (functional + geometric)",
     }
     print(f"% Generated from: {', '.join(str(r) for r in args.roots)}")
@@ -226,7 +227,7 @@ def main() -> None:
         "owl_tamp",
         "retrieval",
         "vilain_tamp",
-        "discovery_replanning",
+        "robust_tamp",
         "functional_tamp",
     ):
         rows = by_method.get(key, [])

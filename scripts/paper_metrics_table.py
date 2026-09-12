@@ -48,12 +48,13 @@ Relocated episodes (`.interrupted`, `.timeout_*`, `.transport_*`,
 `.provenance_*`) are harness deaths, not results, and are excluded everywhere.
 
 A cell is de-duplicated on (scene, method, variant, seed, camera_count), most
-recent episode winning.  Kitchen needs this: `grid_20260907b` holds K1-K12 from
-before the POUR/STIR admissibility fix and `pour_rerun_20260908` re-ran K1-K6
-after it, so pooling the roots naively counts the feasible half twice under two
-different harnesses and reports n=180 where the grid is 120.  Newest-wins keeps
-the re-run for K1-K6 and the original for the infeasible K7-K12, which never
-needed re-running because rejecting an infeasible variant requires no pour.
+recent episode winning.  This mattered while Kitchen spanned several roots: one
+held K1-K12 from before the POUR/STIR admissibility fix and another re-ran only
+K1-K6 after it, so pooling them naively counted the feasible half twice under
+two different harnesses and reported n=180 where the grid is 120.  Those
+superseded roots were removed on 2026-09-12 and every canonical cell now lives
+in exactly one root, but newest-wins is kept because a partial re-run produces
+the same overlap again.
 """
 
 from __future__ import annotations
@@ -94,6 +95,8 @@ DEFAULT_ROOTS = (
 LABEL = {
     "vlm_tamp": "VLM-TAMP", "owl_tamp": "OWL-TAMP", "retrieval": "Retrieval",
     "vilain_tamp": "ViLaIn-TAMP", "discovery_replanning": "ROBUST-TAMP",
+    # `discovery_replanning` is the pre-2026-09-12 spelling; both map here.
+    "robust_tamp": "ROBUST-TAMP",
     "robust_tamp": "ROBUST-TAMP", "functional_tamp": "Ours",
 }
 SCENES = ("kitchen", "living_room", "workshop")

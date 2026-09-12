@@ -53,26 +53,38 @@ def test_an_untracked_file_no_longer_vetoes():
     )
 
 
-def test_a_moved_head_still_vetoes():
-    with pytest.raises(ValueError, match="HEAD changed"):
-        verify_repository_provenance(_provenance(), _provenance(head="def456"))
+def test_a_moved_head_is_recorded_not_vetoed():
+    """A commit landing mid-run used to void every episode in flight.
+
+    It is a fact about the run, so it is recorded.  What binds a plan to the
+    code that produced it is the artifact manifest, asserted below.
+    """
+    recorded = verify_repository_provenance(
+        _provenance(), _provenance(head="def456")
+    )
+    assert recorded["head_at_start"] == "abc123"
+    assert recorded["head_at_end"] == "def456"
+    assert recorded["head_changed_during_run"] is True
 
 
-def test_a_tracked_change_during_the_run_still_vetoes():
-    with pytest.raises(ValueError, match="no tracked repository changes"):
-        verify_repository_provenance(
-            _provenance(), _provenance(tracked_changes=[" M planner.py"])
-        )
+def test_a_tracked_change_during_the_run_is_recorded_not_vetoed():
+    recorded = verify_repository_provenance(
+        _provenance(), _provenance(tracked_changes=[" M planner.py"])
+    )
+    assert recorded["tracked_changes_during_run"] == [" M planner.py"]
 
 
-def test_a_dirty_worktree_is_refused_before_the_run_starts():
-    """The precondition that replaces checking this only on success."""
-    with pytest.raises(ValueError, match="clean worktree"):
-        verify_clean_worktree(_provenance(tracked_changes=[" M domain.pddl"]))
+def test_a_dirty_worktree_may_start_and_says_so():
+    recorded = verify_clean_worktree(_provenance(tracked_changes=[" M domain.pddl"]))
+    assert recorded["clean_worktree"] is False
+    assert recorded["tracked_changes"] == [" M domain.pddl"]
 
 
 def test_a_clean_worktree_with_untracked_files_may_start():
-    verify_clean_worktree(_provenance(untracked_paths=["scratch.txt"], dirty=True))
+    recorded = verify_clean_worktree(
+        _provenance(untracked_paths=["scratch.txt"], dirty=True)
+    )
+    assert recorded["clean_worktree"] is True
 
 
 def test_a_changed_hashed_input_still_vetoes(tmp_path: Path):

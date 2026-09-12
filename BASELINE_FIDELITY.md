@@ -818,6 +818,44 @@ Two causes behind those exclusions were defects, now fixed:
   still written to the artifact.
 - **Model-call budget.** See "Model-call budget" below.
 
+## Goal coverage: the definition, and a fixed denominator
+
+Coverage is scored against the ground-truth goal, which is a fixed conjunction
+of named conditions:
+
+| Scene | n | Conditions |
+|---|---|---|
+| Kitchen | **12** | coffee x2: `coffee_poured`, `water_poured`, `stirred`, `served`; soup x2: `served`, `dedicated_utensil_served` |
+| Living Room | **5** | personal setting x2: `cup_placed`, `saucer_placed`; shared: `remote_placed` |
+| Workshop | **3** | `fastener_inserted`, `joint_repaired`, `driver_returned_to_workbench` |
+
+**The denominator is the goal, not the work left to do.** A condition already
+satisfied in the initial state counts as satisfied. This is defined once, in
+`scripts/goal_coverage.py`, and both the plan-scored and execution-scored
+numbers read it, so they cannot drift apart.
+
+The previous scorers derived the denominator from the ground-truth action list,
+which omits conditions a variant begins with already met. That produced two
+defects, both now fixed:
+
+- **Variants were not comparable.** Living Room L2 and L5 pre-place a saucer, so
+  their ground-truth plan contains four PLACE actions and coverage was reported
+  out of 4 while every other Living Room variant used 5 -- 60 feasible episodes.
+- **Methods were not comparable on the same variant.** ViLaIn-TAMP writes no
+  `expected_gt_actions.json`, so it fell through to a different denominator: on
+  L2 and L5 it was scored out of 5 while VLM-TAMP, OWL-TAMP and ROBUST-TAMP were
+  scored out of 4. Twenty episodes were graded against a harder goal than the
+  methods they are tabulated beside.
+
+Plan goal coverage on the canonical grid under this definition, feasible
+variants:
+
+| Scene | VLM-TAMP | OWL-TAMP | ROBUST-TAMP | ViLaIn-TAMP |
+|---|---|---|---|---|
+| Kitchen | 64.0% | 49.2% | 22.9% | 0.0% |
+| Living Room | 100.0% | 97.3% | 100.0% | 0.0% |
+| Workshop | 65.8% | 0.0% | 9.6% | 0.0% |
+
 ## Model-call budget: what it is and is not
 
 `--max-model-calls` is a single protocol value whose effect differs by method

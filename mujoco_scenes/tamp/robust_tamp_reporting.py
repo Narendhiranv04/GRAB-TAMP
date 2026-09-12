@@ -24,7 +24,14 @@ from baseline_common.physical_benchmark import (
     write_execution_result,
 )
 
-METHOD = "discovery_replanning"
+# The method is ROBUST-TAMP everywhere a human reads it, and the CLI and
+# run directories have always called it `robust_tamp`.  Only the value
+# written into the result JSON said `discovery_replanning`, so one method
+# carried two identities and every consumer needed to know both.  New runs
+# emit the CLI name; `LEGACY_METHOD` stays so the 1,280 episodes already on
+# disk keep parsing.
+METHOD = "robust_tamp"
+LEGACY_METHOD = "discovery_replanning"
 
 _GT_ROOT = Path(__file__).resolve().parents[2] / "EXPECTED_GT_ACTIONS"
 
