@@ -334,13 +334,28 @@ def main() -> None:
     except ValueError as error:
         parser.error(str(error))
     root = args.output_root.resolve()
-    summary_path = root / "batch_summary.json"
+    # A run root is normally filled by several legs running at once, one per
+    # method.  Both root-level files used to be written to fixed names, so the
+    # last leg to write simply replaced what the others had recorded: the
+    # 480-episode four-method `fixed_20260910` root ends up claiming
+    # `methods: ["vlm_tamp"], variants: ["K11"], seeds: [4]` -- a single-episode
+    # repair leg -- and `budgetfix_20260912` records 46 owl_tamp runs for a
+    # root holding three methods.  No analysis read them, and the per-episode
+    # `method_manifest.json` always held the truth, but the files that document
+    # a run root were false, which is the kind of thing a reader trusts.
+    # Naming them per leg removes the collision instead of serialising writers.
+    leg = "-".join(sorted(methods))
+    summary_path = root / f"batch_summary.{leg}.json"
+    legacy_summary = root / "batch_summary.json"
     rows: dict[tuple[str, str, int, int], dict[str, Any]] = {}
-    if args.resume and summary_path.is_file():
-        for row in json.loads(summary_path.read_text(encoding="utf-8")).get("runs", ()):
+    source = summary_path if summary_path.is_file() else legacy_summary
+    if args.resume and source.is_file():
+        for row in json.loads(source.read_text(encoding="utf-8")).get("runs", ()):
+            if str(row["method"]) not in methods:
+                continue
             rows[(str(row["method"]), str(row["variant"]), int(row["camera_count"]), int(row["seed"]))] = row
 
-    write_json(root / "protocol_manifest.json", {
+    write_json(root / f"protocol_manifest.{leg}.json", {
         "schema_version": 1,
         "environment": args.environment,
         "methods": list(methods),

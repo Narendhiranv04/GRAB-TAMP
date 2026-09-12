@@ -1,0 +1,173 @@
+\begin{table*}[t]
+\centering
+\caption{End-to-end results in the three-view setting using the shared
+Google-Robot execution interface, over the full Table~I variant sets at ten
+seeds each. The feasible and infeasible halves are reported as two independent
+blocks, each carrying its own inspection and cost columns: answering a variant
+that cannot be satisfied costs a different amount from solving one that can,
+and a single average over both hides it.}
+\label{tab:main_results}
+
+\setlength{\tabcolsep}{3.0pt}
+\renewcommand{\arraystretch}{1.08}
+\scriptsize
+
+\begin{tabular*}{\textwidth}{
+@{\extracolsep{\fill}}
+l
+cccccc
+ccccc
+@{}
+}
+\toprule
+
+& \multicolumn{6}{c}{\textbf{Feasible variants}}
+& \multicolumn{5}{c}{\textbf{Infeasible variants}} \\
+
+\cmidrule(lr){2-7}
+\cmidrule(l){8-12}
+
+\textbf{Method} &
+\textbf{$N$} &
+\makecell{\textbf{Plan goal}\\\textbf{cov. (\%) $\uparrow$}} &
+\makecell{\textbf{E2E}\\\textbf{succ. (\%) $\uparrow$}} &
+\makecell{\textbf{Regions}\\\textbf{insp. $\downarrow$}} &
+\makecell{\textbf{FM}\\\textbf{calls $\downarrow$}} &
+\makecell{\textbf{Re-}\\\textbf{plans $\downarrow$}} &
+\textbf{$N$} &
+\makecell{\textbf{Plan}\\\textbf{commit. (\%) $\downarrow$}} &
+\makecell{\textbf{Regions}\\\textbf{insp. $\downarrow$}} &
+\makecell{\textbf{FM}\\\textbf{calls $\downarrow$}} &
+\makecell{\textbf{Re-}\\\textbf{plans $\downarrow$}} \\
+
+\midrule
+
+\multicolumn{12}{@{}l}{
+    \textbf{Kitchen}
+    \quad
+    \footnotesize\textit{required objects hidden across five storage regions}
+} \\
+\addlinespace[1pt]
+
+VLM-TAMP~\cite{yang2025vlmtamp}
+    & $60$ & $64.0$ & $0.0$ & $0.00$ & $9.63$ & $4.00$
+    & $60$ & $55.7$ & $0.00$ & $10.07$ & $4.00$ \\
+
+OWL-TAMP~\cite{kumar2026owltamp}
+    & $60$ & $49.2$ & $0.0$ & $0.00$ & $14.57$ & $0.00$
+    & $60$ & $43.8$ & $0.02$ & $10.13$ & $0.00$ \\
+
+ROBUST-TAMP
+    & $60$ & $22.9$ & $0.0$ & $0.02$ & $5.65$ & $4.35$
+    & $60$ & $28.8$ & $0.02$ & $5.13$ & $3.25$ \\
+
+ViLaIn-TAMP~\cite{siburian2025vilaintamp}
+    & $60$ & $0.0$ & $0.0$ & $0.00$ & $6.53$ & $2.85$
+    & $60$ & $0.0$ & $0.00$ & $6.60$ & $2.82$ \\
+
+\textbf{Ours}
+    & \textbf{60} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--}
+    & \textbf{60} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} \\
+
+\midrule
+
+\multicolumn{12}{@{}l}{
+    \textbf{Living room}
+    \quad
+    \footnotesize\textit{all task objects and regions initially visible}
+} \\
+\addlinespace[1pt]
+
+VLM-TAMP~\cite{yang2025vlmtamp}
+    & $60$ & $100.0$ & $71.7$ & -- & $4.55$ & $1.37$
+    & $40$ & $98.0$ & -- & $9.62$ & $3.95$ \\
+
+OWL-TAMP~\cite{kumar2026owltamp}
+    & $60$ & $97.1$ & $53.3$ & -- & $11.03$ & $0.00$
+    & $40$ & $94.0$ & -- & $11.32$ & $0.00$ \\
+
+ROBUST-TAMP
+    & $60$ & $100.0$ & $90.0$ & -- & $1.50$ & $0.50$
+    & $40$ & $100.0$ & -- & $5.15$ & $3.88$ \\
+
+ViLaIn-TAMP~\cite{siburian2025vilaintamp}
+    & $60$ & $0.0$ & $0.0$ & -- & $5.95$ & $2.90$
+    & $40$ & $0.0$ & -- & $6.00$ & $2.17$ \\
+
+\textbf{Ours}
+    & \textbf{60} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--}
+    & \textbf{40} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} \\
+
+\midrule
+
+\multicolumn{12}{@{}l}{
+    \textbf{Workshop}
+    \quad
+    \footnotesize\textit{hidden tools and components with alternative candidates}
+} \\
+\addlinespace[1pt]
+
+VLM-TAMP~\cite{yang2025vlmtamp}
+    & $80$ & $65.8$ & $12.5$ & $1.36$ & $9.41$ & $3.79$
+    & $20$ & $80.0$ & $1.50$ & $10.15$ & $4.00$ \\
+
+OWL-TAMP~\cite{kumar2026owltamp}
+    & $80$ & $0.0$ & $0.0$ & $0.00$ & $3.48$ & $0.00$
+    & $20$ & $0.0$ & $0.00$ & $3.55$ & $0.00$ \\
+
+ROBUST-TAMP
+    & $80$ & $9.6$ & $0.0$ & $1.05$ & $6.17$ & $3.94$
+    & $20$ & $8.3$ & $1.30$ & $6.50$ & $4.05$ \\
+
+ViLaIn-TAMP~\cite{siburian2025vilaintamp}
+    & $80$ & $0.0$ & $0.0$ & $0.00$ & $7.08$ & $2.69$
+    & $20$ & $0.0$ & $0.00$ & $7.15$ & $2.40$ \\
+
+\textbf{Ours}
+    & \textbf{80} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--}
+    & \textbf{20} & \textbf{--} & \textbf{--} & \textbf{--} & \textbf{--} \\
+
+
+\bottomrule
+\end{tabular*}
+
+\vspace{3pt}
+
+\begin{minipage}{0.98\textwidth}
+\footnotesize
+
+\textit{Note:}
+\textbf{Plan goal coverage} is the percentage of required object--region and
+object--object goal relations correctly represented in the generated plan for
+a feasible variant. It is scored on the plan, under the counterfactual that
+every proposed action succeeds, and shares its denominator with E2E success so
+the two are directly comparable.
+\textbf{E2E success} is the percentage of feasible trials in which the
+generated plan is executed and all final task goals are satisfied.
+
+\textbf{Plan commitment} is the infeasible-half counterpart: the fraction of
+the scene's goal relations a method asserts in the plan it builds for a variant
+that cannot be satisfied. It is measured on the plan rather than on execution,
+because the failure being described is committing to a complete-looking plan
+for an impossible task.
+
+\textbf{Regions inspected} is the mean number of storage regions opened per
+trial, undefined in the Living Room, where nothing is hidden.
+\textbf{FM calls} is the mean number of foundation-model requests per trial,
+and \textbf{Replans} the mean number of high-level task-plan regenerations.
+Both are reported per half, because the two differ sharply: \textsc{robust-tamp}
+uses $1.50$ calls and $0.50$ replans on a feasible Living Room variant against
+$5.15$ and $3.88$ on an infeasible one. A dash is an unmeasured quantity,
+never a zero.
+
+\textbf{Kitchen execution bound.} Kitchen E2E success is $0.0$ for every
+baseline while plan goal coverage reaches $64.0$. The gap is the manipulation
+controller, not the planners: the ground-truth oracle completes five of the six
+feasible Kitchen variants end-to-end, but only under an assisted-recovery
+profile the baselines do not receive. The Kitchen success column is a lower
+bound on capability, not a clean measurement of it. The Living Room, where
+nothing is hidden and the same planners reach $90.0$ success against $100.0$
+coverage, is the control that isolates this.
+
+\end{minipage}
+\end{table*}

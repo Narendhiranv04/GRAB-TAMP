@@ -753,71 +753,102 @@ that grid stands at 199/200). Same class as the truncation fault above --
 assisted-grasp path, so it is left for a deliberate decision rather than
 changed mid-grid.
 
-## Blocking: Kitchen POUR/STIR can never succeed, so Kitchen feasible-success is not a capability result
+## RESOLVED 2026-09-12: Kitchen POUR/STIR now execute; the old blocker is lifted
 
-**Do not report Kitchen `feasible_success_percent` as a measurement of any
-method.**  Kitchen's goal is a seven-condition conjunction that includes two
-pour relations and one stir relation, and in the baseline runtime those three
-conditions are unsatisfiable by construction, for every method, on every
-variant.  The reported `0/60` for VLM-TAMP, OWL-TAMP and Retrieval is a harness
-artifact.
+**This section previously said "Do not report Kitchen `feasible_success_percent`"
+and "Kitchen's feasible column is not reportable". That is no longer true and
+following it would suppress a valid column.** Both blockers it described are
+fixed:
 
-Two independent blockers are stacked, both unconditional:
+1. The POUR/STIR whitelist is gone. `baseline_kitchen_runtime` constructs the
+   dispatcher with `admissibility=GEOMETRIC_ADMISSIBILITY`, so admissibility is
+   decided by geometry rather than by membership in a frozen plan -- the
+   decision the old text said was required.
+2. Opening geometry is populated. `_measured_geometric_properties` derives
+   `opening_width_m`, `opening_length_m` and `cavity_depth_m` from the loaded
+   MuJoCo mesh rim, the same routine the feasibility oracle uses, so it is a
+   property of the scene and not of any plan.
 
-1. **The POUR/STIR whitelist is empty.**  `KitchenPhaseCExecutionDispatcher`
-   builds `expected_pairs` from its `frozen_plan` argument, and
-   `baseline_kitchen_runtime.from_variant` constructs the dispatcher with
-   `frozen_plan=[]` (`baseline_kitchen_runtime.py:456`).  So `expected_pairs`
-   is `{'POUR': {}, 'STIR': {}}` and every POUR/STIR returns
-   `POUR_TARGET_RESOLUTION_FAILED` / `STIR_TARGET_RESOLUTION_FAILED` before any
-   geometry is consulted, whatever arguments the method chose.
-2. **The registry carries no opening geometry.**  The same factory builds each
-   registry row as `{"generic_object_id": ...}` and nothing else
-   (`baseline_kitchen_runtime.py:656`).  `derive_target_opening` requires
-   `opening_width_m`, `opening_length_m` and `cavity_depth_m` under
-   `geometric_properties`, so even with the whitelist bypassed it raises
-   `POUR_OPENING_GEOMETRY_UNAVAILABLE`.
-
-Measured on K1 (`BaselineKitchenRuntime.from_variant`), all four functionally
-valid pours and both valid stirs fail, and the geometry check fails
-independently:
+Measured over the canonical grid, against the old text's "368 attempts, 0
+successes":
 
 ```
-kettle -> mug            success=False status=POUR_TARGET_RESOLUTION_FAILED
-kettle -> cup            success=False status=POUR_TARGET_RESOLUTION_FAILED
-coffee_source -> mug     success=False status=POUR_TARGET_RESOLUTION_FAILED
-coffee_source -> cup     success=False status=POUR_TARGET_RESOLUTION_FAILED
-spoon_1 in mug           success=False status=STIR_TARGET_RESOLUTION_FAILED
-spoon_2 in cup           success=False status=STIR_TARGET_RESOLUTION_FAILED
-registry objects WITH geometric_properties: 0   (of 9)
-derive_target_opening(object_0002) -> POUR_OPENING_GEOMETRY_UNAVAILABLE
+POUR attempted 202 times: 117 succeeded, 73 POUR_ALIGNMENT_FAILED,
+                          11 POUR_TRAJECTORY_FAILED, 1 geometry unavailable
 ```
 
-Consistent with the 252 completed Kitchen episodes: POUR was attempted 368
-times and succeeded 0 times, STIR was never reached, and the only effects ever
-observed were `holding` and `placed`.
+What remains true is narrower and still matters: Kitchen end-to-end success is
+0 for every method, but it is now 0 *after* the pour executes, which is a
+result about the methods rather than an unreachable goal.
 
-This is **not** a GT-grounding-mismatch issue.  The whitelist would gate POUR on
-the ground-truth plan if one were supplied, but none is: the constraint binds
-identically for a method whose grounding matches GT exactly.  The ground-truth
-runner does not exercise this path either -- it passes `dummy_registry, []` and
-replaces the ledger with `OraclePhaseCLedger`
-(`kitchen_ground_truth_execution.py:389`) -- so Kitchen pour/stir physics has
-never been wired to real geometry by any caller.
+## Budget termination is not method failure, for any method
 
-### What remains valid
+`terminal_status` collapses every non-completion to `FAILED`, and that bucket
+is not one thing. Classified by `scripts/termination.py` over the canonical
+grid, the episodes that are **not** attributable to the method under test:
 
-* Kitchen `infeasible_rejection_percent` is unaffected: rejecting an infeasible
-  variant requires no POUR.  VLM-TAMP 16/59, OWL-TAMP 0/60, Retrieval 6/6 stand.
-* Kitchen `outcome_correct_percent` is dominated by the infeasible half; its
-  feasible half is structurally 0 and must be described that way, not as a
-  capability gap.
-* **Workshop and Living Room are unaffected.**  Neither has a `frozen_plan`
-  whitelist (`expected_pairs` does not exist in
-  `workshop_ground_truth_execution.py` or `living_room_discovery_runtime.py`)
-  and neither goal requires pour or stir.  Their 400 completed episodes stand.
+| scene | method | reportable | excluded |
+|---|---|---|---|
+| kitchen | ROBUST-TAMP | **0/120** | 66 budget, 35 leakage guard, 19 server unreachable |
+| kitchen | VLM-TAMP | **0/120** | 120 budget |
+| workshop | ROBUST-TAMP | **0/100** | 47 budget, 53 server unreachable |
+| workshop | VLM-TAMP | 10/100 | 90 budget |
+| living room | ROBUST-TAMP | 57/100 | 39 budget, 4 server unreachable |
+| living room | VLM-TAMP | 44/100 | 56 budget |
 
-### A fix is available and does not require ground truth
+OWL-TAMP and ViLaIn-TAMP are unaffected: neither reaches the model-call
+ceiling, because OWL is single-shot by design and ViLaIn is bounded by its own
+`max_cp_corrections`.
+
+The rule this document already states for OWL-TAMP receding-horizon --
+"budget-terminated and must not be reported as the method failing the task" --
+applies to every method. Four cells above contain no method failures at all,
+and publishing them as task-success zeros reports the harness.
+
+Two causes behind those exclusions were defects, now fixed:
+
+- **The prompt-leakage guard was killing episodes.** `_recover_or_fail` put the
+  entire physical skill record into the replan prompt, including world-frame
+  coordinates and provenance labels such as
+  `FROZEN_OPEN_CAVITY_DIMENSIONS_LOCALIZED_BY_LIVE_PHYSICAL_BODY`.
+  `assert_no_prompt_leakage` correctly refused to send it, which ended the
+  episode: 23% of Kitchen ROBUST-TAMP episodes before the manipulation fix and
+  52% after it, since repaired episodes run deep enough to pour more often. The
+  replan prompt now carries only symbolic failure semantics; the full record is
+  still written to the artifact.
+- **Model-call budget.** See "Model-call budget" below.
+
+## Model-call budget: what it is and is not
+
+`--max-model-calls` is a single protocol value whose effect differs by method
+because the methods differ:
+
+| method | bound | cap binds? |
+|---|---|---|
+| OWL-TAMP | single-shot; the paper's simulation condition has no reprompt loop | never: 1.00 calls in every root |
+| ViLaIn-TAMP | its own `max_cp_corrections` (<= 3 whole-problem revisions) | never in practice; 6.6-7.1 calls |
+| ROBUST-TAMP | replan loop | yes |
+| VLM-TAMP | reprompt loop | yes, hardest |
+
+Measured at cap 5, VLM-TAMP's reported mean is **5.00 -- exactly the cap, in
+100% of Kitchen episodes.** A cost metric equal to its own ceiling measures the
+protocol, not the method, and must not be published as a measurement.
+
+Raising the cap does **not** change the reported planning metric. Paired at cap
+5 vs 15 on identical variant+seed: Workshop coverage identical in all six
+episodes, Living Room identical, Kitchen 77.8% -> 84.7% on n=6 with movement in
+both directions. No successes appear at either cap. What the larger budget buys
+is execution depth: Kitchen executed actions rise from 3-7 to 12-21 against a
+23-action ground-truth plan, so at cap 5 the method is structurally incapable of
+completing the task and its zero is partly a budget artifact.
+
+Kitchen is therefore re-run at `--max-model-calls 15`, which is non-binding for
+OWL and ROBUST and binding only for VLM-TAMP. ViLaIn now accepts the same
+ceiling as a backstop (`RecordedFMClient(max_model_calls=...)`); set above its
+corrective loop's demand it never binds, but it is no longer the one method
+outside the protocol's stated bound.
+
+## A fix is available and does not require ground truth
 
 `exact_scene_geometry.extract_exact_object_geometry` already derives
 `opening_width_m`, `opening_length_m` and `cavity_depth_m` from the live MuJoCo
