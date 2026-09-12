@@ -1,0 +1,3088 @@
+{
+  "schema_version": 1,
+  "metric": "functional_assignment_coverage",
+  "definition": "Fraction of task-required functional role and relation assignments correctly grounded by the method, scored against the SET of valid GT functional assignments rather than one oracle trajectory.",
+  "scoring_rule": "FAC = max over valid GT assignments phi* of (correctly grounded required slots) / (total required slots). Unary and relational slots are equally weighted atomic GT facts; the denominator is fixed by GT and never by the prediction.",
+  "excluded_by_construction": [
+    "action-sequence similarity",
+    "PICK/PLACE ordering",
+    "search order",
+    "initial object location",
+    "source drawer or cabinet",
+    "number of regions inspected",
+    "number of objects moved",
+    "execution success",
+    "planner efficiency"
+  ],
+  "evaluation_only": true,
+  "variants": {
+    "K1": {
+      "domain": "kitchen",
+      "feasible": true,
+      "required_role_slots": {
+        "water_source": 1,
+        "coffee_source": 1,
+        "coffee_stirrer": 1,
+        "coffee_container": 2,
+        "soup_container": 2,
+        "soup_eating_utensil": 2
+      },
+      "valid_role_fillers": {
+        "water_source": [
+          "s1i_compact_kettle"
+        ],
+        "coffee_source": [
+          "s1i_compact_coffee_jar"
+        ],
+        "coffee_stirrer": [
+          "s1i_final_long_narrow_spoon"
+        ],
+        "coffee_container": [
+          "ab3_narrow_deep_cup",
+          "ab3_medium_deep_mug"
+        ],
+        "soup_container": [
+          "ab3_deep_bowl",
+          "ab3_shallow_bowl"
+        ],
+        "soup_eating_utensil": [
+          "s1i_oversized_spoon",
+          "ab3_partial_spoon"
+        ]
+      },
+      "role_filler_semantics": {
+        "coffee_stirrer": "Uniquely determined: the oversized and partial spoons exceed the narrow cup opening, so only the long narrow spoon satisfies INSERTABLE_IN on both coffee vessels.",
+        "coffee_container": "Both vessels are required; the pair is forced, not chosen.",
+        "soup_eating_utensil": "Both utensils are required; which bowl each serves is free."
+      },
+      "required_relational_bindings": {
+        "stirs": {
+          "description": "coffee_stirrer -> coffee_container, one binding per container",
+          "policy": "REUSABLE",
+          "cardinality": 2,
+          "constraint": "the single valid stirrer must be bound to BOTH coffee containers"
+        },
+        "serves_soup_in": {
+          "description": "soup_eating_utensil -> soup_container, one binding per bowl",
+          "policy": "DEDICATED",
+          "cardinality": 2,
+          "constraint": "a bijection between the two utensils and the two bowls; either bijection is valid, sharing one utensil is not"
+        }
+      },
+      "valid_assignment_sets": {
+        "representation": "constraint",
+        "unary": {
+          "water_source": {
+            "must_equal_set": [
+              "s1i_compact_kettle"
+            ]
+          },
+          "coffee_source": {
+            "must_equal_set": [
+              "s1i_compact_coffee_jar"
+            ]
+          },
+          "coffee_stirrer": {
+            "must_equal_set": [
+              "s1i_final_long_narrow_spoon"
+            ]
+          },
+          "coffee_container": {
+            "must_equal_set": [
+              "ab3_narrow_deep_cup",
+              "ab3_medium_deep_mug"
+            ]
+          },
+          "soup_container": {
+            "must_equal_set": [
+              "ab3_deep_bowl",
+              "ab3_shallow_bowl"
+            ]
+          },
+          "soup_eating_utensil": {
+            "must_equal_set": [
+              "s1i_oversized_spoon",
+              "ab3_partial_spoon"
+            ]
+          }
+        },
+        "relational": {
+          "stirs": {
+            "type": "complete_from_single_tool",
+            "tool": "s1i_final_long_narrow_spoon",
+            "targets": [
+              "ab3_narrow_deep_cup",
+              "ab3_medium_deep_mug"
+            ]
+          },
+          "serves_soup_in": {
+            "type": "any_bijection",
+            "left": [
+              "s1i_oversized_spoon",
+              "ab3_partial_spoon"
+            ],
+            "right": [
+              "ab3_deep_bowl",
+              "ab3_shallow_bowl"
+            ]
+          }
+        },
+        "enumerated_relational_alternatives": {
+          "serves_soup_in": [
+            {
+              "s1i_oversized_spoon": "ab3_deep_bowl",
+              "ab3_partial_spoon": "ab3_shallow_bowl"
+            },
+            {
+              "s1i_oversized_spoon": "ab3_shallow_bowl",
+              "ab3_partial_spoon": "ab3_deep_bowl"
+            }
+          ]
+        }
+      },
+      "canonical_witness": {
+        "source": "FINAL_PAPER_GT_EXECUTIONS/kitchen/K1/function_object_assignments.json",
+        "assignment": {
+          "coffee_assignments": [
+            {
+              "target_instance": "ab3_narrow_deep_cup",
+              "target_kind": "ab3_narrow_deep_cup",
+              "tool_instance": "s1i_final_long_narrow_spoon",
+              "tool_kind": "s1i_final_long_narrow_spoon"
+            },
+            {
+              "target_instance": "ab3_medium_deep_mug",
+              "target_kind": "ab3_medium_deep_mug",
+              "tool_instance": "s1i_final_long_narrow_spoon",
+              "tool_kind": "s1i_final_long_narrow_spoon"
+            }
+          ],
+          "coffee_targets": [
+            "ab3_narrow_deep_cup",
+            "ab3_medium_deep_mug"
+          ],
+          "coffee_targets_by_tool": {
+            "s1i_final_long_narrow_spoon": [
+              "ab3_narrow_deep_cup",
+              "ab3_medium_deep_mug"
+            ]
+          },
+          "execution_mode": "GROUND_TRUTH_ORACLE",
+          "failure_reason": null,
+          "intended_outcome": "FEASIBLE",
+          "is_feasible": true,
+          "scene_name": "S1_integrated_kitchen_object_function_feasibility_F0",
+          "soup_assignments": [
+            {
+              "target_instance": "ab3_deep_bowl",
+              "target_kind": "ab3_deep_bowl",
+              "tool_instance": "s1i_oversized_spoon",
+              "tool_kind": "s1i_oversized_spoon"
+            },
+            {
+              "target_instance": "ab3_shallow_bowl",
+              "target_kind": "ab3_shallow_bowl",
+              "tool_instance": "ab3_partial_spoon",
+              "tool_kind": "ab3_partial_spoon"
+            }
+          ],
+          "soup_targets": [
+            "ab3_deep_bowl",
+            "ab3_shallow_bowl"
+          ],
+          "soup_utensils_by_target": {
+            "ab3_deep_bowl": "s1i_oversized_spoon",
+            "ab3_shallow_bowl": "ab3_partial_spoon"
+          },
+          "sources": {
+            "coffee_source": "s1i_compact_coffee_jar",
+            "water_source": "s1i_compact_kettle"
+          },
+          "unique_coffee_tools": [
+            "s1i_final_long_narrow_spoon"
+          ],
+          "unique_soup_utensils": [
+            "s1i_oversized_spoon",
+            "ab3_partial_spoon"
+          ],
+          "variant_id": "F0_ALL_VISIBLE"
+        }
+      },
+      "scoring": {
+        "unary_slot_count": 9,
+        "relation_slot_count": 4,
+        "total_scored_slots": 13
+      },
+      "metadata": {
+        "internal_variant": "F0_ALL_VISIBLE",
+        "description": "All required objects are initially visible.",
+        "gt_action_count": 24,
+        "excluded_from_scoring": [
+          "initial object locations",
+          "source/storage regions",
+          "inspection order",
+          "opened regions",
+          "objects requiring movement",
+          "action sequence",
+          "planner efficiency"
+        ]
+      }
+    },
+    "K2": {
+      "domain": "kitchen",
+      "feasible": true,
+      "required_role_slots": {
+        "water_source": 1,
+        "coffee_source": 1,
+        "coffee_stirrer": 1,
+        "coffee_container": 2,
+        "soup_container": 2,
+        "soup_eating_utensil": 2
+      },
+      "valid_role_fillers": {
+        "water_source": [
+          "s1i_compact_kettle"
+        ],
+        "coffee_source": [
+          "s1i_compact_coffee_jar"
+        ],
+        "coffee_stirrer": [
+          "s1i_final_long_narrow_spoon"
+        ],
+        "coffee_container": [
+          "ab3_narrow_deep_cup",
+          "ab3_medium_deep_mug"
+        ],
+        "soup_container": [
+          "ab3_deep_bowl",
+          "ab3_shallow_bowl"
+        ],
+        "soup_eating_utensil": [
+          "s1i_oversized_spoon",
+          "ab3_partial_spoon"
+        ]
+      },
+      "role_filler_semantics": {
+        "coffee_stirrer": "Uniquely determined: the oversized and partial spoons exceed the narrow cup opening, so only the long narrow spoon satisfies INSERTABLE_IN on both coffee vessels.",
+        "coffee_container": "Both vessels are required; the pair is forced, not chosen.",
+        "soup_eating_utensil": "Both utensils are required; which bowl each serves is free."
+      },
+      "required_relational_bindings": {
+        "stirs": {
+          "description": "coffee_stirrer -> coffee_container, one binding per container",
+          "policy": "REUSABLE",
+          "cardinality": 2,
+          "constraint": "the single valid stirrer must be bound to BOTH coffee containers"
+        },
+        "serves_soup_in": {
+          "description": "soup_eating_utensil -> soup_container, one binding per bowl",
+          "policy": "DEDICATED",
+          "cardinality": 2,
+          "constraint": "a bijection between the two utensils and the two bowls; either bijection is valid, sharing one utensil is not"
+        }
+      },
+      "valid_assignment_sets": {
+        "representation": "constraint",
+        "unary": {
+          "water_source": {
+            "must_equal_set": [
+              "s1i_compact_kettle"
+            ]
+          },
+          "coffee_source": {
+            "must_equal_set": [
+              "s1i_compact_coffee_jar"
+            ]
+          },
+          "coffee_stirrer": {
+            "must_equal_set": [
+              "s1i_final_long_narrow_spoon"
+            ]
+          },
+          "coffee_container": {
+            "must_equal_set": [
+              "ab3_narrow_deep_cup",
+              "ab3_medium_deep_mug"
+            ]
+          },
+          "soup_container": {
+            "must_equal_set": [
+              "ab3_deep_bowl",
+              "ab3_shallow_bowl"
+            ]
+          },
+          "soup_eating_utensil": {
+            "must_equal_set": [
+              "s1i_oversized_spoon",
+              "ab3_partial_spoon"
+            ]
+          }
+        },
+        "relational": {
+          "stirs": {
+            "type": "complete_from_single_tool",
+            "tool": "s1i_final_long_narrow_spoon",
+            "targets": [
+              "ab3_narrow_deep_cup",
+              "ab3_medium_deep_mug"
+            ]
+          },
+          "serves_soup_in": {
+            "type": "any_bijection",
+            "left": [
+              "s1i_oversized_spoon",
+              "ab3_partial_spoon"
+            ],
+            "right": [
+              "ab3_deep_bowl",
+              "ab3_shallow_bowl"
+            ]
+          }
+        },
+        "enumerated_relational_alternatives": {
+          "serves_soup_in": [
+            {
+              "s1i_oversized_spoon": "ab3_deep_bowl",
+              "ab3_partial_spoon": "ab3_shallow_bowl"
+            },
+            {
+              "s1i_oversized_spoon": "ab3_shallow_bowl",
+              "ab3_partial_spoon": "ab3_deep_bowl"
+            }
+          ]
+        }
+      },
+      "canonical_witness": {
+        "source": "FINAL_PAPER_GT_EXECUTIONS/kitchen/K2/function_object_assignments.json",
+        "assignment": {
+          "coffee_assignments": [
+            {
+              "target_instance": "ab3_narrow_deep_cup",
+              "target_kind": "ab3_narrow_deep_cup",
+              "tool_instance": "s1i_final_long_narrow_spoon",
+              "tool_kind": "s1i_final_long_narrow_spoon"
+            },
+            {
+              "target_instance": "ab3_medium_deep_mug",
+              "target_kind": "ab3_medium_deep_mug",
+              "tool_instance": "s1i_final_long_narrow_spoon",
+              "tool_kind": "s1i_final_long_narrow_spoon"
+            }
+          ],
+          "coffee_targets": [
+            "ab3_narrow_deep_cup",
+            "ab3_medium_deep_mug"
+          ],
+          "coffee_targets_by_tool": {
+            "s1i_final_long_narrow_spoon": [
+              "ab3_narrow_deep_cup",
+              "ab3_medium_deep_mug"
+            ]
+          },
+          "execution_mode": "GROUND_TRUTH_ORACLE",
+          "failure_reason": null,
+          "intended_outcome": "FEASIBLE",
+          "is_feasible": true,
+          "scene_name": "S1_integrated_kitchen_object_function_feasibility_F1",
+          "soup_assignments": [
+            {
+              "target_instance": "ab3_deep_bowl",
+              "target_kind": "ab3_deep_bowl",
+              "tool_instance": "s1i_oversized_spoon",
+              "tool_kind": "s1i_oversized_spoon"
+            },
+            {
+              "target_instance": "ab3_shallow_bowl",
+              "target_kind": "ab3_shallow_bowl",
+              "tool_instance": "ab3_partial_spoon",
+              "tool_kind": "ab3_partial_spoon"
+            }
+          ],
+          "soup_targets": [
+            "ab3_deep_bowl",
+            "ab3_shallow_bowl"
+          ],
+          "soup_utensils_by_target": {
+            "ab3_deep_bowl": "s1i_oversized_spoon",
+            "ab3_shallow_bowl": "ab3_partial_spoon"
+          },
+          "sources": {
+            "coffee_source": "s1i_compact_coffee_jar",
+            "water_source": "s1i_compact_kettle"
+          },
+          "unique_coffee_tools": [
+            "s1i_final_long_narrow_spoon"
+          ],
+          "unique_soup_utensils": [
+            "s1i_oversized_spoon",
+            "ab3_partial_spoon"
+          ],
+          "variant_id": "F1_HIDDEN_COFFEE_VESSEL"
+        }
+      },
+      "scoring": {
+        "unary_slot_count": 9,
+        "relation_slot_count": 4,
+        "total_scored_slots": 13
+      },
+      "metadata": {
+        "internal_variant": "F1_HIDDEN_COFFEE_VESSEL",
+        "description": "The second coffee vessel is in cupboard C2.",
+        "gt_action_count": 27,
+        "excluded_from_scoring": [
+          "initial object locations",
+          "source/storage regions",
+          "inspection order",
+          "opened regions",
+          "objects requiring movement",
+          "action sequence",
+          "planner efficiency"
+        ]
+      }
+    },
+    "K3": {
+      "domain": "kitchen",
+      "feasible": true,
+      "required_role_slots": {
+        "water_source": 1,
+        "coffee_source": 1,
+        "coffee_stirrer": 1,
+        "coffee_container": 2,
+        "soup_container": 2,
+        "soup_eating_utensil": 2
+      },
+      "valid_role_fillers": {
+        "water_source": [
+          "s1i_compact_kettle"
+        ],
+        "coffee_source": [
+          "s1i_compact_coffee_jar"
+        ],
+        "coffee_stirrer": [
+          "s1i_final_long_narrow_spoon"
+        ],
+        "coffee_container": [
+          "ab3_narrow_deep_cup",
+          "ab3_medium_deep_mug"
+        ],
+        "soup_container": [
+          "ab3_deep_bowl",
+          "ab3_shallow_bowl"
+        ],
+        "soup_eating_utensil": [
+          "s1i_oversized_spoon",
+          "ab3_partial_spoon"
+        ]
+      },
+      "role_filler_semantics": {
+        "coffee_stirrer": "Uniquely determined: the oversized and partial spoons exceed the narrow cup opening, so only the long narrow spoon satisfies INSERTABLE_IN on both coffee vessels.",
+        "coffee_container": "Both vessels are required; the pair is forced, not chosen.",
+        "soup_eating_utensil": "Both utensils are required; which bowl each serves is free."
+      },
+      "required_relational_bindings": {
+        "stirs": {
+          "description": "coffee_stirrer -> coffee_container, one binding per container",
+          "policy": "REUSABLE",
+          "cardinality": 2,
+          "constraint": "the single valid stirrer must be bound to BOTH coffee containers"
+        },
+        "serves_soup_in": {
+          "description": "soup_eating_utensil -> soup_container, one binding per bowl",
+          "policy": "DEDICATED",
+          "cardinality": 2,
+          "constraint": "a bijection between the two utensils and the two bowls; either bijection is valid, sharing one utensil is not"
+        }
+      },
+      "valid_assignment_sets": {
+        "representation": "constraint",
+        "unary": {
+          "water_source": {
+            "must_equal_set": [
+              "s1i_compact_kettle"
+            ]
+          },
+          "coffee_source": {
+            "must_equal_set": [
+              "s1i_compact_coffee_jar"
+            ]
+          },
+          "coffee_stirrer": {
+            "must_equal_set": [
+              "s1i_final_long_narrow_spoon"
+            ]
+          },
+          "coffee_container": {
+            "must_equal_set": [
+              "ab3_narrow_deep_cup",
+              "ab3_medium_deep_mug"
+            ]
+          },
+          "soup_container": {
+            "must_equal_set": [
+              "ab3_deep_bowl",
+              "ab3_shallow_bowl"
+            ]
+          },
+          "soup_eating_utensil": {
+            "must_equal_set": [
+              "s1i_oversized_spoon",
+              "ab3_partial_spoon"
+            ]
+          }
+        },
+        "relational": {
+          "stirs": {
+            "type": "complete_from_single_tool",
+            "tool": "s1i_final_long_narrow_spoon",
+            "targets": [
+              "ab3_narrow_deep_cup",
+              "ab3_medium_deep_mug"
+            ]
+          },
+          "serves_soup_in": {
+            "type": "any_bijection",
+            "left": [
+              "s1i_oversized_spoon",
+              "ab3_partial_spoon"
+            ],
+            "right": [
+              "ab3_deep_bowl",
+              "ab3_shallow_bowl"
+            ]
+          }
+        },
+        "enumerated_relational_alternatives": {
+          "serves_soup_in": [
+            {
+              "s1i_oversized_spoon": "ab3_deep_bowl",
+              "ab3_partial_spoon": "ab3_shallow_bowl"
+            },
+            {
+              "s1i_oversized_spoon": "ab3_shallow_bowl",
+              "ab3_partial_spoon": "ab3_deep_bowl"
+            }
+          ]
+        }
+      },
+      "canonical_witness": {
+        "source": "FINAL_PAPER_GT_EXECUTIONS/kitchen/K3/function_object_assignments.json",
+        "assignment": {
+          "coffee_assignments": [
+            {
+              "target_instance": "ab3_narrow_deep_cup",
+              "target_kind": "ab3_narrow_deep_cup",
+              "tool_instance": "s1i_final_long_narrow_spoon",
+              "tool_kind": "s1i_final_long_narrow_spoon"
+            },
+            {
+              "target_instance": "ab3_medium_deep_mug",
+              "target_kind": "ab3_medium_deep_mug",
+              "tool_instance": "s1i_final_long_narrow_spoon",
+              "tool_kind": "s1i_final_long_narrow_spoon"
+            }
+          ],
+          "coffee_targets": [
+            "ab3_narrow_deep_cup",
+            "ab3_medium_deep_mug"
+          ],
+          "coffee_targets_by_tool": {
+            "s1i_final_long_narrow_spoon": [
+              "ab3_narrow_deep_cup",
+              "ab3_medium_deep_mug"
+            ]
+          },
+          "execution_mode": "GROUND_TRUTH_ORACLE",
+          "failure_reason": null,
+          "intended_outcome": "FEASIBLE",
+          "is_feasible": true,
+          "scene_name": "S1_integrated_kitchen_object_function_feasibility_F2",
+          "soup_assignments": [
+            {
+              "target_instance": "ab3_deep_bowl",
+              "target_kind": "ab3_deep_bowl",
+              "tool_instance": "s1i_oversized_spoon",
+              "tool_kind": "s1i_oversized_spoon"
+            },
+            {
+              "target_instance": "ab3_shallow_bowl",
+              "target_kind": "ab3_shallow_bowl",
+              "tool_instance": "ab3_partial_spoon",
+              "tool_kind": "ab3_partial_spoon"
+            }
+          ],
+          "soup_targets": [
+            "ab3_deep_bowl",
+            "ab3_shallow_bowl"
+          ],
+          "soup_utensils_by_target": {
+            "ab3_deep_bowl": "s1i_oversized_spoon",
+            "ab3_shallow_bowl": "ab3_partial_spoon"
+          },
+          "sources": {
+            "coffee_source": "s1i_compact_coffee_jar",
+            "water_source": "s1i_compact_kettle"
+          },
+          "unique_coffee_tools": [
+            "s1i_final_long_narrow_spoon"
+          ],
+          "unique_soup_utensils": [
+            "s1i_oversized_spoon",
+            "ab3_partial_spoon"
+          ],
+          "variant_id": "F2_HIDDEN_SOUP_BOWL"
+        }
+      },
+      "scoring": {
+        "unary_slot_count": 9,
+        "relation_slot_count": 4,
+        "total_scored_slots": 13
+      },
+      "metadata": {
+        "internal_variant": "F2_HIDDEN_SOUP_BOWL",
+        "description": "The second soup bowl is in box B1.",
+        "gt_action_count": 25,
+        "excluded_from_scoring": [
+          "initial object locations",
+          "source/storage regions",
+          "inspection order",
+          "opened regions",
+          "objects requiring movement",
+          "action sequence",
+          "planner efficiency"
+        ]
+      }
+    },
+    "K4": {
+      "domain": "kitchen",
+      "feasible": true,
+      "required_role_slots": {
+        "water_source": 1,
+        "coffee_source": 1,
+        "coffee_stirrer": 1,
+        "coffee_container": 2,
+        "soup_container": 2,
+        "soup_eating_utensil": 2
+      },
+      "valid_role_fillers": {
+        "water_source": [
+          "s1i_compact_kettle"
+        ],
+        "coffee_source": [
+          "s1i_compact_coffee_jar"
+        ],
+        "coffee_stirrer": [
+          "s1i_final_long_narrow_spoon"
+        ],
+        "coffee_container": [
+          "ab3_narrow_deep_cup",
+          "ab3_medium_deep_mug"
+        ],
+        "soup_container": [
+          "ab3_deep_bowl",
+          "ab3_shallow_bowl"
+        ],
+        "soup_eating_utensil": [
+          "s1i_oversized_spoon",
+          "ab3_partial_spoon"
+        ]
+      },
+      "role_filler_semantics": {
+        "coffee_stirrer": "Uniquely determined: the oversized and partial spoons exceed the narrow cup opening, so only the long narrow spoon satisfies INSERTABLE_IN on both coffee vessels.",
+        "coffee_container": "Both vessels are required; the pair is forced, not chosen.",
+        "soup_eating_utensil": "Both utensils are required; which bowl each serves is free."
+      },
+      "required_relational_bindings": {
+        "stirs": {
+          "description": "coffee_stirrer -> coffee_container, one binding per container",
+          "policy": "REUSABLE",
+          "cardinality": 2,
+          "constraint": "the single valid stirrer must be bound to BOTH coffee containers"
+        },
+        "serves_soup_in": {
+          "description": "soup_eating_utensil -> soup_container, one binding per bowl",
+          "policy": "DEDICATED",
+          "cardinality": 2,
+          "constraint": "a bijection between the two utensils and the two bowls; either bijection is valid, sharing one utensil is not"
+        }
+      },
+      "valid_assignment_sets": {
+        "representation": "constraint",
+        "unary": {
+          "water_source": {
+            "must_equal_set": [
+              "s1i_compact_kettle"
+            ]
+          },
+          "coffee_source": {
+            "must_equal_set": [
+              "s1i_compact_coffee_jar"
+            ]
+          },
+          "coffee_stirrer": {
+            "must_equal_set": [
+              "s1i_final_long_narrow_spoon"
+            ]
+          },
+          "coffee_container": {
+            "must_equal_set": [
+              "ab3_narrow_deep_cup",
+              "ab3_medium_deep_mug"
+            ]
+          },
+          "soup_container": {
+            "must_equal_set": [
+              "ab3_deep_bowl",
+              "ab3_shallow_bowl"
+            ]
+          },
+          "soup_eating_utensil": {
+            "must_equal_set": [
+              "s1i_oversized_spoon",
+              "ab3_partial_spoon"
+            ]
+          }
+        },
+        "relational": {
+          "stirs": {
+            "type": "complete_from_single_tool",
+            "tool": "s1i_final_long_narrow_spoon",
+            "targets": [
+              "ab3_narrow_deep_cup",
+              "ab3_medium_deep_mug"
+            ]
+          },
+          "serves_soup_in": {
+            "type": "any_bijection",
+            "left": [
+              "s1i_oversized_spoon",
+              "ab3_partial_spoon"
+            ],
+            "right": [
+              "ab3_deep_bowl",
+              "ab3_shallow_bowl"
+            ]
+          }
+        },
+        "enumerated_relational_alternatives": {
+          "serves_soup_in": [
+            {
+              "s1i_oversized_spoon": "ab3_deep_bowl",
+              "ab3_partial_spoon": "ab3_shallow_bowl"
+            },
+            {
+              "s1i_oversized_spoon": "ab3_shallow_bowl",
+              "ab3_partial_spoon": "ab3_deep_bowl"
+            }
+          ]
+        }
+      },
+      "canonical_witness": {
+        "source": "FINAL_PAPER_GT_EXECUTIONS/kitchen/K4/function_object_assignments.json",
+        "assignment": {
+          "coffee_assignments": [
+            {
+              "target_instance": "ab3_narrow_deep_cup",
+              "target_kind": "ab3_narrow_deep_cup",
+              "tool_instance": "s1i_final_long_narrow_spoon",
+              "tool_kind": "s1i_final_long_narrow_spoon"
+            },
+            {
+              "target_instance": "ab3_medium_deep_mug",
+              "target_kind": "ab3_medium_deep_mug",
+              "tool_instance": "s1i_final_long_narrow_spoon",
+              "tool_kind": "s1i_final_long_narrow_spoon"
+            }
+          ],
+          "coffee_targets": [
+            "ab3_narrow_deep_cup",
+            "ab3_medium_deep_mug"
+          ],
+          "coffee_targets_by_tool": {
+            "s1i_final_long_narrow_spoon": [
+              "ab3_narrow_deep_cup",
+              "ab3_medium_deep_mug"
+            ]
+          },
+          "execution_mode": "GROUND_TRUTH_ORACLE",
+          "failure_reason": null,
+          "intended_outcome": "FEASIBLE",
+          "is_feasible": true,
+          "scene_name": "S1_integrated_kitchen_object_function_feasibility_F3",
+          "soup_assignments": [
+            {
+              "target_instance": "ab3_deep_bowl",
+              "target_kind": "ab3_deep_bowl",
+              "tool_instance": "s1i_oversized_spoon",
+              "tool_kind": "s1i_oversized_spoon"
+            },
+            {
+              "target_instance": "ab3_shallow_bowl",
+              "target_kind": "ab3_shallow_bowl",
+              "tool_instance": "ab3_partial_spoon",
+              "tool_kind": "ab3_partial_spoon"
+            }
+          ],
+          "soup_targets": [
+            "ab3_deep_bowl",
+            "ab3_shallow_bowl"
+          ],
+          "soup_utensils_by_target": {
+            "ab3_deep_bowl": "s1i_oversized_spoon",
+            "ab3_shallow_bowl": "ab3_partial_spoon"
+          },
+          "sources": {
+            "coffee_source": "s1i_compact_coffee_jar",
+            "water_source": "s1i_compact_kettle"
+          },
+          "unique_coffee_tools": [
+            "s1i_final_long_narrow_spoon"
+          ],
+          "unique_soup_utensils": [
+            "s1i_oversized_spoon",
+            "ab3_partial_spoon"
+          ],
+          "variant_id": "F3_HIDDEN_VESSELS_MIXED"
+        }
+      },
+      "scoring": {
+        "unary_slot_count": 9,
+        "relation_slot_count": 4,
+        "total_scored_slots": 13
+      },
+      "metadata": {
+        "internal_variant": "F3_HIDDEN_VESSELS_MIXED",
+        "description": "The second coffee vessel is in C2 and the second soup bowl is in B1.",
+        "gt_action_count": 28,
+        "excluded_from_scoring": [
+          "initial object locations",
+          "source/storage regions",
+          "inspection order",
+          "opened regions",
+          "objects requiring movement",
+          "action sequence",
+          "planner efficiency"
+        ]
+      }
+    },
+    "K5": {
+      "domain": "kitchen",
+      "feasible": true,
+      "required_role_slots": {
+        "water_source": 1,
+        "coffee_source": 1,
+        "coffee_stirrer": 1,
+        "coffee_container": 2,
+        "soup_container": 2,
+        "soup_eating_utensil": 2
+      },
+      "valid_role_fillers": {
+        "water_source": [
+          "s1i_compact_kettle"
+        ],
+        "coffee_source": [
+          "s1i_compact_coffee_jar"
+        ],
+        "coffee_stirrer": [
+          "s1i_final_long_narrow_spoon"
+        ],
+        "coffee_container": [
+          "ab3_narrow_deep_cup",
+          "ab3_medium_deep_mug"
+        ],
+        "soup_container": [
+          "ab3_deep_bowl",
+          "ab3_shallow_bowl"
+        ],
+        "soup_eating_utensil": [
+          "s1i_oversized_spoon",
+          "ab3_partial_spoon"
+        ]
+      },
+      "role_filler_semantics": {
+        "coffee_stirrer": "Uniquely determined: the oversized and partial spoons exceed the narrow cup opening, so only the long narrow spoon satisfies INSERTABLE_IN on both coffee vessels.",
+        "coffee_container": "Both vessels are required; the pair is forced, not chosen.",
+        "soup_eating_utensil": "Both utensils are required; which bowl each serves is free."
+      },
+      "required_relational_bindings": {
+        "stirs": {
+          "description": "coffee_stirrer -> coffee_container, one binding per container",
+          "policy": "REUSABLE",
+          "cardinality": 2,
+          "constraint": "the single valid stirrer must be bound to BOTH coffee containers"
+        },
+        "serves_soup_in": {
+          "description": "soup_eating_utensil -> soup_container, one binding per bowl",
+          "policy": "DEDICATED",
+          "cardinality": 2,
+          "constraint": "a bijection between the two utensils and the two bowls; either bijection is valid, sharing one utensil is not"
+        }
+      },
+      "valid_assignment_sets": {
+        "representation": "constraint",
+        "unary": {
+          "water_source": {
+            "must_equal_set": [
+              "s1i_compact_kettle"
+            ]
+          },
+          "coffee_source": {
+            "must_equal_set": [
+              "s1i_compact_coffee_jar"
+            ]
+          },
+          "coffee_stirrer": {
+            "must_equal_set": [
+              "s1i_final_long_narrow_spoon"
+            ]
+          },
+          "coffee_container": {
+            "must_equal_set": [
+              "ab3_narrow_deep_cup",
+              "ab3_medium_deep_mug"
+            ]
+          },
+          "soup_container": {
+            "must_equal_set": [
+              "ab3_deep_bowl",
+              "ab3_shallow_bowl"
+            ]
+          },
+          "soup_eating_utensil": {
+            "must_equal_set": [
+              "s1i_oversized_spoon",
+              "ab3_partial_spoon"
+            ]
+          }
+        },
+        "relational": {
+          "stirs": {
+            "type": "complete_from_single_tool",
+            "tool": "s1i_final_long_narrow_spoon",
+            "targets": [
+              "ab3_narrow_deep_cup",
+              "ab3_medium_deep_mug"
+            ]
+          },
+          "serves_soup_in": {
+            "type": "any_bijection",
+            "left": [
+              "s1i_oversized_spoon",
+              "ab3_partial_spoon"
+            ],
+            "right": [
+              "ab3_deep_bowl",
+              "ab3_shallow_bowl"
+            ]
+          }
+        },
+        "enumerated_relational_alternatives": {
+          "serves_soup_in": [
+            {
+              "s1i_oversized_spoon": "ab3_deep_bowl",
+              "ab3_partial_spoon": "ab3_shallow_bowl"
+            },
+            {
+              "s1i_oversized_spoon": "ab3_shallow_bowl",
+              "ab3_partial_spoon": "ab3_deep_bowl"
+            }
+          ]
+        }
+      },
+      "canonical_witness": {
+        "source": "FINAL_PAPER_GT_EXECUTIONS/kitchen/K5/function_object_assignments.json",
+        "assignment": {
+          "coffee_assignments": [
+            {
+              "target_instance": "ab3_narrow_deep_cup",
+              "target_kind": "ab3_narrow_deep_cup",
+              "tool_instance": "s1i_final_long_narrow_spoon",
+              "tool_kind": "s1i_final_long_narrow_spoon"
+            },
+            {
+              "target_instance": "ab3_medium_deep_mug",
+              "target_kind": "ab3_medium_deep_mug",
+              "tool_instance": "s1i_final_long_narrow_spoon",
+              "tool_kind": "s1i_final_long_narrow_spoon"
+            }
+          ],
+          "coffee_targets": [
+            "ab3_narrow_deep_cup",
+            "ab3_medium_deep_mug"
+          ],
+          "coffee_targets_by_tool": {
+            "s1i_final_long_narrow_spoon": [
+              "ab3_narrow_deep_cup",
+              "ab3_medium_deep_mug"
+            ]
+          },
+          "execution_mode": "GROUND_TRUTH_ORACLE",
+          "failure_reason": null,
+          "intended_outcome": "FEASIBLE",
+          "is_feasible": true,
+          "scene_name": "S1_integrated_kitchen_object_function_feasibility_F4",
+          "soup_assignments": [
+            {
+              "target_instance": "ab3_deep_bowl",
+              "target_kind": "ab3_deep_bowl",
+              "tool_instance": "s1i_oversized_spoon",
+              "tool_kind": "s1i_oversized_spoon"
+            },
+            {
+              "target_instance": "ab3_shallow_bowl",
+              "target_kind": "ab3_shallow_bowl",
+              "tool_instance": "ab3_partial_spoon",
+              "tool_kind": "ab3_partial_spoon"
+            }
+          ],
+          "soup_targets": [
+            "ab3_deep_bowl",
+            "ab3_shallow_bowl"
+          ],
+          "soup_utensils_by_target": {
+            "ab3_deep_bowl": "s1i_oversized_spoon",
+            "ab3_shallow_bowl": "ab3_partial_spoon"
+          },
+          "sources": {
+            "coffee_source": "s1i_compact_coffee_jar",
+            "water_source": "s1i_compact_kettle"
+          },
+          "unique_coffee_tools": [
+            "s1i_final_long_narrow_spoon"
+          ],
+          "unique_soup_utensils": [
+            "s1i_oversized_spoon",
+            "ab3_partial_spoon"
+          ],
+          "variant_id": "F4_TOOLS_IN_DRAWERS"
+        }
+      },
+      "scoring": {
+        "unary_slot_count": 9,
+        "relation_slot_count": 4,
+        "total_scored_slots": 13
+      },
+      "metadata": {
+        "internal_variant": "F4_TOOLS_IN_DRAWERS",
+        "description": "The coffee stirrer and one soup utensil are in drawers D1 and D2.",
+        "gt_action_count": 26,
+        "excluded_from_scoring": [
+          "initial object locations",
+          "source/storage regions",
+          "inspection order",
+          "opened regions",
+          "objects requiring movement",
+          "action sequence",
+          "planner efficiency"
+        ]
+      }
+    },
+    "K6": {
+      "domain": "kitchen",
+      "feasible": true,
+      "required_role_slots": {
+        "water_source": 1,
+        "coffee_source": 1,
+        "coffee_stirrer": 1,
+        "coffee_container": 2,
+        "soup_container": 2,
+        "soup_eating_utensil": 2
+      },
+      "valid_role_fillers": {
+        "water_source": [
+          "s1i_compact_kettle"
+        ],
+        "coffee_source": [
+          "s1i_compact_coffee_jar"
+        ],
+        "coffee_stirrer": [
+          "s1i_final_long_narrow_spoon"
+        ],
+        "coffee_container": [
+          "ab3_narrow_deep_cup",
+          "ab3_medium_deep_mug"
+        ],
+        "soup_container": [
+          "ab3_deep_bowl",
+          "ab3_shallow_bowl"
+        ],
+        "soup_eating_utensil": [
+          "s1i_oversized_spoon",
+          "ab3_partial_spoon"
+        ]
+      },
+      "role_filler_semantics": {
+        "coffee_stirrer": "Uniquely determined: the oversized and partial spoons exceed the narrow cup opening, so only the long narrow spoon satisfies INSERTABLE_IN on both coffee vessels.",
+        "coffee_container": "Both vessels are required; the pair is forced, not chosen.",
+        "soup_eating_utensil": "Both utensils are required; which bowl each serves is free."
+      },
+      "required_relational_bindings": {
+        "stirs": {
+          "description": "coffee_stirrer -> coffee_container, one binding per container",
+          "policy": "REUSABLE",
+          "cardinality": 2,
+          "constraint": "the single valid stirrer must be bound to BOTH coffee containers"
+        },
+        "serves_soup_in": {
+          "description": "soup_eating_utensil -> soup_container, one binding per bowl",
+          "policy": "DEDICATED",
+          "cardinality": 2,
+          "constraint": "a bijection between the two utensils and the two bowls; either bijection is valid, sharing one utensil is not"
+        }
+      },
+      "valid_assignment_sets": {
+        "representation": "constraint",
+        "unary": {
+          "water_source": {
+            "must_equal_set": [
+              "s1i_compact_kettle"
+            ]
+          },
+          "coffee_source": {
+            "must_equal_set": [
+              "s1i_compact_coffee_jar"
+            ]
+          },
+          "coffee_stirrer": {
+            "must_equal_set": [
+              "s1i_final_long_narrow_spoon"
+            ]
+          },
+          "coffee_container": {
+            "must_equal_set": [
+              "ab3_narrow_deep_cup",
+              "ab3_medium_deep_mug"
+            ]
+          },
+          "soup_container": {
+            "must_equal_set": [
+              "ab3_deep_bowl",
+              "ab3_shallow_bowl"
+            ]
+          },
+          "soup_eating_utensil": {
+            "must_equal_set": [
+              "s1i_oversized_spoon",
+              "ab3_partial_spoon"
+            ]
+          }
+        },
+        "relational": {
+          "stirs": {
+            "type": "complete_from_single_tool",
+            "tool": "s1i_final_long_narrow_spoon",
+            "targets": [
+              "ab3_narrow_deep_cup",
+              "ab3_medium_deep_mug"
+            ]
+          },
+          "serves_soup_in": {
+            "type": "any_bijection",
+            "left": [
+              "s1i_oversized_spoon",
+              "ab3_partial_spoon"
+            ],
+            "right": [
+              "ab3_deep_bowl",
+              "ab3_shallow_bowl"
+            ]
+          }
+        },
+        "enumerated_relational_alternatives": {
+          "serves_soup_in": [
+            {
+              "s1i_oversized_spoon": "ab3_deep_bowl",
+              "ab3_partial_spoon": "ab3_shallow_bowl"
+            },
+            {
+              "s1i_oversized_spoon": "ab3_shallow_bowl",
+              "ab3_partial_spoon": "ab3_deep_bowl"
+            }
+          ]
+        }
+      },
+      "canonical_witness": {
+        "source": "EXPECTED_GT_ACTIONS/kitchen/K6",
+        "note": "no execution bundle archived for this variant; identities confirmed from the GT action catalogue"
+      },
+      "scoring": {
+        "unary_slot_count": 9,
+        "relation_slot_count": 4,
+        "total_scored_slots": 13
+      },
+      "metadata": {
+        "internal_variant": "F5_FULL_DISTRIBUTED_SEARCH",
+        "description": "One required object is distributed through each storage region.",
+        "gt_action_count": 31,
+        "excluded_from_scoring": [
+          "initial object locations",
+          "source/storage regions",
+          "inspection order",
+          "opened regions",
+          "objects requiring movement",
+          "action sequence",
+          "planner efficiency"
+        ]
+      }
+    },
+    "L1": {
+      "domain": "living_room",
+      "feasible": true,
+      "required_role_slots": {
+        "PERSONAL_CUP_SAUCER_REGION": 2,
+        "SHARED_REMOTE_REGION": 1,
+        "cup": 2,
+        "saucer": 2,
+        "REMOTE": 1,
+        "SEATING_POSITION": 2
+      },
+      "valid_role_fillers": {
+        "PERSONAL_CUP_SAUCER_REGION": [
+          "region_0001",
+          "region_0003"
+        ],
+        "SHARED_REMOTE_REGION": [
+          "region_0002"
+        ],
+        "cup": [
+          "object_0001",
+          "object_0004"
+        ],
+        "saucer": [
+          "object_0002",
+          "object_0005"
+        ],
+        "REMOTE": [
+          "object_0003"
+        ],
+        "SEATING_POSITION": [
+          "seat_0001",
+          "seat_0002"
+        ]
+      },
+      "object_semantics": {
+        "object_0001": "cup",
+        "object_0002": "saucer",
+        "object_0003": "tv_remote",
+        "object_0004": "cup",
+        "object_0005": "saucer"
+      },
+      "region_semantics": {
+        "region_0001": "PERSONAL_TABLE_LEFT",
+        "region_0002": "SHARED_TABLE",
+        "region_0003": "PERSONAL_TABLE_RIGHT"
+      },
+      "required_relational_bindings": {
+        "personal_set_on_region": {
+          "description": "each PERSONAL_CUP_SAUCER_REGION holds exactly one cup and one saucer",
+          "cardinality": 4,
+          "constraint": "partition the 2 cups and 2 saucers across the 2 personal regions, one of each per region"
+        },
+        "region_near_seat": {
+          "description": "each personal region is NEAR_SEAT of a distinct seating position",
+          "cardinality": 2,
+          "constraint": "injective region -> seat"
+        },
+        "remote_on_shared": {
+          "description": "REMOTE placed on the SHARED_REMOTE_REGION",
+          "cardinality": 1,
+          "constraint": "exactly the shared region"
+        },
+        "shared_accessible_from_both": {
+          "description": "shared region ACCESSIBLE_FROM_BOTH_SEATS",
+          "cardinality": 1,
+          "constraint": "relation must hold against SEATING_PAIR"
+        }
+      },
+      "valid_assignment_sets": {
+        "representation": "constraint",
+        "unary": {
+          "PERSONAL_CUP_SAUCER_REGION": {
+            "must_equal_set": [
+              "region_0001",
+              "region_0003"
+            ]
+          },
+          "SHARED_REMOTE_REGION": {
+            "must_equal_set": [
+              "region_0002"
+            ]
+          },
+          "cup": {
+            "must_equal_set": [
+              "object_0001",
+              "object_0004"
+            ]
+          },
+          "saucer": {
+            "must_equal_set": [
+              "object_0002",
+              "object_0005"
+            ]
+          },
+          "REMOTE": {
+            "must_equal_set": [
+              "object_0003"
+            ]
+          },
+          "SEATING_POSITION": {
+            "must_equal_set": [
+              "seat_0001",
+              "seat_0002"
+            ]
+          }
+        },
+        "relational": {
+          "personal_set_on_region": {
+            "type": "partition_one_of_each",
+            "regions": [
+              "region_0001",
+              "region_0003"
+            ],
+            "cups": [
+              "object_0001",
+              "object_0004"
+            ],
+            "saucers": [
+              "object_0002",
+              "object_0005"
+            ],
+            "note": "all 4 cup/saucer-to-region combinations are functionally valid"
+          },
+          "region_near_seat": {
+            "type": "any_bijection",
+            "left": [
+              "region_0001",
+              "region_0003"
+            ],
+            "right": [
+              "seat_0001",
+              "seat_0002"
+            ]
+          },
+          "remote_on_shared": {
+            "type": "fixed",
+            "left": [
+              "object_0003"
+            ],
+            "right": [
+              "region_0002"
+            ]
+          },
+          "shared_accessible_from_both": {
+            "type": "fixed",
+            "left": [
+              "region_0002"
+            ],
+            "right": [
+              "SEATING_PAIR"
+            ]
+          }
+        }
+      },
+      "canonical_witness": {
+        "source": "FINAL_PAPER_GT_EXECUTIONS/living_room/L1/function_object_assignments.txt",
+        "assignment_text": "Environment: living_room\nVariant: L1\nInternal variant: F0_ALL_OBJECTS_IN_STAGING\nIntended outcome: FEASIBLE\nExecution status: SUCCESS\n\nFUNCTION -> OBJECT/REGION ASSIGNMENTS\nPERSONAL_CUP_SAUCER_REGION -> region=region_0001; objects=object_0001, object_0002; seat=seat_0001\nPERSONAL_CUP_SAUCER_REGION -> region=region_0003; objects=object_0004, object_0005; seat=seat_0002\nSHARED_REMOTE_REGION -> region=region_0002; objects=object_0003; seat=NONE"
+      },
+      "scoring": {
+        "unary_slot_count": 10,
+        "relation_slot_count": 8,
+        "total_scored_slots": 18
+      },
+      "metadata": {
+        "internal_variant": "F0_ALL_OBJECTS_IN_STAGING",
+        "description": "All five objects begin in the staging area.",
+        "gt_action_count": 10,
+        "excluded_from_scoring": [
+          "initial object locations",
+          "source/storage regions",
+          "inspection order",
+          "opened regions",
+          "objects requiring movement",
+          "action sequence",
+          "planner efficiency"
+        ],
+        "objects_requiring_movement": 5,
+        "preplaced_objects": []
+      }
+    },
+    "L2": {
+      "domain": "living_room",
+      "feasible": true,
+      "required_role_slots": {
+        "PERSONAL_CUP_SAUCER_REGION": 2,
+        "SHARED_REMOTE_REGION": 1,
+        "cup": 2,
+        "saucer": 2,
+        "REMOTE": 1,
+        "SEATING_POSITION": 2
+      },
+      "valid_role_fillers": {
+        "PERSONAL_CUP_SAUCER_REGION": [
+          "region_0001",
+          "region_0003"
+        ],
+        "SHARED_REMOTE_REGION": [
+          "region_0002"
+        ],
+        "cup": [
+          "object_0002",
+          "object_0004"
+        ],
+        "saucer": [
+          "object_0001",
+          "object_0005"
+        ],
+        "REMOTE": [
+          "object_0003"
+        ],
+        "SEATING_POSITION": [
+          "seat_0001",
+          "seat_0002"
+        ]
+      },
+      "object_semantics": {
+        "object_0001": "saucer",
+        "object_0002": "cup",
+        "object_0003": "tv_remote",
+        "object_0004": "cup",
+        "object_0005": "saucer"
+      },
+      "region_semantics": {
+        "region_0001": "PERSONAL_TABLE_LEFT",
+        "region_0002": "SHARED_TABLE",
+        "region_0003": "PERSONAL_TABLE_RIGHT"
+      },
+      "required_relational_bindings": {
+        "personal_set_on_region": {
+          "description": "each PERSONAL_CUP_SAUCER_REGION holds exactly one cup and one saucer",
+          "cardinality": 4,
+          "constraint": "partition the 2 cups and 2 saucers across the 2 personal regions, one of each per region"
+        },
+        "region_near_seat": {
+          "description": "each personal region is NEAR_SEAT of a distinct seating position",
+          "cardinality": 2,
+          "constraint": "injective region -> seat"
+        },
+        "remote_on_shared": {
+          "description": "REMOTE placed on the SHARED_REMOTE_REGION",
+          "cardinality": 1,
+          "constraint": "exactly the shared region"
+        },
+        "shared_accessible_from_both": {
+          "description": "shared region ACCESSIBLE_FROM_BOTH_SEATS",
+          "cardinality": 1,
+          "constraint": "relation must hold against SEATING_PAIR"
+        }
+      },
+      "valid_assignment_sets": {
+        "representation": "constraint",
+        "unary": {
+          "PERSONAL_CUP_SAUCER_REGION": {
+            "must_equal_set": [
+              "region_0001",
+              "region_0003"
+            ]
+          },
+          "SHARED_REMOTE_REGION": {
+            "must_equal_set": [
+              "region_0002"
+            ]
+          },
+          "cup": {
+            "must_equal_set": [
+              "object_0002",
+              "object_0004"
+            ]
+          },
+          "saucer": {
+            "must_equal_set": [
+              "object_0001",
+              "object_0005"
+            ]
+          },
+          "REMOTE": {
+            "must_equal_set": [
+              "object_0003"
+            ]
+          },
+          "SEATING_POSITION": {
+            "must_equal_set": [
+              "seat_0001",
+              "seat_0002"
+            ]
+          }
+        },
+        "relational": {
+          "personal_set_on_region": {
+            "type": "partition_one_of_each",
+            "regions": [
+              "region_0001",
+              "region_0003"
+            ],
+            "cups": [
+              "object_0002",
+              "object_0004"
+            ],
+            "saucers": [
+              "object_0001",
+              "object_0005"
+            ],
+            "note": "all 4 cup/saucer-to-region combinations are functionally valid"
+          },
+          "region_near_seat": {
+            "type": "any_bijection",
+            "left": [
+              "region_0001",
+              "region_0003"
+            ],
+            "right": [
+              "seat_0001",
+              "seat_0002"
+            ]
+          },
+          "remote_on_shared": {
+            "type": "fixed",
+            "left": [
+              "object_0003"
+            ],
+            "right": [
+              "region_0002"
+            ]
+          },
+          "shared_accessible_from_both": {
+            "type": "fixed",
+            "left": [
+              "region_0002"
+            ],
+            "right": [
+              "SEATING_PAIR"
+            ]
+          }
+        }
+      },
+      "canonical_witness": {
+        "source": "FINAL_PAPER_GT_EXECUTIONS/living_room/L2/function_object_assignments.txt",
+        "assignment_text": "Environment: living_room\nVariant: L2\nInternal variant: F1_LEFT_SAUCER_PREPLACED\nIntended outcome: FEASIBLE\nExecution status: SUCCESS\n\nFUNCTION -> OBJECT/REGION ASSIGNMENTS\nPERSONAL_CUP_SAUCER_REGION -> region=region_0001; objects=object_0002, object_0001; seat=seat_0001\nPERSONAL_CUP_SAUCER_REGION -> region=region_0003; objects=object_0004, object_0005; seat=seat_0002\nSHARED_REMOTE_REGION -> region=region_0002; objects=object_0003; seat=NONE"
+      },
+      "scoring": {
+        "unary_slot_count": 10,
+        "relation_slot_count": 8,
+        "total_scored_slots": 18
+      },
+      "metadata": {
+        "internal_variant": "F1_LEFT_SAUCER_PREPLACED",
+        "description": "The left saucer is already correctly placed on the left personal table.",
+        "gt_action_count": 8,
+        "excluded_from_scoring": [
+          "initial object locations",
+          "source/storage regions",
+          "inspection order",
+          "opened regions",
+          "objects requiring movement",
+          "action sequence",
+          "planner efficiency"
+        ],
+        "objects_requiring_movement": 4,
+        "preplaced_objects": [
+          "object_0001"
+        ]
+      }
+    },
+    "L3": {
+      "domain": "living_room",
+      "feasible": true,
+      "required_role_slots": {
+        "PERSONAL_CUP_SAUCER_REGION": 2,
+        "SHARED_REMOTE_REGION": 1,
+        "cup": 2,
+        "saucer": 2,
+        "REMOTE": 1,
+        "SEATING_POSITION": 2
+      },
+      "valid_role_fillers": {
+        "PERSONAL_CUP_SAUCER_REGION": [
+          "region_0001",
+          "region_0003"
+        ],
+        "SHARED_REMOTE_REGION": [
+          "region_0002"
+        ],
+        "cup": [
+          "object_0001",
+          "object_0003"
+        ],
+        "saucer": [
+          "object_0004",
+          "object_0005"
+        ],
+        "REMOTE": [
+          "object_0002"
+        ],
+        "SEATING_POSITION": [
+          "seat_0001",
+          "seat_0002"
+        ]
+      },
+      "object_semantics": {
+        "object_0001": "cup",
+        "object_0002": "tv_remote",
+        "object_0003": "cup",
+        "object_0004": "saucer",
+        "object_0005": "saucer"
+      },
+      "region_semantics": {
+        "region_0001": "PERSONAL_TABLE_LEFT",
+        "region_0002": "SHARED_TABLE",
+        "region_0003": "PERSONAL_TABLE_RIGHT"
+      },
+      "required_relational_bindings": {
+        "personal_set_on_region": {
+          "description": "each PERSONAL_CUP_SAUCER_REGION holds exactly one cup and one saucer",
+          "cardinality": 4,
+          "constraint": "partition the 2 cups and 2 saucers across the 2 personal regions, one of each per region"
+        },
+        "region_near_seat": {
+          "description": "each personal region is NEAR_SEAT of a distinct seating position",
+          "cardinality": 2,
+          "constraint": "injective region -> seat"
+        },
+        "remote_on_shared": {
+          "description": "REMOTE placed on the SHARED_REMOTE_REGION",
+          "cardinality": 1,
+          "constraint": "exactly the shared region"
+        },
+        "shared_accessible_from_both": {
+          "description": "shared region ACCESSIBLE_FROM_BOTH_SEATS",
+          "cardinality": 1,
+          "constraint": "relation must hold against SEATING_PAIR"
+        }
+      },
+      "valid_assignment_sets": {
+        "representation": "constraint",
+        "unary": {
+          "PERSONAL_CUP_SAUCER_REGION": {
+            "must_equal_set": [
+              "region_0001",
+              "region_0003"
+            ]
+          },
+          "SHARED_REMOTE_REGION": {
+            "must_equal_set": [
+              "region_0002"
+            ]
+          },
+          "cup": {
+            "must_equal_set": [
+              "object_0001",
+              "object_0003"
+            ]
+          },
+          "saucer": {
+            "must_equal_set": [
+              "object_0004",
+              "object_0005"
+            ]
+          },
+          "REMOTE": {
+            "must_equal_set": [
+              "object_0002"
+            ]
+          },
+          "SEATING_POSITION": {
+            "must_equal_set": [
+              "seat_0001",
+              "seat_0002"
+            ]
+          }
+        },
+        "relational": {
+          "personal_set_on_region": {
+            "type": "partition_one_of_each",
+            "regions": [
+              "region_0001",
+              "region_0003"
+            ],
+            "cups": [
+              "object_0001",
+              "object_0003"
+            ],
+            "saucers": [
+              "object_0004",
+              "object_0005"
+            ],
+            "note": "all 4 cup/saucer-to-region combinations are functionally valid"
+          },
+          "region_near_seat": {
+            "type": "any_bijection",
+            "left": [
+              "region_0001",
+              "region_0003"
+            ],
+            "right": [
+              "seat_0001",
+              "seat_0002"
+            ]
+          },
+          "remote_on_shared": {
+            "type": "fixed",
+            "left": [
+              "object_0002"
+            ],
+            "right": [
+              "region_0002"
+            ]
+          },
+          "shared_accessible_from_both": {
+            "type": "fixed",
+            "left": [
+              "region_0002"
+            ],
+            "right": [
+              "SEATING_PAIR"
+            ]
+          }
+        }
+      },
+      "canonical_witness": {
+        "source": "FINAL_PAPER_GT_EXECUTIONS/living_room/L3/function_object_assignments.txt",
+        "assignment_text": "Environment: living_room\nVariant: L3\nInternal variant: F2_LEFT_SAUCER_ON_SHARED\nIntended outcome: FEASIBLE\nExecution status: SUCCESS\n\nFUNCTION -> OBJECT/REGION ASSIGNMENTS\nPERSONAL_CUP_SAUCER_REGION -> region=region_0001; objects=object_0001, object_0004; seat=seat_0001\nPERSONAL_CUP_SAUCER_REGION -> region=region_0003; objects=object_0003, object_0005; seat=seat_0002\nSHARED_REMOTE_REGION -> region=region_0002; objects=object_0002; seat=NONE"
+      },
+      "scoring": {
+        "unary_slot_count": 10,
+        "relation_slot_count": 8,
+        "total_scored_slots": 18
+      },
+      "metadata": {
+        "internal_variant": "F2_LEFT_SAUCER_ON_SHARED",
+        "description": "The left saucer begins on the shared table and must be moved to a personal table.",
+        "gt_action_count": 10,
+        "excluded_from_scoring": [
+          "initial object locations",
+          "source/storage regions",
+          "inspection order",
+          "opened regions",
+          "objects requiring movement",
+          "action sequence",
+          "planner efficiency"
+        ],
+        "objects_requiring_movement": 5,
+        "preplaced_objects": []
+      }
+    },
+    "L4": {
+      "domain": "living_room",
+      "feasible": true,
+      "required_role_slots": {
+        "PERSONAL_CUP_SAUCER_REGION": 2,
+        "SHARED_REMOTE_REGION": 1,
+        "cup": 2,
+        "saucer": 2,
+        "REMOTE": 1,
+        "SEATING_POSITION": 2
+      },
+      "valid_role_fillers": {
+        "PERSONAL_CUP_SAUCER_REGION": [
+          "region_0001",
+          "region_0003"
+        ],
+        "SHARED_REMOTE_REGION": [
+          "region_0002"
+        ],
+        "cup": [
+          "object_0002",
+          "object_0004"
+        ],
+        "saucer": [
+          "object_0001",
+          "object_0005"
+        ],
+        "REMOTE": [
+          "object_0003"
+        ],
+        "SEATING_POSITION": [
+          "seat_0001",
+          "seat_0002"
+        ]
+      },
+      "object_semantics": {
+        "object_0001": "saucer",
+        "object_0002": "cup",
+        "object_0003": "tv_remote",
+        "object_0004": "cup",
+        "object_0005": "saucer"
+      },
+      "region_semantics": {
+        "region_0001": "PERSONAL_TABLE_LEFT",
+        "region_0002": "SHARED_TABLE",
+        "region_0003": "PERSONAL_TABLE_RIGHT"
+      },
+      "required_relational_bindings": {
+        "personal_set_on_region": {
+          "description": "each PERSONAL_CUP_SAUCER_REGION holds exactly one cup and one saucer",
+          "cardinality": 4,
+          "constraint": "partition the 2 cups and 2 saucers across the 2 personal regions, one of each per region"
+        },
+        "region_near_seat": {
+          "description": "each personal region is NEAR_SEAT of a distinct seating position",
+          "cardinality": 2,
+          "constraint": "injective region -> seat"
+        },
+        "remote_on_shared": {
+          "description": "REMOTE placed on the SHARED_REMOTE_REGION",
+          "cardinality": 1,
+          "constraint": "exactly the shared region"
+        },
+        "shared_accessible_from_both": {
+          "description": "shared region ACCESSIBLE_FROM_BOTH_SEATS",
+          "cardinality": 1,
+          "constraint": "relation must hold against SEATING_PAIR"
+        }
+      },
+      "valid_assignment_sets": {
+        "representation": "constraint",
+        "unary": {
+          "PERSONAL_CUP_SAUCER_REGION": {
+            "must_equal_set": [
+              "region_0001",
+              "region_0003"
+            ]
+          },
+          "SHARED_REMOTE_REGION": {
+            "must_equal_set": [
+              "region_0002"
+            ]
+          },
+          "cup": {
+            "must_equal_set": [
+              "object_0002",
+              "object_0004"
+            ]
+          },
+          "saucer": {
+            "must_equal_set": [
+              "object_0001",
+              "object_0005"
+            ]
+          },
+          "REMOTE": {
+            "must_equal_set": [
+              "object_0003"
+            ]
+          },
+          "SEATING_POSITION": {
+            "must_equal_set": [
+              "seat_0001",
+              "seat_0002"
+            ]
+          }
+        },
+        "relational": {
+          "personal_set_on_region": {
+            "type": "partition_one_of_each",
+            "regions": [
+              "region_0001",
+              "region_0003"
+            ],
+            "cups": [
+              "object_0002",
+              "object_0004"
+            ],
+            "saucers": [
+              "object_0001",
+              "object_0005"
+            ],
+            "note": "all 4 cup/saucer-to-region combinations are functionally valid"
+          },
+          "region_near_seat": {
+            "type": "any_bijection",
+            "left": [
+              "region_0001",
+              "region_0003"
+            ],
+            "right": [
+              "seat_0001",
+              "seat_0002"
+            ]
+          },
+          "remote_on_shared": {
+            "type": "fixed",
+            "left": [
+              "object_0003"
+            ],
+            "right": [
+              "region_0002"
+            ]
+          },
+          "shared_accessible_from_both": {
+            "type": "fixed",
+            "left": [
+              "region_0002"
+            ],
+            "right": [
+              "SEATING_PAIR"
+            ]
+          }
+        }
+      },
+      "canonical_witness": {
+        "source": "FINAL_PAPER_GT_EXECUTIONS/living_room/L4/function_object_assignments.txt",
+        "assignment_text": "Environment: living_room\nVariant: L4\nInternal variant: F3_LEFT_CUP_ON_SHARED\nIntended outcome: FEASIBLE\nExecution status: SUCCESS\n\nFUNCTION -> OBJECT/REGION ASSIGNMENTS\nPERSONAL_CUP_SAUCER_REGION -> region=region_0001; objects=object_0002, object_0001; seat=seat_0001\nPERSONAL_CUP_SAUCER_REGION -> region=region_0003; objects=object_0004, object_0005; seat=seat_0002\nSHARED_REMOTE_REGION -> region=region_0002; objects=object_0003; seat=NONE"
+      },
+      "scoring": {
+        "unary_slot_count": 10,
+        "relation_slot_count": 8,
+        "total_scored_slots": 18
+      },
+      "metadata": {
+        "internal_variant": "F3_LEFT_CUP_ON_SHARED",
+        "description": "The left cup begins on the shared table and must be moved to a personal table.",
+        "gt_action_count": 10,
+        "excluded_from_scoring": [
+          "initial object locations",
+          "source/storage regions",
+          "inspection order",
+          "opened regions",
+          "objects requiring movement",
+          "action sequence",
+          "planner efficiency"
+        ],
+        "objects_requiring_movement": 5,
+        "preplaced_objects": []
+      }
+    },
+    "L5": {
+      "domain": "living_room",
+      "feasible": true,
+      "required_role_slots": {
+        "PERSONAL_CUP_SAUCER_REGION": 2,
+        "SHARED_REMOTE_REGION": 1,
+        "cup": 2,
+        "saucer": 2,
+        "REMOTE": 1,
+        "SEATING_POSITION": 2
+      },
+      "valid_role_fillers": {
+        "PERSONAL_CUP_SAUCER_REGION": [
+          "region_0001",
+          "region_0003"
+        ],
+        "SHARED_REMOTE_REGION": [
+          "region_0002"
+        ],
+        "cup": [
+          "object_0002",
+          "object_0004"
+        ],
+        "saucer": [
+          "object_0001",
+          "object_0005"
+        ],
+        "REMOTE": [
+          "object_0003"
+        ],
+        "SEATING_POSITION": [
+          "seat_0001",
+          "seat_0002"
+        ]
+      },
+      "object_semantics": {
+        "object_0001": "saucer",
+        "object_0002": "cup",
+        "object_0003": "tv_remote",
+        "object_0004": "cup",
+        "object_0005": "saucer"
+      },
+      "region_semantics": {
+        "region_0001": "PERSONAL_TABLE_LEFT",
+        "region_0002": "SHARED_TABLE",
+        "region_0003": "PERSONAL_TABLE_RIGHT"
+      },
+      "required_relational_bindings": {
+        "personal_set_on_region": {
+          "description": "each PERSONAL_CUP_SAUCER_REGION holds exactly one cup and one saucer",
+          "cardinality": 4,
+          "constraint": "partition the 2 cups and 2 saucers across the 2 personal regions, one of each per region"
+        },
+        "region_near_seat": {
+          "description": "each personal region is NEAR_SEAT of a distinct seating position",
+          "cardinality": 2,
+          "constraint": "injective region -> seat"
+        },
+        "remote_on_shared": {
+          "description": "REMOTE placed on the SHARED_REMOTE_REGION",
+          "cardinality": 1,
+          "constraint": "exactly the shared region"
+        },
+        "shared_accessible_from_both": {
+          "description": "shared region ACCESSIBLE_FROM_BOTH_SEATS",
+          "cardinality": 1,
+          "constraint": "relation must hold against SEATING_PAIR"
+        }
+      },
+      "valid_assignment_sets": {
+        "representation": "constraint",
+        "unary": {
+          "PERSONAL_CUP_SAUCER_REGION": {
+            "must_equal_set": [
+              "region_0001",
+              "region_0003"
+            ]
+          },
+          "SHARED_REMOTE_REGION": {
+            "must_equal_set": [
+              "region_0002"
+            ]
+          },
+          "cup": {
+            "must_equal_set": [
+              "object_0002",
+              "object_0004"
+            ]
+          },
+          "saucer": {
+            "must_equal_set": [
+              "object_0001",
+              "object_0005"
+            ]
+          },
+          "REMOTE": {
+            "must_equal_set": [
+              "object_0003"
+            ]
+          },
+          "SEATING_POSITION": {
+            "must_equal_set": [
+              "seat_0001",
+              "seat_0002"
+            ]
+          }
+        },
+        "relational": {
+          "personal_set_on_region": {
+            "type": "partition_one_of_each",
+            "regions": [
+              "region_0001",
+              "region_0003"
+            ],
+            "cups": [
+              "object_0002",
+              "object_0004"
+            ],
+            "saucers": [
+              "object_0001",
+              "object_0005"
+            ],
+            "note": "all 4 cup/saucer-to-region combinations are functionally valid"
+          },
+          "region_near_seat": {
+            "type": "any_bijection",
+            "left": [
+              "region_0001",
+              "region_0003"
+            ],
+            "right": [
+              "seat_0001",
+              "seat_0002"
+            ]
+          },
+          "remote_on_shared": {
+            "type": "fixed",
+            "left": [
+              "object_0003"
+            ],
+            "right": [
+              "region_0002"
+            ]
+          },
+          "shared_accessible_from_both": {
+            "type": "fixed",
+            "left": [
+              "region_0002"
+            ],
+            "right": [
+              "SEATING_PAIR"
+            ]
+          }
+        }
+      },
+      "canonical_witness": {
+        "source": "FINAL_PAPER_GT_EXECUTIONS/living_room/L5/function_object_assignments.txt",
+        "assignment_text": "Environment: living_room\nVariant: L5\nInternal variant: F4_SAUCER_PREPLACED_CUP_ON_SHARED\nIntended outcome: FEASIBLE\nExecution status: SUCCESS\n\nFUNCTION -> OBJECT/REGION ASSIGNMENTS\nPERSONAL_CUP_SAUCER_REGION -> region=region_0001; objects=object_0002, object_0001; seat=seat_0001\nPERSONAL_CUP_SAUCER_REGION -> region=region_0003; objects=object_0004, object_0005; seat=seat_0002\nSHARED_REMOTE_REGION -> region=region_0002; objects=object_0003; seat=NONE"
+      },
+      "scoring": {
+        "unary_slot_count": 10,
+        "relation_slot_count": 8,
+        "total_scored_slots": 18
+      },
+      "metadata": {
+        "internal_variant": "F4_SAUCER_PREPLACED_CUP_ON_SHARED",
+        "description": "The left saucer is correctly preplaced while the left cup begins on the shared table.",
+        "gt_action_count": 8,
+        "excluded_from_scoring": [
+          "initial object locations",
+          "source/storage regions",
+          "inspection order",
+          "opened regions",
+          "objects requiring movement",
+          "action sequence",
+          "planner efficiency"
+        ],
+        "objects_requiring_movement": 4,
+        "preplaced_objects": [
+          "object_0001"
+        ]
+      }
+    },
+    "L6": {
+      "domain": "living_room",
+      "feasible": true,
+      "required_role_slots": {
+        "PERSONAL_CUP_SAUCER_REGION": 2,
+        "SHARED_REMOTE_REGION": 1,
+        "cup": 2,
+        "saucer": 2,
+        "REMOTE": 1,
+        "SEATING_POSITION": 2
+      },
+      "valid_role_fillers": {
+        "PERSONAL_CUP_SAUCER_REGION": [
+          "region_0001",
+          "region_0003"
+        ],
+        "SHARED_REMOTE_REGION": [
+          "region_0002"
+        ],
+        "cup": [
+          "object_0001",
+          "object_0003"
+        ],
+        "saucer": [
+          "object_0004",
+          "object_0005"
+        ],
+        "REMOTE": [
+          "object_0002"
+        ],
+        "SEATING_POSITION": [
+          "seat_0001",
+          "seat_0002"
+        ]
+      },
+      "object_semantics": {
+        "object_0001": "cup",
+        "object_0002": "tv_remote",
+        "object_0003": "cup",
+        "object_0004": "saucer",
+        "object_0005": "saucer"
+      },
+      "region_semantics": {
+        "region_0001": "PERSONAL_TABLE_LEFT",
+        "region_0002": "SHARED_TABLE",
+        "region_0003": "PERSONAL_TABLE_RIGHT"
+      },
+      "required_relational_bindings": {
+        "personal_set_on_region": {
+          "description": "each PERSONAL_CUP_SAUCER_REGION holds exactly one cup and one saucer",
+          "cardinality": 4,
+          "constraint": "partition the 2 cups and 2 saucers across the 2 personal regions, one of each per region"
+        },
+        "region_near_seat": {
+          "description": "each personal region is NEAR_SEAT of a distinct seating position",
+          "cardinality": 2,
+          "constraint": "injective region -> seat"
+        },
+        "remote_on_shared": {
+          "description": "REMOTE placed on the SHARED_REMOTE_REGION",
+          "cardinality": 1,
+          "constraint": "exactly the shared region"
+        },
+        "shared_accessible_from_both": {
+          "description": "shared region ACCESSIBLE_FROM_BOTH_SEATS",
+          "cardinality": 1,
+          "constraint": "relation must hold against SEATING_PAIR"
+        }
+      },
+      "valid_assignment_sets": {
+        "representation": "constraint",
+        "unary": {
+          "PERSONAL_CUP_SAUCER_REGION": {
+            "must_equal_set": [
+              "region_0001",
+              "region_0003"
+            ]
+          },
+          "SHARED_REMOTE_REGION": {
+            "must_equal_set": [
+              "region_0002"
+            ]
+          },
+          "cup": {
+            "must_equal_set": [
+              "object_0001",
+              "object_0003"
+            ]
+          },
+          "saucer": {
+            "must_equal_set": [
+              "object_0004",
+              "object_0005"
+            ]
+          },
+          "REMOTE": {
+            "must_equal_set": [
+              "object_0002"
+            ]
+          },
+          "SEATING_POSITION": {
+            "must_equal_set": [
+              "seat_0001",
+              "seat_0002"
+            ]
+          }
+        },
+        "relational": {
+          "personal_set_on_region": {
+            "type": "partition_one_of_each",
+            "regions": [
+              "region_0001",
+              "region_0003"
+            ],
+            "cups": [
+              "object_0001",
+              "object_0003"
+            ],
+            "saucers": [
+              "object_0004",
+              "object_0005"
+            ],
+            "note": "all 4 cup/saucer-to-region combinations are functionally valid"
+          },
+          "region_near_seat": {
+            "type": "any_bijection",
+            "left": [
+              "region_0001",
+              "region_0003"
+            ],
+            "right": [
+              "seat_0001",
+              "seat_0002"
+            ]
+          },
+          "remote_on_shared": {
+            "type": "fixed",
+            "left": [
+              "object_0002"
+            ],
+            "right": [
+              "region_0002"
+            ]
+          },
+          "shared_accessible_from_both": {
+            "type": "fixed",
+            "left": [
+              "region_0002"
+            ],
+            "right": [
+              "SEATING_PAIR"
+            ]
+          }
+        }
+      },
+      "canonical_witness": {
+        "source": "FINAL_PAPER_GT_EXECUTIONS/living_room/L6/function_object_assignments.txt",
+        "assignment_text": "Environment: living_room\nVariant: L6\nInternal variant: F5_LEFT_PAIR_ON_SHARED\nIntended outcome: FEASIBLE\nExecution status: SUCCESS\n\nFUNCTION -> OBJECT/REGION ASSIGNMENTS\nPERSONAL_CUP_SAUCER_REGION -> region=region_0001; objects=object_0001, object_0004; seat=seat_0001\nPERSONAL_CUP_SAUCER_REGION -> region=region_0003; objects=object_0003, object_0005; seat=seat_0002\nSHARED_REMOTE_REGION -> region=region_0002; objects=object_0002; seat=NONE"
+      },
+      "scoring": {
+        "unary_slot_count": 10,
+        "relation_slot_count": 8,
+        "total_scored_slots": 18
+      },
+      "metadata": {
+        "internal_variant": "F5_LEFT_PAIR_ON_SHARED",
+        "description": "The left cup and left saucer both begin on the shared table and must be moved.",
+        "gt_action_count": 10,
+        "excluded_from_scoring": [
+          "initial object locations",
+          "source/storage regions",
+          "inspection order",
+          "opened regions",
+          "objects requiring movement",
+          "action sequence",
+          "planner efficiency"
+        ],
+        "objects_requiring_movement": 5,
+        "preplaced_objects": []
+      }
+    },
+    "W1": {
+      "domain": "workshop",
+      "feasible": true,
+      "required_role_slots": {
+        "driver": 1,
+        "fastener": 1,
+        "repair_target": 1
+      },
+      "valid_role_fillers": {
+        "driver": [
+          "workshop_long_phillips_driver",
+          "workshop_power_driver"
+        ],
+        "fastener": [
+          "workshop_medium_phillips_screw"
+        ],
+        "repair_target": [
+          "workshop_frame_joint"
+        ]
+      },
+      "role_filler_semantics": {
+        "driver": "Every driver present in the scene is compatible with the phillips screw; where two exist, both are valid and the GT's choice reflects inspection order only."
+      },
+      "required_relational_bindings": {
+        "repair_tuple": {
+          "description": "the (driver, fastener, repair_target) tuple, carrying COMPATIBLE_WITH(driver, fastener), REACHES_TARGET(driver, repair_target) and COMPATIBLE_WITH_TARGET(fastener, repair_target)",
+          "cardinality": 3,
+          "relations": [
+            "COMPATIBLE_WITH",
+            "REACHES_TARGET",
+            "COMPATIBLE_WITH_TARGET"
+          ],
+          "constraint": "all three must hold for one consistent driver choice"
+        }
+      },
+      "valid_assignment_sets": {
+        "representation": "constraint",
+        "unary": {
+          "driver": {
+            "must_be_member_of": [
+              "workshop_long_phillips_driver",
+              "workshop_power_driver"
+            ]
+          },
+          "fastener": {
+            "must_equal_set": [
+              "workshop_medium_phillips_screw"
+            ]
+          },
+          "repair_target": {
+            "must_equal_set": [
+              "workshop_frame_joint"
+            ]
+          }
+        },
+        "relational": {
+          "repair_tuple": {
+            "type": "tuple_over_valid_fillers",
+            "drivers": [
+              "workshop_long_phillips_driver",
+              "workshop_power_driver"
+            ],
+            "fastener": "workshop_medium_phillips_screw",
+            "target": "workshop_frame_joint"
+          }
+        }
+      },
+      "canonical_witness": {
+        "source": "FINAL_PAPER_GT_EXECUTIONS/workshop/W1/function_object_assignments.json",
+        "assignment": {
+          "assignment_source": "GROUND_TRUTH_ORACLE",
+          "driver": "workshop_long_phillips_driver",
+          "fastener": "workshop_medium_phillips_screw",
+          "intended_outcome": "FEASIBLE",
+          "is_feasible": true,
+          "parts_container": null,
+          "rejection_reason": null,
+          "source_ids": null,
+          "target_joint": "workshop_frame_joint",
+          "variant_id": "F0_MANUAL_FIRST_ONE_REGION",
+          "work_surface": "MAIN_WORKBENCH_ZONE"
+        }
+      },
+      "scoring": {
+        "unary_slot_count": 3,
+        "relation_slot_count": 3,
+        "total_scored_slots": 6
+      },
+      "metadata": {
+        "internal_variant": "F0_MANUAL_FIRST_ONE_REGION",
+        "description": "Manual driver and screw are both in the first region; search stops after one inspection.",
+        "gt_action_count": 6,
+        "excluded_from_scoring": [
+          "initial object locations",
+          "source/storage regions",
+          "inspection order",
+          "opened regions",
+          "objects requiring movement",
+          "action sequence",
+          "planner efficiency"
+        ]
+      }
+    },
+    "W2": {
+      "domain": "workshop",
+      "feasible": true,
+      "required_role_slots": {
+        "driver": 1,
+        "fastener": 1,
+        "repair_target": 1
+      },
+      "valid_role_fillers": {
+        "driver": [
+          "workshop_long_phillips_driver",
+          "workshop_power_driver"
+        ],
+        "fastener": [
+          "workshop_medium_phillips_screw"
+        ],
+        "repair_target": [
+          "workshop_frame_joint"
+        ]
+      },
+      "role_filler_semantics": {
+        "driver": "Every driver present in the scene is compatible with the phillips screw; where two exist, both are valid and the GT's choice reflects inspection order only."
+      },
+      "required_relational_bindings": {
+        "repair_tuple": {
+          "description": "the (driver, fastener, repair_target) tuple, carrying COMPATIBLE_WITH(driver, fastener), REACHES_TARGET(driver, repair_target) and COMPATIBLE_WITH_TARGET(fastener, repair_target)",
+          "cardinality": 3,
+          "relations": [
+            "COMPATIBLE_WITH",
+            "REACHES_TARGET",
+            "COMPATIBLE_WITH_TARGET"
+          ],
+          "constraint": "all three must hold for one consistent driver choice"
+        }
+      },
+      "valid_assignment_sets": {
+        "representation": "constraint",
+        "unary": {
+          "driver": {
+            "must_be_member_of": [
+              "workshop_long_phillips_driver",
+              "workshop_power_driver"
+            ]
+          },
+          "fastener": {
+            "must_equal_set": [
+              "workshop_medium_phillips_screw"
+            ]
+          },
+          "repair_target": {
+            "must_equal_set": [
+              "workshop_frame_joint"
+            ]
+          }
+        },
+        "relational": {
+          "repair_tuple": {
+            "type": "tuple_over_valid_fillers",
+            "drivers": [
+              "workshop_long_phillips_driver",
+              "workshop_power_driver"
+            ],
+            "fastener": "workshop_medium_phillips_screw",
+            "target": "workshop_frame_joint"
+          }
+        }
+      },
+      "canonical_witness": {
+        "source": "FINAL_PAPER_GT_EXECUTIONS/workshop/W2/function_object_assignments.json",
+        "assignment": {
+          "assignment_source": "GROUND_TRUTH_ORACLE",
+          "driver": "workshop_power_driver",
+          "fastener": "workshop_medium_phillips_screw",
+          "intended_outcome": "FEASIBLE",
+          "is_feasible": true,
+          "parts_container": null,
+          "rejection_reason": null,
+          "source_ids": null,
+          "target_joint": "workshop_frame_joint",
+          "variant_id": "F1_POWER_FIRST_ONE_REGION",
+          "work_surface": "MAIN_WORKBENCH_ZONE"
+        }
+      },
+      "scoring": {
+        "unary_slot_count": 3,
+        "relation_slot_count": 3,
+        "total_scored_slots": 6
+      },
+      "metadata": {
+        "internal_variant": "F1_POWER_FIRST_ONE_REGION",
+        "description": "Power driver and screw are both in the first region; search stops after one inspection.",
+        "gt_action_count": 6,
+        "excluded_from_scoring": [
+          "initial object locations",
+          "source/storage regions",
+          "inspection order",
+          "opened regions",
+          "objects requiring movement",
+          "action sequence",
+          "planner efficiency"
+        ]
+      }
+    },
+    "W3": {
+      "domain": "workshop",
+      "feasible": true,
+      "required_role_slots": {
+        "driver": 1,
+        "fastener": 1,
+        "repair_target": 1
+      },
+      "valid_role_fillers": {
+        "driver": [
+          "workshop_long_phillips_driver",
+          "workshop_power_driver"
+        ],
+        "fastener": [
+          "workshop_medium_phillips_screw"
+        ],
+        "repair_target": [
+          "workshop_frame_joint"
+        ]
+      },
+      "role_filler_semantics": {
+        "driver": "Every driver present in the scene is compatible with the phillips screw; where two exist, both are valid and the GT's choice reflects inspection order only."
+      },
+      "required_relational_bindings": {
+        "repair_tuple": {
+          "description": "the (driver, fastener, repair_target) tuple, carrying COMPATIBLE_WITH(driver, fastener), REACHES_TARGET(driver, repair_target) and COMPATIBLE_WITH_TARGET(fastener, repair_target)",
+          "cardinality": 3,
+          "relations": [
+            "COMPATIBLE_WITH",
+            "REACHES_TARGET",
+            "COMPATIBLE_WITH_TARGET"
+          ],
+          "constraint": "all three must hold for one consistent driver choice"
+        }
+      },
+      "valid_assignment_sets": {
+        "representation": "constraint",
+        "unary": {
+          "driver": {
+            "must_be_member_of": [
+              "workshop_long_phillips_driver",
+              "workshop_power_driver"
+            ]
+          },
+          "fastener": {
+            "must_equal_set": [
+              "workshop_medium_phillips_screw"
+            ]
+          },
+          "repair_target": {
+            "must_equal_set": [
+              "workshop_frame_joint"
+            ]
+          }
+        },
+        "relational": {
+          "repair_tuple": {
+            "type": "tuple_over_valid_fillers",
+            "drivers": [
+              "workshop_long_phillips_driver",
+              "workshop_power_driver"
+            ],
+            "fastener": "workshop_medium_phillips_screw",
+            "target": "workshop_frame_joint"
+          }
+        }
+      },
+      "canonical_witness": {
+        "source": "FINAL_PAPER_GT_EXECUTIONS/workshop/W3/function_object_assignments.json",
+        "assignment": {
+          "assignment_source": "GROUND_TRUTH_ORACLE",
+          "driver": "workshop_long_phillips_driver",
+          "fastener": "workshop_medium_phillips_screw",
+          "intended_outcome": "FEASIBLE",
+          "is_feasible": true,
+          "parts_container": null,
+          "rejection_reason": null,
+          "source_ids": null,
+          "target_joint": "workshop_frame_joint",
+          "variant_id": "F2_MANUAL_FIRST_TWO_REGIONS",
+          "work_surface": "MAIN_WORKBENCH_ZONE"
+        }
+      },
+      "scoring": {
+        "unary_slot_count": 3,
+        "relation_slot_count": 3,
+        "total_scored_slots": 6
+      },
+      "metadata": {
+        "internal_variant": "F2_MANUAL_FIRST_TWO_REGIONS",
+        "description": "Screw in the left drawer; the first driver found is the manual driver in the right drawer.",
+        "gt_action_count": 7,
+        "excluded_from_scoring": [
+          "initial object locations",
+          "source/storage regions",
+          "inspection order",
+          "opened regions",
+          "objects requiring movement",
+          "action sequence",
+          "planner efficiency"
+        ]
+      }
+    },
+    "W4": {
+      "domain": "workshop",
+      "feasible": true,
+      "required_role_slots": {
+        "driver": 1,
+        "fastener": 1,
+        "repair_target": 1
+      },
+      "valid_role_fillers": {
+        "driver": [
+          "workshop_long_phillips_driver",
+          "workshop_power_driver"
+        ],
+        "fastener": [
+          "workshop_medium_phillips_screw"
+        ],
+        "repair_target": [
+          "workshop_frame_joint"
+        ]
+      },
+      "role_filler_semantics": {
+        "driver": "Every driver present in the scene is compatible with the phillips screw; where two exist, both are valid and the GT's choice reflects inspection order only."
+      },
+      "required_relational_bindings": {
+        "repair_tuple": {
+          "description": "the (driver, fastener, repair_target) tuple, carrying COMPATIBLE_WITH(driver, fastener), REACHES_TARGET(driver, repair_target) and COMPATIBLE_WITH_TARGET(fastener, repair_target)",
+          "cardinality": 3,
+          "relations": [
+            "COMPATIBLE_WITH",
+            "REACHES_TARGET",
+            "COMPATIBLE_WITH_TARGET"
+          ],
+          "constraint": "all three must hold for one consistent driver choice"
+        }
+      },
+      "valid_assignment_sets": {
+        "representation": "constraint",
+        "unary": {
+          "driver": {
+            "must_be_member_of": [
+              "workshop_long_phillips_driver",
+              "workshop_power_driver"
+            ]
+          },
+          "fastener": {
+            "must_equal_set": [
+              "workshop_medium_phillips_screw"
+            ]
+          },
+          "repair_target": {
+            "must_equal_set": [
+              "workshop_frame_joint"
+            ]
+          }
+        },
+        "relational": {
+          "repair_tuple": {
+            "type": "tuple_over_valid_fillers",
+            "drivers": [
+              "workshop_long_phillips_driver",
+              "workshop_power_driver"
+            ],
+            "fastener": "workshop_medium_phillips_screw",
+            "target": "workshop_frame_joint"
+          }
+        }
+      },
+      "canonical_witness": {
+        "source": "FINAL_PAPER_GT_EXECUTIONS/workshop/W4/function_object_assignments.json",
+        "assignment": {
+          "assignment_source": "GROUND_TRUTH_ORACLE",
+          "driver": "workshop_power_driver",
+          "fastener": "workshop_medium_phillips_screw",
+          "intended_outcome": "FEASIBLE",
+          "is_feasible": true,
+          "parts_container": null,
+          "rejection_reason": null,
+          "source_ids": null,
+          "target_joint": "workshop_frame_joint",
+          "variant_id": "F3_POWER_FIRST_TWO_REGIONS",
+          "work_surface": "MAIN_WORKBENCH_ZONE"
+        }
+      },
+      "scoring": {
+        "unary_slot_count": 3,
+        "relation_slot_count": 3,
+        "total_scored_slots": 6
+      },
+      "metadata": {
+        "internal_variant": "F3_POWER_FIRST_TWO_REGIONS",
+        "description": "Screw in the left drawer; the first driver found is the power driver in the right drawer.",
+        "gt_action_count": 7,
+        "excluded_from_scoring": [
+          "initial object locations",
+          "source/storage regions",
+          "inspection order",
+          "opened regions",
+          "objects requiring movement",
+          "action sequence",
+          "planner efficiency"
+        ]
+      }
+    },
+    "W5": {
+      "domain": "workshop",
+      "feasible": true,
+      "required_role_slots": {
+        "driver": 1,
+        "fastener": 1,
+        "repair_target": 1
+      },
+      "valid_role_fillers": {
+        "driver": [
+          "workshop_long_phillips_driver",
+          "workshop_power_driver"
+        ],
+        "fastener": [
+          "workshop_medium_phillips_screw"
+        ],
+        "repair_target": [
+          "workshop_frame_joint"
+        ]
+      },
+      "role_filler_semantics": {
+        "driver": "Every driver present in the scene is compatible with the phillips screw; where two exist, both are valid and the GT's choice reflects inspection order only."
+      },
+      "required_relational_bindings": {
+        "repair_tuple": {
+          "description": "the (driver, fastener, repair_target) tuple, carrying COMPATIBLE_WITH(driver, fastener), REACHES_TARGET(driver, repair_target) and COMPATIBLE_WITH_TARGET(fastener, repair_target)",
+          "cardinality": 3,
+          "relations": [
+            "COMPATIBLE_WITH",
+            "REACHES_TARGET",
+            "COMPATIBLE_WITH_TARGET"
+          ],
+          "constraint": "all three must hold for one consistent driver choice"
+        }
+      },
+      "valid_assignment_sets": {
+        "representation": "constraint",
+        "unary": {
+          "driver": {
+            "must_be_member_of": [
+              "workshop_long_phillips_driver",
+              "workshop_power_driver"
+            ]
+          },
+          "fastener": {
+            "must_equal_set": [
+              "workshop_medium_phillips_screw"
+            ]
+          },
+          "repair_target": {
+            "must_equal_set": [
+              "workshop_frame_joint"
+            ]
+          }
+        },
+        "relational": {
+          "repair_tuple": {
+            "type": "tuple_over_valid_fillers",
+            "drivers": [
+              "workshop_long_phillips_driver",
+              "workshop_power_driver"
+            ],
+            "fastener": "workshop_medium_phillips_screw",
+            "target": "workshop_frame_joint"
+          }
+        }
+      },
+      "canonical_witness": {
+        "source": "EXPECTED_GT_ACTIONS/workshop/W5",
+        "note": "no execution bundle archived for this variant; identities confirmed from the GT action catalogue"
+      },
+      "scoring": {
+        "unary_slot_count": 3,
+        "relation_slot_count": 3,
+        "total_scored_slots": 6
+      },
+      "metadata": {
+        "internal_variant": "F4_MANUAL_FIRST_THREE_REGIONS",
+        "description": "Manual driver is found second; the screw is only found in the third region.",
+        "gt_action_count": 8,
+        "excluded_from_scoring": [
+          "initial object locations",
+          "source/storage regions",
+          "inspection order",
+          "opened regions",
+          "objects requiring movement",
+          "action sequence",
+          "planner efficiency"
+        ]
+      }
+    },
+    "W6": {
+      "domain": "workshop",
+      "feasible": true,
+      "required_role_slots": {
+        "driver": 1,
+        "fastener": 1,
+        "repair_target": 1
+      },
+      "valid_role_fillers": {
+        "driver": [
+          "workshop_long_phillips_driver",
+          "workshop_power_driver"
+        ],
+        "fastener": [
+          "workshop_medium_phillips_screw"
+        ],
+        "repair_target": [
+          "workshop_frame_joint"
+        ]
+      },
+      "role_filler_semantics": {
+        "driver": "Every driver present in the scene is compatible with the phillips screw; where two exist, both are valid and the GT's choice reflects inspection order only."
+      },
+      "required_relational_bindings": {
+        "repair_tuple": {
+          "description": "the (driver, fastener, repair_target) tuple, carrying COMPATIBLE_WITH(driver, fastener), REACHES_TARGET(driver, repair_target) and COMPATIBLE_WITH_TARGET(fastener, repair_target)",
+          "cardinality": 3,
+          "relations": [
+            "COMPATIBLE_WITH",
+            "REACHES_TARGET",
+            "COMPATIBLE_WITH_TARGET"
+          ],
+          "constraint": "all three must hold for one consistent driver choice"
+        }
+      },
+      "valid_assignment_sets": {
+        "representation": "constraint",
+        "unary": {
+          "driver": {
+            "must_be_member_of": [
+              "workshop_long_phillips_driver",
+              "workshop_power_driver"
+            ]
+          },
+          "fastener": {
+            "must_equal_set": [
+              "workshop_medium_phillips_screw"
+            ]
+          },
+          "repair_target": {
+            "must_equal_set": [
+              "workshop_frame_joint"
+            ]
+          }
+        },
+        "relational": {
+          "repair_tuple": {
+            "type": "tuple_over_valid_fillers",
+            "drivers": [
+              "workshop_long_phillips_driver",
+              "workshop_power_driver"
+            ],
+            "fastener": "workshop_medium_phillips_screw",
+            "target": "workshop_frame_joint"
+          }
+        }
+      },
+      "canonical_witness": {
+        "source": "EXPECTED_GT_ACTIONS/workshop/W6",
+        "note": "no execution bundle archived for this variant; identities confirmed from the GT action catalogue"
+      },
+      "scoring": {
+        "unary_slot_count": 3,
+        "relation_slot_count": 3,
+        "total_scored_slots": 6
+      },
+      "metadata": {
+        "internal_variant": "F5_POWER_FIRST_THREE_REGIONS",
+        "description": "Power driver is found first; the screw is only found in the third region.",
+        "gt_action_count": 8,
+        "excluded_from_scoring": [
+          "initial object locations",
+          "source/storage regions",
+          "inspection order",
+          "opened regions",
+          "objects requiring movement",
+          "action sequence",
+          "planner efficiency"
+        ]
+      }
+    },
+    "W7": {
+      "domain": "workshop",
+      "feasible": true,
+      "required_role_slots": {
+        "driver": 1,
+        "fastener": 1,
+        "repair_target": 1
+      },
+      "valid_role_fillers": {
+        "driver": [
+          "workshop_long_phillips_driver"
+        ],
+        "fastener": [
+          "workshop_medium_phillips_screw"
+        ],
+        "repair_target": [
+          "workshop_frame_joint"
+        ]
+      },
+      "role_filler_semantics": {
+        "driver": "Every driver present in the scene is compatible with the phillips screw; where two exist, both are valid and the GT's choice reflects inspection order only."
+      },
+      "required_relational_bindings": {
+        "repair_tuple": {
+          "description": "the (driver, fastener, repair_target) tuple, carrying COMPATIBLE_WITH(driver, fastener), REACHES_TARGET(driver, repair_target) and COMPATIBLE_WITH_TARGET(fastener, repair_target)",
+          "cardinality": 3,
+          "relations": [
+            "COMPATIBLE_WITH",
+            "REACHES_TARGET",
+            "COMPATIBLE_WITH_TARGET"
+          ],
+          "constraint": "all three must hold for one consistent driver choice"
+        }
+      },
+      "valid_assignment_sets": {
+        "representation": "constraint",
+        "unary": {
+          "driver": {
+            "must_be_member_of": [
+              "workshop_long_phillips_driver"
+            ]
+          },
+          "fastener": {
+            "must_equal_set": [
+              "workshop_medium_phillips_screw"
+            ]
+          },
+          "repair_target": {
+            "must_equal_set": [
+              "workshop_frame_joint"
+            ]
+          }
+        },
+        "relational": {
+          "repair_tuple": {
+            "type": "tuple_over_valid_fillers",
+            "drivers": [
+              "workshop_long_phillips_driver"
+            ],
+            "fastener": "workshop_medium_phillips_screw",
+            "target": "workshop_frame_joint"
+          }
+        }
+      },
+      "canonical_witness": {
+        "source": "EXPECTED_GT_ACTIONS/workshop/W7",
+        "note": "no execution bundle archived for this variant; identities confirmed from the GT action catalogue"
+      },
+      "scoring": {
+        "unary_slot_count": 3,
+        "relation_slot_count": 3,
+        "total_scored_slots": 6
+      },
+      "metadata": {
+        "internal_variant": "F6_MANUAL_ONLY",
+        "description": "Power driver absent; manual driver and screw remain sufficient.",
+        "gt_action_count": 8,
+        "excluded_from_scoring": [
+          "initial object locations",
+          "source/storage regions",
+          "inspection order",
+          "opened regions",
+          "objects requiring movement",
+          "action sequence",
+          "planner efficiency"
+        ]
+      }
+    },
+    "W8": {
+      "domain": "workshop",
+      "feasible": true,
+      "required_role_slots": {
+        "driver": 1,
+        "fastener": 1,
+        "repair_target": 1
+      },
+      "valid_role_fillers": {
+        "driver": [
+          "workshop_power_driver"
+        ],
+        "fastener": [
+          "workshop_medium_phillips_screw"
+        ],
+        "repair_target": [
+          "workshop_frame_joint"
+        ]
+      },
+      "role_filler_semantics": {
+        "driver": "Every driver present in the scene is compatible with the phillips screw; where two exist, both are valid and the GT's choice reflects inspection order only."
+      },
+      "required_relational_bindings": {
+        "repair_tuple": {
+          "description": "the (driver, fastener, repair_target) tuple, carrying COMPATIBLE_WITH(driver, fastener), REACHES_TARGET(driver, repair_target) and COMPATIBLE_WITH_TARGET(fastener, repair_target)",
+          "cardinality": 3,
+          "relations": [
+            "COMPATIBLE_WITH",
+            "REACHES_TARGET",
+            "COMPATIBLE_WITH_TARGET"
+          ],
+          "constraint": "all three must hold for one consistent driver choice"
+        }
+      },
+      "valid_assignment_sets": {
+        "representation": "constraint",
+        "unary": {
+          "driver": {
+            "must_be_member_of": [
+              "workshop_power_driver"
+            ]
+          },
+          "fastener": {
+            "must_equal_set": [
+              "workshop_medium_phillips_screw"
+            ]
+          },
+          "repair_target": {
+            "must_equal_set": [
+              "workshop_frame_joint"
+            ]
+          }
+        },
+        "relational": {
+          "repair_tuple": {
+            "type": "tuple_over_valid_fillers",
+            "drivers": [
+              "workshop_power_driver"
+            ],
+            "fastener": "workshop_medium_phillips_screw",
+            "target": "workshop_frame_joint"
+          }
+        }
+      },
+      "canonical_witness": {
+        "source": "EXPECTED_GT_ACTIONS/workshop/W8",
+        "note": "no execution bundle archived for this variant; identities confirmed from the GT action catalogue"
+      },
+      "scoring": {
+        "unary_slot_count": 3,
+        "relation_slot_count": 3,
+        "total_scored_slots": 6
+      },
+      "metadata": {
+        "internal_variant": "F7_POWER_ONLY",
+        "description": "Manual driver absent; power driver and screw remain sufficient.",
+        "gt_action_count": 8,
+        "excluded_from_scoring": [
+          "initial object locations",
+          "source/storage regions",
+          "inspection order",
+          "opened regions",
+          "objects requiring movement",
+          "action sequence",
+          "planner efficiency"
+        ]
+      }
+    }
+  }
+}
