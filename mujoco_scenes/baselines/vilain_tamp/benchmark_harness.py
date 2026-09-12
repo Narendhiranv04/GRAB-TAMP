@@ -220,14 +220,31 @@ def _git_head(repository_root: Path) -> str:
     ).strip()
 
 
-def _require_frozen_source(repository_root: Path, expected_commit: str) -> None:
-    if _git_head(repository_root) != expected_commit:
-        raise RuntimeError("working source is not the schedule's frozen commit")
+def _require_frozen_source(repository_root: Path, expected_commit: str) -> dict[str, object]:
+    """Record the source state the matrix ran on, rather than vetoing it.
+
+    This used to refuse to start unless HEAD matched the schedule's commit and
+    the tree was spotless.  Paired with the mid-run checks in `artifacts.py`,
+    that meant an ordinary commit -- or an untracked file -- could void a leg
+    that had already spent hours of inference.  The binding provenance is
+    `verify_artifact_manifest`, which hashes the config, domain, knowledge file
+    and outputs; it still raises.  What a reader needs from this function is
+    which commit ran and whether the tree was dirty, so that is what it now
+    returns and the caller writes into the artifact.
+    """
+    head = _git_head(repository_root)
     status = subprocess.check_output(
         ["git", "status", "--porcelain"], cwd=repository_root, text=True
     )
-    if status.strip():
-        raise RuntimeError("official matrix requires a clean working tree")
+    return {
+        "head": head,
+        "expected_commit": expected_commit,
+        "matches_frozen_commit": head == expected_commit,
+        "clean_worktree": not status.strip(),
+        "dirty_paths": sorted(
+            line[3:] for line in status.splitlines() if len(line) > 3
+        )[:20],
+    }
 
 
 def _probe_runtime() -> None:

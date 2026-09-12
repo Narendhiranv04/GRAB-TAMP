@@ -18,6 +18,14 @@ class FMCallType(str, Enum):
     CORRECTIVE_PLANNING = "CORRECTIVE_PLANNING"
 
 
+class FMBudgetExhausted(RuntimeError):
+    """The protocol's model-call ceiling was reached.
+
+    Distinct from `FMTransportError` on purpose: a budget stop is a protocol
+    outcome and must never be reported as the method failing the task.
+    """
+
+
 class FMTransportError(RuntimeError):
     """Raised when an injected model transport cannot complete a request."""
 
@@ -97,14 +105,39 @@ class FMCallRecord:
 class RecordedFMClient:
     """Record one call made through a caller-supplied transport."""
 
-    def __init__(self, transport: QwenObjectEstimatorTransport | GPTReasoningTransport):
+    def __init__(
+        self,
+        transport: QwenObjectEstimatorTransport | GPTReasoningTransport,
+        *,
+        max_model_calls: int | None = None,
+    ):
         self.transport = transport
+        # ViLaIn-TAMP bounds itself algorithmically, through
+        # `max_cp_corrections` (at most three whole-problem revisions), the way
+        # OWL-TAMP is bounded by being single-shot.  That is paper-faithful and
+        # is not changed here.  What was missing is that ViLaIn sat outside the
+        # protocol's `max_model_calls` ceiling entirely, so it was the one
+        # method with no stated upper bound -- it averaged 6.6-7.1 calls where
+        # every other method was held to 5.  This ceiling is a protocol
+        # backstop, not a behavioural change: set above the corrective loop's
+        # natural demand it never binds, and the episode records the ceiling it
+        # ran under so the comparison can be stated.
+        self.max_model_calls = max_model_calls
+        self.calls_made = 0
 
     def invoke(
         self,
         request: FMRequest,
         artifact_dir: str | Path,
     ) -> tuple[FMTransportResponse, FMCallRecord]:
+        if (
+            self.max_model_calls is not None
+            and self.calls_made >= self.max_model_calls
+        ):
+            raise FMBudgetExhausted(
+                f"model-call ceiling reached: {self.calls_made}/{self.max_model_calls}"
+            )
+        self.calls_made += 1
         destination = Path(artifact_dir)
         request_path = atomic_write_json(
             destination / "request.json", request.sanitized_dict()
