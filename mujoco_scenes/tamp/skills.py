@@ -40,8 +40,21 @@ class SkillResult:
     details: Mapping[str, object] = field(default_factory=dict)
 
     @classmethod
-    def succeeded(cls, *effects: str) -> SkillResult:
-        return cls(True, tuple(effects))
+    def succeeded(
+        cls,
+        *effects: str,
+        details: Mapping[str, object] | None = None,
+    ) -> SkillResult:
+        """A success carries its evidence, the same way a failure does.
+
+        Every failure path records `details`; success recorded none, so the
+        physical postconditions that `PLACE_SUCCESS` is actually gated on --
+        support contact, release, stability, source-return error, upright
+        alignment -- were discarded exactly when they held.  Only failures
+        were auditable after the fact, which is backwards for a result
+        defined by physical verification.
+        """
+        return cls(True, tuple(effects), details=dict(details or {}))
 
     @classmethod
     def failed(

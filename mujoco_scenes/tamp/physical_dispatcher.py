@@ -153,7 +153,9 @@ def result_to_skill(
                 details=_json_safe(result),
             )
         effects = tuple(effect for effect in raw_effects if effect)
-        return SkillResult.succeeded(*(effects or verified_effects))
+        return SkillResult.succeeded(
+            *(effects or verified_effects), details=_json_safe(result)
+        )
     status = str(
         result.get("failure_code")
         or result.get("status")

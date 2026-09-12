@@ -3224,7 +3224,20 @@ class KitchenObjectManipulationExecutor:
                 data.ctrl[:] = saved_ctrl
                 data.eq_active[:] = saved_eq
                 mujoco.mj_forward(model, data)
-                base_target = saved_base_stance + np.asarray(local, dtype=float)
+                # `_home_place_candidates` returns an absolute HOME-frame
+                # stance (its lateral coordinate is derived from the world
+                # target, not from wherever the base happens to be), so it is
+                # evaluated as one.  Adding it to `base_stance` compounded the
+                # stance a previous action had left behind: after a POUR the
+                # C2 vessel primitive parks the base at ~(0.28, 0.26) and
+                # never restores it, which pushed all twelve candidates to
+                # ~0.5 m forward, inside the serving table legs.  Every one
+                # then failed the base collision check, no stance was
+                # selected, and the fallback drove the base into the table
+                # until the 30000-step controller timeout.  PLACE after PICK
+                # was unaffected only because PICK ends by retreating to
+                # navigation home, leaving `base_stance` at zero.
+                base_target = np.asarray(local, dtype=float)
                 base_valid = checker.is_pose_valid(
                     -float(base_target[1]),
                     float(profile.home_y + base_target[0]),
@@ -3712,7 +3725,19 @@ class KitchenObjectManipulationExecutor:
                     np.clip(-before_pos[0], -lateral_limit, lateral_limit)
                 )
                 local = np.array((family_forward, lateral, 0.0))
-        self.executor.base_manipulation_target = self.executor.base_stance + local
+        self.executor.base_manipulation_target = (
+            # The HOME branches above derive `local` from the world object
+            # position, so it is an absolute HOME-frame stance, not an offset
+            # from wherever the base is parked.  Adding it to `base_stance`
+            # only happened to work while `base_stance` was zero; a preceding
+            # POUR leaves it at the pour stance and the sum drove the grasp
+            # approach ~0.28 m past the object (GRASP_FAILED).  It also keeps
+            # the carry translation below consistent, since that waypoint is
+            # calibrated at HOME and must move with the base's final pose.
+            local
+            if current_workspace == KitchenWorkspace.HOME
+            else self.executor.base_stance + local
+        )
         # The profile carry point is world-calibrated at the HOME base pose.
         # A bounded local base approach must translate that waypoint with the
         # base, otherwise the arm is incorrectly commanded back through the
@@ -4491,7 +4516,14 @@ class KitchenObjectManipulationExecutor:
             )) if selected is not None else np.array((
                 0.20, float(np.clip(-position[0], -0.18, 0.18)), 0.0
             ))
-        self.executor.base_manipulation_target = self.executor.base_stance + local
+        self.executor.base_manipulation_target = (
+            # HOME candidates are absolute stances (see
+            # `_select_home_place_stance`); LEFT/RIGHT keep the historical
+            # zero-offset relative form.
+            local
+            if current_workspace == KitchenWorkspace.HOME
+            else self.executor.base_stance + local
+        )
         self.executor.request_place_world(position, rotation)
         try:
             steps = self._step_until_stable_mode()

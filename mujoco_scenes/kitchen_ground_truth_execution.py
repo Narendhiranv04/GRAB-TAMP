@@ -657,7 +657,14 @@ class KitchenGroundTruthExecutionDispatcher:
 
                 sel_stance = stance["selected"]
                 local = np.array((float(sel_stance["local_forward_m"]), float(sel_stance["local_lateral_m"]), 0.0))
-                base_target = low.base_stance + local
+                # `_select_home_place_stance` validates its candidates as
+                # absolute HOME-frame stances, so the pose driven to here must
+                # be the same one that was collision- and IK-checked.  Adding
+                # `base_stance` again would validate one pose and execute
+                # another whenever the anchor is not zero.  GT zeroes the
+                # anchor before each HOME pick, so this is a no-op today and
+                # exists to keep the two sides from drifting apart.
+                base_target = np.asarray(local, dtype=float)
 
                 # Plan arm trajectory using low._begin_place_plan on base target
                 saved_qpos = self.scene.data.qpos.copy()
