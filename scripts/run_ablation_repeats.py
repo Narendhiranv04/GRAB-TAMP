@@ -13,8 +13,15 @@ import argparse, json, os, subprocess, sys, time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO))
 INFRASTRUCTURE_EXIT_CODE = 86
-SAMPLER = {"TAMP_FM_ENABLE_THINKING": "true", "TAMP_FM_MAX_TOKENS": "28000"}
+# Imported from the main runner rather than restated. An earlier copy here
+# pinned only max_tokens and thinking, dropping temperature, top_p, top_k and
+# the penalties. Without presence_penalty the model ran away and blew the token
+# budget: K1 and K2 truncated 0/12 each in the full run and 4/5 under the
+# ablation, which would have made the two arms incomparable.
+sys.path.insert(0, str(REPO / "scripts"))
+from run_live_repeat_experiment import SAMPLER  # noqa: E402
 
 
 def main() -> int:
