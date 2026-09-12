@@ -45,6 +45,17 @@ def classify(result: dict) -> str:
         return BUDGET
     if "unreachable" in message or "Connection" in message:
         return INFRASTRUCTURE
+    # An outage does not always leave a message.  When the endpoint went down
+    # mid-run on 2026-09-13, Workshop VLM-TAMP wrote 100 episodes with
+    # `terminal_status: INFERENCE_FAILED` and an empty `terminal_failure`, 99 of
+    # them finishing in under 30 s, and this function called them method
+    # failures.  A model-call failure is never the method's result, and an
+    # episode that ends in seconds has not run the task.
+    if status == "INFERENCE_FAILED":
+        return INFRASTRUCTURE
+    elapsed = result.get("elapsed_seconds")
+    if isinstance(elapsed, (int, float)) and elapsed < 30 and not result.get("executed_actions"):
+        return INFRASTRUCTURE
     if "Refusing to send" in message:
         return GUARD
     return METHOD
