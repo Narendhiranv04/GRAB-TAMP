@@ -61,11 +61,21 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from collections import Counter, defaultdict
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 EXCLUDED = (".interrupted", ".timeout_", ".transport_", ".provenance_")
+#: A trial directory is exactly `seed_<digits>`.  Anything else is a relocated
+#: episode -- interrupted, timed out, superseded, left over -- and is not a
+#: result.  This is an allowlist on purpose: the blocklist above missed
+#: `.mixed_version_superseded` and `.leftover_`, and seven such directories sat
+#: inside the canonical roots.  Five carried a result file and were kept out of
+#: the table only by losing the mtime comparison below, which is not a property
+#: anyone should be relying on -- one `touch`, restore or rsync and a
+#: superseded episode replaces a real one silently.
+TRIAL_DIR = re.compile(r"^seed_\d+$")
 # Superseded roots live in `runs/_superseded/` with the reason each was
 # retired; see its README.  They are deliberately absent here rather than
 # filtered, because a re-run that fails to produce an artifact would otherwise
@@ -125,7 +135,7 @@ def _episodes(roots):
         if not base.is_dir():
             continue
         for path in base.rglob("benchmark_execution_result.json"):
-            if any(k in str(path) for k in EXCLUDED):
+            if not TRIAL_DIR.match(path.parent.name):
                 continue
             try:
                 row = json.loads(path.read_text())
