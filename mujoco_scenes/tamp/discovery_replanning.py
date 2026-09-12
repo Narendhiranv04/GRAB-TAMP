@@ -133,6 +133,28 @@ def _action_record(action: SkillAction, result: SkillResult) -> dict[str, object
     }
 
 
+def _replannable_evidence(record: Mapping[str, object]) -> dict[str, object]:
+    """Project a skill record down to what a replanner can act on.
+
+    The whole record used to go into the replan prompt.  That record carries
+    the physical diagnostics -- world-frame coordinates, measured cavity
+    geometry, provenance labels such as
+    `FROZEN_OPEN_CAVITY_DIMENSIONS_LOCALIZED_BY_LIVE_PHYSICAL_BODY` -- none of
+    which a task-level planner can use and none of which a baseline is allowed
+    to see.  `assert_no_prompt_leakage` caught it at the transport and refused
+    the request, which is the correct outcome but ends the episode: 23% of
+    Kitchen ROBUST-TAMP episodes died this way before the execution fix and
+    52% after it, because repaired episodes run deep enough to pour more often.
+
+    A replanner needs to know which action failed and why.  That is the
+    symbolic failure semantics, not the physics behind them, so only those
+    fields cross into the prompt.  The full record is still written to the
+    episode artifact, where auditing it is the point.
+    """
+    allowed = ("success", "status", "failure_code", "message", "effects", "recoverable")
+    return {key: record[key] for key in allowed if key in record}
+
+
 class DiscoveryReplanningExecutive:
     """Execute direct skills while replanning from newly observed state.
 
@@ -425,7 +447,7 @@ class DiscoveryReplanningExecutive:
             code.value,
             message,
             action,
-            {"skill_result": dict(record)},
+            {"skill_result": _replannable_evidence(record)},
         )
         self.events.append("failure_replan_requested", **event.as_dict())
         self._begin_replan(event)
