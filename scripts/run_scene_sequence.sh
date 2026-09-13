@@ -33,14 +33,44 @@ start_leg() { # scene variants workers method python
         >/dev/null 2>&1
 }
 
-wait_for_scene() {
-    while [ -n "$(systemctl --user list-units --state=active --no-legend 'rr5-*' 2>/dev/null)" ]; do
+episodes_done() { # scene
+    find "$ROOT/runs/$1/execution/final_20260913" \
+        -path '*/seed_[0-9][0-9][0-9]/benchmark_execution_result.json' 2>/dev/null | wc -l
+}
+
+# A scene is finished when its episodes exist, never when its legs are absent.
+# On 2026-09-13 the desktop session died and took the legs and the inference
+# tunnel with it; this loop saw no active units, called Kitchen complete at 370
+# of 480, and ran Workshop and Living Room into a dead endpoint -- 201 episodes
+# in three minutes, 200 of them instant failures.  Counting canonical seed
+# paths is the rule RESUME_HERE already states for judging a leg by hand.
+wait_for_scene() { # scene expected
+    local scene=$1 expected=$2 stalled=0 last=-1 now
+    while true; do
+        now=$(episodes_done "$scene")
+        [ "$now" -ge "$expected" ] && { echo "    $scene complete: $now/$expected"; return 0; }
+        if [ -z "$(systemctl --user list-units --state=active --no-legend 'rr5-*' 2>/dev/null)" ]; then
+            if [ "$now" -eq "$last" ]; then
+                stalled=$((stalled + 1))
+            else
+                stalled=0
+            fi
+            # Legs gone and no new episodes for five minutes: they died rather
+            # than finished.  Stop, so nothing downstream runs on a dead host.
+            if [ "$stalled" -ge 5 ]; then
+                echo "    ABORT: $scene legs gone at $now/$expected and not progressing $(date -Is)"
+                return 1
+            fi
+        else
+            stalled=0
+        fi
+        last=$now
         sleep 60
     done
 }
 
-run_scene() { # scene variants "method:workers ..."
-    local scene=$1 variants=$2; shift 2
+run_scene() { # scene expected variants "method:workers ..."
+    local scene=$1 EXPECTED=$2 variants=$3; shift 3
     echo "=== $scene starting $(date -Is) ==="
     for spec in "$@"; do
         local m=${spec%%:*} w=${spec##*:} py="$V"
@@ -49,7 +79,11 @@ run_scene() { # scene variants "method:workers ..."
         echo "    leg $m workers=$w"
     done
     sleep 20
-    wait_for_scene
+    local expected=$1_EXPECTED
+    if ! wait_for_scene "$scene" "$EXPECTED"; then
+        echo "=== ABORTING SEQUENCE: $scene did not complete $(date -Is) ==="
+        exit 1
+    fi
     local n
     n=$(find "$ROOT/runs/$scene/execution/final_20260913" \
         -path '*/seed_[0-9][0-9][0-9]/benchmark_execution_result.json' 2>/dev/null | wc -l)
@@ -57,7 +91,11 @@ run_scene() { # scene variants "method:workers ..."
 }
 
 # Workers allocated by measured leg-hours, not by episode count.
-run_scene kitchen     "$K" vlm_tamp:8 robust_tamp:3 vilain_tamp:3 owl_tamp:3
-run_scene workshop    "$W" vlm_tamp:7 robust_tamp:6 vilain_tamp:3 owl_tamp:1
-run_scene living_room "$L" vlm_tamp:6 vilain_tamp:5 owl_tamp:4 robust_tamp:2
+# Workers by measured leg-hours for the episodes that remain, not by episode
+# count.  ROBUST-TAMP's Kitchen episodes measured 54.7 min against the 25
+# assumed, so at 3 workers it needed 23 h while OWL-TAMP and ViLaIn-TAMP
+# finished early and their workers idled.
+run_scene kitchen     480 "$K" robust_tamp:11 vlm_tamp:5 vilain_tamp:1 owl_tamp:1
+run_scene workshop    300 "$W" vlm_tamp:7 robust_tamp:6 vilain_tamp:3 owl_tamp:1
+run_scene living_room 400 "$L" vlm_tamp:6 vilain_tamp:5 owl_tamp:4 robust_tamp:2
 echo "=== ALL SCENES COMPLETE $(date -Is) ==="
