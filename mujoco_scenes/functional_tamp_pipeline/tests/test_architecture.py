@@ -1149,11 +1149,11 @@ def test_kitchen_vlm_variable_cardinality_and_policies_roundtrip(monkeypatch) ->
 
     mock_kitchen_raw = qwen_graph()
     mock_kitchen_raw["inspectable_regions"] = [
-        {"id": "r_d1", "label": "upper kitchen drawer", "visual_description": "top drawer", "reason": "storage"},
+        {"id": "r_d1", "label": "left kitchen drawer", "visual_description": "left drawer", "reason": "storage"},
         {"id": "r_d2", "label": "lower kitchen drawer", "visual_description": "bottom drawer", "reason": "storage"},
-        {"id": "r_c2", "label": "upper wall cupboard", "visual_description": "cupboard", "reason": "storage"},
+        {"id": "r_c2", "label": "upper left cupboard", "visual_description": "cupboard", "reason": "storage"},
         {"id": "r_b1", "label": "countertop storage box", "visual_description": "box", "reason": "storage"},
-        {"id": "r_c1", "label": "lower kitchen cupboard", "visual_description": "cupboard", "reason": "storage"},
+        {"id": "r_c1", "label": "right kitchen cupboard", "visual_description": "cupboard", "reason": "storage"},
     ]
     mock_kitchen_raw["inspection_order"] = ["r_d1", "r_d2", "r_c2", "r_b1", "r_c1"]
     for r in mock_kitchen_raw.get("functional_roles", []):

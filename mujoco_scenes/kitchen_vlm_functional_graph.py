@@ -142,37 +142,69 @@ KITCHEN_INTERACTION_GROUP_ALIASES: dict[str, tuple[str, ...]] = {
     ),
 }
 
+# Region aliases are matched against the FM's own free-text label and visual
+# description, so they have to cover ordinary English rather than the canonical
+# ids -- the model never sees D1/C2/B1 and names what it sees.
+#
+# Geometry is the authority here (kitchen_base.xml):
+#
+#   C1 (-0.35, 0.65, 0.96)   C2 (0.35, 0.65, 0.96)   wall cabinets, mirrored pair
+#   D1 (-0.44,-0.30, 0.46)   D2 (0.44,-0.30, 0.46)   table drawers, mirrored pair
+#   B1 ( 0.52, 0.18, 0.58)   box resting on the table
+#
+# Each pair differs only in x, so the sole honest discriminator is left/right.
+# Earlier entries claimed otherwise -- C1 was listed as a "base cabinet" and
+# "cupboard below counter" when it hangs at the same height as C2, and D1/D2
+# were split "top" against "bottom" when they sit side by side. Those are
+# removed rather than kept as harmless extras: they matched real FM phrasings
+# and bound them to the wrong region.
+#
+# Side-less phrasings are deliberately absent. "wall cabinet" and "upper
+# cabinet" used to live on C2 alone, so every generic mention of a wall cabinet
+# resolved to C2 -- 107 matches against C1's 39, a side the FM never stated.
+# A proposal that names no side stays unresolved, which is the truthful outcome
+# for two identical fixtures; the search contract then fills those regions in
+# canonical order exactly as before.
+#
+# The front and overhead cameras (the two of three views that show the fixture
+# pair) both place world +x on the image right, so the model's "left" is -x.
 KITCHEN_REGION_ALIASES: dict[str, tuple[str, ...]] = {
     "D1": (
-        "upper kitchen drawer", "upper drawer", "top kitchen drawer", "top drawer",
-        "drawer above lower drawer", "first drawer", "topmost drawer", "upper storage drawer",
-        "top drawer below counter", "upper left drawer", "upper right drawer",
-        "left drawer", "left kitchen drawer", "left storage drawer",
+        "left drawer", "drawer left", "left kitchen drawer", "left storage drawer",
+        "left table drawer", "table drawer left", "left desk drawer",
+        "drawer under table left", "left drawer under table", "left under table drawer",
+        "drawer under the table on the left", "drawer under left side of table",
+        "upper left drawer", "lower left drawer", "front left drawer", "drawer front left",
     ),
     "D2": (
-        "lower kitchen drawer", "lower drawer", "bottom kitchen drawer", "bottom drawer",
-        "second drawer", "drawer below upper drawer", "bottom storage drawer",
-        "lower drawer below counter", "lower left drawer", "lower right drawer",
-        "right drawer", "right kitchen drawer", "right storage drawer",
-    ),
-    "C2": (
-        "upper right cupboard", "upper right wall cupboard", "upper right cabinet",
-        "upper wall cupboard", "upper cupboard", "wall cupboard", "upper cabinet",
-        "top cabinet", "wall cabinet", "overhead cupboard", "overhead cabinet",
-        "cupboard above counter", "cabinet above counter", "upper wall storage",
-        "wall mounted cupboard", "right cupboard", "right wall cupboard",
-        "right cabinet", "right kitchen cupboard",
-    ),
-    "B1": (
-        "countertop storage box", "countertop box", "storage box", "wooden box",
-        "counter box", "box on counter", "storage bin on counter", "tabletop box",
+        "right drawer", "drawer right", "right kitchen drawer", "right storage drawer",
+        "right table drawer", "table drawer right", "right desk drawer",
+        "drawer under table right", "right drawer under table", "right under table drawer",
+        "drawer under the table on the right", "drawer under right side of table",
+        "upper right drawer", "lower right drawer", "front right drawer", "drawer front right",
     ),
     "C1": (
         "upper left cupboard", "upper left wall cupboard", "upper left cabinet",
-        "lower kitchen cupboard", "lower cupboard", "bottom cupboard", "base cupboard",
-        "lower cabinet", "base cabinet", "under counter cupboard", "cupboard below counter",
-        "cabinet below counter", "lower cupboard storage", "left cupboard", "left wall cupboard",
-        "left cabinet", "left wall cabinet", "left kitchen cupboard",
+        "left cupboard", "left wall cupboard", "left cabinet", "left wall cabinet",
+        "left kitchen cupboard", "cabinet left", "cupboard left",
+        "wall cabinet left", "wall cupboard left", "grey cabinet left",
+        "hanging cabinet left", "left hanging cabinet", "cabinet on wall left",
+        "wall mounted cabinet left", "left wall mounted cabinet",
+    ),
+    "C2": (
+        "upper right cupboard", "upper right wall cupboard", "upper right cabinet",
+        "right cupboard", "right wall cupboard", "right cabinet", "right wall cabinet",
+        "right kitchen cupboard", "cabinet right", "cupboard right",
+        "wall cabinet right", "wall cupboard right", "grey cabinet right",
+        "hanging cabinet right", "right hanging cabinet", "cabinet on wall right",
+        "wall mounted cabinet right", "right wall mounted cabinet",
+    ),
+    "B1": (
+        # The only box in the scene, so no side is needed to identify it.
+        "countertop storage box", "countertop box", "storage box", "wooden box",
+        "counter box", "box on counter", "storage bin on counter", "tabletop box",
+        "box on table", "box on the table", "brown box", "cardboard box",
+        "brown cardboard box", "carton", "container on the table",
     ),
 }
 

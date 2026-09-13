@@ -136,14 +136,14 @@ def natural_kitchen_spec() -> dict:
         "inspectable_regions": [
             {
                 "id": "reg_1",
-                "label": "upper wall cupboard",
+                "label": "upper right cupboard",
                 "visual_description": "cupboard above counter",
                 "reason": "may hold vessels",
             },
             {
                 "id": "reg_2",
-                "label": "upper drawer",
-                "visual_description": "top drawer below counter",
+                "label": "left drawer",
+                "visual_description": "drawer under table",
                 "reason": "may hold utensils",
             },
         ],
@@ -194,8 +194,8 @@ def test_local_id_collision_independence():
     """VLM local ID 'c2' must not trick the resolver if visual label says 'upper drawer'."""
     proposal = {
         "id": "c2",
-        "label": "upper drawer",
-        "visual_description": "top drawer below counter",
+        "label": "left drawer",
+        "visual_description": "drawer under table",
         "reason": "storage",
     }
     resolved = resolve_kitchen_region_proposal(proposal)
@@ -250,8 +250,8 @@ def test_unique_property_mapping():
 def test_inspection_order_resolves_through_local_id_map():
     spec = natural_kitchen_spec()
     spec["inspectable_regions"] = [
-        {"id": "loc_cupboard", "label": "upper wall cupboard", "visual_description": "cupboard above counter", "reason": "cups"},
-        {"id": "loc_drawer", "label": "upper drawer", "visual_description": "top drawer below counter", "reason": "spoons"},
+        {"id": "loc_cupboard", "label": "upper right cupboard", "visual_description": "cupboard above counter", "reason": "cups"},
+        {"id": "loc_drawer", "label": "left drawer", "visual_description": "drawer under table", "reason": "spoons"},
     ]
     spec["inspection_order"] = ["loc_drawer", "loc_cupboard"]
 
@@ -328,7 +328,7 @@ def test_inconsistent_role_count_fails_closed():
 def test_unresolved_region_proposal_fails_closed():
     spec = natural_kitchen_spec()
     spec["inspectable_regions"] = [
-        {"id": "reg_1", "label": "upper wall cupboard", "visual_description": "cupboard", "reason": "storage"},
+        {"id": "reg_1", "label": "upper right cupboard", "visual_description": "cupboard", "reason": "storage"},
         {"id": "reg_2", "label": "bookshelf in bedroom", "visual_description": "bookshelf", "reason": "storage"},
     ]
     spec["inspection_order"] = ["reg_1", "reg_2"]
@@ -345,7 +345,7 @@ def test_no_full_catalog_fallback():
     spec = natural_kitchen_spec()
     # VLM proposes only 1 region
     spec["inspectable_regions"] = [
-        {"id": "reg_1", "label": "upper wall cupboard", "visual_description": "cupboard", "reason": "storage"},
+        {"id": "reg_1", "label": "upper right cupboard", "visual_description": "cupboard", "reason": "storage"},
     ]
     spec["inspection_order"] = ["reg_1"]
 

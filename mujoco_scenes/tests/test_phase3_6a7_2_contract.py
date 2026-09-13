@@ -256,7 +256,7 @@ def _valid_kitchen_vlm_doc() -> dict[str, Any]:
         ],
         "cross_group_reuse_allowed": False,
         "inspectable_regions": [
-            {"id": "drawer_top", "label": "top kitchen drawer", "visual_description": "wooden upper drawer", "reason": "utensil storage"}
+            {"id": "drawer_top", "label": "left kitchen drawer", "visual_description": "wooden left drawer", "reason": "utensil storage"}
         ],
         "inspection_order": ["drawer_top"],
         "unsupported_reason": "",

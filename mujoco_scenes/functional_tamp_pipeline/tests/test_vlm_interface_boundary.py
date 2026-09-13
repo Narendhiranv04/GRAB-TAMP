@@ -114,7 +114,7 @@ def test_zero_leakage_in_kitchen_and_workshop_payloads(tmp_path):
         ],
         "cross_group_reuse_allowed": False,
         "inspectable_regions": [
-            {"id": "c1", "label": "upper wall cupboard", "visual_description": "cupboard", "reason": "storage"}
+            {"id": "c1", "label": "upper left cupboard", "visual_description": "cupboard", "reason": "storage"}
         ],
         "inspection_order": ["c1"],
         "unsupported_reason": "",
@@ -207,11 +207,34 @@ def test_zero_leakage_in_kitchen_and_workshop_payloads(tmp_path):
 
 
 def test_deterministic_kitchen_region_resolution():
-    assert resolve_kitchen_region_proposal({"label": "upper wall cupboard", "visual_description": "above counter"}) == "C2"
-    assert resolve_kitchen_region_proposal({"label": "top drawer", "visual_description": "first drawer"}) == "D1"
-    assert resolve_kitchen_region_proposal({"label": "lower cupboard", "visual_description": "under counter"}) == "C1"
+    # C1/C2 hang at the same height and D1/D2 sit side by side (kitchen_base.xml),
+    # so left/right is the only property that separates either pair.
+    assert resolve_kitchen_region_proposal({"label": "upper left cupboard", "visual_description": "above counter"}) == "C1"
+    assert resolve_kitchen_region_proposal({"label": "upper right cupboard", "visual_description": "above counter"}) == "C2"
+    assert resolve_kitchen_region_proposal({"label": "left drawer", "visual_description": "drawer under table"}) == "D1"
+    assert resolve_kitchen_region_proposal({"label": "right drawer", "visual_description": "drawer under table"}) == "D2"
+    # Only one box in the scene, so it needs no side.
     assert resolve_kitchen_region_proposal({"label": "countertop storage box", "visual_description": "wooden box"}) == "B1"
+    assert resolve_kitchen_region_proposal({"label": "box on table", "visual_description": "brown cardboard box"}) == "B1"
     assert resolve_kitchen_region_proposal({"label": "refrigerator door", "visual_description": "fridge"}) is None
+
+
+def test_sideless_proposal_for_a_mirrored_pair_is_not_resolved():
+    """A proposal naming no side must not be handed to one half of a pair.
+
+    'wall cabinet' describes C1 and C2 equally. Resolving it to either invents a
+    side the model never stated, and that is what used to happen: the side-less
+    cabinet aliases lived on C2 alone, so every generic mention became C2 (107
+    matches against C1's 39 across the benchmark). Refusing is the truthful
+    outcome; the search contract then supplies those regions in canonical order.
+    """
+    for sideless in (
+        {"label": "wall cabinet", "visual_description": "grey cabinet hanging on wall"},
+        {"label": "upper cupboard", "visual_description": "cupboard above the counter"},
+        {"label": "table drawer", "visual_description": "closed drawer under table"},
+        {"label": "drawers", "visual_description": "two drawers underneath the table"},
+    ):
+        assert resolve_kitchen_region_proposal(sideless) is None, sideless
 
 
 def test_deterministic_workshop_region_resolution():

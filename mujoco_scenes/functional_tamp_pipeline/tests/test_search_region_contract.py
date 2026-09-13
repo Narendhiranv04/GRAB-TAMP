@@ -300,7 +300,7 @@ def test_13_ambiguous_proposal_fails():
     """Region proposal matching multiple distinct physical regions fails closed."""
     from mujoco_scenes.kitchen_vlm_functional_graph import resolve_kitchen_region_proposal
     with pytest.raises(AmbiguousCanonicalizationError):
-        resolve_kitchen_region_proposal({"label": "upper drawer lower drawer", "visual_description": "upper drawer and lower drawer"})
+        resolve_kitchen_region_proposal({"label": "left drawer right drawer", "visual_description": "left drawer and right drawer"})
 
 
 def test_14_duplicate_canonical_proposal_fails():
@@ -350,8 +350,8 @@ def test_14_duplicate_canonical_proposal_fails():
             }
         ],
         "inspectable_regions": [
-            {"id": "reg1", "label": "top drawer", "visual_description": "d1 drawer", "reason": "search"},
-            {"id": "reg2", "label": "upper drawer", "visual_description": "d1 compartment", "reason": "search"},
+            {"id": "reg1", "label": "left drawer", "visual_description": "d1 drawer", "reason": "search"},
+            {"id": "reg2", "label": "left kitchen drawer", "visual_description": "d1 compartment", "reason": "search"},
         ],
         "inspection_order": ["reg1", "reg2"],
     }
@@ -418,7 +418,7 @@ def test_16_production_proposal_trace_populated_in_kitchen():
             }
         ],
         "inspectable_regions": [
-            {"id": "r_d1", "label": "top drawer", "visual_description": "d1", "reason": "search"}
+            {"id": "r_d1", "label": "left drawer", "visual_description": "d1", "reason": "search"}
         ],
         "inspection_order": ["r_d1"],
     }
@@ -509,7 +509,7 @@ def test_19_contract_deeply_immutable():
     entry = RegionProposalTraceEntry(
         raw_index=0,
         raw_id="r1",
-        raw_label="top drawer",
+        raw_label="left drawer",
         raw_visual_description="d1",
         canonical_region_id="D1",
         resolution_status="RESOLVED",
@@ -532,7 +532,7 @@ def test_20_serialization_roundtrip_preserves_typed_trace():
     entry = RegionProposalTraceEntry(
         raw_index=0,
         raw_id="r1",
-        raw_label="top drawer",
+        raw_label="left drawer",
         raw_visual_description="d1",
         canonical_region_id="D1",
         resolution_status="RESOLVED",

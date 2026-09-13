@@ -264,15 +264,27 @@ WORKSHOP_SEARCH_REGIONS = {
 
 
 WORKSHOP_REGION_ALIASES: dict[str, tuple[str, ...]] = {
+    # The two drawers are a mirrored pair, so left/right is the only honest
+    # discriminator; phrasings the model actually used ("blue drawer under the
+    # desk", "left under-table drawer") are covered here. A proposal naming no
+    # side stays unresolved rather than being assigned a side it never stated.
     "LEFT_DRAWER": (
         "left storage drawer", "left drawer", "left workbench drawer",
         "drawer on the left", "left storage drawer below workbench",
         "left desk drawer", "left lower drawer", "left table drawer", "left_drawer",
+        "left blue drawer", "blue drawer left", "left drawer under desk",
+        "left drawer under table", "left under table drawer", "left under desk drawer",
+        "drawer under the left side of the table", "drawer under left side of desk",
+        "left blue drawer under desk", "drawer left",
     ),
     "RIGHT_DRAWER": (
         "right storage drawer", "right drawer", "right workbench drawer",
         "drawer on the right", "right storage drawer below workbench",
         "right desk drawer", "right lower drawer", "right table drawer", "right_drawer",
+        "right blue drawer", "blue drawer right", "right drawer under desk",
+        "right drawer under table", "right under table drawer", "right under desk drawer",
+        "drawer under the right side of the table", "drawer under right side of desk",
+        "right blue drawer under desk", "drawer right",
     ),
     "TOOL_CABINET": (
         "tool cabinet", "cabinet", "wall cabinet", "upper cabinet",
