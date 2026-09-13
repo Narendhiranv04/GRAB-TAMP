@@ -35,6 +35,9 @@ class InfrastructureUnavailable(RuntimeError):
     """
 
 
+# Terminal statuses meaning the specification itself was never usable, so the
+# run stopped before recording its acquisition provenance.
+FM_RESPONSE_FAILURE_STATUSES = frozenset({"VLM_SPEC_FAILED", "PIPELINE_EXCEPTION"})
 MAX_CONSECUTIVE_INFRASTRUCTURE_FAILURES = 3
 INFRASTRUCTURE_EXIT_CODE = 86
 from mujoco_scenes.functional_tamp_pipeline.evaluation_metrics import compute_primary_metrics
@@ -354,7 +357,17 @@ def evaluate_all_variants(
             assert r["high_level_replans"] == 0, f"Variant {r['domain']}/{r['variant']} high_level_replans={r['high_level_replans']} != 0"
     elif spec_source == "raw-replay":
         for r in records:
-            assert r["spec_acquisition"] == "archived_raw_provider_response", f"Variant {r['domain']}/{r['variant']} spec_acquisition={r['spec_acquisition']} != 'archived_raw_provider_response'"
+            # A trial whose specification is rejected fails before the pipeline
+            # records how that specification was acquired, so the row falls back
+            # to the evaluator's default label. That is a real outcome of replay,
+            # not a provenance violation, and asserting the archived label for it
+            # aborted the whole matrix after every per-trial record was already
+            # written. The check that matters is that no model call was made.
+            spec_failed = r.get("terminal_status") in FM_RESPONSE_FAILURE_STATUSES
+            assert r["spec_acquisition"] == "archived_raw_provider_response" or spec_failed, (
+                f"Variant {r['domain']}/{r['variant']} spec_acquisition={r['spec_acquisition']} "
+                f"!= 'archived_raw_provider_response' (terminal_status={r.get('terminal_status')})"
+            )
             assert r["semantic_vlm_requests"] == 0, f"Variant {r['domain']}/{r['variant']} semantic_vlm_requests={r['semantic_vlm_requests']} != 0"
             assert r["high_level_replans"] == 0, f"Variant {r['domain']}/{r['variant']} high_level_replans={r['high_level_replans']} != 0"
 
