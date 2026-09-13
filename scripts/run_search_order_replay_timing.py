@@ -13,7 +13,14 @@ vocabulary, open-vocabulary semantics, point-cloud geometry, G_O, region search,
 grounding, A* -- still runs for real, and that downstream part is exactly what
 the timers measure. The FM call was never inside the measurement.
 
-Only the trials whose specification still exists on disk are replayed; the rest
+Replay starts from the raw FM response rather than the canonicalized
+specification. The canonicalization step is where region proposals are mapped
+onto canonical ids, so a specification written before that mapping was corrected
+has already lost most of its ranking; replaying it would carry the loss forward
+and leave the FM arm barely FM-ranked. Re-canonicalizing from the raw response
+rebuilds the ranking under the current mapping.
+
+Only the trials whose raw response still exists on disk are replayed; the rest
 were lost to earlier disk pressure and are reported as reduced coverage rather
 than silently dropped.
 """
@@ -30,12 +37,12 @@ from run_live_repeat_experiment import SAMPLER  # noqa: E402
 
 
 def surviving_groups(scored_json: Path) -> dict[str, list[str]]:
-    """Attempt root -> variants whose specification is still on disk."""
+    """Attempt root -> variants whose raw FM response is still on disk."""
     rows = json.loads(scored_json.read_text(encoding="utf-8"))["rows"]
     groups: dict[str, list[str]] = defaultdict(list)
     for row in rows:
         run_dir = Path(row["run_dir"])
-        if not (run_dir / "functional_specification.json").exists():
+        if not (run_dir / "fm_diagnostics" / "fm_call_001.json").exists():
             continue
         groups[str(run_dir.parents[2])].append(row["variant"])
     return {k: sorted(set(v)) for k, v in sorted(groups.items())}
@@ -65,7 +72,7 @@ def main() -> int:
         cmd = [sys.executable, "scripts/evaluate_vlm_search_order.py",
                "--order-mode", args.order_mode, "--output-root", str(out_dir),
                "--seed-base", str(args.seed_base),
-               "--spec-source", "replay", "--specification-root", attempt_root,
+               "--spec-source", "raw-replay", "--specification-root", attempt_root,
                "--variants", ",".join(variants)]
         started = time.time()
         code = subprocess.run(cmd, env=env,

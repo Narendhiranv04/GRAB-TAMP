@@ -34,7 +34,8 @@ def main() -> int:
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--seed-base", type=int, default=0,
                         help="Shifts every per-trial seed; lets a whole arm be redrawn reproducibly.")
-    parser.add_argument("--spec-source", default="live", choices=["live", "replay"])
+    parser.add_argument("--spec-source", default="live",
+                        choices=["live", "replay", "raw-replay"])
     parser.add_argument("--specification-root", type=Path, default=None)
     parser.add_argument("--variants", default=None)
     args = parser.parse_args()
