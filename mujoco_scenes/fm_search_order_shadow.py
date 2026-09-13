@@ -48,7 +48,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-ORDER_MODES = ("auto", "random")
+ORDER_MODES = ("auto", "random", "worst")
 
 # Living Room has no inspectable regions; the contract validator refuses
 # `random` and refuses a seed for it.
@@ -72,9 +72,16 @@ def trial_seed(seed_base: int, output_root: Any, domain: str, variant: str) -> i
 
 def order_for_trial(order_mode: str, seed_base: int, output_root: Any,
                     domain: str, variant: str) -> tuple[str, int | None, str]:
-    """Return (search_order, search_seed, applied_label) for one trial."""
+    """Return (search_order, search_seed, applied_label) for one trial.
+
+    The worst-case arm keeps the deployed source here and overrides the frozen
+    contract's region list instead: its order is privileged, so it is not a
+    policy the contract resolver is allowed to express.
+    """
     if order_mode not in ORDER_MODES:
         raise ValueError(f"Unknown order mode {order_mode!r}; expected one of {ORDER_MODES}")
+    if order_mode == "worst" and domain not in NO_SEARCH_DOMAINS:
+        return "auto", None, "worst (privileged adversarial order, applied to the frozen contract)"
     if domain in NO_SEARCH_DOMAINS:
         # Not a silent downgrade: the domain has no regions to order, so both
         # arms are the same run and the sidecar says so.
@@ -153,6 +160,44 @@ def _install(target: Any, name: str, wrap) -> tuple[Any, str, Any] | None:
     return (target, name, original)
 
 
+def _install_worst_case_contract() -> list:
+    """Rewrite the frozen contract's region order to the adversarial one.
+
+    The worst-case order is oracle information, so it is imposed here rather
+    than added as a policy the resolver could pick: nothing inside the pipeline
+    gains a way to ask for it. Everything else about the contract -- its
+    validation, its provenance trace, the no-search decision for Living Room --
+    is whatever the real resolver produced.
+    """
+    import dataclasses
+
+    from mujoco_scenes.functional_tamp_pipeline import run as run_module
+    from mujoco_scenes.fm_worst_case_order import worst_case_order
+
+    original = run_module.freeze_search_region_contract
+
+    def patched(specification, domain=None, source="auto", **kwargs):
+        contract = original(specification, domain, source, **kwargs)
+        eff_domain = domain or getattr(specification, "domain", None)
+        order = worst_case_order(str(eff_domain), str(kwargs.get("variant") or ""))
+        if order is None or contract.no_search_required:
+            return contract
+        # Keep only the regions this contract actually declared, so the override
+        # cannot widen the search beyond what the resolver authorised.
+        declared = set(contract.canonical_region_ids)
+        reordered = tuple(r for r in order if r in declared)
+        if set(reordered) != declared:
+            return contract
+        return dataclasses.replace(
+            contract,
+            canonical_region_ids=reordered,
+            source="PRIVILEGED_GT_WORST_CASE_DIAGNOSTIC",
+        )
+
+    run_module.freeze_search_region_contract = patched
+    return [(run_module, "freeze_search_region_contract", original)]
+
+
 def _instrument_phases(clock: _PhaseClock) -> tuple[list, list[str]]:
     """Install the solve/planner timers on every domain's own entry points."""
     from mujoco_scenes.functional_tamp_pipeline import run as run_module
@@ -201,13 +246,15 @@ def search_order_shadow(evaluator_module: Any, *, order_mode: str, seed_base: in
 
     clock = _PhaseClock()
     stats: dict[str, Any] = {
-        "trials": 0, "random_trials": 0, "auto_trials": 0,
+        "trials": 0, "random_trials": 0, "auto_trials": 0, "worst_trials": 0,
         "untimed_trials": 0, "missing_instrumentation": [], "sidecars": [],
     }
 
     original_run_pipeline = evaluator_module.run_pipeline
     restores, missing = _instrument_phases(clock)
     stats["missing_instrumentation"] = missing
+    if order_mode == "worst":
+        restores.extend(_install_worst_case_contract())
 
     def patched_run_pipeline(*args, **kwargs):
         if args:
@@ -247,7 +294,13 @@ def search_order_shadow(evaluator_module: Any, *, order_mode: str, seed_base: in
                 "run_dir": str(run_dir),
             }
             stats["trials"] += 1
-            stats["random_trials" if order == "random" else "auto_trials"] += 1
+            if order == "random":
+                key = "random_trials"
+            elif order_mode == "worst" and domain not in NO_SEARCH_DOMAINS:
+                key = "worst_trials"
+            else:
+                key = "auto_trials"
+            stats[key] += 1
             # A trial that never reached the solve phase (an FM spec failure) has
             # no grounding time to report; that is a real outcome, not a missing
             # measurement, so it is counted rather than imputed.

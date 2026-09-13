@@ -65,10 +65,10 @@ def main() -> int:
     # deployed run and look like a clean null result, so the counts are reported
     # rather than assumed.
     print(f"[search-order] trials={stats['trials']} "
-          f"random={stats['random_trials']} auto={stats['auto_trials']} "
+          f"random={stats['random_trials']} worst={stats['worst_trials']} auto={stats['auto_trials']} "
           f"untimed={stats['untimed_trials']}", flush=True)
-    if args.order_mode == "random" and not stats["random_trials"]:
-        print("[search-order] WARNING: no trial received a random order", file=sys.stderr, flush=True)
+    if args.order_mode in ("random", "worst") and not (stats["random_trials"] or stats["worst_trials"]):
+        print(f"[search-order] WARNING: no trial received a {args.order_mode} order", file=sys.stderr, flush=True)
     # The three domains have separate solve paths; a renamed entry point would
     # quietly leave one of them untimed, which must not pass as a zero.
     if stats["missing_instrumentation"]:
