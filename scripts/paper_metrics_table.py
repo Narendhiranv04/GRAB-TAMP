@@ -81,20 +81,14 @@ TRIAL_DIR = re.compile(r"^seed_\d+$")
 # filtered, because a re-run that fails to produce an artifact would otherwise
 # let the retired episode win the de-duplication below on mtime.
 DEFAULT_ROOTS = (
-    # The 2026-09-10/11 re-run, produced after the nine harness faults recorded
-    # in BASELINE_FIDELITY.md were fixed.  Every cell here is 120/120 or
-    # 100/100 with no gaps, verified by enumerating variant x seed rather than
-    # by counting files.
-    "runs/kitchen/execution/fixed_20260910",
-    "runs/living_room/execution/newgoal_20260911",
-    "runs/workshop/execution/fixed_20260910",
-    # VLM-TAMP Workshop was deliberately NOT re-run for the harness fixes: an
-    # import-graph check confirms it reaches none of the changed files, so its
-    # existing root remains canonical.  Kitchen VLM-TAMP was re-run and lives
-    # in fixed_20260910 above.  VLM-TAMP Living Room is NOT here because the
-    # instruction change forces it back into newgoal_20260911 with the rest of
-    # that scene.
-    "runs/workshop/execution/vlm_rerun_20260909",
+    # The 2026-09-13/14 grid: 960 episodes, nine cells, every one verified by
+    # enumerating variant x seed rather than by counting files.  Produced after
+    # the stance-frame fix (placement timeouts 254 -> 0), the replan-prompt
+    # leakage fix (guard deaths 35 -> 0), and at --max-model-calls 15 uniformly.
+    # ViLaIn-TAMP ran here too but is excluded from the tables; see LABEL.
+    "runs/kitchen/execution/final_20260913",
+    "runs/living_room/execution/final_20260913",
+    "runs/workshop/execution/final_20260913",
 )
 # The Living Room instruction was rewritten on 2026-09-11 -- the pipeline had
 # been tested against a different one -- so every Living Room cell including
