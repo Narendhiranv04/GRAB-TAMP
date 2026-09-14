@@ -12,6 +12,7 @@ coverage that did not exist before.
     capability  robot_capability_registry.extract_operation_semantic_candidates
     relation    relation_interpreter.extract_relation_semantic_candidates
     region      kitchen / workshop region proposal resolvers
+    role        semantic_compiler._map_role
 
 Endpoint filtering, validation and every downstream stage are untouched: a
 zero-shot suggestion still has to survive the same checks a cue match does.
@@ -34,6 +35,7 @@ import contextlib
 import functools
 import os
 import threading
+from pathlib import Path
 from typing import Any
 
 # Declared up front; override only to run a deliberately stated arm.
@@ -204,6 +206,72 @@ def zs_canonicalization():
 
     region_patch(KV, "resolve_kitchen_region_proposal", KITCHEN_REGION_TEXT, "region_kitchen")
     region_patch(WR, "resolve_workshop_region_proposal", WORKSHOP_REGION_TEXT, "region_workshop")
+
+    # ---- role ----
+    # Roles block more failing trials than any other single layer, and unlike the
+    # other three the ontology publishes no prose for them -- only the categories
+    # each role accepts. The label is composed from the canonical name and those
+    # categories, which is mechanical; writing role descriptions by hand would be
+    # the practice under test.
+    from mujoco_scenes.functional_tamp_pipeline import semantic_compiler as SC
+    from mujoco_scenes.functional_tamp_pipeline.system_context_registry import (
+        get_domain_selectable_roles, get_domain_system_fixed_anchors,
+    )
+    import yaml
+
+    _ont = yaml.safe_load(
+        (Path(__file__).resolve().parents[1]
+         / "mujoco_scenes/configs/runtime_functional_semantic_ontology.yaml").read_text(encoding="utf-8")
+    )
+
+    def role_labels(domain: str) -> list[tuple[str, str]]:
+        block = (_ont.get("domains") or {}).get(domain) or {}
+        roles = block.get("roles") or block
+        allowed = set(get_domain_selectable_roles(domain)) | set(get_domain_system_fixed_anchors(domain))
+        out = []
+        for name, body in sorted(roles.items()):
+            if allowed and name not in allowed:
+                continue
+            cats = (body or {}).get("accepted_categories") or []
+            text = f"{name}: the {name.replace('_', ' ').lower()}"
+            if cats:
+                text += f", typically a {' or '.join(cats[:4])}"
+            out.append((name, text))
+        return out
+
+    orig_map_role = SC._map_role
+
+    @functools.wraps(orig_map_role)
+    def map_role(domain, role, doc):
+        try:
+            mapped, rule = orig_map_role(domain, role, doc)
+        except Exception:
+            mapped, rule = None, "RESOLVER_RAISED"
+        if mapped:
+            _bump("role_cue")
+            return mapped, rule
+        labels = role_labels(str(domain))
+        if not labels:
+            return mapped, rule
+        bits = [f'a role the plan calls "{role.get("id", "")}"']
+        fn = str(role.get("function") or role.get("description") or "").strip().rstrip(".")
+        if fn:
+            bits.append(f"whose job is {fn[0].lower() + fn[1:]}" if fn else "")
+        cats = [str(c) for c in (role.get("candidate_categories") or [])][:3]
+        if cats:
+            bits.append(f"and which could be a {' or '.join(cats)}")
+        props = [str(c) for c in (role.get("required_properties") or [])][:3]
+        if props:
+            bits.append(f"[must be: {', '.join(props)}]")
+        pick = _accept(_rank(" ".join(b for b in bits if b), labels))
+        if pick is None:
+            _bump("role_abstain")
+            return mapped, rule
+        _bump("role_zs")
+        return pick, "ZERO_SHOT_SEMANTIC_FALLBACK"
+
+    SC._map_role = map_role
+    restores.append((SC, "_map_role", orig_map_role))
 
     try:
         yield STATS
