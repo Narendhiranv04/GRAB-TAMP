@@ -195,6 +195,7 @@ def main() -> None:
                 max_replans=args.max_replans,
                 max_total_actions=args.max_total_actions,
                 replan_on_no_plan=bool(args.replan_on_no_plan),
+                max_vlm_requests=1 + args.max_sketch_actions,
             ).run(args.goal or runtime.goal)
             history = [
                 {

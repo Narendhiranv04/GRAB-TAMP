@@ -100,9 +100,24 @@ class OWLTAMPRecedingHorizon:
         # condition collapses back onto single-shot.  Recorded in the trace
         # either way; never infer which was used from the episode length.
         replan_on_no_plan: bool = False,
+        # Every planning round is bounded the same way the single-shot path
+        # bounds its one round: one sketch request plus at most one constraint
+        # request per sketch action.  Passing None here left a round free to
+        # issue requests without limit, and a Workshop run stalled 88 minutes
+        # inside a single round -- roughly 22 requests at the measured
+        # four-minutes-per-call -- while the round loop itself, bounded at
+        # `max_replans + 2`, never got the chance to advance.  The symptom
+        # reads as a hang; the cause is an unbounded inner budget.
+        max_vlm_requests: int | None = None,
     ):
         if max_replans < 0 or max_total_actions < 1:
             raise ValueError("max_replans must be non-negative and max_total_actions positive")
+        if max_vlm_requests is not None and (
+            isinstance(max_vlm_requests, bool)
+            or not isinstance(max_vlm_requests, int)
+            or max_vlm_requests <= 0
+        ):
+            raise ValueError("max_vlm_requests must be a positive integer or None")
         self.planner = planner
         self.observe = observe
         self.execute = execute
@@ -112,6 +127,7 @@ class OWLTAMPRecedingHorizon:
         self.max_replans = max_replans
         self.max_total_actions = max_total_actions
         self.replan_on_no_plan = replan_on_no_plan
+        self.max_vlm_requests = max_vlm_requests
 
     def run(self, goal: str) -> RecedingHorizonResult:
         history: list[Mapping[str, Any]] = []
@@ -133,7 +149,7 @@ class OWLTAMPRecedingHorizon:
                 images,
                 self.oracle,
                 movable_object_ids=self.movable_objects(observation),
-                max_vlm_requests=None,
+                max_vlm_requests=self.max_vlm_requests,
             )
             raw_requests += len(self.planner.response_trace)
             traces.append(
