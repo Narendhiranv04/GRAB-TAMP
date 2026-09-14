@@ -818,6 +818,39 @@ Two causes behind those exclusions were defects, now fixed:
   still written to the artifact.
 - **Model-call budget.** See "Model-call budget" below.
 
+## ViLaIn-TAMP is excluded from the reported tables (2026-09-14)
+
+It executes **zero actions in all 320 episodes across all three scenes**, so it
+is dropped from the tables by decision. The episodes are kept in full under
+`runs/*/execution/final_20260913/vilain_tamp` with complete per-episode
+provenance (`run_config.json` records `cp_limit: 3`, `model-native` decoding and
+`Qwen/Qwen3.5-9B`); restoring the cell is putting the label back in
+`scripts/paper_metrics_table.py:LABEL`.
+
+The zero is a real result and not a harness artifact. Two harness obstacles that
+were masking it were fixed first: the identity resolver aborted an episode on
+the first estimate matching no visible entity, which discarded every correct
+binding beside it (`UNRESOLVED_ENTITY` fell 117 -> 6 in Kitchen once unmatched
+estimates were dropped instead), and detection centroids were taken from the
+whole-box depth median, which put objects on the floor. What remains is the
+method:
+
+* **885 corrective planning calls** across 314 episodes, the paper's full
+  three-correction budget used in 94% of them.
+* **In every episode the revised PDDL problem repeated one already rejected.**
+  Not one correction produced something new.
+* The dominant planner diagnostic is `RELAXED_GOAL_UNREACHABLE` (222): the
+  generated `:init` omits a fact no action can establish. Behind it are
+  self-contradictory states -- one object in two places (41), the goal asserted
+  as already true (29), an object both held and on a surface (13).
+
+The architecture puts the whole task on one-shot formal-language generation, and
+this checkpoint cannot hold a consistent PDDL initial state or repair one when
+shown the error. **That claim is about Qwen3.5-9B on this architecture, not about
+ViLaIn-TAMP in principle** -- the paper allocates reasoning to `gpt-4o`, and a
+stronger model would plausibly clear the bar. Do not write the zero as evidence
+that the method does not work.
+
 ## Goal coverage: the definition, and a fixed denominator
 
 Coverage is scored against the ground-truth goal, which is a fixed conjunction

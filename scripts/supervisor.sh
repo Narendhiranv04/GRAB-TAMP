@@ -22,9 +22,20 @@ declare -A VARIANTS=(
   [living_room]=L1,L2,L3,L4,L5,L6,L7,L8,L9,L10 )
 declare -A TARGET=( [kitchen]=120 [workshop]=100 [living_room]=100 )
 # phase 1 runs kitchen and living room together; workshop follows.
-PHASE1="kitchen:robust_tamp:11 kitchen:vlm_tamp:5 kitchen:owl_tamp:2 kitchen:vilain_tamp:2
-        living_room:vlm_tamp:2 living_room:owl_tamp:2 living_room:vilain_tamp:2 living_room:robust_tamp:1"
-PHASE2="workshop:vlm_tamp:7 workshop:robust_tamp:6 workshop:vilain_tamp:3 workshop:owl_tamp:1"
+# Living Room carries the phase once Kitchen drains, so it is sized for that
+# rather than for the moment the phase starts.  Leaving it at 7 workers let
+# concurrency -- and with it throughput -- fall as Kitchen finished: 935 tok/s
+# down to 809, which turned a +2.3 h margin into -0.2 h.  Kitchen's own counts
+# stay high because its remaining legs are the slowest episodes in the grid.
+# Phases are split so that capacity a finishing scene releases is picked up by
+# the next one, rather than idling until every scene in the phase is done.
+# Kitchen held 16 workers for its last 8 episodes while Workshop waited on
+# Living Room; concurrency sagged and the margin went from +2.3 h to -0.2 h.
+# Kitchen runs alone because its episodes are the most expensive in the grid;
+# Living Room and Workshop then share the machine.
+PHASE1="kitchen:robust_tamp:8 kitchen:vlm_tamp:5 kitchen:owl_tamp:2 kitchen:vilain_tamp:2"
+PHASE2="living_room:vlm_tamp:4 living_room:owl_tamp:3 living_room:vilain_tamp:3 living_room:robust_tamp:3
+        workshop:vlm_tamp:7 workshop:robust_tamp:6 workshop:vilain_tamp:4 workshop:owl_tamp:3"
 
 count() { find "$ROOT/runs/$1/execution/final_20260913/$2" \
     -path '*/seed_[0-9][0-9][0-9]/benchmark_execution_result.json' 2>/dev/null | wc -l; }
@@ -81,6 +92,6 @@ drive() { # spec
 }
 
 echo "=== supervisor start $(date -Is) ==="
-drive "$PHASE1"; echo "=== phase 1 complete (kitchen + living room) $(date -Is) ==="
-drive "$PHASE2"; echo "=== phase 2 complete (workshop) $(date -Is) ==="
+drive "$PHASE1"; echo "=== phase 1 complete (kitchen) $(date -Is) ==="
+drive "$PHASE2"; echo "=== phase 2 complete (living room + workshop) $(date -Is) ==="
 echo "=== ALL COMPLETE $(date -Is) ==="

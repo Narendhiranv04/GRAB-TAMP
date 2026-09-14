@@ -27,9 +27,18 @@ SUCCESS = "SUCCESS"
 BUDGET = "BUDGET"
 INFRASTRUCTURE = "INFRASTRUCTURE"
 GUARD = "HARNESS_GUARD"
+TRUNCATED = "TOKEN_CEILING"
 METHOD = "METHOD"
 
 #: Reasons that are properties of the protocol or the machine, not the method.
+#: Reasons that are properties of the protocol or the machine, not the method.
+#: `TRUNCATED` is deliberately NOT here.  A decode that runs past `max_tokens`
+#: is the method's own framework failing to produce a usable plan within the
+#: stated budget, the same way an unparseable reply is, so it counts as a
+#: failure of that method and is reported as one.  The label is kept so the
+#: cause stays visible in the artifacts: 27 of 97 Kitchen ROBUST-TAMP episodes
+#: and 20 of 105 Kitchen VLM-TAMP episodes end this way, and a reader should be
+#: able to see that rather than infer a planning failure.
 NOT_A_METHOD_FAILURE = (BUDGET, INFRASTRUCTURE, GUARD)
 
 
@@ -43,6 +52,15 @@ def classify(result: dict) -> str:
     message = str((result.get("terminal_failure") or {}).get("message") or "")
     if "budget exhausted" in message or "ceiling reached" in message:
         return BUDGET
+    # Check truncation first: ROBUST-TAMP reports a decode that ran past
+    # `max_tokens` as "Inference service unreachable after 2 retries:
+    # MODEL_OUTPUT_TRUNCATED: ...", so matching "unreachable" first called 27
+    # of 97 Kitchen episodes an outage.  They are not -- they ran a median of
+    # 43.6 minutes and the endpoint was up throughout.  The 24576-token ceiling
+    # is a stated framework limitation, so these are neither an outage nor the
+    # method failing to plan, and they need their own bucket.
+    if "MODEL_OUTPUT_TRUNCATED" in message or "token ceiling" in message:
+        return TRUNCATED
     if "unreachable" in message or "Connection" in message:
         return INFRASTRUCTURE
     # An outage does not always leave a message.  When the endpoint went down

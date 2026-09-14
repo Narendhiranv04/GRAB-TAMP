@@ -104,7 +104,21 @@ DEFAULT_ROOTS = (
 # column.
 LABEL = {
     "vlm_tamp": "VLM-TAMP", "owl_tamp": "OWL-TAMP", "retrieval": "Retrieval",
-    "vilain_tamp": "ViLaIn-TAMP", "discovery_replanning": "ROBUST-TAMP",
+    # ViLaIn-TAMP is excluded from the reported tables by decision on
+    # 2026-09-14: it executes zero actions in all 320 episodes of all three
+    # scenes.  The episodes are kept in full -- `runs/*/execution/final_20260913
+    # /vilain_tamp` -- with complete provenance (`run_config.json` records
+    # cp_limit 3, model-native decoding, Qwen3.5-9B), so the cell can be
+    # restored by putting the label back.  Nothing was deleted.
+    #
+    # What the data shows, if it is ever needed: 885 corrective planning calls
+    # across 314 episodes, the paper's full three-correction budget used in 94%
+    # of them, and in every single episode the revised PDDL problem repeated
+    # one the planner had already rejected.  The dominant diagnostic is
+    # RELAXED_GOAL_UNREACHABLE (222), with self-contradictory states behind it
+    # -- one object in two places (41), goal asserted as already true (29), an
+    # object both held and on a surface (13).
+    "discovery_replanning": "ROBUST-TAMP",
     # `discovery_replanning` is the pre-2026-09-12 spelling; both map here.
     "robust_tamp": "ROBUST-TAMP",
     "robust_tamp": "ROBUST-TAMP", "functional_tamp": "Ours",

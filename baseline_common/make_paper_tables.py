@@ -207,7 +207,6 @@ def main() -> None:
         "vlm_tamp": "VLM-TAMP (single-shot)",
         "owl_tamp": "OWL-TAMP (single-shot)",
         "retrieval": "Retrieval (CLIP, no FM)",
-        "vilain_tamp": "ViLaIn-TAMP",
         "discovery_replanning": "ROBUST-TAMP",  # legacy artifacts
         "robust_tamp": "ROBUST-TAMP",
         "functional_tamp": "Ours (functional + geometric)",
@@ -226,7 +225,6 @@ def main() -> None:
         "vlm_tamp",
         "owl_tamp",
         "retrieval",
-        "vilain_tamp",
         "robust_tamp",
         "functional_tamp",
     ):
