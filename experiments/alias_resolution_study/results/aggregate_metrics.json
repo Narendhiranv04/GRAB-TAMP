@@ -1,0 +1,759 @@
+{
+  "dataset": {
+    "relation_instances": 973,
+    "unique_phrases": 534,
+    "reference_resolved_instances": 119,
+    "reference_resolved_unique": 106,
+    "frozen_unresolved_instances": 583,
+    "frozen_unresolved_unique": 261,
+    "task_causal_instances": 239,
+    "by_domain": {
+      "kitchen": 474,
+      "living_room": 240,
+      "workshop": 259
+    },
+    "resolved_by_predicate": {
+      "COMPATIBLE_WITH": 34,
+      "INSERTABLE_IN": 28,
+      "COMPATIBLE_WITH_TARGET": 23,
+      "FITS_SET_ON": 21,
+      "FITS_ON": 7,
+      "NEAR_SEAT": 3,
+      "REACHES_TARGET": 3
+    },
+    "lexical_variants_per_predicate": {
+      "INSERTABLE_IN": 26,
+      "COMPATIBLE_WITH_TARGET": 22,
+      "FITS_ON": 7,
+      "NEAR_SEAT": 3,
+      "COMPATIBLE_WITH": 31,
+      "REACHES_TARGET": 3,
+      "FITS_SET_ON": 17
+    }
+  },
+  "agreement": {
+    "ZS-Global|instance": {
+      "n": 119,
+      "top1_agreement": 0.3697478991596639,
+      "macro_f1": 0.2352701460149325
+    },
+    "ZS-Global|unique_phrase": {
+      "n": 106,
+      "top1_agreement": 0.3867924528301887,
+      "macro_f1": 0.23997193080130602
+    },
+    "ZS-Typed|instance": {
+      "n": 119,
+      "top1_agreement": 0.5546218487394958,
+      "macro_f1": 0.3129475043940453
+    },
+    "ZS-Typed|unique_phrase": {
+      "n": 106,
+      "top1_agreement": 0.5660377358490566,
+      "macro_f1": 0.31819996275482815
+    },
+    "ZS-Context|instance": {
+      "n": 119,
+      "top1_agreement": 0.865546218487395,
+      "macro_f1": 0.5694451808648521
+    },
+    "ZS-Context|unique_phrase": {
+      "n": 106,
+      "top1_agreement": 0.8679245283018868,
+      "macro_f1": 0.5748236419717827
+    }
+  },
+  "per_predicate": {
+    "ZS-Global": {
+      "COMPATIBLE_WITH": {
+        "n": 34,
+        "agreement": 0.38235294117647056,
+        "unique_phrasings": 31
+      },
+      "COMPATIBLE_WITH_TARGET": {
+        "n": 23,
+        "agreement": 0.08695652173913043,
+        "unique_phrasings": 22
+      },
+      "FITS_ON": {
+        "n": 7,
+        "agreement": 0.0,
+        "unique_phrasings": 7
+      },
+      "FITS_SET_ON": {
+        "n": 21,
+        "agreement": 0.0,
+        "unique_phrasings": 17
+      },
+      "INSERTABLE_IN": {
+        "n": 28,
+        "agreement": 0.8928571428571429,
+        "unique_phrasings": 26
+      },
+      "NEAR_SEAT": {
+        "n": 3,
+        "agreement": 0.3333333333333333,
+        "unique_phrasings": 3
+      },
+      "REACHES_TARGET": {
+        "n": 3,
+        "agreement": 1.0,
+        "unique_phrasings": 3
+      }
+    },
+    "ZS-Typed": {
+      "COMPATIBLE_WITH": {
+        "n": 34,
+        "agreement": 1.0,
+        "unique_phrasings": 31
+      },
+      "COMPATIBLE_WITH_TARGET": {
+        "n": 23,
+        "agreement": 0.08695652173913043,
+        "unique_phrasings": 22
+      },
+      "FITS_ON": {
+        "n": 7,
+        "agreement": 0.0,
+        "unique_phrasings": 7
+      },
+      "FITS_SET_ON": {
+        "n": 21,
+        "agreement": 0.047619047619047616,
+        "unique_phrasings": 17
+      },
+      "INSERTABLE_IN": {
+        "n": 28,
+        "agreement": 0.8928571428571429,
+        "unique_phrasings": 26
+      },
+      "NEAR_SEAT": {
+        "n": 3,
+        "agreement": 0.3333333333333333,
+        "unique_phrasings": 3
+      },
+      "REACHES_TARGET": {
+        "n": 3,
+        "agreement": 1.0,
+        "unique_phrasings": 3
+      }
+    },
+    "ZS-Context": {
+      "COMPATIBLE_WITH": {
+        "n": 34,
+        "agreement": 1.0,
+        "unique_phrasings": 31
+      },
+      "COMPATIBLE_WITH_TARGET": {
+        "n": 23,
+        "agreement": 0.8260869565217391,
+        "unique_phrasings": 22
+      },
+      "FITS_ON": {
+        "n": 7,
+        "agreement": 0.14285714285714285,
+        "unique_phrasings": 7
+      },
+      "FITS_SET_ON": {
+        "n": 21,
+        "agreement": 0.9523809523809523,
+        "unique_phrasings": 17
+      },
+      "INSERTABLE_IN": {
+        "n": 28,
+        "agreement": 1.0,
+        "unique_phrasings": 26
+      },
+      "NEAR_SEAT": {
+        "n": 3,
+        "agreement": 0.3333333333333333,
+        "unique_phrasings": 3
+      },
+      "REACHES_TARGET": {
+        "n": 3,
+        "agreement": 0.0,
+        "unique_phrasings": 3
+      }
+    }
+  },
+  "per_domain": {
+    "ZS-Global": {
+      "kitchen": {
+        "n": 28,
+        "agreement": 0.8928571428571429
+      },
+      "living_room": {
+        "n": 31,
+        "agreement": 0.03225806451612903
+      },
+      "workshop": {
+        "n": 60,
+        "agreement": 0.3
+      }
+    },
+    "ZS-Typed": {
+      "kitchen": {
+        "n": 28,
+        "agreement": 0.8928571428571429
+      },
+      "living_room": {
+        "n": 31,
+        "agreement": 0.06451612903225806
+      },
+      "workshop": {
+        "n": 60,
+        "agreement": 0.65
+      }
+    },
+    "ZS-Context": {
+      "kitchen": {
+        "n": 28,
+        "agreement": 1.0
+      },
+      "living_room": {
+        "n": 31,
+        "agreement": 0.7096774193548387
+      },
+      "workshop": {
+        "n": 60,
+        "agreement": 0.8833333333333333
+      }
+    }
+  },
+  "confidence": {
+    "ZS-Global": {
+      "mean_top_score_agreeing": 0.5251104730096731,
+      "mean_top_score_disagreeing": 0.45991365432739256,
+      "mean_margin": 0.1505532960931794,
+      "accuracy_coverage_curve": [
+        {
+          "coverage": 0.04201680672268908,
+          "accuracy": 0.4,
+          "score_threshold": 0.6632328033447266
+        },
+        {
+          "coverage": 0.08403361344537816,
+          "accuracy": 0.5,
+          "score_threshold": 0.6377079486846924
+        },
+        {
+          "coverage": 0.12605042016806722,
+          "accuracy": 0.6666666666666666,
+          "score_threshold": 0.6293190717697144
+        },
+        {
+          "coverage": 0.16806722689075632,
+          "accuracy": 0.75,
+          "score_threshold": 0.6034646034240723
+        },
+        {
+          "coverage": 0.21008403361344538,
+          "accuracy": 0.72,
+          "score_threshold": 0.5917232632637024
+        },
+        {
+          "coverage": 0.25210084033613445,
+          "accuracy": 0.6666666666666666,
+          "score_threshold": 0.5664982199668884
+        },
+        {
+          "coverage": 0.29411764705882354,
+          "accuracy": 0.6571428571428571,
+          "score_threshold": 0.5396845936775208
+        },
+        {
+          "coverage": 0.33613445378151263,
+          "accuracy": 0.65,
+          "score_threshold": 0.513783872127533
+        },
+        {
+          "coverage": 0.37815126050420167,
+          "accuracy": 0.6444444444444445,
+          "score_threshold": 0.5020715594291687
+        },
+        {
+          "coverage": 0.42016806722689076,
+          "accuracy": 0.58,
+          "score_threshold": 0.48190683126449585
+        },
+        {
+          "coverage": 0.46218487394957986,
+          "accuracy": 0.5272727272727272,
+          "score_threshold": 0.47376447916030884
+        },
+        {
+          "coverage": 0.5042016806722689,
+          "accuracy": 0.48333333333333334,
+          "score_threshold": 0.4693633019924164
+        },
+        {
+          "coverage": 0.5462184873949579,
+          "accuracy": 0.4461538461538462,
+          "score_threshold": 0.4638806879520416
+        },
+        {
+          "coverage": 0.5882352941176471,
+          "accuracy": 0.42857142857142855,
+          "score_threshold": 0.4432640075683594
+        },
+        {
+          "coverage": 0.6302521008403361,
+          "accuracy": 0.41333333333333333,
+          "score_threshold": 0.4178045690059662
+        },
+        {
+          "coverage": 0.6722689075630253,
+          "accuracy": 0.425,
+          "score_threshold": 0.4094446897506714
+        },
+        {
+          "coverage": 0.7142857142857143,
+          "accuracy": 0.43529411764705883,
+          "score_threshold": 0.3971843123435974
+        },
+        {
+          "coverage": 0.7563025210084033,
+          "accuracy": 0.4222222222222222,
+          "score_threshold": 0.3862515687942505
+        },
+        {
+          "coverage": 0.7983193277310925,
+          "accuracy": 0.4,
+          "score_threshold": 0.3817732632160187
+        },
+        {
+          "coverage": 0.8403361344537815,
+          "accuracy": 0.38,
+          "score_threshold": 0.3789381682872772
+        },
+        {
+          "coverage": 0.8823529411764706,
+          "accuracy": 0.3619047619047619,
+          "score_threshold": 0.37506580352783203
+        },
+        {
+          "coverage": 0.9243697478991597,
+          "accuracy": 0.36363636363636365,
+          "score_threshold": 0.3703940808773041
+        },
+        {
+          "coverage": 0.9663865546218487,
+          "accuracy": 0.3739130434782609,
+          "score_threshold": 0.36532148718833923
+        },
+        {
+          "coverage": 1.0,
+          "accuracy": 0.3697478991596639,
+          "score_threshold": 0.3439332842826843
+        }
+      ]
+    },
+    "ZS-Typed": {
+      "mean_top_score_agreeing": 0.8035523882417968,
+      "mean_top_score_disagreeing": 0.5573051554976769,
+      "mean_margin": 0.43739339897111684,
+      "accuracy_coverage_curve": [
+        {
+          "coverage": 0.04201680672268908,
+          "accuracy": 1.0,
+          "score_threshold": 1.0
+        },
+        {
+          "coverage": 0.08403361344537816,
+          "accuracy": 1.0,
+          "score_threshold": 1.0
+        },
+        {
+          "coverage": 0.12605042016806722,
+          "accuracy": 1.0,
+          "score_threshold": 1.0
+        },
+        {
+          "coverage": 0.16806722689075632,
+          "accuracy": 1.0,
+          "score_threshold": 1.0
+        },
+        {
+          "coverage": 0.21008403361344538,
+          "accuracy": 1.0,
+          "score_threshold": 1.0
+        },
+        {
+          "coverage": 0.25210084033613445,
+          "accuracy": 1.0,
+          "score_threshold": 1.0
+        },
+        {
+          "coverage": 0.29411764705882354,
+          "accuracy": 0.9714285714285714,
+          "score_threshold": 0.7749937176704407
+        },
+        {
+          "coverage": 0.33613445378151263,
+          "accuracy": 0.875,
+          "score_threshold": 0.6695287823677063
+        },
+        {
+          "coverage": 0.37815126050420167,
+          "accuracy": 0.8444444444444444,
+          "score_threshold": 0.6469064354896545
+        },
+        {
+          "coverage": 0.42016806722689076,
+          "accuracy": 0.8,
+          "score_threshold": 0.6377078890800476
+        },
+        {
+          "coverage": 0.46218487394957986,
+          "accuracy": 0.8,
+          "score_threshold": 0.6293190717697144
+        },
+        {
+          "coverage": 0.5042016806722689,
+          "accuracy": 0.8,
+          "score_threshold": 0.6118459105491638
+        },
+        {
+          "coverage": 0.5462184873949579,
+          "accuracy": 0.7692307692307693,
+          "score_threshold": 0.6025294661521912
+        },
+        {
+          "coverage": 0.5882352941176471,
+          "accuracy": 0.7571428571428571,
+          "score_threshold": 0.5917232632637024
+        },
+        {
+          "coverage": 0.6302521008403361,
+          "accuracy": 0.7066666666666667,
+          "score_threshold": 0.5808276534080505
+        },
+        {
+          "coverage": 0.6722689075630253,
+          "accuracy": 0.7125,
+          "score_threshold": 0.5636181831359863
+        },
+        {
+          "coverage": 0.7142857142857143,
+          "accuracy": 0.6823529411764706,
+          "score_threshold": 0.553987979888916
+        },
+        {
+          "coverage": 0.7563025210084033,
+          "accuracy": 0.6666666666666666,
+          "score_threshold": 0.5467380881309509
+        },
+        {
+          "coverage": 0.7983193277310925,
+          "accuracy": 0.6631578947368421,
+          "score_threshold": 0.5282900333404541
+        },
+        {
+          "coverage": 0.8403361344537815,
+          "accuracy": 0.65,
+          "score_threshold": 0.5156199336051941
+        },
+        {
+          "coverage": 0.8823529411764706,
+          "accuracy": 0.6285714285714286,
+          "score_threshold": 0.4865328073501587
+        },
+        {
+          "coverage": 0.9243697478991597,
+          "accuracy": 0.6,
+          "score_threshold": 0.47752803564071655
+        },
+        {
+          "coverage": 0.9663865546218487,
+          "accuracy": 0.5739130434782609,
+          "score_threshold": 0.4693633019924164
+        },
+        {
+          "coverage": 1.0,
+          "accuracy": 0.5546218487394958,
+          "score_threshold": 0.3761357367038727
+        }
+      ]
+    },
+    "ZS-Context": {
+      "mean_top_score_agreeing": 0.7017846582005325,
+      "mean_top_score_disagreeing": 0.5179760921746492,
+      "mean_margin": 0.4325115460307658,
+      "accuracy_coverage_curve": [
+        {
+          "coverage": 0.04201680672268908,
+          "accuracy": 1.0,
+          "score_threshold": 1.0
+        },
+        {
+          "coverage": 0.08403361344537816,
+          "accuracy": 1.0,
+          "score_threshold": 1.0
+        },
+        {
+          "coverage": 0.12605042016806722,
+          "accuracy": 1.0,
+          "score_threshold": 1.0
+        },
+        {
+          "coverage": 0.16806722689075632,
+          "accuracy": 1.0,
+          "score_threshold": 1.0
+        },
+        {
+          "coverage": 0.21008403361344538,
+          "accuracy": 1.0,
+          "score_threshold": 1.0
+        },
+        {
+          "coverage": 0.25210084033613445,
+          "accuracy": 1.0,
+          "score_threshold": 1.0
+        },
+        {
+          "coverage": 0.29411764705882354,
+          "accuracy": 1.0,
+          "score_threshold": 0.7908535599708557
+        },
+        {
+          "coverage": 0.33613445378151263,
+          "accuracy": 1.0,
+          "score_threshold": 0.6867903470993042
+        },
+        {
+          "coverage": 0.37815126050420167,
+          "accuracy": 1.0,
+          "score_threshold": 0.6621413230895996
+        },
+        {
+          "coverage": 0.42016806722689076,
+          "accuracy": 1.0,
+          "score_threshold": 0.650245189666748
+        },
+        {
+          "coverage": 0.46218487394957986,
+          "accuracy": 0.9818181818181818,
+          "score_threshold": 0.6325027346611023
+        },
+        {
+          "coverage": 0.5042016806722689,
+          "accuracy": 0.9833333333333333,
+          "score_threshold": 0.6141626238822937
+        },
+        {
+          "coverage": 0.5462184873949579,
+          "accuracy": 0.9846153846153847,
+          "score_threshold": 0.6071974039077759
+        },
+        {
+          "coverage": 0.5882352941176471,
+          "accuracy": 0.9857142857142858,
+          "score_threshold": 0.6004226803779602
+        },
+        {
+          "coverage": 0.6302521008403361,
+          "accuracy": 0.9733333333333334,
+          "score_threshold": 0.5879431366920471
+        },
+        {
+          "coverage": 0.6722689075630253,
+          "accuracy": 0.9625,
+          "score_threshold": 0.5616957545280457
+        },
+        {
+          "coverage": 0.7142857142857143,
+          "accuracy": 0.9294117647058824,
+          "score_threshold": 0.5491571426391602
+        },
+        {
+          "coverage": 0.7563025210084033,
+          "accuracy": 0.9,
+          "score_threshold": 0.523248016834259
+        },
+        {
+          "coverage": 0.7983193277310925,
+          "accuracy": 0.8736842105263158,
+          "score_threshold": 0.5087881684303284
+        },
+        {
+          "coverage": 0.8403361344537815,
+          "accuracy": 0.87,
+          "score_threshold": 0.42228251695632935
+        },
+        {
+          "coverage": 0.8823529411764706,
+          "accuracy": 0.8571428571428571,
+          "score_threshold": 0.3887421786785126
+        },
+        {
+          "coverage": 0.9243697478991597,
+          "accuracy": 0.8545454545454545,
+          "score_threshold": 0.365114688873291
+        },
+        {
+          "coverage": 0.9663865546218487,
+          "accuracy": 0.8608695652173913,
+          "score_threshold": 0.3343740701675415
+        },
+        {
+          "coverage": 1.0,
+          "accuracy": 0.865546218487395,
+          "score_threshold": 0.3146016001701355
+        }
+      ]
+    }
+  },
+  "unresolved_analysis": {
+    "ZS-Global": {
+      "n_instances": 583,
+      "n_unique": 261,
+      "buckets": {
+        "AMBIGUOUS": 298,
+        "LOW_CONFIDENCE": 257,
+        "HIGH_CONFIDENCE_PROPOSAL": 28
+      },
+      "note": "No reference label exists for these; buckets describe confidence, not correctness."
+    },
+    "ZS-Typed": {
+      "n_instances": 583,
+      "n_unique": 261,
+      "buckets": {
+        "AMBIGUOUS": 313,
+        "LOW_CONFIDENCE": 198,
+        "HIGH_CONFIDENCE_PROPOSAL": 72
+      },
+      "note": "No reference label exists for these; buckets describe confidence, not correctness."
+    },
+    "ZS-Context": {
+      "n_instances": 583,
+      "n_unique": 261,
+      "buckets": {
+        "AMBIGUOUS": 311,
+        "LOW_CONFIDENCE": 220,
+        "HIGH_CONFIDENCE_PROPOSAL": 52
+      },
+      "note": "No reference label exists for these; buckets describe confidence, not correctness."
+    }
+  },
+  "cross_phrasing_consistency": {
+    "COMPATIBLE_WITH": {
+      "ZS-Global": {
+        "unique_phrasings": 31,
+        "modal_prediction": "REACHES_TARGET",
+        "agreement_rate": 0.5806451612903226
+      },
+      "ZS-Typed": {
+        "unique_phrasings": 31,
+        "modal_prediction": "COMPATIBLE_WITH",
+        "agreement_rate": 1.0
+      },
+      "ZS-Context": {
+        "unique_phrasings": 31,
+        "modal_prediction": "COMPATIBLE_WITH",
+        "agreement_rate": 1.0
+      }
+    },
+    "COMPATIBLE_WITH_TARGET": {
+      "ZS-Global": {
+        "unique_phrasings": 22,
+        "modal_prediction": "REACHES_TARGET",
+        "agreement_rate": 0.5
+      },
+      "ZS-Typed": {
+        "unique_phrasings": 22,
+        "modal_prediction": "REACHES_TARGET",
+        "agreement_rate": 0.9090909090909091
+      },
+      "ZS-Context": {
+        "unique_phrasings": 22,
+        "modal_prediction": "COMPATIBLE_WITH_TARGET",
+        "agreement_rate": 0.8181818181818182
+      }
+    },
+    "FITS_ON": {
+      "ZS-Global": {
+        "unique_phrasings": 7,
+        "modal_prediction": "ACCESSIBLE_FROM_BOTH_SEATS",
+        "agreement_rate": 1.0
+      },
+      "ZS-Typed": {
+        "unique_phrasings": 7,
+        "modal_prediction": "ACCESSIBLE_FROM_BOTH_SEATS",
+        "agreement_rate": 1.0
+      },
+      "ZS-Context": {
+        "unique_phrasings": 7,
+        "modal_prediction": "ACCESSIBLE_FROM_BOTH_SEATS",
+        "agreement_rate": 0.8571428571428571
+      }
+    },
+    "FITS_SET_ON": {
+      "ZS-Global": {
+        "unique_phrasings": 17,
+        "modal_prediction": "ACCESSIBLE_FROM_BOTH_SEATS",
+        "agreement_rate": 0.9411764705882353
+      },
+      "ZS-Typed": {
+        "unique_phrasings": 17,
+        "modal_prediction": "ACCESSIBLE_FROM_BOTH_SEATS",
+        "agreement_rate": 0.8823529411764706
+      },
+      "ZS-Context": {
+        "unique_phrasings": 17,
+        "modal_prediction": "FITS_SET_ON",
+        "agreement_rate": 1.0
+      }
+    },
+    "INSERTABLE_IN": {
+      "ZS-Global": {
+        "unique_phrasings": 26,
+        "modal_prediction": "INSERTABLE_IN",
+        "agreement_rate": 0.8846153846153846
+      },
+      "ZS-Typed": {
+        "unique_phrasings": 26,
+        "modal_prediction": "INSERTABLE_IN",
+        "agreement_rate": 0.8846153846153846
+      },
+      "ZS-Context": {
+        "unique_phrasings": 26,
+        "modal_prediction": "INSERTABLE_IN",
+        "agreement_rate": 1.0
+      }
+    },
+    "NEAR_SEAT": {
+      "ZS-Global": {
+        "unique_phrasings": 3,
+        "modal_prediction": "ACCESSIBLE_FROM_BOTH_SEATS",
+        "agreement_rate": 0.6666666666666666
+      },
+      "ZS-Typed": {
+        "unique_phrasings": 3,
+        "modal_prediction": "ACCESSIBLE_FROM_BOTH_SEATS",
+        "agreement_rate": 0.6666666666666666
+      },
+      "ZS-Context": {
+        "unique_phrasings": 3,
+        "modal_prediction": "ACCESSIBLE_FROM_BOTH_SEATS",
+        "agreement_rate": 0.6666666666666666
+      }
+    },
+    "REACHES_TARGET": {
+      "ZS-Global": {
+        "unique_phrasings": 3,
+        "modal_prediction": "REACHES_TARGET",
+        "agreement_rate": 1.0
+      },
+      "ZS-Typed": {
+        "unique_phrasings": 3,
+        "modal_prediction": "REACHES_TARGET",
+        "agreement_rate": 1.0
+      },
+      "ZS-Context": {
+        "unique_phrasings": 3,
+        "modal_prediction": "COMPATIBLE_WITH_TARGET",
+        "agreement_rate": 1.0
+      }
+    }
+  }
+}
