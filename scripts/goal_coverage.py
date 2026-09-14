@@ -124,10 +124,24 @@ def workshop(episode: Path, facts: set[tuple]) -> tuple[int, int]:
 
 
 def _workbench_id(episode: Path) -> str | None:
-    payload = _read(episode / "latest_observation.json")
+    """Resolve the workbench region, from the evaluator's labelled observation.
+
+    This read the episode's public `latest_observation.json`, which publishes
+    `regions` with anonymous ids and no labels -- the method is not told which
+    region is the workbench.  Asking it for `known_regions` therefore returned
+    nothing in every episode, and `driver_returned_to_workbench` was
+    unsatisfiable by construction: all three methods scored 0% on it while
+    plans placed at `region_0004` 122 times, which is the workbench.
+
+    The labelled view is the evaluator's, under `_private_evaluation/`, which is
+    the right place for it: scoring may use ground truth, the planner may not.
+    """
+    payload = _read(episode / "_private_evaluation/latest_observation.json")
+    if not payload:
+        payload = _read(episode / "latest_observation.json")
     if not payload:
         return None
-    for row in payload.get("known_regions", []):
+    for row in payload.get("known_regions") or payload.get("regions") or []:
         if str(row.get("label", "")).strip().lower() == "main workbench":
             return row.get("id")
     return None

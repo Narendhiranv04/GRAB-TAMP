@@ -862,6 +862,23 @@ of named conditions:
 | Living Room | **5** | personal setting x2: `cup_placed`, `saucer_placed`; shared: `remote_placed` |
 | Workshop | **3** | `fastener_inserted`, `joint_repaired`, `driver_returned_to_workbench` |
 
+**Workshop's first two conditions are checked by predicate, not by argument.**
+`fastener_inserted` and `joint_repaired` are satisfied by the presence of an
+`inserted` or `fastened` fact, whatever it references; a plan that fastens the
+wrong parts scores the same as a correct one. Kitchen does not have this
+weakness -- its `goal_contract.json` states the required effects in the same
+anonymised vocabulary the plans use, so the match is exact -- and neither does
+Living Room, which resolves roles through `adapter_resolution.json`. Workshop's
+ground truth is written in MuJoCo backend names (`workshop_power_driver`) while
+plans are in anonymised ids (`object_0004`), and no alias map is published on
+the evaluator side, so the arguments cannot be compared.
+
+Left as-is deliberately: a plan naming incompatible parts is rejected by the
+physical skill, so execution catches what coverage does not, and closing it
+means changing the Workshop runner to publish the alias map and re-running the
+scene. **Workshop coverage is therefore a weaker measurement than Kitchen's or
+Living Room's and should not be presented as equivalent.**
+
 **The denominator is the goal, not the work left to do.** A condition already
 satisfied in the initial state counts as satisfied. This is defined once, in
 `scripts/goal_coverage.py`, and both the plan-scored and execution-scored

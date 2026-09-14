@@ -33,9 +33,9 @@ declare -A TARGET=( [kitchen]=120 [workshop]=100 [living_room]=100 )
 # Living Room; concurrency sagged and the margin went from +2.3 h to -0.2 h.
 # Kitchen runs alone because its episodes are the most expensive in the grid;
 # Living Room and Workshop then share the machine.
-PHASE1="kitchen:robust_tamp:8 kitchen:vlm_tamp:5 kitchen:owl_tamp:2 kitchen:vilain_tamp:2"
-PHASE2="living_room:vlm_tamp:4 living_room:owl_tamp:3 living_room:vilain_tamp:3 living_room:robust_tamp:3
-        workshop:vlm_tamp:7 workshop:robust_tamp:6 workshop:vilain_tamp:4 workshop:owl_tamp:3"
+PHASE1="kitchen:robust_tamp:8 kitchen:vlm_tamp:5 kitchen:owl_tamp:2"
+PHASE2="living_room:vlm_tamp:4 living_room:owl_tamp:3 living_room:robust_tamp:3
+        workshop:vlm_tamp:7 workshop:robust_tamp:6 workshop:owl_tamp:3"
 
 count() { find "$ROOT/runs/$1/execution/final_20260913/$2" \
     -path '*/seed_[0-9][0-9][0-9]/benchmark_execution_result.json' 2>/dev/null | wc -l; }

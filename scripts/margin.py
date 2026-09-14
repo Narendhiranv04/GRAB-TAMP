@@ -53,10 +53,16 @@ def remaining_tokens(skip=()):
             f"runs/{scene}/execution/final_20260913/*/*/images_3/"
             "seed_[0-9][0-9][0-9]/benchmark_execution_result.json"
         ):
-            done[(scene, json.load(open(path)).get("method"))] += 1
+            method = json.load(open(path)).get("method")
+            # ViLaIn-TAMP is not part of the reported grid; counting it made
+            # the status line read 1209/960.
+            if method == "vilain_tamp":
+                continue
+            done[(scene, method)] += 1
     total = 0
     for scene in ("kitchen", "living_room", "workshop"):
-        for method in ("vlm_tamp", "owl_tamp", "robust_tamp", "vilain_tamp"):
+        # ViLaIn-TAMP was dropped from the reported grid on 2026-09-14.
+        for method in ("vlm_tamp", "owl_tamp", "robust_tamp"):
             if (scene, method) in skip:
                 continue
             new = f"runs/{scene}/execution/final_20260913/{method}/*/images_3/seed_[0-9][0-9][0-9]"
@@ -77,14 +83,12 @@ def main():
         print("MARGIN: endpoint unreachable, cannot measure")
         return 0
     total, done = remaining_tokens()
-    cut, _ = remaining_tokens(skip={("workshop", "vilain_tamp")})
     now = datetime.datetime.now()
     need = total / rate / 3600
     slack = (DEADLINE - now).total_seconds() / 3600 - need
     finish = (now + datetime.timedelta(hours=need)).strftime("%a %H:%M")
-    print(f"MARGIN {slack:+.1f} h | episodes {done}/1280 | {total/1e6:.1f} Mtok "
-          f"at {rate:.0f} tok/s | finish {finish} | "
-          f"cutting workshop ViLaIn would save {(total-cut)/rate/3600:.1f} h")
+    print(f"MARGIN {slack:+.1f} h | episodes {done}/960 | {total/1e6:.1f} Mtok "
+          f"at {rate:.0f} tok/s | finish {finish}")
     return slack
 
 
