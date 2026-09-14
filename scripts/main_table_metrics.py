@@ -34,7 +34,7 @@ def _inspections(directory: Path) -> int:
 def collect(roots):
     cell = defaultdict(lambda: {
         "fN": 0, "iN": 0, "cov_h": 0, "cov_r": 0, "succ": 0,
-        "commit_h": 0, "commit_r": 0,
+        "commit_h": 0, "commit_r": 0, "recognised": 0, "no_answer": 0,
         "f_req": [], "f_rep": [], "f_time": [], "f_insp": [],
         "i_req": [], "i_rep": [], "i_time": [], "i_insp": [],
     })
@@ -61,8 +61,24 @@ def collect(roots):
             c["iN"] += 1
             facts = planned(d, row.get("method")) or set()
             asserted = {f for f in facts if f and f[0] in GOAL_SHAPED}
-            c["commit_h"] += min(len(asserted), RELATIONS[scene])
-            c["commit_r"] += RELATIONS[scene]
+            # Eq. 13 is trial-level: c_i in {0,1}, averaged over N_I.  This
+            # counted the *fraction of the scene's goal relations* a plan
+            # asserted, which is a different quantity and read very
+            # differently: Kitchen VLM-TAMP scored 55.7% that way against
+            # 100.0% under the equation, because its plans assert 4 to 12 of
+            # the 12 relations and every one of the 60 trials produced a plan.
+            c["commit_h"] += bool(asserted)
+            c["commit_r"] += 1
+            # Kept separately because `Reject = 100 - Commit` otherwise credits
+            # a method for failing: 25% of Kitchen ROBUST-TAMP's infeasible
+            # trials produce no plan because they hit the token ceiling or the
+            # replan budget, not because they recognised the task as
+            # impossible.  Only Workshop OWL-TAMP genuinely rejects (80%).
+            if not asserted:
+                if row.get("predicted_outcome") == "INFEASIBLE":
+                    c["recognised"] += 1
+                else:
+                    c["no_answer"] += 1
     return cell
 
 
