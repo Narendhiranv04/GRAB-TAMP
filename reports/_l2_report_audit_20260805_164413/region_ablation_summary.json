@@ -1,0 +1,44 @@
+{
+  "modes": {
+    "geometry_only": {
+      "completion_stage": 0,
+      "production_authoritative": false,
+      "selected_inspection_label": "RUG_PATCH",
+      "selected_region_id": "region_0001",
+      "status": "COMPLETE"
+    },
+    "joint": {
+      "completion_stage": 2,
+      "production_authoritative": true,
+      "selected_inspection_label": "COFFEE_TABLE",
+      "selected_region_id": "region_0003",
+      "status": "COMPLETE"
+    },
+    "semantic_only": {
+      "completion_stage": 1,
+      "production_authoritative": false,
+      "selected_inspection_label": "SMALL_SIDE_TABLE",
+      "selected_region_id": "region_0002",
+      "status": "COMPLETE"
+    }
+  },
+  "production_status": "COMPLETE",
+  "rerendered_for_diagnostics": false,
+  "same_evidence_manifest": [
+    {
+      "path": "stages/000_initial_RUG_PATCH/region_evidence/fused.ply",
+      "sha256": "554ac69b6c12af926600708a97c5f1370ecdce989fb11377c0a1034fb8f5eb8f"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/region_evidence/fused.ply",
+      "sha256": "1ab9cc43e1bcb6975adaca574d808c8eae9e6c3f4d2f036b950b1206f5b46cb5"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/region_evidence/fused.ply",
+      "sha256": "866fda8b41896318727d46433037352a7014fc71f21040ea7e51e5484d485634"
+    }
+  ],
+  "scene_name": "L2_living_room_region_ablation1_primary",
+  "schema_version": 1,
+  "task_id": "l2_place_refreshment_tray_region_grounding"
+}

@@ -1,0 +1,344 @@
+{
+  "modes": {
+    "geometry_only": {
+      "completion_stage": 0,
+      "production_authoritative": false,
+      "selected_inspection_label": "RUG_PATCH",
+      "selected_region_id": "region_0001",
+      "status": "COMPLETE"
+    },
+    "joint": {
+      "completion_stage": 2,
+      "production_authoritative": true,
+      "selected_inspection_label": "COFFEE_TABLE",
+      "selected_region_id": "region_0003",
+      "status": "COMPLETE"
+    },
+    "semantic_only": {
+      "completion_stage": 1,
+      "production_authoritative": false,
+      "selected_inspection_label": "SMALL_SIDE_TABLE",
+      "selected_region_id": "region_0002",
+      "status": "COMPLETE"
+    }
+  },
+  "production_status": "COMPLETE",
+  "rerendered_for_diagnostics": false,
+  "same_evidence_manifest": [
+    {
+      "path": "stages/000_initial_RUG_PATCH/cameras/inspection_close/depth.png",
+      "sha256": "a1f2429d3e2022655d7fe25356dc8923fc1a73c74ce6ce11e91c6843dc4215ed"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/cameras/inspection_close/evidence_masks.png",
+      "sha256": "349366688e455fca62aaeb9ea4d4b4b474973f9342c4c6413d8fdc1057e4bb52"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/cameras/inspection_close/rgb.png",
+      "sha256": "bb5ad29d43178b88902b6a2804fbdda48426a38ae3993a0cf1b95a8ce70ee96e"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/cameras/inspection_close/segmentation.png",
+      "sha256": "ecb7f0b7d64e60916d0fc094bc46d875e93dc6e9939854179d08b5bc780cfded"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/cameras/inspection_front/depth.png",
+      "sha256": "a0d045d05d8fd4a31b8a64a909cc040e12ba85e1e396cddedfe6df99305cc7b3"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/cameras/inspection_front/evidence_masks.png",
+      "sha256": "59f637ecdfc39fdcc20f2c0682a5d444d8daa8f4b6dd5a600172c9093d616ced"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/cameras/inspection_front/rgb.png",
+      "sha256": "aaab4ce0503e2e422584253fff6162d7b8cf72d6dd0ef14121e1369178612dde"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/cameras/inspection_front/segmentation.png",
+      "sha256": "012c6260085e3c36eea340fe78732ec95bde8055f2ae9b4253f2a5ad9b1ba21f"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/cameras/inspection_left/depth.png",
+      "sha256": "fd148db07ea3a0e4ee716f3574fe17e6ad522488e959faf57e3ad3183d8a313c"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/cameras/inspection_left/evidence_masks.png",
+      "sha256": "edd1b0604ca7fe9836f82b00bab8d9fbfd2b14988aaaeebf7f0bf8b723940a40"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/cameras/inspection_left/rgb.png",
+      "sha256": "2f3d1f9e0ec8d6e03ad72a692a8952da313a086a6af240cccf3ee90b861a3bdf"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/cameras/inspection_left/segmentation.png",
+      "sha256": "d72d47fcd5ab4a1e6db7218b6ec772c664c86e1b2461d4239462e2826c1ccdb8"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/cameras/inspection_right/depth.png",
+      "sha256": "b928c73e14d5617503999736589da543e6b1ef657882f2a535dabeaf8bae7828"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/cameras/inspection_right/evidence_masks.png",
+      "sha256": "7e3cfb9ea39bf0ce338619535d71b9b6aeda4a5c0de995b11c38eeb0fa51423c"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/cameras/inspection_right/rgb.png",
+      "sha256": "e92e24511e1854de88798bb6f6e9427934e9ae4bc9353b877b169cfe7afa77b7"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/cameras/inspection_right/segmentation.png",
+      "sha256": "00f1848ff42da95f3780b09b658017e2a1f7ce3e4c60a4737ae1de893c6cd62c"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/cameras/inspection_top/depth.png",
+      "sha256": "00178aa1e4a401455ee74c1470d66330fc1e110c46cfa4db1c7302965b81b15d"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/cameras/inspection_top/evidence_masks.png",
+      "sha256": "fa1fd881589f02549982f51132d680b140491d209c5020fc5daec41376c611d5"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/cameras/inspection_top/rgb.png",
+      "sha256": "58d7f0e1af32bef60fc914eecefead5cf41142adeb72afde37b19858c1445661"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/cameras/inspection_top/segmentation.png",
+      "sha256": "d572a25cffd21b077b61773c4a68f74f122924d8ee1651a6b06bd456dff4d148"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/payload_evidence/fused.ply",
+      "sha256": "c33db5fe3d9af3a038eea43823d07ee3a20bdf73fec840dd1cdeea352fed6292"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/region_evidence/fused.ply",
+      "sha256": "3e9367592bee9b386dda21dad696968e8887277ab786d69231537d9d06ff8523"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/seating_context/observed_points.ply",
+      "sha256": "c0b40717e74a3b8d705ee484a76ccfda36cd37bf9c364cfc8af6668435891ea4"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/semantics/associations.json",
+      "sha256": "99fb34717e0cc1bcfd86b0ebf86bde35c162cf2eb6932e0d244eeb6110321c08"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/semantics/detections.json",
+      "sha256": "f9ad393a37aa198eca352be912a0eed98ef5a751c0420bccc2ecc98677af2e56"
+    },
+    {
+      "path": "stages/000_initial_RUG_PATCH/semantics/fused_semantics.json",
+      "sha256": "1c81c6533c7288f2d91a95e595e9b286493da5c662897d81c50324b67368694d"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/cameras/inspection_close/depth.png",
+      "sha256": "7b655cde4c59fd76623992dcec13619fdc855276962059af10721605bd33db7a"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/cameras/inspection_close/evidence_masks.png",
+      "sha256": "1161adb34bcc47ca2e5c1fd801595e36090c82dd288689af6d0ea238159e1b37"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/cameras/inspection_close/rgb.png",
+      "sha256": "a5abd2fd9e219ce5244e7f64a5cd2a1f73bfeafbeed86c7f0072de0a0cc70451"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/cameras/inspection_close/segmentation.png",
+      "sha256": "4e282536b8a51466021d695446ca0e134090a42aa2857e893b3be8b704077d98"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/cameras/inspection_front/depth.png",
+      "sha256": "79bc117e168c9a37295f89f4e6ccd270a19fd8ad71c0a7104755f9f592a32685"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/cameras/inspection_front/evidence_masks.png",
+      "sha256": "97ff65126fc639c8bcd6bcca550c56f3fdd8dc3edcf811752b37a1cdc2ea4193"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/cameras/inspection_front/rgb.png",
+      "sha256": "abfd2fef3439928dbb9370d24874765aae82e59dcaab7d7d7f51d5c12af9fc10"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/cameras/inspection_front/segmentation.png",
+      "sha256": "9ec0d36c942e9661879a551f329779b65aa32325e1977b8cc905425f5a526adb"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/cameras/inspection_left/depth.png",
+      "sha256": "59f4ecc40c8a323c0c67ebfed267159052528b1c1180525cab001f98631dab67"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/cameras/inspection_left/evidence_masks.png",
+      "sha256": "a1d3dc3cf6b8c5657de3f8ca76ba3cda447a95f30f106b76904ef13f010c9054"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/cameras/inspection_left/rgb.png",
+      "sha256": "d1a5fac96494be41c8f23e205ba650fbf6e1964baa3fd5cc529e038dc9e35025"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/cameras/inspection_left/segmentation.png",
+      "sha256": "974308dcb803e2e8f08077ce8e387d8dc6b0efa416f221876492be6e320a5760"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/cameras/inspection_right/depth.png",
+      "sha256": "e04ab14928b91c6bba82e78d137afec7b123310652d5b7a91e82de1256441834"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/cameras/inspection_right/evidence_masks.png",
+      "sha256": "f4cb80db0e7dde4fcb52bd9fccb9c245533ff4fa0f6300ae2be9ad46aa215763"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/cameras/inspection_right/rgb.png",
+      "sha256": "b9a37a37d95ca7d78dcd9aa7591b1bedcf850a8c7e512c66725f6a3577893e7d"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/cameras/inspection_right/segmentation.png",
+      "sha256": "75ed0abcee988aaa4f003447b7fe7a13fff70553cab65d252b0ddfd7b4f9c0ed"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/cameras/inspection_top/depth.png",
+      "sha256": "34bd0de14afef6883adb511df63cb75cfca7c1743ac30cab733616a0dbc24d91"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/cameras/inspection_top/evidence_masks.png",
+      "sha256": "b41299384c9be31a9ca55d11bd4793039017ac1da2aedfe4ead4cddff14f897d"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/cameras/inspection_top/rgb.png",
+      "sha256": "e968e9daf4eaa0150da85ce8caa2cd6ca34c4da0fc382672339cb4885a5b2398"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/cameras/inspection_top/segmentation.png",
+      "sha256": "59835262f4f8d46bf0b04740be925279e7373719ef2ed8beac783d9394b1346c"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/payload_evidence/fused.ply",
+      "sha256": "e669b427f97f261e2370f6be9c3a9f743efaadcee0682cba8c45c11690ab6e1a"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/region_evidence/fused.ply",
+      "sha256": "92db5ea1f598ae874a9013e976a4ea891ecb13fd21a20217447e343547609019"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/seating_context/observed_points.ply",
+      "sha256": "3729b473865249b836fc9ae7a50b3aeec7d6b6b62a438be0c804f2142b8b6adf"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/semantics/associations.json",
+      "sha256": "87109d9d33925be2d5c4d260bb8c1718bb25f0b73de608c231a526d6cf29dc1b"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/semantics/detections.json",
+      "sha256": "f305edb9de7a2f6e06738564555401298ff30ba390d13f77475f6dc9dde6a11f"
+    },
+    {
+      "path": "stages/001_after_SMALL_SIDE_TABLE/semantics/fused_semantics.json",
+      "sha256": "283b916f28d375b1e15e9ce2f8300c213ed94d21e8c03c5edd79224126e8e9e9"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/cameras/inspection_close/depth.png",
+      "sha256": "9b10367e0c6169d902028d91b2b2877f2d43ed8886d30758545213b6dfe89612"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/cameras/inspection_close/evidence_masks.png",
+      "sha256": "2d4985985aa43d0d31d188c2cfe7fbfe425880515781f8e306d43c181e62a4b1"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/cameras/inspection_close/rgb.png",
+      "sha256": "55af53039faa2625762a4c11102dff703b97b4f8da2057b27a9023a9179dc3fa"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/cameras/inspection_close/segmentation.png",
+      "sha256": "dc94c40a93b25285babb5c86bb7b942254cc9d95a5888d55d742be8ef62f0a15"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/cameras/inspection_front/depth.png",
+      "sha256": "98b16417f273e8b6b3d47da2bfd40c49d2ead62feea485b08319019e69a549af"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/cameras/inspection_front/evidence_masks.png",
+      "sha256": "a21a9303bd182c252d3a9e8e05cd9c66995446146f332acbfaa83fd31874a37c"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/cameras/inspection_front/rgb.png",
+      "sha256": "61509427614ffef599158660820bd42d22ffbfa59539218cfcea818c86c26311"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/cameras/inspection_front/segmentation.png",
+      "sha256": "3b665b0cc34483fb3dbf09f7b3454e4f830e51693688b7952b882223a33df467"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/cameras/inspection_left/depth.png",
+      "sha256": "73a4cd2c02112caf228ae8be58959986ca8c1ee29a47e05f43a33a840d479b66"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/cameras/inspection_left/evidence_masks.png",
+      "sha256": "747699133c8e909d39b4189529de8922a50ed5a81b88cb0ed18c73f5e8f0d38c"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/cameras/inspection_left/rgb.png",
+      "sha256": "511ddc4dc7d66b29ed08949e30d8b4917e73f4c742355f829dab4535383df70d"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/cameras/inspection_left/segmentation.png",
+      "sha256": "c634c7fc6d035fe6f19820be9eb884dce96e296b62da9bb3ce69a9d9a150989b"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/cameras/inspection_right/depth.png",
+      "sha256": "b46f6ab317298ce14a9f2cf211c3b36fe5951901e2c0d1080885898c04fa6daa"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/cameras/inspection_right/evidence_masks.png",
+      "sha256": "6e32067cc9b698f0b91dd47ee751b6591e48c4c42d7bc40aeecdd2215e571083"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/cameras/inspection_right/rgb.png",
+      "sha256": "bfccbbd3d17e0b016590479c4ab44e3eb6179f104f4061779ef857e8e75166f0"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/cameras/inspection_right/segmentation.png",
+      "sha256": "61008096c9f576b8d74053a852e7b988b4b1ecd8536553666c75889f4e903eb5"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/cameras/inspection_top/depth.png",
+      "sha256": "2cdc340740a4a8040307c406fab69a07dcd35029e3fb041de16e2d06fde16d99"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/cameras/inspection_top/evidence_masks.png",
+      "sha256": "f6e302c7edcf5032e9436cf0882f1e41385e327465c12e8d901c67eaa07e009c"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/cameras/inspection_top/rgb.png",
+      "sha256": "6787bf2b640ab0d3c97c3dd2dccd73495e64e73f13ee95f1960755c92ea5d96f"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/cameras/inspection_top/segmentation.png",
+      "sha256": "845d9a7af161492d56d6df937479810428e82025b84b29d37f4b12ffb24c6b1b"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/payload_evidence/fused.ply",
+      "sha256": "676612402d53d4e1d6b4f676f9f27aa595226c079016f75e47a36db39acba739"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/region_evidence/fused.ply",
+      "sha256": "9d94ee1deecb7f97245ec32c6de83a653fbdc951db0f4574248e9f2e3582b4ae"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/seating_context/observed_points.ply",
+      "sha256": "d473ee9e01963869fe91df800af242d0c507f443a3a7c087d4907a4b3cb2bc94"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/semantics/associations.json",
+      "sha256": "7706fc3356a64ab8ffd34c86da0b41239622b63ee0d86c32f3f09e752f30fd1a"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/semantics/detections.json",
+      "sha256": "103eb877d10527882551a9ca0efcb4724ee05be3754eb512a3568403fda93b6a"
+    },
+    {
+      "path": "stages/002_after_COFFEE_TABLE/semantics/fused_semantics.json",
+      "sha256": "48b320caf0817ccb8739392e65508ffeb82dea88d5547004a3b8d4619afb07a8"
+    }
+  ],
+  "scene_name": "L2_living_room_region_ablation1_primary",
+  "schema_version": 1,
+  "task_id": "l2_place_refreshment_tray_region_grounding"
+}
