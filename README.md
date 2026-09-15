@@ -146,8 +146,13 @@ parentheses. Kitchen and Living Room use 13 G_O nodes per trial, Workshop 6.
 | | **+ Binary** | 200 | **1192 (58.4)** | 138 (6.8) | **710 (34.8)** |
 
 **Table IV, inspection-order ablation** — FM-derived ranking π_R against a fixed
-inspection order, rest of the pipeline unchanged. Total time is region-opening
-cost plus grounding time.
+inspection order, rest of the pipeline unchanged. The fixed order is a
+per-variant sequence that does not use the FM ranking and visits regions in
+ascending order of how much they hold, so regions holding nothing are opened
+first (`mujoco_scenes/fm_worst_case_order.py`). It is a reference order, not
+something the method can produce: deriving it needs the region contents, which
+the pipeline is never given. Total time is region-opening cost plus grounding
+time.
 
 | Scene | Order | Regions inspected | Candidate checks | Total time (s) |
 |---|---|---:|---:|---:|
@@ -162,11 +167,19 @@ Living Room is unchanged because it declares no inspectable regions — all
 task-relevant entities are initially visible — which also makes it a control
 for timing drift.
 
-A third arm is included: a **seeded random** inspection order, paired per trial
-against the FM ranking. It is a null result (Kitchen 3.88 vs 3.91, p = 0.670;
-Workshop 2.28 vs 2.32, p = 0.492), and all 309 paired trials reach the same
-terminal status under every order. Regenerate it with
+A third arm ships alongside: a **seeded random** order, reseeded per trial from
+a hash of `(seed_base, output_root, domain, variant)` so it is unpredictable
+across trials and reproducible within one. Paired against the FM ranking it
+gives Kitchen 3.88 against 3.91 (p = 0.670) and Workshop 2.28 against 2.32
+(p = 0.492) — on this benchmark a random order costs about what the FM ranking
+costs, because the searches are close to exhaustive (Kitchen inspects 3.91 of 5
+regions, Workshop 2.32 of 3) and ordering can only pay for search it avoids.
+Run any arm with `scripts/run_search_order_replay_timing.py --order-mode
+{auto,random,worst}` and score it with
 `scripts/score_inspection_order_ablation.py`.
+
+Across all three orders, **309 of 309 paired trials reach the same terminal
+status** — ordering changes what the search costs, never what it concludes.
 
 ## Reproducing each result
 
