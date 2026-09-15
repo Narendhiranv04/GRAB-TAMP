@@ -49,5 +49,12 @@ yolov8x-worldv2.pt
 # Local debug captures
 mujoco_scenes/captures/
 
-# Per-run benchmark images and generated evaluation artifacts (kept locally).
+# Per-run benchmark images and generated evaluation artifacts.
+#
+# This rule ignores NEW run directories by default, because a full arm is
+# ~5.6 GB and is almost all rendered views, point clouds and per-stage
+# perception dumps. It does not un-track what is already committed: the
+# measurement record for the frozen 320 and for every ablation arm is
+# tracked deliberately with `git add -f`. See benchmark_reports/README.md
+# for which files that is and why.
 benchmark_reports/
