@@ -4,6 +4,12 @@ Pillow==11.3.0
 PyYAML==6.0.2
 ultralytics==8.4.112
 trimesh==4.12.2
+# Used by the workshop perception and tracking code. ultralytics pulls opencv
+# transitively and older versions pulled scipy too, so both went undeclared
+# until a clean install failed with "No module named 'scipy'" on the first
+# workshop trial -- the kitchen and living-room paths never touch either.
+scipy==1.16.3
+opencv-python==5.0.0.93
 clip @ https://github.com/ultralytics/CLIP/archive/c4b6ea0932a2c0f39a0fa528af5ec4982ff15cab.zip
 jsonschema==4.26.0
 pytest>=8.0.0

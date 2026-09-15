@@ -29,6 +29,11 @@ def main() -> int:
     ap.add_argument("--variants", default=None)
     ap.add_argument("--baseline", action="store_true",
                     help="Run without the shadow, to pair against on the same commit.")
+    ap.add_argument("--physical", action="store_true",
+                    help="Open containers by driving the robot instead of setting the "
+                         "simulator joint. Workshop only -- kitchen always sets the "
+                         "joint and living room has no containers. Costs about four "
+                         "minutes of simulated actuation per region.")
     args = ap.parse_args()
 
     import evaluate_vlm_functional_tamp as evaluator
@@ -36,7 +41,7 @@ def main() -> int:
     def run():
         evaluator.evaluate_all_variants(
             mode="vlm", spec_source="raw-replay", output_root=args.output_root,
-            specification_root=args.specification_root, dry_run=True,
+            specification_root=args.specification_root, dry_run=not args.physical,
             resume=False, variants=args.variants,
         )
 

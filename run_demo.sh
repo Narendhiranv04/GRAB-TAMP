@@ -8,7 +8,10 @@
 #
 # Replays the archived foundation-model response for that variant, so it needs
 # no GPU and makes no model call; everything after the call runs for real.
-# Add --live to call a served model instead.
+#
+#   --live       call a served model instead of replaying
+#   --physical   open workshop containers by driving the robot rather than
+#                setting the simulator joint (~4 minutes per region)
 set -euo pipefail
 cd "$(dirname "$0")"
 export PYTHONPATH=. TOKENIZERS_PARALLELISM=false
@@ -19,14 +22,18 @@ DOMAIN="kitchen"; VARIANT="K3"
 [ $# -ge 2 ] && case "$2" in -*) ;; *) VARIANT="$2" ;; esac
 
 SPEC=(--specification-root data/reference_run)
-for a in "$@"; do [ "$a" = "--live" ] && SPEC=(); done
+EXTRA=()
+for a in "$@"; do
+  [ "$a" = "--live" ] && SPEC=()
+  [ "$a" = "--physical" ] && EXTRA+=(--physical)
+done
 
 OUT="results/runs/demo_${DOMAIN}_${VARIANT}"
 echo "domain=${DOMAIN} variant=${VARIANT}  ->  ${OUT}"
 echo
 
 python3 scripts/evaluate_vlm_zs_canonicalization.py \
-  "${SPEC[@]}" --variants "$VARIANT" --output-root "$OUT"
+  "${SPEC[@]}" ${EXTRA[@]+"${EXTRA[@]}"} --variants "$VARIANT" --output-root "$OUT"
 
 echo
 python3 - "$OUT" "$DOMAIN" "$VARIANT" <<'PY'
