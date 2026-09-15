@@ -111,11 +111,16 @@ Workshop has alternative tools and a hidden distractor.
 `./run_benchmark.sh` regenerates both tables into `results/tables/paper_tables.md`
 from `data/metrics/`.
 
-**Metrics.** PGC is mean per-trial goal coverage over feasible trials, Eq. (9).
-E2E success is the share of feasible trials satisfying **all** task goals,
-Eq. (10) — not an action-sequence match; the two coincide in Kitchen and Living
-Room but diverge in Workshop (62.5% against 47.5% for the action multiset). CR
-is 100 − Commit over infeasible trials, Eq. (11).
+**Metrics.** Feasible and infeasible variants are scored separately, because
+they measure different behaviours. For trial *i*, G_i is the set of required
+task goals and Ĝ_i the subset the generated plan achieves.
+
+- **Plan Goal Coverage**, Eq. (9): `PGC = (1/N_F) Σ |G_i ∩ Ĝ_i| / |G_i| × 100`
+  — partial credit when a plan achieves only part of the task.
+- **E2E Success**, Eq. (10): `(1/N_F) Σ s_i × 100`, where `s_i ∈ {0,1}` is
+  whether feasible trial *i* satisfies all task goals after execution.
+- **Correct Rejection**, Eq. (11): `CR = (1/N_I) Σ (1 − C_i) × 100 = 100 −
+  Commit` — an infeasible task identified without committing to a plan.
 
 **Table III** — GRAB-TAMP rows (baselines are in the paper):
 
@@ -167,19 +172,13 @@ Living Room is unchanged because it declares no inspectable regions — all
 task-relevant entities are initially visible — which also makes it a control
 for timing drift.
 
-A third arm ships alongside: a **seeded random** order, reseeded per trial from
-a hash of `(seed_base, output_root, domain, variant)` so it is unpredictable
-across trials and reproducible within one. Paired against the FM ranking it
-gives Kitchen 3.88 against 3.91 (p = 0.670) and Workshop 2.28 against 2.32
-(p = 0.492) — on this benchmark a random order costs about what the FM ranking
-costs, because the searches are close to exhaustive (Kitchen inspects 3.91 of 5
-regions, Workshop 2.32 of 3) and ordering can only pay for search it avoids.
-Run any arm with `scripts/run_search_order_replay_timing.py --order-mode
-{auto,random,worst}` and score it with
-`scripts/score_inspection_order_ablation.py`.
-
-Across all three orders, **309 of 309 paired trials reach the same terminal
-status** — ordering changes what the search costs, never what it concludes.
+A **seeded random** order is also implemented, reseeded per trial from a hash
+of `(seed_base, output_root, domain, variant)` so it is unpredictable across
+trials and reproducible within one. Run any arm with
+`scripts/run_search_order_replay_timing.py --order-mode {auto,random,worst}`
+and score it with `scripts/score_inspection_order_ablation.py`, which reports
+paired per-scene means with confidence intervals and a Wilcoxon signed-rank
+test, and checks that the arms agree on every trial's terminal status.
 
 ## Reproducing each result
 

@@ -8,16 +8,15 @@ results/inspection_order_total_time.json.
 
 Table III -- end-to-end comparison, per domain
     N_F         feasible trials
-    PGC         plan goal coverage: mean over feasible trials of
-                (satisfied reference goals / total reference goals)
-    E2E succ.   share of feasible trials satisfying EVERY reference goal.
-                Note this is the goal-satisfaction definition, not the
-                action-multiset match: the two coincide in kitchen and living
-                room but diverge in workshop (62.5% against 47.5%), where a
-                trial can satisfy every goal by a different action sequence.
+    PGC         plan goal coverage, Eq. (9): mean over feasible trials of
+                |G_i intersect G_i_hat| / |G_i|
+    E2E succ.   share of feasible trials satisfying every reference goal
+                after execution -- Eq. (10)'s s_i. This is goal satisfaction,
+                not a match against the reference action sequence.
     N_I         infeasible trials
-    CR          correct rejection: infeasible trials that produced no plan and
-                did not report ACTION_SEQUENCE_READY
+    CR          correct rejection, Eq. (11): an infeasible task identified
+                without committing to a plan -- no plan produced and no
+                ACTION_SEQUENCE_READY. Equivalently 100 - Commit.
 
 Table IV, upper -- verification ablation
     Reference role and relation slots are classified correct / wrong /
