@@ -26,6 +26,12 @@ pip install -r requirements.txt -r requirements-zs.txt
 python3 mujoco_scenes/scripts/prepare_semantic_models.py    # detector + CLIP weights
 ```
 
+Install both requirement files in one `pip` call, as above: separate calls can
+resolve torchvision against the wrong torch. On a headless machine set
+`MUJOCO_GL=egl`. If `python3 -m venv` reports that `ensurepip` is unavailable,
+either install the distribution's `python3-venv` package or use conda
+(`conda create -n grab python=3.13`).
+
 | component | model |
 |---|---|
 | foundation model | `qwen35-9b`, OpenAI-compatible endpoint (only for `--live`) |
