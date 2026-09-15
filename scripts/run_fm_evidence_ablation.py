@@ -209,7 +209,7 @@ def summarize(rows: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--archive", type=Path,
-                        default=REPO / "benchmark_reports/v3_qwen_distribution_3x32_20260910T053937",
+                        default=REPO / "data/reference_run",
                         help="Root holding trial_NN/<domain>/<variant>/vlm archived FM responses")
     parser.add_argument("--trials", default="trial_01,trial_02,trial_03")
     parser.add_argument("--conditions", default="all")

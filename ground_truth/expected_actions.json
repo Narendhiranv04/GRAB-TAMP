@@ -1,0 +1,4369 @@
+{
+ "kitchen/K1": {
+  "actions": [
+   {
+    "arguments": [
+     "s1i_compact_kettle"
+    ],
+    "operator": "PICK",
+    "reason": "Pick water_source (s1i_compact_kettle) to dispense hot water"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle",
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "POUR",
+    "reason": "Pour hot water from s1i_compact_kettle into coffee target ab3_narrow_deep_cup"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle",
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "POUR",
+    "reason": "Pour hot water from s1i_compact_kettle into coffee target ab3_medium_deep_mug"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Return water_source (s1i_compact_kettle) to safe countertop support"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar"
+    ],
+    "operator": "PICK",
+    "reason": "Pick coffee_source (s1i_compact_coffee_jar) to dispense coffee grounds"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar",
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "POUR",
+    "reason": "Pour coffee grounds from s1i_compact_coffee_jar into coffee target ab3_narrow_deep_cup"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar",
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "POUR",
+    "reason": "Pour coffee grounds from s1i_compact_coffee_jar into coffee target ab3_medium_deep_mug"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Return coffee_source (s1i_compact_coffee_jar) to safe countertop support"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon"
+    ],
+    "operator": "PICK",
+    "reason": "Pick coffee stirring tool s1i_final_long_narrow_spoon for sequential preparation"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon",
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "STIR",
+    "reason": "Stir coffee in ab3_narrow_deep_cup using assigned tool s1i_final_long_narrow_spoon"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon",
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "STIR",
+    "reason": "Stir coffee in ab3_medium_deep_mug using assigned tool s1i_final_long_narrow_spoon"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Set stirring tool s1i_final_long_narrow_spoon on countertop after coffee stirring completion"
+   },
+   {
+    "arguments": [
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "PICK",
+    "reason": "Pick prepared coffee vessel ab3_narrow_deep_cup for serving"
+   },
+   {
+    "arguments": [
+     "ab3_narrow_deep_cup",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place coffee vessel ab3_narrow_deep_cup in serving area"
+   },
+   {
+    "arguments": [
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "PICK",
+    "reason": "Pick prepared coffee vessel ab3_medium_deep_mug for serving"
+   },
+   {
+    "arguments": [
+     "ab3_medium_deep_mug",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place coffee vessel ab3_medium_deep_mug in serving area"
+   },
+   {
+    "arguments": [
+     "ab3_deep_bowl"
+    ],
+    "operator": "PICK",
+    "reason": "Pick soup bowl ab3_deep_bowl for serving"
+   },
+   {
+    "arguments": [
+     "ab3_deep_bowl",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place soup bowl ab3_deep_bowl in serving area"
+   },
+   {
+    "arguments": [
+     "s1i_oversized_spoon"
+    ],
+    "operator": "PICK",
+    "reason": "Pick dedicated soup utensil s1i_oversized_spoon for ab3_deep_bowl"
+   },
+   {
+    "arguments": [
+     "s1i_oversized_spoon",
+     "ab3_deep_bowl"
+    ],
+    "operator": "PLACE_SERVING_UTENSIL",
+    "reason": "Place soup utensil s1i_oversized_spoon with served soup bowl ab3_deep_bowl"
+   },
+   {
+    "arguments": [
+     "ab3_shallow_bowl"
+    ],
+    "operator": "PICK",
+    "reason": "Pick soup bowl ab3_shallow_bowl for serving"
+   },
+   {
+    "arguments": [
+     "ab3_shallow_bowl",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place soup bowl ab3_shallow_bowl in serving area"
+   },
+   {
+    "arguments": [
+     "ab3_partial_spoon"
+    ],
+    "operator": "PICK",
+    "reason": "Pick dedicated soup utensil ab3_partial_spoon for ab3_shallow_bowl"
+   },
+   {
+    "arguments": [
+     "ab3_partial_spoon",
+     "ab3_shallow_bowl"
+    ],
+    "operator": "PLACE_SERVING_UTENSIL",
+    "reason": "Place soup utensil ab3_partial_spoon with served soup bowl ab3_shallow_bowl"
+   }
+  ],
+  "description": "All required objects are initially visible.",
+  "environment": "kitchen",
+  "intended_outcome": "FEASIBLE",
+  "internal_variant": "F0_ALL_VISIBLE",
+  "schema_version": 1,
+  "total_actions": 24,
+  "variant": "K1"
+ },
+ "kitchen/K10": {
+  "actions": [
+   {
+    "arguments": [
+     "D1"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage D1 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "D1"
+    ],
+    "operator": "CLOSE",
+    "reason": "Close upper drawer D1 to clear arm approach corridor to D2 handle"
+   },
+   {
+    "arguments": [
+     "D2"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage D2 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "C2"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage C2 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "B1"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage B1 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "C1"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage C1 to assess task feasibility"
+   }
+  ],
+  "description": "One of the two required soup utensils is absent; otherwise identical to F5.",
+  "environment": "kitchen",
+  "intended_outcome": "INFEASIBLE",
+  "internal_variant": "I3_MISSING_SOUP_UTENSIL",
+  "schema_version": 1,
+  "total_actions": 6,
+  "variant": "K10"
+ },
+ "kitchen/K11": {
+  "actions": [
+   {
+    "arguments": [
+     "D1"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage D1 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "D1"
+    ],
+    "operator": "CLOSE",
+    "reason": "Close upper drawer D1 to clear arm approach corridor to D2 handle"
+   },
+   {
+    "arguments": [
+     "D2"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage D2 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "C2"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage C2 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "B1"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage B1 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "C1"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage C1 to assess task feasibility"
+   }
+  ],
+  "description": "The kettle is absent; otherwise identical to F5.",
+  "environment": "kitchen",
+  "intended_outcome": "INFEASIBLE",
+  "internal_variant": "I4_MISSING_KETTLE",
+  "schema_version": 1,
+  "total_actions": 6,
+  "variant": "K11"
+ },
+ "kitchen/K12": {
+  "actions": [
+   {
+    "arguments": [
+     "D1"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage D1 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "D1"
+    ],
+    "operator": "CLOSE",
+    "reason": "Close upper drawer D1 to clear arm approach corridor to D2 handle"
+   },
+   {
+    "arguments": [
+     "D2"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage D2 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "C2"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage C2 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "B1"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage B1 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "C1"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage C1 to assess task feasibility"
+   }
+  ],
+  "description": "The coffee jar is absent; otherwise identical to F5.",
+  "environment": "kitchen",
+  "intended_outcome": "INFEASIBLE",
+  "internal_variant": "I5_MISSING_COFFEE_JAR",
+  "schema_version": 1,
+  "total_actions": 6,
+  "variant": "K12"
+ },
+ "kitchen/K2": {
+  "actions": [
+   {
+    "arguments": [
+     "C2"
+    ],
+    "operator": "OPEN",
+    "reason": "Open container C2 to access required task kitchenware"
+   },
+   {
+    "arguments": [
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "PICK",
+    "reason": "Retrieve target vessel ab3_medium_deep_mug from C2 for countertop staging"
+   },
+   {
+    "arguments": [
+     "ab3_medium_deep_mug",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Stage target vessel ab3_medium_deep_mug on countertop for safe pouring and stirring"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle"
+    ],
+    "operator": "PICK",
+    "reason": "Pick water_source (s1i_compact_kettle) to dispense hot water"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle",
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "POUR",
+    "reason": "Pour hot water from s1i_compact_kettle into coffee target ab3_narrow_deep_cup"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle",
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "POUR",
+    "reason": "Pour hot water from s1i_compact_kettle into coffee target ab3_medium_deep_mug"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Return water_source (s1i_compact_kettle) to safe countertop support"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar"
+    ],
+    "operator": "PICK",
+    "reason": "Pick coffee_source (s1i_compact_coffee_jar) to dispense coffee grounds"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar",
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "POUR",
+    "reason": "Pour coffee grounds from s1i_compact_coffee_jar into coffee target ab3_narrow_deep_cup"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar",
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "POUR",
+    "reason": "Pour coffee grounds from s1i_compact_coffee_jar into coffee target ab3_medium_deep_mug"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Return coffee_source (s1i_compact_coffee_jar) to safe countertop support"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon"
+    ],
+    "operator": "PICK",
+    "reason": "Pick coffee stirring tool s1i_final_long_narrow_spoon for sequential preparation"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon",
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "STIR",
+    "reason": "Stir coffee in ab3_narrow_deep_cup using assigned tool s1i_final_long_narrow_spoon"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon",
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "STIR",
+    "reason": "Stir coffee in ab3_medium_deep_mug using assigned tool s1i_final_long_narrow_spoon"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Set stirring tool s1i_final_long_narrow_spoon on countertop after coffee stirring completion"
+   },
+   {
+    "arguments": [
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "PICK",
+    "reason": "Pick prepared coffee vessel ab3_narrow_deep_cup for serving"
+   },
+   {
+    "arguments": [
+     "ab3_narrow_deep_cup",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place coffee vessel ab3_narrow_deep_cup in serving area"
+   },
+   {
+    "arguments": [
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "PICK",
+    "reason": "Pick prepared coffee vessel ab3_medium_deep_mug for serving"
+   },
+   {
+    "arguments": [
+     "ab3_medium_deep_mug",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place coffee vessel ab3_medium_deep_mug in serving area"
+   },
+   {
+    "arguments": [
+     "ab3_deep_bowl"
+    ],
+    "operator": "PICK",
+    "reason": "Pick soup bowl ab3_deep_bowl for serving"
+   },
+   {
+    "arguments": [
+     "ab3_deep_bowl",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place soup bowl ab3_deep_bowl in serving area"
+   },
+   {
+    "arguments": [
+     "s1i_oversized_spoon"
+    ],
+    "operator": "PICK",
+    "reason": "Pick dedicated soup utensil s1i_oversized_spoon for ab3_deep_bowl"
+   },
+   {
+    "arguments": [
+     "s1i_oversized_spoon",
+     "ab3_deep_bowl"
+    ],
+    "operator": "PLACE_SERVING_UTENSIL",
+    "reason": "Place soup utensil s1i_oversized_spoon with served soup bowl ab3_deep_bowl"
+   },
+   {
+    "arguments": [
+     "ab3_shallow_bowl"
+    ],
+    "operator": "PICK",
+    "reason": "Pick soup bowl ab3_shallow_bowl for serving"
+   },
+   {
+    "arguments": [
+     "ab3_shallow_bowl",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place soup bowl ab3_shallow_bowl in serving area"
+   },
+   {
+    "arguments": [
+     "ab3_partial_spoon"
+    ],
+    "operator": "PICK",
+    "reason": "Pick dedicated soup utensil ab3_partial_spoon for ab3_shallow_bowl"
+   },
+   {
+    "arguments": [
+     "ab3_partial_spoon",
+     "ab3_shallow_bowl"
+    ],
+    "operator": "PLACE_SERVING_UTENSIL",
+    "reason": "Place soup utensil ab3_partial_spoon with served soup bowl ab3_shallow_bowl"
+   }
+  ],
+  "description": "The second coffee vessel is in cupboard C2.",
+  "environment": "kitchen",
+  "intended_outcome": "FEASIBLE",
+  "internal_variant": "F1_HIDDEN_COFFEE_VESSEL",
+  "schema_version": 1,
+  "total_actions": 27,
+  "variant": "K2"
+ },
+ "kitchen/K3": {
+  "actions": [
+   {
+    "arguments": [
+     "B1"
+    ],
+    "operator": "OPEN",
+    "reason": "Open container B1 to access required task kitchenware"
+   },
+   {
+    "arguments": [
+     "ab3_deep_bowl"
+    ],
+    "operator": "PICK",
+    "reason": "Retrieve target vessel ab3_deep_bowl from B1 for countertop staging"
+   },
+   {
+    "arguments": [
+     "ab3_deep_bowl",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Stage target vessel ab3_deep_bowl on countertop for safe pouring and stirring"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle"
+    ],
+    "operator": "PICK",
+    "reason": "Pick water_source (s1i_compact_kettle) to dispense hot water"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle",
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "POUR",
+    "reason": "Pour hot water from s1i_compact_kettle into coffee target ab3_narrow_deep_cup"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle",
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "POUR",
+    "reason": "Pour hot water from s1i_compact_kettle into coffee target ab3_medium_deep_mug"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Return water_source (s1i_compact_kettle) to safe countertop support"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar"
+    ],
+    "operator": "PICK",
+    "reason": "Pick coffee_source (s1i_compact_coffee_jar) to dispense coffee grounds"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar",
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "POUR",
+    "reason": "Pour coffee grounds from s1i_compact_coffee_jar into coffee target ab3_narrow_deep_cup"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar",
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "POUR",
+    "reason": "Pour coffee grounds from s1i_compact_coffee_jar into coffee target ab3_medium_deep_mug"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Return coffee_source (s1i_compact_coffee_jar) to safe countertop support"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon"
+    ],
+    "operator": "PICK",
+    "reason": "Pick coffee stirring tool s1i_final_long_narrow_spoon for sequential preparation"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon",
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "STIR",
+    "reason": "Stir coffee in ab3_narrow_deep_cup using assigned tool s1i_final_long_narrow_spoon"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon",
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "STIR",
+    "reason": "Stir coffee in ab3_medium_deep_mug using assigned tool s1i_final_long_narrow_spoon"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Set stirring tool s1i_final_long_narrow_spoon on countertop after coffee stirring completion"
+   },
+   {
+    "arguments": [
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "PICK",
+    "reason": "Pick prepared coffee vessel ab3_narrow_deep_cup for serving"
+   },
+   {
+    "arguments": [
+     "ab3_narrow_deep_cup",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place coffee vessel ab3_narrow_deep_cup in serving area"
+   },
+   {
+    "arguments": [
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "PICK",
+    "reason": "Pick prepared coffee vessel ab3_medium_deep_mug for serving"
+   },
+   {
+    "arguments": [
+     "ab3_medium_deep_mug",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place coffee vessel ab3_medium_deep_mug in serving area"
+   },
+   {
+    "arguments": [
+     "ab3_shallow_bowl"
+    ],
+    "operator": "PICK",
+    "reason": "Pick soup bowl ab3_shallow_bowl for serving"
+   },
+   {
+    "arguments": [
+     "ab3_shallow_bowl",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place soup bowl ab3_shallow_bowl in serving area"
+   },
+   {
+    "arguments": [
+     "s1i_oversized_spoon"
+    ],
+    "operator": "PICK",
+    "reason": "Pick dedicated soup utensil s1i_oversized_spoon for ab3_shallow_bowl"
+   },
+   {
+    "arguments": [
+     "s1i_oversized_spoon",
+     "ab3_shallow_bowl"
+    ],
+    "operator": "PLACE_SERVING_UTENSIL",
+    "reason": "Place soup utensil s1i_oversized_spoon with served soup bowl ab3_shallow_bowl"
+   },
+   {
+    "arguments": [
+     "ab3_deep_bowl"
+    ],
+    "operator": "PICK",
+    "reason": "Pick soup bowl ab3_deep_bowl for serving"
+   },
+   {
+    "arguments": [
+     "ab3_deep_bowl",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place soup bowl ab3_deep_bowl in serving area"
+   },
+   {
+    "arguments": [
+     "ab3_partial_spoon"
+    ],
+    "operator": "PICK",
+    "reason": "Pick dedicated soup utensil ab3_partial_spoon for ab3_deep_bowl"
+   },
+   {
+    "arguments": [
+     "ab3_partial_spoon",
+     "ab3_deep_bowl"
+    ],
+    "operator": "PLACE_SERVING_UTENSIL",
+    "reason": "Place soup utensil ab3_partial_spoon with served soup bowl ab3_deep_bowl"
+   }
+  ],
+  "description": "The second soup bowl is in box B1.",
+  "environment": "kitchen",
+  "intended_outcome": "FEASIBLE",
+  "internal_variant": "F2_HIDDEN_SOUP_BOWL",
+  "schema_version": 1,
+  "total_actions": 27,
+  "variant": "K3"
+ },
+ "kitchen/K4": {
+  "actions": [
+   {
+    "arguments": [
+     "C2"
+    ],
+    "operator": "OPEN",
+    "reason": "Open container C2 to access required task kitchenware"
+   },
+   {
+    "arguments": [
+     "B1"
+    ],
+    "operator": "OPEN",
+    "reason": "Open container B1 to access required task kitchenware"
+   },
+   {
+    "arguments": [
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "PICK",
+    "reason": "Retrieve target vessel ab3_medium_deep_mug from C2 for countertop staging"
+   },
+   {
+    "arguments": [
+     "ab3_medium_deep_mug",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Stage target vessel ab3_medium_deep_mug on countertop for safe pouring and stirring"
+   },
+   {
+    "arguments": [
+     "ab3_deep_bowl"
+    ],
+    "operator": "PICK",
+    "reason": "Retrieve target vessel ab3_deep_bowl from B1 for countertop staging"
+   },
+   {
+    "arguments": [
+     "ab3_deep_bowl",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Stage target vessel ab3_deep_bowl on countertop for safe pouring and stirring"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle"
+    ],
+    "operator": "PICK",
+    "reason": "Pick water_source (s1i_compact_kettle) to dispense hot water"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle",
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "POUR",
+    "reason": "Pour hot water from s1i_compact_kettle into coffee target ab3_narrow_deep_cup"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle",
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "POUR",
+    "reason": "Pour hot water from s1i_compact_kettle into coffee target ab3_medium_deep_mug"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Return water_source (s1i_compact_kettle) to safe countertop support"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar"
+    ],
+    "operator": "PICK",
+    "reason": "Pick coffee_source (s1i_compact_coffee_jar) to dispense coffee grounds"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar",
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "POUR",
+    "reason": "Pour coffee grounds from s1i_compact_coffee_jar into coffee target ab3_narrow_deep_cup"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar",
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "POUR",
+    "reason": "Pour coffee grounds from s1i_compact_coffee_jar into coffee target ab3_medium_deep_mug"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Return coffee_source (s1i_compact_coffee_jar) to safe countertop support"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon"
+    ],
+    "operator": "PICK",
+    "reason": "Pick coffee stirring tool s1i_final_long_narrow_spoon for sequential preparation"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon",
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "STIR",
+    "reason": "Stir coffee in ab3_narrow_deep_cup using assigned tool s1i_final_long_narrow_spoon"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon",
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "STIR",
+    "reason": "Stir coffee in ab3_medium_deep_mug using assigned tool s1i_final_long_narrow_spoon"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Set stirring tool s1i_final_long_narrow_spoon on countertop after coffee stirring completion"
+   },
+   {
+    "arguments": [
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "PICK",
+    "reason": "Pick prepared coffee vessel ab3_narrow_deep_cup for serving"
+   },
+   {
+    "arguments": [
+     "ab3_narrow_deep_cup",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place coffee vessel ab3_narrow_deep_cup in serving area"
+   },
+   {
+    "arguments": [
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "PICK",
+    "reason": "Pick prepared coffee vessel ab3_medium_deep_mug for serving"
+   },
+   {
+    "arguments": [
+     "ab3_medium_deep_mug",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place coffee vessel ab3_medium_deep_mug in serving area"
+   },
+   {
+    "arguments": [
+     "ab3_shallow_bowl"
+    ],
+    "operator": "PICK",
+    "reason": "Pick soup bowl ab3_shallow_bowl for serving"
+   },
+   {
+    "arguments": [
+     "ab3_shallow_bowl",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place soup bowl ab3_shallow_bowl in serving area"
+   },
+   {
+    "arguments": [
+     "s1i_oversized_spoon"
+    ],
+    "operator": "PICK",
+    "reason": "Pick dedicated soup utensil s1i_oversized_spoon for ab3_shallow_bowl"
+   },
+   {
+    "arguments": [
+     "s1i_oversized_spoon",
+     "ab3_shallow_bowl"
+    ],
+    "operator": "PLACE_SERVING_UTENSIL",
+    "reason": "Place soup utensil s1i_oversized_spoon with served soup bowl ab3_shallow_bowl"
+   },
+   {
+    "arguments": [
+     "ab3_deep_bowl"
+    ],
+    "operator": "PICK",
+    "reason": "Pick soup bowl ab3_deep_bowl for serving"
+   },
+   {
+    "arguments": [
+     "ab3_deep_bowl",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place soup bowl ab3_deep_bowl in serving area"
+   },
+   {
+    "arguments": [
+     "ab3_partial_spoon"
+    ],
+    "operator": "PICK",
+    "reason": "Pick dedicated soup utensil ab3_partial_spoon for ab3_deep_bowl"
+   },
+   {
+    "arguments": [
+     "ab3_partial_spoon",
+     "ab3_deep_bowl"
+    ],
+    "operator": "PLACE_SERVING_UTENSIL",
+    "reason": "Place soup utensil ab3_partial_spoon with served soup bowl ab3_deep_bowl"
+   }
+  ],
+  "description": "The second coffee vessel is in C2 and the second soup bowl is in B1.",
+  "environment": "kitchen",
+  "intended_outcome": "FEASIBLE",
+  "internal_variant": "F3_HIDDEN_VESSELS_MIXED",
+  "schema_version": 1,
+  "total_actions": 30,
+  "variant": "K4"
+ },
+ "kitchen/K5": {
+  "actions": [
+   {
+    "arguments": [
+     "D1"
+    ],
+    "operator": "OPEN",
+    "reason": "Open container D1 to access required task kitchenware"
+   },
+   {
+    "arguments": [
+     "D2"
+    ],
+    "operator": "OPEN",
+    "reason": "Open container D2 to access required task kitchenware"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle"
+    ],
+    "operator": "PICK",
+    "reason": "Pick water_source (s1i_compact_kettle) to dispense hot water"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle",
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "POUR",
+    "reason": "Pour hot water from s1i_compact_kettle into coffee target ab3_narrow_deep_cup"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle",
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "POUR",
+    "reason": "Pour hot water from s1i_compact_kettle into coffee target ab3_medium_deep_mug"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Return water_source (s1i_compact_kettle) to safe countertop support"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar"
+    ],
+    "operator": "PICK",
+    "reason": "Pick coffee_source (s1i_compact_coffee_jar) to dispense coffee grounds"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar",
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "POUR",
+    "reason": "Pour coffee grounds from s1i_compact_coffee_jar into coffee target ab3_narrow_deep_cup"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar",
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "POUR",
+    "reason": "Pour coffee grounds from s1i_compact_coffee_jar into coffee target ab3_medium_deep_mug"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Return coffee_source (s1i_compact_coffee_jar) to safe countertop support"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon"
+    ],
+    "operator": "PICK",
+    "reason": "Pick coffee stirring tool s1i_final_long_narrow_spoon for sequential preparation"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon",
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "STIR",
+    "reason": "Stir coffee in ab3_narrow_deep_cup using assigned tool s1i_final_long_narrow_spoon"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon",
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "STIR",
+    "reason": "Stir coffee in ab3_medium_deep_mug using assigned tool s1i_final_long_narrow_spoon"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Set stirring tool s1i_final_long_narrow_spoon on countertop after coffee stirring completion"
+   },
+   {
+    "arguments": [
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "PICK",
+    "reason": "Pick prepared coffee vessel ab3_narrow_deep_cup for serving"
+   },
+   {
+    "arguments": [
+     "ab3_narrow_deep_cup",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place coffee vessel ab3_narrow_deep_cup in serving area"
+   },
+   {
+    "arguments": [
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "PICK",
+    "reason": "Pick prepared coffee vessel ab3_medium_deep_mug for serving"
+   },
+   {
+    "arguments": [
+     "ab3_medium_deep_mug",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place coffee vessel ab3_medium_deep_mug in serving area"
+   },
+   {
+    "arguments": [
+     "ab3_deep_bowl"
+    ],
+    "operator": "PICK",
+    "reason": "Pick soup bowl ab3_deep_bowl for serving"
+   },
+   {
+    "arguments": [
+     "ab3_deep_bowl",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place soup bowl ab3_deep_bowl in serving area"
+   },
+   {
+    "arguments": [
+     "s1i_oversized_spoon"
+    ],
+    "operator": "PICK",
+    "reason": "Pick dedicated soup utensil s1i_oversized_spoon for ab3_deep_bowl"
+   },
+   {
+    "arguments": [
+     "s1i_oversized_spoon",
+     "ab3_deep_bowl"
+    ],
+    "operator": "PLACE_SERVING_UTENSIL",
+    "reason": "Place soup utensil s1i_oversized_spoon with served soup bowl ab3_deep_bowl"
+   },
+   {
+    "arguments": [
+     "ab3_shallow_bowl"
+    ],
+    "operator": "PICK",
+    "reason": "Pick soup bowl ab3_shallow_bowl for serving"
+   },
+   {
+    "arguments": [
+     "ab3_shallow_bowl",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place soup bowl ab3_shallow_bowl in serving area"
+   },
+   {
+    "arguments": [
+     "ab3_partial_spoon"
+    ],
+    "operator": "PICK",
+    "reason": "Pick dedicated soup utensil ab3_partial_spoon for ab3_shallow_bowl"
+   },
+   {
+    "arguments": [
+     "ab3_partial_spoon",
+     "ab3_shallow_bowl"
+    ],
+    "operator": "PLACE_SERVING_UTENSIL",
+    "reason": "Place soup utensil ab3_partial_spoon with served soup bowl ab3_shallow_bowl"
+   }
+  ],
+  "description": "The coffee stirrer and one soup utensil are in drawers D1 and D2.",
+  "environment": "kitchen",
+  "intended_outcome": "FEASIBLE",
+  "internal_variant": "F4_TOOLS_IN_DRAWERS",
+  "schema_version": 1,
+  "total_actions": 26,
+  "variant": "K5"
+ },
+ "kitchen/K6": {
+  "actions": [
+   {
+    "arguments": [
+     "D1"
+    ],
+    "operator": "OPEN",
+    "reason": "Open container D1 to access required task kitchenware"
+   },
+   {
+    "arguments": [
+     "D2"
+    ],
+    "operator": "OPEN",
+    "reason": "Open container D2 to access required task kitchenware"
+   },
+   {
+    "arguments": [
+     "C2"
+    ],
+    "operator": "OPEN",
+    "reason": "Open container C2 to access required task kitchenware"
+   },
+   {
+    "arguments": [
+     "B1"
+    ],
+    "operator": "OPEN",
+    "reason": "Open container B1 to access required task kitchenware"
+   },
+   {
+    "arguments": [
+     "C1"
+    ],
+    "operator": "OPEN",
+    "reason": "Open container C1 to access required task kitchenware"
+   },
+   {
+    "arguments": [
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "PICK",
+    "reason": "Retrieve target vessel ab3_medium_deep_mug from C2 for countertop staging"
+   },
+   {
+    "arguments": [
+     "ab3_medium_deep_mug",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Stage target vessel ab3_medium_deep_mug on countertop for safe pouring and stirring"
+   },
+   {
+    "arguments": [
+     "ab3_deep_bowl"
+    ],
+    "operator": "PICK",
+    "reason": "Retrieve target vessel ab3_deep_bowl from B1 for countertop staging"
+   },
+   {
+    "arguments": [
+     "ab3_deep_bowl",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Stage target vessel ab3_deep_bowl on countertop for safe pouring and stirring"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle"
+    ],
+    "operator": "PICK",
+    "reason": "Pick water_source (s1i_compact_kettle) to dispense hot water"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle",
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "POUR",
+    "reason": "Pour hot water from s1i_compact_kettle into coffee target ab3_narrow_deep_cup"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle",
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "POUR",
+    "reason": "Pour hot water from s1i_compact_kettle into coffee target ab3_medium_deep_mug"
+   },
+   {
+    "arguments": [
+     "s1i_compact_kettle",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Return water_source (s1i_compact_kettle) to safe countertop support"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar"
+    ],
+    "operator": "PICK",
+    "reason": "Pick coffee_source (s1i_compact_coffee_jar) to dispense coffee grounds"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar",
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "POUR",
+    "reason": "Pour coffee grounds from s1i_compact_coffee_jar into coffee target ab3_narrow_deep_cup"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar",
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "POUR",
+    "reason": "Pour coffee grounds from s1i_compact_coffee_jar into coffee target ab3_medium_deep_mug"
+   },
+   {
+    "arguments": [
+     "s1i_compact_coffee_jar",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Return coffee_source (s1i_compact_coffee_jar) to safe countertop support"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon"
+    ],
+    "operator": "PICK",
+    "reason": "Pick coffee stirring tool s1i_final_long_narrow_spoon for sequential preparation"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon",
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "STIR",
+    "reason": "Stir coffee in ab3_narrow_deep_cup using assigned tool s1i_final_long_narrow_spoon"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon",
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "STIR",
+    "reason": "Stir coffee in ab3_medium_deep_mug using assigned tool s1i_final_long_narrow_spoon"
+   },
+   {
+    "arguments": [
+     "s1i_final_long_narrow_spoon",
+     "countertop"
+    ],
+    "operator": "PLACE",
+    "reason": "Set stirring tool s1i_final_long_narrow_spoon on countertop after coffee stirring completion"
+   },
+   {
+    "arguments": [
+     "ab3_narrow_deep_cup"
+    ],
+    "operator": "PICK",
+    "reason": "Pick prepared coffee vessel ab3_narrow_deep_cup for serving"
+   },
+   {
+    "arguments": [
+     "ab3_narrow_deep_cup",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place coffee vessel ab3_narrow_deep_cup in serving area"
+   },
+   {
+    "arguments": [
+     "ab3_medium_deep_mug"
+    ],
+    "operator": "PICK",
+    "reason": "Pick prepared coffee vessel ab3_medium_deep_mug for serving"
+   },
+   {
+    "arguments": [
+     "ab3_medium_deep_mug",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place coffee vessel ab3_medium_deep_mug in serving area"
+   },
+   {
+    "arguments": [
+     "ab3_shallow_bowl"
+    ],
+    "operator": "PICK",
+    "reason": "Pick soup bowl ab3_shallow_bowl for serving"
+   },
+   {
+    "arguments": [
+     "ab3_shallow_bowl",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place soup bowl ab3_shallow_bowl in serving area"
+   },
+   {
+    "arguments": [
+     "s1i_oversized_spoon"
+    ],
+    "operator": "PICK",
+    "reason": "Pick dedicated soup utensil s1i_oversized_spoon for ab3_shallow_bowl"
+   },
+   {
+    "arguments": [
+     "s1i_oversized_spoon",
+     "ab3_shallow_bowl"
+    ],
+    "operator": "PLACE_SERVING_UTENSIL",
+    "reason": "Place soup utensil s1i_oversized_spoon with served soup bowl ab3_shallow_bowl"
+   },
+   {
+    "arguments": [
+     "ab3_deep_bowl"
+    ],
+    "operator": "PICK",
+    "reason": "Pick soup bowl ab3_deep_bowl for serving"
+   },
+   {
+    "arguments": [
+     "ab3_deep_bowl",
+     "serving_area"
+    ],
+    "operator": "PLACE",
+    "reason": "Place soup bowl ab3_deep_bowl in serving area"
+   },
+   {
+    "arguments": [
+     "ab3_partial_spoon"
+    ],
+    "operator": "PICK",
+    "reason": "Pick dedicated soup utensil ab3_partial_spoon for ab3_deep_bowl"
+   },
+   {
+    "arguments": [
+     "ab3_partial_spoon",
+     "ab3_deep_bowl"
+    ],
+    "operator": "PLACE_SERVING_UTENSIL",
+    "reason": "Place soup utensil ab3_partial_spoon with served soup bowl ab3_deep_bowl"
+   }
+  ],
+  "description": "One required object is distributed through each storage region.",
+  "environment": "kitchen",
+  "intended_outcome": "FEASIBLE",
+  "internal_variant": "F5_FULL_DISTRIBUTED_SEARCH",
+  "schema_version": 1,
+  "total_actions": 33,
+  "variant": "K6"
+ },
+ "kitchen/K7": {
+  "actions": [
+   {
+    "arguments": [
+     "D1"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage D1 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "D1"
+    ],
+    "operator": "CLOSE",
+    "reason": "Close upper drawer D1 to clear arm approach corridor to D2 handle"
+   },
+   {
+    "arguments": [
+     "D2"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage D2 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "C2"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage C2 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "B1"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage B1 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "C1"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage C1 to assess task feasibility"
+   }
+  ],
+  "description": "The second coffee vessel is absent; otherwise identical to F3.",
+  "environment": "kitchen",
+  "intended_outcome": "INFEASIBLE",
+  "internal_variant": "I0_MISSING_COFFEE_VESSEL",
+  "schema_version": 1,
+  "total_actions": 6,
+  "variant": "K7"
+ },
+ "kitchen/K8": {
+  "actions": [
+   {
+    "arguments": [
+     "D1"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage D1 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "D1"
+    ],
+    "operator": "CLOSE",
+    "reason": "Close upper drawer D1 to clear arm approach corridor to D2 handle"
+   },
+   {
+    "arguments": [
+     "D2"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage D2 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "C2"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage C2 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "B1"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage B1 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "C1"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage C1 to assess task feasibility"
+   }
+  ],
+  "description": "The second soup bowl is absent; otherwise identical to F3.",
+  "environment": "kitchen",
+  "intended_outcome": "INFEASIBLE",
+  "internal_variant": "I1_MISSING_SOUP_BOWL",
+  "schema_version": 1,
+  "total_actions": 6,
+  "variant": "K8"
+ },
+ "kitchen/K9": {
+  "actions": [
+   {
+    "arguments": [
+     "D1"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage D1 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "D1"
+    ],
+    "operator": "CLOSE",
+    "reason": "Close upper drawer D1 to clear arm approach corridor to D2 handle"
+   },
+   {
+    "arguments": [
+     "D2"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage D2 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "C2"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage C2 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "B1"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage B1 to assess task feasibility"
+   },
+   {
+    "arguments": [
+     "C1"
+    ],
+    "operator": "OPEN",
+    "reason": "Search storage C1 to assess task feasibility"
+   }
+  ],
+  "description": "The reusable coffee stirrer is absent; otherwise identical to F5.",
+  "environment": "kitchen",
+  "intended_outcome": "INFEASIBLE",
+  "internal_variant": "I2_MISSING_COFFEE_SPOON",
+  "schema_version": 1,
+  "total_actions": 6,
+  "variant": "K9"
+ },
+ "living_room/L1": {
+  "actions": [
+   {
+    "arguments": [
+     "object_0001"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0001",
+     "region_0001"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0002"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0002",
+     "region_0001"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0003"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0003",
+     "region_0002"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0004"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0004",
+     "region_0003"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0005"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0005",
+     "region_0003"
+    ],
+    "operator": "PLACE"
+   }
+  ],
+  "description": "All five objects begin in the staging area.",
+  "environment": "living_room",
+  "intended_outcome": "FEASIBLE",
+  "internal_variant": "F0_ALL_OBJECTS_IN_STAGING",
+  "schema_version": 1,
+  "total_actions": 10,
+  "variant": "L1"
+ },
+ "living_room/L10": {
+  "actions": [
+   {
+    "arguments": [
+     "FUNCTIONAL_WITNESS_NOT_COMPLETE"
+    ],
+    "operator": "TERMINATE_INFEASIBLE",
+    "reason": "No complete functional region assignment exists."
+   }
+  ],
+  "description": "All three placement tables are absent. Grounding termination: FUNCTIONAL_WITNESS_NOT_COMPLETE.",
+  "environment": "living_room",
+  "intended_outcome": "INFEASIBLE",
+  "internal_variant": "I3_NO_TABLES",
+  "schema_version": 1,
+  "total_actions": 1,
+  "variant": "L10"
+ },
+ "living_room/L2": {
+  "actions": [
+   {
+    "arguments": [
+     "object_0002"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0002",
+     "region_0001"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0003"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0003",
+     "region_0002"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0004"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0004",
+     "region_0003"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0005"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0005",
+     "region_0003"
+    ],
+    "operator": "PLACE"
+   }
+  ],
+  "description": "The left saucer is already correctly placed on the left personal table.",
+  "environment": "living_room",
+  "intended_outcome": "FEASIBLE",
+  "internal_variant": "F1_LEFT_SAUCER_PREPLACED",
+  "schema_version": 1,
+  "total_actions": 8,
+  "variant": "L2"
+ },
+ "living_room/L3": {
+  "actions": [
+   {
+    "arguments": [
+     "object_0001"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0001",
+     "region_0001"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0002"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0002",
+     "region_0002"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0003"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0003",
+     "region_0003"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0004"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0004",
+     "region_0001"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0005"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0005",
+     "region_0003"
+    ],
+    "operator": "PLACE"
+   }
+  ],
+  "description": "The left saucer begins on the shared table and must be moved to a personal table.",
+  "environment": "living_room",
+  "intended_outcome": "FEASIBLE",
+  "internal_variant": "F2_LEFT_SAUCER_ON_SHARED",
+  "schema_version": 1,
+  "total_actions": 10,
+  "variant": "L3"
+ },
+ "living_room/L4": {
+  "actions": [
+   {
+    "arguments": [
+     "object_0001"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0001",
+     "region_0001"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0002"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0002",
+     "region_0001"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0003"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0003",
+     "region_0002"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0004"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0004",
+     "region_0003"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0005"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0005",
+     "region_0003"
+    ],
+    "operator": "PLACE"
+   }
+  ],
+  "description": "The left cup begins on the shared table and must be moved to a personal table.",
+  "environment": "living_room",
+  "intended_outcome": "FEASIBLE",
+  "internal_variant": "F3_LEFT_CUP_ON_SHARED",
+  "schema_version": 1,
+  "total_actions": 10,
+  "variant": "L4"
+ },
+ "living_room/L5": {
+  "actions": [
+   {
+    "arguments": [
+     "object_0002"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0002",
+     "region_0001"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0003"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0003",
+     "region_0002"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0004"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0004",
+     "region_0003"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0005"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0005",
+     "region_0003"
+    ],
+    "operator": "PLACE"
+   }
+  ],
+  "description": "The left saucer is correctly preplaced while the left cup begins on the shared table.",
+  "environment": "living_room",
+  "intended_outcome": "FEASIBLE",
+  "internal_variant": "F4_SAUCER_PREPLACED_CUP_ON_SHARED",
+  "schema_version": 1,
+  "total_actions": 8,
+  "variant": "L5"
+ },
+ "living_room/L6": {
+  "actions": [
+   {
+    "arguments": [
+     "object_0001"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0001",
+     "region_0001"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0002"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0002",
+     "region_0002"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0003"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0003",
+     "region_0003"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0004"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0004",
+     "region_0001"
+    ],
+    "operator": "PLACE"
+   },
+   {
+    "arguments": [
+     "object_0005"
+    ],
+    "operator": "PICK"
+   },
+   {
+    "arguments": [
+     "object_0005",
+     "region_0003"
+    ],
+    "operator": "PLACE"
+   }
+  ],
+  "description": "The left cup and left saucer both begin on the shared table and must be moved.",
+  "environment": "living_room",
+  "intended_outcome": "FEASIBLE",
+  "internal_variant": "F5_LEFT_PAIR_ON_SHARED",
+  "schema_version": 1,
+  "total_actions": 10,
+  "variant": "L6"
+ },
+ "living_room/L7": {
+  "actions": [
+   {
+    "arguments": [
+     "FUNCTIONAL_WITNESS_NOT_COMPLETE"
+    ],
+    "operator": "TERMINATE_INFEASIBLE",
+    "reason": "No complete functional region assignment exists."
+   }
+  ],
+  "description": "The required shared table is absent. Grounding termination: FUNCTIONAL_WITNESS_NOT_COMPLETE.",
+  "environment": "living_room",
+  "intended_outcome": "INFEASIBLE",
+  "internal_variant": "I0_NO_SHARED_TABLE",
+  "schema_version": 1,
+  "total_actions": 1,
+  "variant": "L7"
+ },
+ "living_room/L8": {
+  "actions": [
+   {
+    "arguments": [
+     "FUNCTIONAL_WITNESS_NOT_COMPLETE"
+    ],
+    "operator": "TERMINATE_INFEASIBLE",
+    "reason": "No complete functional region assignment exists."
+   }
+  ],
+  "description": "One of the two required personal tables is absent. Grounding termination: FUNCTIONAL_WITNESS_NOT_COMPLETE.",
+  "environment": "living_room",
+  "intended_outcome": "INFEASIBLE",
+  "internal_variant": "I1_NO_LEFT_PERSONAL_TABLE",
+  "schema_version": 1,
+  "total_actions": 1,
+  "variant": "L8"
+ },
+ "living_room/L9": {
+  "actions": [
+   {
+    "arguments": [
+     "FUNCTIONAL_WITNESS_NOT_COMPLETE"
+    ],
+    "operator": "TERMINATE_INFEASIBLE",
+    "reason": "No complete functional region assignment exists."
+   }
+  ],
+  "description": "Both required personal tables are absent. Grounding termination: FUNCTIONAL_WITNESS_NOT_COMPLETE.",
+  "environment": "living_room",
+  "intended_outcome": "INFEASIBLE",
+  "internal_variant": "I2_NO_PERSONAL_TABLES",
+  "schema_version": 1,
+  "total_actions": 1,
+  "variant": "L9"
+ },
+ "workshop/W1": {
+  "actions": [
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Make the selected driver accessible."
+   },
+   {
+    "arguments": [
+     "workshop_long_phillips_driver",
+     "LEFT_DRAWER"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the first compatible driver encountered."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the selected driver to the fixed main workbench staging area."
+   },
+   {
+    "arguments": [
+     "workshop_long_phillips_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Stage the selected driver safely while retrieving the screw."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return empty-handed to the driver's source."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Close the driver's source after retrieval."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Make the compatible screw accessible."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "LEFT_DRAWER"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the single compatible workbench screw."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the screw to a stable workbench staging pose before restoring the extracted drawer."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Stage the screw so the gripper is free to close its source drawer."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return empty-handed to the screw's source drawer."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Close the extracted drawer before entering the repair workspace."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return to the staged screw after the drawer is closed."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PICK",
+    "reason": "Reacquire the staged screw for insertion."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the fastener to the loose frame joint."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "workshop_frame_joint"
+    ],
+    "operator": "INSERT_FASTENER",
+    "reason": "Place it perfectly tip-down with the screw head/recess on top."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return to the selected staged driver."
+   },
+   {
+    "arguments": [
+     "workshop_long_phillips_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the staged driver for fastening."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Bring the compatible driver to the inserted fastener."
+   },
+   {
+    "arguments": [
+     "workshop_long_phillips_driver",
+     "workshop_medium_phillips_screw",
+     "workshop_frame_joint"
+    ],
+    "operator": "DRIVE_FASTENER",
+    "reason": "Rotate the manual driver in visible ratchet strokes while the screw advances."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return the driver to the selected work surface."
+   },
+   {
+    "arguments": [
+     "workshop_long_phillips_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Leave the used driver safely on the main workbench."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Move to the repaired joint for terminal inspection."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "VERIFY_REPAIR",
+    "reason": "Verify the intended repair and terminal organization."
+   }
+  ],
+  "description": "Manual driver and screw are both in the first region; search stops after one inspection.",
+  "environment": "workshop",
+  "intended_outcome": "FEASIBLE",
+  "internal_variant": "F0_MANUAL_FIRST_ONE_REGION",
+  "schema_version": 1,
+  "total_actions": 28,
+  "variant": "W1"
+ },
+ "workshop/W10": {
+  "actions": [
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "NO_COMPATIBLE_SCREW"
+    ],
+    "operator": "TERMINATE_INFEASIBLE",
+    "reason": "All three regions were inspected and the required screw-driver pair is absent."
+   }
+  ],
+  "description": "Both compatible drivers and hammer present; required screw absent.",
+  "environment": "workshop",
+  "intended_outcome": "INFEASIBLE",
+  "internal_variant": "I1_NO_SCREW",
+  "schema_version": 1,
+  "total_actions": 13,
+  "variant": "W10"
+ },
+ "workshop/W2": {
+  "actions": [
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Make the selected driver accessible."
+   },
+   {
+    "arguments": [
+     "workshop_power_driver",
+     "LEFT_DRAWER"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the first compatible driver encountered."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the selected driver to the fixed main workbench staging area."
+   },
+   {
+    "arguments": [
+     "workshop_power_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Stage the selected driver safely while retrieving the screw."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return empty-handed to the driver's source."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Close the driver's source after retrieval."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Make the compatible screw accessible."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "LEFT_DRAWER"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the single compatible workbench screw."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the screw to a stable workbench staging pose before restoring the extracted drawer."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Stage the screw so the gripper is free to close its source drawer."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return empty-handed to the screw's source drawer."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Close the extracted drawer before entering the repair workspace."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return to the staged screw after the drawer is closed."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PICK",
+    "reason": "Reacquire the staged screw for insertion."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the fastener to the loose frame joint."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "workshop_frame_joint"
+    ],
+    "operator": "INSERT_FASTENER",
+    "reason": "Place it perfectly tip-down with the screw head/recess on top."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return to the selected staged driver."
+   },
+   {
+    "arguments": [
+     "workshop_power_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the staged driver for fastening."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Bring the compatible driver to the inserted fastener."
+   },
+   {
+    "arguments": [
+     "workshop_power_driver",
+     "workshop_medium_phillips_screw",
+     "workshop_frame_joint"
+    ],
+    "operator": "DRIVE_FASTENER",
+    "reason": "Hold the powered driver steady while its motor turns and advances the screw."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return the driver to the selected work surface."
+   },
+   {
+    "arguments": [
+     "workshop_power_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Leave the used driver safely on the main workbench."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Move to the repaired joint for terminal inspection."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "VERIFY_REPAIR",
+    "reason": "Verify the intended repair and terminal organization."
+   }
+  ],
+  "description": "Power driver and screw are both in the first region; search stops after one inspection.",
+  "environment": "workshop",
+  "intended_outcome": "FEASIBLE",
+  "internal_variant": "F1_POWER_FIRST_ONE_REGION",
+  "schema_version": 1,
+  "total_actions": 28,
+  "variant": "W2"
+ },
+ "workshop/W3": {
+  "actions": [
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Make the selected driver accessible."
+   },
+   {
+    "arguments": [
+     "workshop_long_phillips_driver",
+     "RIGHT_DRAWER"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the first compatible driver encountered."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the selected driver to the fixed main workbench staging area."
+   },
+   {
+    "arguments": [
+     "workshop_long_phillips_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Stage the selected driver safely while retrieving the screw."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return empty-handed to the driver's source."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Close the driver's source after retrieval."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Move to the observed compatible screw."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Make the compatible screw accessible."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "LEFT_DRAWER"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the single compatible workbench screw."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the screw to a stable workbench staging pose before restoring the extracted drawer."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Stage the screw so the gripper is free to close its source drawer."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return empty-handed to the screw's source drawer."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Close the extracted drawer before entering the repair workspace."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return to the staged screw after the drawer is closed."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PICK",
+    "reason": "Reacquire the staged screw for insertion."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the fastener to the loose frame joint."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "workshop_frame_joint"
+    ],
+    "operator": "INSERT_FASTENER",
+    "reason": "Place it perfectly tip-down with the screw head/recess on top."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return to the selected staged driver."
+   },
+   {
+    "arguments": [
+     "workshop_long_phillips_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the staged driver for fastening."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Bring the compatible driver to the inserted fastener."
+   },
+   {
+    "arguments": [
+     "workshop_long_phillips_driver",
+     "workshop_medium_phillips_screw",
+     "workshop_frame_joint"
+    ],
+    "operator": "DRIVE_FASTENER",
+    "reason": "Rotate the manual driver in visible ratchet strokes while the screw advances."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return the driver to the selected work surface."
+   },
+   {
+    "arguments": [
+     "workshop_long_phillips_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Leave the used driver safely on the main workbench."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Move to the repaired joint for terminal inspection."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "VERIFY_REPAIR",
+    "reason": "Verify the intended repair and terminal organization."
+   }
+  ],
+  "description": "Screw in the left drawer; the first driver found is the manual driver in the right drawer.",
+  "environment": "workshop",
+  "intended_outcome": "FEASIBLE",
+  "internal_variant": "F2_MANUAL_FIRST_TWO_REGIONS",
+  "schema_version": 1,
+  "total_actions": 33,
+  "variant": "W3"
+ },
+ "workshop/W4": {
+  "actions": [
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Make the selected driver accessible."
+   },
+   {
+    "arguments": [
+     "workshop_power_driver",
+     "RIGHT_DRAWER"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the first compatible driver encountered."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the selected driver to the fixed main workbench staging area."
+   },
+   {
+    "arguments": [
+     "workshop_power_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Stage the selected driver safely while retrieving the screw."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return empty-handed to the driver's source."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Close the driver's source after retrieval."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Move to the observed compatible screw."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Make the compatible screw accessible."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "LEFT_DRAWER"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the single compatible workbench screw."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the screw to a stable workbench staging pose before restoring the extracted drawer."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Stage the screw so the gripper is free to close its source drawer."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return empty-handed to the screw's source drawer."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Close the extracted drawer before entering the repair workspace."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return to the staged screw after the drawer is closed."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PICK",
+    "reason": "Reacquire the staged screw for insertion."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the fastener to the loose frame joint."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "workshop_frame_joint"
+    ],
+    "operator": "INSERT_FASTENER",
+    "reason": "Place it perfectly tip-down with the screw head/recess on top."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return to the selected staged driver."
+   },
+   {
+    "arguments": [
+     "workshop_power_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the staged driver for fastening."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Bring the compatible driver to the inserted fastener."
+   },
+   {
+    "arguments": [
+     "workshop_power_driver",
+     "workshop_medium_phillips_screw",
+     "workshop_frame_joint"
+    ],
+    "operator": "DRIVE_FASTENER",
+    "reason": "Hold the powered driver steady while its motor turns and advances the screw."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return the driver to the selected work surface."
+   },
+   {
+    "arguments": [
+     "workshop_power_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Leave the used driver safely on the main workbench."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Move to the repaired joint for terminal inspection."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "VERIFY_REPAIR",
+    "reason": "Verify the intended repair and terminal organization."
+   }
+  ],
+  "description": "Screw in the left drawer; the first driver found is the power driver in the right drawer.",
+  "environment": "workshop",
+  "intended_outcome": "FEASIBLE",
+  "internal_variant": "F3_POWER_FIRST_TWO_REGIONS",
+  "schema_version": 1,
+  "total_actions": 33,
+  "variant": "W4"
+ },
+ "workshop/W5": {
+  "actions": [
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Move to the first compatible driver observed during search."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Make the selected driver accessible."
+   },
+   {
+    "arguments": [
+     "workshop_long_phillips_driver",
+     "RIGHT_DRAWER"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the first compatible driver encountered."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the selected driver to the fixed main workbench staging area."
+   },
+   {
+    "arguments": [
+     "workshop_long_phillips_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Stage the selected driver safely while retrieving the screw."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return empty-handed to the driver's source."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Close the driver's source after retrieval."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Move to the observed compatible screw."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Make the compatible screw accessible."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "TOOL_CABINET"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the single compatible workbench screw."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the fastener to the loose frame joint."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "workshop_frame_joint"
+    ],
+    "operator": "INSERT_FASTENER",
+    "reason": "Place it perfectly tip-down with the screw head/recess on top."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return empty-handed after insertion to restore the cabinet."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Close the cabinet after retrieving and inserting the screw."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return to the selected staged driver."
+   },
+   {
+    "arguments": [
+     "workshop_long_phillips_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the staged driver for fastening."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Bring the compatible driver to the inserted fastener."
+   },
+   {
+    "arguments": [
+     "workshop_long_phillips_driver",
+     "workshop_medium_phillips_screw",
+     "workshop_frame_joint"
+    ],
+    "operator": "DRIVE_FASTENER",
+    "reason": "Rotate the manual driver in visible ratchet strokes while the screw advances."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return the driver to the selected work surface."
+   },
+   {
+    "arguments": [
+     "workshop_long_phillips_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Leave the used driver safely on the main workbench."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Move to the repaired joint for terminal inspection."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "VERIFY_REPAIR",
+    "reason": "Verify the intended repair and terminal organization."
+   }
+  ],
+  "description": "Manual driver is found second; the screw is only found in the third region.",
+  "environment": "workshop",
+  "intended_outcome": "FEASIBLE",
+  "internal_variant": "F4_MANUAL_FIRST_THREE_REGIONS",
+  "schema_version": 1,
+  "total_actions": 34,
+  "variant": "W5"
+ },
+ "workshop/W6": {
+  "actions": [
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Move to the first compatible driver observed during search."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Make the selected driver accessible."
+   },
+   {
+    "arguments": [
+     "workshop_power_driver",
+     "LEFT_DRAWER"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the first compatible driver encountered."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the selected driver to the fixed main workbench staging area."
+   },
+   {
+    "arguments": [
+     "workshop_power_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Stage the selected driver safely while retrieving the screw."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return empty-handed to the driver's source."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Close the driver's source after retrieval."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Move to the observed compatible screw."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Make the compatible screw accessible."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "TOOL_CABINET"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the single compatible workbench screw."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the fastener to the loose frame joint."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "workshop_frame_joint"
+    ],
+    "operator": "INSERT_FASTENER",
+    "reason": "Place it perfectly tip-down with the screw head/recess on top."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return empty-handed after insertion to restore the cabinet."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Close the cabinet after retrieving and inserting the screw."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return to the selected staged driver."
+   },
+   {
+    "arguments": [
+     "workshop_power_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the staged driver for fastening."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Bring the compatible driver to the inserted fastener."
+   },
+   {
+    "arguments": [
+     "workshop_power_driver",
+     "workshop_medium_phillips_screw",
+     "workshop_frame_joint"
+    ],
+    "operator": "DRIVE_FASTENER",
+    "reason": "Hold the powered driver steady while its motor turns and advances the screw."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return the driver to the selected work surface."
+   },
+   {
+    "arguments": [
+     "workshop_power_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Leave the used driver safely on the main workbench."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Move to the repaired joint for terminal inspection."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "VERIFY_REPAIR",
+    "reason": "Verify the intended repair and terminal organization."
+   }
+  ],
+  "description": "Power driver is found first; the screw is only found in the third region.",
+  "environment": "workshop",
+  "intended_outcome": "FEASIBLE",
+  "internal_variant": "F5_POWER_FIRST_THREE_REGIONS",
+  "schema_version": 1,
+  "total_actions": 34,
+  "variant": "W6"
+ },
+ "workshop/W7": {
+  "actions": [
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Make the selected driver accessible."
+   },
+   {
+    "arguments": [
+     "workshop_long_phillips_driver",
+     "TOOL_CABINET"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the first compatible driver encountered."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the selected driver to the fixed main workbench staging area."
+   },
+   {
+    "arguments": [
+     "workshop_long_phillips_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Stage the selected driver safely while retrieving the screw."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return empty-handed to the driver's source."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Close the driver's source after retrieval."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Move to the observed compatible screw."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Make the compatible screw accessible."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "RIGHT_DRAWER"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the single compatible workbench screw."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the screw to a stable workbench staging pose before restoring the extracted drawer."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Stage the screw so the gripper is free to close its source drawer."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return empty-handed to the screw's source drawer."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Close the extracted drawer before entering the repair workspace."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return to the staged screw after the drawer is closed."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PICK",
+    "reason": "Reacquire the staged screw for insertion."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the fastener to the loose frame joint."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "workshop_frame_joint"
+    ],
+    "operator": "INSERT_FASTENER",
+    "reason": "Place it perfectly tip-down with the screw head/recess on top."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return to the selected staged driver."
+   },
+   {
+    "arguments": [
+     "workshop_long_phillips_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the staged driver for fastening."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Bring the compatible driver to the inserted fastener."
+   },
+   {
+    "arguments": [
+     "workshop_long_phillips_driver",
+     "workshop_medium_phillips_screw",
+     "workshop_frame_joint"
+    ],
+    "operator": "DRIVE_FASTENER",
+    "reason": "Rotate the manual driver in visible ratchet strokes while the screw advances."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return the driver to the selected work surface."
+   },
+   {
+    "arguments": [
+     "workshop_long_phillips_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Leave the used driver safely on the main workbench."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Move to the repaired joint for terminal inspection."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "VERIFY_REPAIR",
+    "reason": "Verify the intended repair and terminal organization."
+   }
+  ],
+  "description": "Power driver absent; manual driver and screw remain sufficient.",
+  "environment": "workshop",
+  "intended_outcome": "FEASIBLE",
+  "internal_variant": "F6_MANUAL_ONLY",
+  "schema_version": 1,
+  "total_actions": 37,
+  "variant": "W7"
+ },
+ "workshop/W8": {
+  "actions": [
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Make the selected driver accessible."
+   },
+   {
+    "arguments": [
+     "workshop_power_driver",
+     "TOOL_CABINET"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the first compatible driver encountered."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the selected driver to the fixed main workbench staging area."
+   },
+   {
+    "arguments": [
+     "workshop_power_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Stage the selected driver safely while retrieving the screw."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return empty-handed to the driver's source."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Close the driver's source after retrieval."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Move to the observed compatible screw."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Make the compatible screw accessible."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "RIGHT_DRAWER"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the single compatible workbench screw."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the screw to a stable workbench staging pose before restoring the extracted drawer."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Stage the screw so the gripper is free to close its source drawer."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return empty-handed to the screw's source drawer."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Close the extracted drawer before entering the repair workspace."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return to the staged screw after the drawer is closed."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PICK",
+    "reason": "Reacquire the staged screw for insertion."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Carry the fastener to the loose frame joint."
+   },
+   {
+    "arguments": [
+     "workshop_medium_phillips_screw",
+     "workshop_frame_joint"
+    ],
+    "operator": "INSERT_FASTENER",
+    "reason": "Place it perfectly tip-down with the screw head/recess on top."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return to the selected staged driver."
+   },
+   {
+    "arguments": [
+     "workshop_power_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PICK",
+    "reason": "Acquire the staged driver for fastening."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Bring the compatible driver to the inserted fastener."
+   },
+   {
+    "arguments": [
+     "workshop_power_driver",
+     "workshop_medium_phillips_screw",
+     "workshop_frame_joint"
+    ],
+    "operator": "DRIVE_FASTENER",
+    "reason": "Hold the powered driver steady while its motor turns and advances the screw."
+   },
+   {
+    "arguments": [
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Return the driver to the selected work surface."
+   },
+   {
+    "arguments": [
+     "workshop_power_driver",
+     "MAIN_WORKBENCH_ZONE"
+    ],
+    "operator": "PLACE_ON_SURFACE",
+    "reason": "Leave the used driver safely on the main workbench."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Move to the repaired joint for terminal inspection."
+   },
+   {
+    "arguments": [
+     "workshop_frame_joint"
+    ],
+    "operator": "VERIFY_REPAIR",
+    "reason": "Verify the intended repair and terminal organization."
+   }
+  ],
+  "description": "Manual driver absent; power driver and screw remain sufficient.",
+  "environment": "workshop",
+  "intended_outcome": "FEASIBLE",
+  "internal_variant": "F7_POWER_ONLY",
+  "schema_version": 1,
+  "total_actions": 37,
+  "variant": "W8"
+ },
+ "workshop/W9": {
+  "actions": [
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "LEFT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "RIGHT_DRAWER"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "MOVE_TO",
+    "reason": "Visit the next storage region in the fixed search order."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "OPEN_STORAGE",
+    "reason": "Expose the fixed object set in this region."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "INSPECT_STORAGE",
+    "reason": "Observe the screw, compatible drivers, or hammer distractor."
+   },
+   {
+    "arguments": [
+     "TOOL_CABINET"
+    ],
+    "operator": "CLOSE_STORAGE",
+    "reason": "Restore the inspected storage region before continuing search."
+   },
+   {
+    "arguments": [
+     "NO_COMPATIBLE_DRIVER"
+    ],
+    "operator": "TERMINATE_INFEASIBLE",
+    "reason": "All three regions were inspected and the required screw-driver pair is absent."
+   }
+  ],
+  "description": "Screw and hammer present; both compatible drivers absent.",
+  "environment": "workshop",
+  "intended_outcome": "INFEASIBLE",
+  "internal_variant": "I0_NO_DRIVER",
+  "schema_version": 1,
+  "total_actions": 13,
+  "variant": "W9"
+ }
+}

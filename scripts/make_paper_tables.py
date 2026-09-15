@@ -142,8 +142,8 @@ def table_iv_verification(doc, top_up: bool) -> str:
 
 
 def table_iv_inspection(repo: pathlib.Path) -> str:
-    worst = json.loads((repo / "benchmark_reports/INSPECTION_ORDER_ABLATION/fm_vs_worst.json").read_text())
-    times = json.loads((repo / "results/inspection_order_total_time.json").read_text())
+    worst = json.loads((repo / "data/metrics/inspection_order.json").read_text())
+    times = json.loads((repo / "data/metrics/inspection_order_total_time.json").read_text())
     body = []
     for dom in DOMAINS:
         m = worst["scenes"][dom]
@@ -160,7 +160,7 @@ def table_iv_inspection(repo: pathlib.Path) -> str:
             "is the privileged worst case, which reads which regions are empty "
             "from the scene configuration and opens those first. Total time is "
             "opening cost plus grounding time — see "
-            "`results/inspection_order_total_time.json` for the composition.\n\n"
+            "`data/metrics/inspection_order_total_time.json` for the composition.\n\n"
             + md(["Scene", "Order", "Regions inspected", "Candidate checks",
                   "Total time (s)"], body))
 
@@ -171,17 +171,17 @@ def main() -> None:
     ap.add_argument("--repo", type=pathlib.Path,
                     default=pathlib.Path(__file__).resolve().parents[1])
     ap.add_argument("--scored", type=pathlib.Path, default=None,
-                    help="default: benchmark_reports/zs4_top1/full_metrics.json")
+                    help="default: data/metrics/scored_320.json")
     ap.add_argument("--drop-unscored", action="store_true",
                     help="exclude unscored trials from the denominators instead "
                          "of scoring them as achieving the reference behaviour")
     ap.add_argument("--out", type=pathlib.Path, default=None)
     args = ap.parse_args()
 
-    scored = args.scored or (args.repo / "benchmark_reports/zs4_top1/full_metrics.json")
+    scored = args.scored or (args.repo / "data/metrics/scored_320.json")
     doc = json.loads(scored.read_text())
     rows = doc["rows"] if isinstance(doc, dict) and "rows" in doc else doc
-    verif = json.loads((args.repo / "results/verification_ablation.json").read_text())
+    verif = json.loads((args.repo / "data/metrics/verification_ablation.json").read_text())
     top_up = not args.drop_unscored
 
     out = "\n\n".join([

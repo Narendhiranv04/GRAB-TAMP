@@ -530,7 +530,7 @@ def main():
     parser.add_argument("--mode", choices=("vlm", "gt"), default="vlm")
     parser.add_argument("--spec-source", choices=("live", "replay", "raw-replay"), default="live",
                         help="Specification sourcing mode: 'live' (fresh FM call per variant), 'replay' (canonical graph JSON), or 'raw-replay' (archived raw FM response)")
-    parser.add_argument("--output-root", type=Path, default=Path("benchmark_reports/final_vlm_evaluation"))
+    parser.add_argument("--output-root", type=Path, default=Path("results/runs/evaluation"))
     parser.add_argument("--specification-root", type=Path, default=None,
                         help="Path to root containing per-variant specifications (required for --spec-source replay or raw-replay, forbidden for live)")
     parser.add_argument("--dry-run", action="store_true", default=True)

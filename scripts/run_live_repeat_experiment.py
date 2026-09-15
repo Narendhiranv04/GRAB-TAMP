@@ -77,17 +77,17 @@ def _model_revision(record: dict) -> str:
 # so each is passed and each is recorded, and the two come from one dict.
 #
 # The values are not chosen here: they are the sampler of the archived 3x32 V3
-# distribution (benchmark_reports/v3_qwen_distribution_3x32_20260910T053937,
-# model_config), which is the configuration every offline measurement of this
-# pipeline was made against.  Running live under a different sampler would make
+# distribution whose model_config every offline measurement of this pipeline
+# was made against.  Running live under a different sampler would make
 # the live numbers unattributable -- a drop could be the pipeline or could be
 # the sampler, with no way to tell them apart.  In particular thinking is on and
 # the temperature is 0.6: the repetitions exist to measure that variance, and a
 # greedy sampler would make ten repetitions ten copies of one draw.
 # test_the_live_sampler_is_the_one_the_offline_numbers_were_measured_on pins
 # these against the archived manifest.
-FROZEN_DISTRIBUTION = (
-    "benchmark_reports/v3_qwen_distribution_3x32_20260910T053937/collection_manifest.json")
+# Identifies the archived distribution these values came from. Kept as a label
+# rather than a path: the distribution itself is not redistributed here.
+FROZEN_DISTRIBUTION = "v3_qwen_distribution_3x32"
 SAMPLER = {
     # 28000, not the archive's 24000.  The hard limit is 28247: the model's
     # context is 32768 and the worst observed prompt is 4521 tokens.
@@ -170,7 +170,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--output-root", type=Path,
-                        default=Path("benchmark_reports/live_repeat_experiment"))
+                        default=Path("results/runs/live_repeat_experiment"))
     parser.add_argument("--base-url", default="http://127.0.0.1:8000/v1")
     parser.add_argument("--model", required=True,
                         help="exact model id the endpoint must serve; no fallback")

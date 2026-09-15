@@ -31,8 +31,8 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping
 
 REPO = Path(__file__).resolve().parents[1]
-FAC_PATH = REPO / "GT_VALID_ROLE_ASSIGNMENTS" / "gt_valid_role_assignments.json"
-GC_PATH = REPO / "GT_GOAL_COVERAGE" / "gt_goal_coverage.json"
+FAC_PATH = REPO / "ground_truth" / "valid_role_assignments.json"
+GC_PATH = REPO / "ground_truth" / "goal_coverage.json"
 
 _FAC_CACHE: dict | None = None
 _GC_CACHE: dict | None = None

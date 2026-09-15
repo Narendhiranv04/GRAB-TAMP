@@ -51,7 +51,7 @@ def surviving_groups(scored_json: Path) -> dict[str, list[str]]:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--scored-json", type=Path,
-                    default=REPO / "benchmark_reports/FINAL_10x32_RESULTS/final_10x32.json")
+                    default=REPO / "data/metrics/scored_320.json")
     ap.add_argument("--output-root", type=Path, required=True)
     ap.add_argument("--order-mode", default="auto", choices=["auto", "random", "worst"])
     ap.add_argument("--seed-base", type=int, default=0)

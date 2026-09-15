@@ -1,72 +1,51 @@
 #!/usr/bin/env bash
-# One GRAB-TAMP trial, end to end: instruction and three rendered views in,
-# validated action sequence out.
+# One trial end to end: task instruction and three rendered views in, validated
+# action sequence out.
 #
-#   ./run_demo.sh                  # kitchen K3
-#   ./run_demo.sh workshop W2      # robot-actuated container opening
-#   ./run_demo.sh living_room L1   # no inspectable regions, no search stage
+#   ./run_demo.sh                    # kitchen K3
+#   ./run_demo.sh workshop W2
+#   ./run_demo.sh living_room L1
 #
-# Replays the archived foundation-model response, so it needs no GPU and makes
-# no model call. The response is recompiled from the model's own words, so the
-# whole pipeline downstream of the call runs for real.
-#
-#   --live       call a served model instead of replaying
-#   --physical   drive containers open with the robot instead of setting the
-#                simulator joint (workshop only; kitchen always sets the joint)
+# Replays the archived foundation-model response for that variant, so it needs
+# no GPU and makes no model call; everything after the call runs for real.
+# Add --live to call a served model instead.
 set -euo pipefail
 cd "$(dirname "$0")"
-export PYTHONPATH=.
+export PYTHONPATH=. TOKENIZERS_PARALLELISM=false
+export TAMP_ZS_MIN_SCORE=0.0 TAMP_ZS_MIN_MARGIN=0.0
 
 DOMAIN="kitchen"; VARIANT="K3"
 [ $# -ge 1 ] && case "$1" in -*) ;; *) DOMAIN="$1" ;; esac
 [ $# -ge 2 ] && case "$2" in -*) ;; *) VARIANT="$2" ;; esac
 
-SPEC_ARGS=(--spec-source raw-replay --specification-root examples)
-DRY=(--dry-run)
-for arg in "$@"; do
-  case "$arg" in
-    --live)     SPEC_ARGS=(--spec-source live) ;;
-    --physical) DRY=() ;;
-  esac
-done
+SPEC=(--specification-root data/reference_run)
+for a in "$@"; do [ "$a" = "--live" ] && SPEC=(); done
 
-# Fall back to the full archive when the variant is not one of the examples.
-if [ "${SPEC_ARGS[1]}" = "raw-replay" ] \
-   && [ ! -f "examples/${DOMAIN}/${VARIANT}/vlm/fm_diagnostics/fm_call_001.json" ]; then
-  HIT=$(find benchmark_reports/full320_s0* \
-          -path "*/${DOMAIN}/${VARIANT}/vlm/fm_diagnostics/fm_call_001.json" \
-          -print -quit 2>/dev/null || true)
-  if [ -z "$HIT" ]; then
-    echo "No archived response for ${DOMAIN}/${VARIANT}; re-run with --live." >&2
-    exit 1
-  fi
-  SPEC_ARGS=(--spec-source raw-replay --specification-root "${HIT%/${DOMAIN}/${VARIANT}/vlm/fm_diagnostics/fm_call_001.json}")
-fi
-
-OUT="results/demo/${DOMAIN}_${VARIANT}"
-echo "domain=${DOMAIN} variant=${VARIANT} ${SPEC_ARGS[*]}"
-echo "output=${OUT}"
+OUT="results/runs/demo_${DOMAIN}_${VARIANT}"
+echo "domain=${DOMAIN} variant=${VARIANT}  ->  ${OUT}"
 echo
 
-python3 scripts/evaluate_vlm_functional_tamp.py \
-  --mode vlm "${SPEC_ARGS[@]}" "${DRY[@]}" \
-  --variants "$VARIANT" --output-root "$OUT"
+python3 scripts/evaluate_vlm_zs_canonicalization.py \
+  "${SPEC[@]}" --variants "$VARIANT" --output-root "$OUT"
 
 echo
-echo "Terminal status and validated plan:"
 python3 - "$OUT" "$DOMAIN" "$VARIANT" <<'PY'
 import json, pathlib, sys
 out, domain, variant = sys.argv[1:4]
 hits = sorted(pathlib.Path(out).rglob(f"{domain}/{variant}/*/result.json"))
 if not hits:
-    print(f"  (no result.json under {out})")
-    raise SystemExit(0)
-doc = json.loads(hits[-1].read_text())
-print(f"  status           {doc.get('status')}")
-print(f"  outcome          {doc.get('outcome_category')}")
-print(f"  regions opened   {doc.get('inspected_regions')}")
-print(f"  role assignment  {doc.get('assignment')}")
-plan = doc.get("plan") or doc.get("candidate_plan") or []
-for i, step in enumerate(plan, 1):
-    print(f"  {i:2d}. {step.get('action_instance_id', step) if isinstance(step, dict) else step}")
+    print(f"no result.json under {out}"); raise SystemExit(1)
+d = json.loads(hits[-1].read_text())
+print(f"status          {d.get('status')}")
+print(f"outcome         {d.get('outcome_category')}")
+print(f"regions opened  {d.get('inspected_regions')}")
+print(f"role binding    {d.get('assignment')}")
+print("action sequence:")
+for i, s in enumerate(d.get("plan") or d.get("candidate_plan") or [], 1):
+    if isinstance(s, dict):
+        name = s.get("operator") or s.get("action") or s.get("action_instance_id")
+        args = ", ".join(map(str, s.get("arguments") or []))
+        print(f"  {i:2d}. {name}({args})")
+    else:
+        print(f"  {i:2d}. {s}")
 PY

@@ -74,7 +74,7 @@ def _signatures():
     """
     global _SIG
     if _SIG is None:
-        path = REPO / "GT_VALID_ROLE_ASSIGNMENTS" / "identity_signatures.json"
+        path = REPO / "ground_truth" / "identity_signatures.json"
         _SIG = json.loads(path.read_text()) if path.exists() else {}
     return _SIG
 

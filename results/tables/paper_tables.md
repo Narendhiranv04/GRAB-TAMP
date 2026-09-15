@@ -36,7 +36,7 @@ Reference role and relation slots classified *correct*, *wrong* or *missing*, wi
 
 ### Inspection-order ablation
 
-Paired per trial over the same frozen responses; the fixed order is the privileged worst case, which reads which regions are empty from the scene configuration and opens those first. Total time is opening cost plus grounding time — see `results/inspection_order_total_time.json` for the composition.
+Paired per trial over the same frozen responses; the fixed order is the privileged worst case, which reads which regions are empty from the scene configuration and opens those first. Total time is opening cost plus grounding time — see `data/metrics/inspection_order_total_time.json` for the composition.
 
 | Scene | Order | Regions inspected | Candidate checks | Total time (s) |
 |---|---|---|---|---|

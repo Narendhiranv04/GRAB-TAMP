@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Compare each produced action plan against the expected GT action sequence.
 
-Offline scoring only.  Reads the catalogue in EXPECTED_GT_ACTIONS/, which is
+Offline scoring only.  Reads the catalogue in ground_truth/expected_actions.json, which is
 generated from the benchmark definition, and the action_plan.json each trial
 produced.  Nothing here runs during a trial and nothing it computes is fed back
 into the pipeline.
@@ -20,7 +20,16 @@ import argparse, csv, json, re, sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
-CATALOGUE = REPO / "EXPECTED_GT_ACTIONS"
+CATALOGUE = REPO / "ground_truth" / "expected_actions.json"
+_CATALOGUE_CACHE: dict | None = None
+
+
+def _catalogue() -> dict:
+    """The expected-action catalogue, keyed "<domain>/<variant>"."""
+    global _CATALOGUE_CACHE
+    if _CATALOGUE_CACHE is None:
+        _CATALOGUE_CACHE = json.loads(CATALOGUE.read_text()) if CATALOGUE.exists() else {}
+    return _CATALOGUE_CACHE
 
 # Arguments that name a place the runtime and the catalogue share a name for.
 SHARED_NAME = re.compile(
@@ -32,10 +41,9 @@ EXPLORATORY = {"OPEN"}
 
 
 def load_expected(domain: str, variant: str):
-    path = CATALOGUE / domain / variant / "expected_gt_actions.json"
-    if not path.exists():
+    data = _catalogue().get(f"{domain}/{variant}")
+    if data is None:
         return None
-    data = json.loads(path.read_text())
     actions = data.get("actions") or data.get("expected_actions") or []
     return data, [a for a in actions if str(a.get("operator")) not in EXPLORATORY]
 

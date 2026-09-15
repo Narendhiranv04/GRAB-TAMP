@@ -24,7 +24,7 @@ sys.path.insert(0, str(REPO))
 from mujoco_scenes.functional_tamp_pipeline.relation_interpreter import interpret_relation  # noqa: E402
 
 STREAMS = ("full320_s01", "full320_s02", "full320_s03")
-SCORED = REPO / "benchmark_reports/FINAL_10x32_RESULTS/final_10x32.json"
+SCORED = REPO / "data/metrics/scored_320.json"
 OUT = Path(__file__).resolve().parent / "data" / "frozen_relation_instances.jsonl"
 
 

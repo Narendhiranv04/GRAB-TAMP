@@ -8,7 +8,7 @@ cabinet open. An inspection-order result reported in grounding seconds is
 therefore reporting the small term.
 
 This sums the *measured* actuation time for the regions each trial actually
-inspected. Per-region costs come from benchmark_reports/workshop_open_costs.json,
+inspected. Per-region costs come from data/metrics/workshop_open_costs.json,
 recorded with contact-gated robot actuation from the home position and verified
 against ground truth, so nothing here is an estimate of the physical cost --
 only the composition is computed.
@@ -24,7 +24,7 @@ cost that exists to be measured.
 Usage:
     python3 scripts/score_inspection_open_cost.py \
         --arms order_fm order_random order_worst \
-        --out benchmark_reports/INSPECTION_ORDER_ABLATION/open_cost.json
+        --out results/open_cost.json
 """
 from __future__ import annotations
 
@@ -68,14 +68,14 @@ def arm_costs(root: pathlib.Path, sim_cost: dict[str, float]) -> dict:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--reports-root", default="benchmark_reports", type=pathlib.Path)
+    ap.add_argument("--reports-root", default="results/runs", type=pathlib.Path)
     ap.add_argument("--arms", nargs="+", required=True)
     ap.add_argument("--costs", default=None, type=pathlib.Path,
                     help="per-region measured open costs (default: <reports-root>/workshop_open_costs.json)")
     ap.add_argument("--out", default=None, type=pathlib.Path)
     args = ap.parse_args()
 
-    costs_path = args.costs or (args.reports_root / "workshop_open_costs.json")
+    costs_path = args.costs or pathlib.Path("data/metrics/workshop_open_costs.json")
     measured = json.loads(costs_path.read_text())
     sim_cost = {region: entry["sim_seconds"] for region, entry in measured.items()}
 

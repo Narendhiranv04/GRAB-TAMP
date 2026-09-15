@@ -29,7 +29,7 @@ from mujoco_scenes.kitchen_vlm_functional_graph import (  # noqa: E402
 )
 from mujoco_scenes.workshop_phase1.requirements import resolve_workshop_region_proposal  # noqa: E402
 
-SCORED = REPO / "benchmark_reports/FINAL_10x32_RESULTS/final_10x32.json"
+SCORED = REPO / "data/metrics/scored_320.json"
 OUT = Path(__file__).resolve().parent / "data"
 
 
