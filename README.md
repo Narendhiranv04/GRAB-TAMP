@@ -51,7 +51,10 @@ install the distribution's `python3-venv` package or use conda
 | detector embedding | CLIP `ViT-B-32` |
 | relation alias resolution | DeBERTa zero-shot NLI, `MoritzLaurer/deberta-v3-large-zeroshot-v2.0-c` (CPU) |
 
-The reported runs served the FM on an NVIDIA RTX PRO 5000 Blackwell.
+**Hardware.** All experiments in the paper were run on an inference server with
+a single **NVIDIA RTX PRO 5000 Blackwell** (32 GB), which served the foundation
+model through vLLM; simulation, detection and point-cloud geometry run on CPU.
+
 **Reproducing the tables needs no GPU and no model access** — the raw FM
 response for all 320 trials ships in `data/reference_run/`, and every result is
 recompiled from it. A replay of all 32 variants takes about 15 minutes on CPU.
