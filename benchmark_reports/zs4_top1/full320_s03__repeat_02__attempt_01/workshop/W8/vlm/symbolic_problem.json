@@ -1,0 +1,137 @@
+{
+  "initial_atoms": [
+    [
+      "at",
+      "object_0003",
+      "TOOL_CABINET"
+    ],
+    [
+      "hand_empty"
+    ],
+    [
+      "open",
+      "LEFT_DRAWER"
+    ],
+    [
+      "open",
+      "RIGHT_DRAWER"
+    ],
+    [
+      "open",
+      "TOOL_CABINET"
+    ]
+  ],
+  "goal_atoms": [
+    [
+      "at",
+      "object_0003",
+      "MAIN_WORKBENCH_ZONE"
+    ],
+    [
+      "hand_empty"
+    ]
+  ],
+  "actions": [
+    {
+      "name": "PICK",
+      "arguments": [
+        "object_0003",
+        "TOOL_CABINET"
+      ],
+      "positive_preconditions": [
+        [
+          "at",
+          "object_0003",
+          "TOOL_CABINET"
+        ],
+        [
+          "hand_empty"
+        ],
+        [
+          "open",
+          "TOOL_CABINET"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "holding",
+          "object_0003"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "at",
+          "object_0003",
+          "TOOL_CABINET"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PLACE",
+      "arguments": [
+        "object_0003",
+        "MAIN_WORKBENCH_ZONE"
+      ],
+      "positive_preconditions": [
+        [
+          "holding",
+          "object_0003"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "at",
+          "object_0003",
+          "MAIN_WORKBENCH_ZONE"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0003"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PLACE",
+      "arguments": [
+        "object_0003",
+        "MAIN_WORKBENCH_ZONE"
+      ],
+      "positive_preconditions": [
+        [
+          "holding",
+          "object_0003"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "at",
+          "object_0003",
+          "MAIN_WORKBENCH_ZONE"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0003"
+        ]
+      ],
+      "cost": 1
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "initial_atoms": [
+    [
+      "available",
+      "object_0003"
+    ],
+    [
+      "hand_empty"
+    ],
+    [
+      "object",
+      "object_0003"
+    ],
+    [
+      "region",
+      "region_0002"
+    ]
+  ],
+  "goal_atoms": [
+    [
+      "on",
+      "object_0003",
+      "region_0002"
+    ]
+  ],
+  "actions": [
+    {
+      "name": "pick",
+      "arguments": [
+        "object_0003"
+      ],
+      "positive_preconditions": [
+        [
+          "available",
+          "object_0003"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "holding",
+          "object_0003"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "available",
+          "object_0003"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "place",
+      "arguments": [
+        "object_0003",
+        "region_0002"
+      ],
+      "positive_preconditions": [
+        [
+          "holding",
+          "object_0003"
+        ],
+        [
+          "region",
+          "region_0002"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "hand_empty"
+        ],
+        [
+          "on",
+          "object_0003",
+          "region_0002"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0003"
+        ]
+      ],
+      "cost": 1
+    }
+  ]
+}

@@ -1,0 +1,3156 @@
+{
+  "candidate_regions": [],
+  "cross_group_reuse_allowed": false,
+  "detector_vocabulary": [
+    "cup",
+    "plate",
+    "beverage",
+    "remote",
+    "control_panel",
+    "table",
+    "desk",
+    "shelf",
+    "chair_group",
+    "floor_area",
+    "tv",
+    "screen",
+    "cup saucer set",
+    "saucer",
+    "remote control",
+    "tv remote"
+  ],
+  "domain": "living_room",
+  "metadata": {
+    "candidate_categories_used_for_detector_vocabulary": true,
+    "candidate_categories_used_for_grounding_acceptance": false,
+    "candidate_categories_used_for_role_identity": true,
+    "candidate_requirement_statuses": [
+      {
+        "id": "television",
+        "status": "CONTEXT_ONLY"
+      },
+      {
+        "id": "refreshment_setting",
+        "requirement": "drinkable_container",
+        "status": "SOFT_SEMANTIC_ONLY"
+      },
+      {
+        "id": "refreshment_setting",
+        "requirement": "eating_surface",
+        "status": "SOFT_SEMANTIC_ONLY"
+      },
+      {
+        "id": "entertainment_control",
+        "requirement": "button_interface",
+        "status": "SOFT_SEMANTIC_ONLY"
+      },
+      {
+        "id": "surface",
+        "requirement": "flat_top",
+        "status": "SOFT_SEMANTIC_ONLY"
+      },
+      {
+        "id": "surface",
+        "requirement": "stable",
+        "status": "SOFT_SEMANTIC_ONLY"
+      },
+      {
+        "id": "seating_location",
+        "requirement": "furnished",
+        "status": "SOFT_SEMANTIC_ONLY"
+      },
+      {
+        "id": "seating_location",
+        "requirement": "in_front_of_tv",
+        "status": "SOFT_SEMANTIC_ONLY"
+      },
+      {
+        "id": "personal_support_group",
+        "missing_roles": [],
+        "roles": [
+          "PERSONAL_CUP_SAUCER_REGION",
+          "CUP_SAUCER_SET",
+          "SEATING_POSITION"
+        ],
+        "status": "UNINSTANTIABLE_UNGROUNDED_ROLE"
+      },
+      {
+        "id": "shared_entertainment_group",
+        "missing_roles": [],
+        "roles": [
+          "SHARED_REMOTE_REGION",
+          "REMOTE",
+          "SEATING_PAIR"
+        ],
+        "status": "UNINSTANTIABLE_UNGROUNDED_ROLE"
+      }
+    ],
+    "canonicalization_status": "FULL",
+    "canonicalization_trace": {
+      "constraints_outside_the_runtime_task": [],
+      "context_only_roles": [
+        {
+          "raw_role": {
+            "binding_policy": "SHARED",
+            "candidate_categories": [
+              "tv",
+              "screen"
+            ],
+            "description": "",
+            "entity_kind": "FIXED_TARGET",
+            "function": "Screen providing visual content.",
+            "id": "television",
+            "required_count": 1,
+            "required_properties": [
+              "display"
+            ],
+            "visible_candidates": [
+              {
+                "label": "wall_mounted_tv",
+                "visual_description": "Black flat screen mounted on the back wall."
+              }
+            ]
+          },
+          "recognized_families": [
+            "DISPLAY_CONTEXT"
+          ],
+          "status": "RECOGNIZED_CONTEXT_FAMILY_WITH_NO_FUNCTIONAL_ROLE"
+        }
+      ],
+      "disabled_groups": [],
+      "disambiguated_roles": [],
+      "explicit_context_set_canonicalizations": [],
+      "explicit_role_pairings": [
+        {
+          "canonical_context_role": "SEATING_POSITION",
+          "canonical_source_role": "PERSONAL_CUP_SAUCER_REGION",
+          "canonical_target_role": "CUP_SAUCER_SET",
+          "context_set_id": null,
+          "current_state_context_roles": [],
+          "graph_join_relation_id": "near_viewer",
+          "operation_id": "place_refreshments",
+          "provenance": "FM_EXPLICIT_OPERATION",
+          "raw_fm_participant_roles": [
+            "refreshment_setting",
+            "surface"
+          ],
+          "raw_participant_roles": [
+            "refreshment_setting",
+            "surface",
+            "seating_location"
+          ]
+        },
+        {
+          "canonical_context_role": "SEATING_PAIR",
+          "canonical_source_role": "SHARED_REMOTE_REGION",
+          "canonical_target_role": "REMOTE",
+          "context_set_id": null,
+          "current_state_context_roles": [],
+          "graph_join_relation_id": null,
+          "operation_id": "place_remote",
+          "provenance": "FM_EXPLICIT_OPERATION",
+          "raw_fm_participant_roles": [
+            "entertainment_control",
+            "surface",
+            "op_slot__place_remote__source",
+            "op_slot__place_remote__anchor"
+          ],
+          "raw_participant_roles": [
+            "entertainment_control",
+            "surface",
+            "op_slot__place_remote__source",
+            "op_slot__place_remote__anchor"
+          ]
+        }
+      ],
+      "groups": [
+        {
+          "capability_id": "SUPPORT_DRINKWARE",
+          "context_relations": [
+            "NEAR_SEAT"
+          ],
+          "interp_status": "LEXICAL_SEMANTIC_MATCH",
+          "planner_operation": "SUPPORT_DRINKWARE",
+          "preconditions_provenance": [
+            {
+              "capability_id": "SUPPORT_DRINKWARE",
+              "predicate": "FITS_SET_ON",
+              "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+              "source_operation_id": "place_refreshments"
+            },
+            {
+              "capability_id": "SUPPORT_DRINKWARE",
+              "predicate": "NEAR_SEAT",
+              "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+              "source_operation_id": "place_refreshments"
+            }
+          ],
+          "raw_group": {
+            "context_relations": [],
+            "context_role": "seating_location",
+            "function": "place_on",
+            "id": "place_refreshments",
+            "required_relations": [],
+            "required_target_count": 2,
+            "target_role": "refreshment_setting",
+            "tool_role": "surface",
+            "usage_policy": "SEQUENTIAL_REUSE_ALLOWED",
+            "v3_current_state_context_roles": [],
+            "v3_explicit_context_set_id": null,
+            "v3_explicit_participant_roles": [
+              "refreshment_setting",
+              "surface",
+              "seating_location"
+            ],
+            "v3_graph_join_relation_id": "near_viewer",
+            "v3_participant_roles": [
+              "refreshment_setting",
+              "surface",
+              "seating_location"
+            ],
+            "v3_raw_fm_participant_roles": [
+              "refreshment_setting",
+              "surface"
+            ],
+            "v3_slot_assignments": [
+              {
+                "anchor_role": "seating_location",
+                "anchor_type": "SEATING_POSITION",
+                "capability_id": "SUPPORT_DRINKWARE",
+                "planner_operation": "SUPPORT_DRINKWARE",
+                "source_role": "surface",
+                "source_type": "PERSONAL_CUP_SAUCER_REGION",
+                "target_role": "refreshment_setting",
+                "target_type": "CUP_SAUCER_SET",
+                "usage_policy": "SEQUENTIAL_REUSE_ALLOWED"
+              }
+            ],
+            "v3_witness_roles": []
+          },
+          "required_relations": [
+            "FITS_SET_ON"
+          ],
+          "status": "CANONICAL_OPERATION_GROUP"
+        },
+        {
+          "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+          "context_relations": [
+            "ACCESSIBLE_FROM_BOTH_SEATS"
+          ],
+          "interp_status": "LEXICAL_SEMANTIC_MATCH",
+          "planner_operation": "SUPPORT_ENTERTAINMENT_CONTROL",
+          "preconditions_provenance": [
+            {
+              "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+              "predicate": "FITS_ON",
+              "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+              "source_operation_id": "place_remote"
+            },
+            {
+              "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+              "predicate": "ACCESSIBLE_FROM_BOTH_SEATS",
+              "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+              "source_operation_id": "place_remote"
+            }
+          ],
+          "raw_group": {
+            "context_relations": [],
+            "context_role": "op_slot__place_remote__anchor",
+            "function": "place_on",
+            "id": "place_remote",
+            "required_relations": [],
+            "required_target_count": 1,
+            "target_role": "entertainment_control",
+            "tool_role": "op_slot__place_remote__source",
+            "usage_policy": "SEQUENTIAL_REUSE_ALLOWED",
+            "v3_current_state_context_roles": [],
+            "v3_explicit_context_set_id": null,
+            "v3_explicit_participant_roles": [
+              "entertainment_control",
+              "surface",
+              "op_slot__place_remote__source",
+              "op_slot__place_remote__anchor"
+            ],
+            "v3_graph_join_relation_id": null,
+            "v3_participant_roles": [
+              "entertainment_control",
+              "surface",
+              "op_slot__place_remote__source",
+              "op_slot__place_remote__anchor"
+            ],
+            "v3_raw_fm_participant_roles": [
+              "entertainment_control",
+              "surface",
+              "op_slot__place_remote__source",
+              "op_slot__place_remote__anchor"
+            ],
+            "v3_slot_assignments": [
+              {
+                "anchor_role": "op_slot__place_remote__anchor",
+                "anchor_type": "SEATING_PAIR",
+                "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+                "capability_provenance": "OPERATION_INDUCED_SLOT_COMPLETION",
+                "planner_operation": "SUPPORT_ENTERTAINMENT_CONTROL",
+                "source_role": "op_slot__place_remote__source",
+                "source_type": "SHARED_REMOTE_REGION",
+                "target_role": "entertainment_control",
+                "target_type": "REMOTE",
+                "usage_policy": "SEQUENTIAL_REUSE_ALLOWED"
+              }
+            ],
+            "v3_witness_roles": [
+              "surface"
+            ]
+          },
+          "required_relations": [
+            "FITS_ON"
+          ],
+          "status": "CANONICAL_OPERATION_GROUP"
+        }
+      ],
+      "merged_roles": [],
+      "operation_participant_slot_resolutions": [
+        {
+          "anchor_role": "seating_location",
+          "capability_id": "SUPPORT_DRINKWARE",
+          "operation_id": "place_refreshments",
+          "participant_roles": [
+            "refreshment_setting",
+            "seating_location",
+            "surface"
+          ],
+          "source_role": "surface",
+          "target_role": "refreshment_setting",
+          "usage_policy": "SEQUENTIAL_REUSE_ALLOWED"
+        },
+        {
+          "anchor_role": "op_slot__place_remote__anchor",
+          "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+          "operation_id": "place_remote",
+          "participant_roles": [
+            "entertainment_control",
+            "op_slot__place_remote__anchor",
+            "op_slot__place_remote__source"
+          ],
+          "source_role": "op_slot__place_remote__source",
+          "target_role": "entertainment_control",
+          "usage_policy": "SEQUENTIAL_REUSE_ALLOWED"
+        }
+      ],
+      "precondition_provenance": [
+        {
+          "capability_id": "SUPPORT_DRINKWARE",
+          "predicate": "FITS_SET_ON",
+          "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+          "source_operation_id": "place_refreshments"
+        },
+        {
+          "capability_id": "SUPPORT_DRINKWARE",
+          "predicate": "NEAR_SEAT",
+          "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+          "source_operation_id": "place_refreshments"
+        },
+        {
+          "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+          "predicate": "FITS_ON",
+          "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+          "source_operation_id": "place_remote"
+        },
+        {
+          "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+          "predicate": "ACCESSIBLE_FROM_BOTH_SEATS",
+          "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+          "source_operation_id": "place_remote"
+        }
+      ],
+      "properties": [
+        {
+          "canonical_predicate": null,
+          "raw_phrase": "drinkable_container",
+          "raw_role_id": "refreshment_setting",
+          "status": "SOFT_SEMANTIC_EVIDENCE"
+        },
+        {
+          "canonical_predicate": null,
+          "raw_phrase": "eating_surface",
+          "raw_role_id": "refreshment_setting",
+          "status": "SOFT_SEMANTIC_EVIDENCE"
+        },
+        {
+          "canonical_predicate": null,
+          "raw_phrase": "button_interface",
+          "raw_role_id": "entertainment_control",
+          "status": "SOFT_SEMANTIC_EVIDENCE"
+        },
+        {
+          "canonical_predicate": null,
+          "raw_phrase": "flat_top",
+          "raw_role_id": "surface",
+          "status": "SOFT_SEMANTIC_EVIDENCE"
+        },
+        {
+          "canonical_predicate": null,
+          "raw_phrase": "stable",
+          "raw_role_id": "surface",
+          "status": "SOFT_SEMANTIC_EVIDENCE"
+        },
+        {
+          "canonical_predicate": null,
+          "raw_phrase": "furnished",
+          "raw_role_id": "seating_location",
+          "status": "SOFT_SEMANTIC_EVIDENCE"
+        },
+        {
+          "canonical_predicate": null,
+          "raw_phrase": "in_front_of_tv",
+          "raw_role_id": "seating_location",
+          "status": "SOFT_SEMANTIC_EVIDENCE"
+        }
+      ],
+      "provisional_operation_constraints": [],
+      "provisional_relation_constraints": [],
+      "provisional_roles": [],
+      "relation_orientation_resolutions": [
+        {
+          "canonical": [
+            [
+              "PERSONAL_CUP_SAUCER_REGION",
+              "NEAR_SEAT",
+              "SEATING_POSITION"
+            ]
+          ],
+          "direction_normalized": false,
+          "raw_participants": [
+            "surface",
+            "seating_location"
+          ]
+        }
+      ],
+      "relations": [
+        {
+          "canonical": [
+            [
+              "PERSONAL_CUP_SAUCER_REGION",
+              "NEAR_SEAT",
+              "SEATING_POSITION"
+            ]
+          ],
+          "category": "PHYSICAL_VERIFIER",
+          "direction_normalized": false,
+          "interp_status": "LEXICAL_SEMANTIC_MATCH",
+          "raw_object": "seating_location",
+          "raw_phrase": "near",
+          "raw_subject": "surface",
+          "status": "CANONICAL_EXECUTABLE_SEMANTIC"
+        }
+      ],
+      "relations_enforced_by_operations": [
+        {
+          "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+          "category": "UNRESOLVED_REQUIRED_SEMANTIC",
+          "code": "RELATION_ENFORCED_BY_COMPILED_OPERATION",
+          "enforced_predicates": [
+            "ACCESSIBLE_FROM_BOTH_SEATS"
+          ],
+          "id": "accessible_to_viewer",
+          "operation_id": "place_remote",
+          "participant_roles": [
+            "entertainment_control",
+            "seating_location"
+          ],
+          "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+          "reason": "NO_LEGAL_ORIENTATION_FOR_PARTICIPANTS",
+          "relation": "accessible_from",
+          "required": true
+        }
+      ],
+      "role_operation_reconciliations": [],
+      "roles": [
+        {
+          "canonical_role": "CUP_SAUCER_SET",
+          "canonical_role_candidates": [
+            "CUP_SAUCER_SET"
+          ],
+          "raw_id": "refreshment_setting",
+          "resolution_status": "DIRECT_FUNCTION_MATCH",
+          "rule": "TYPED_DOMAIN_SEMANTICS",
+          "status": "CANONICAL_EXECUTABLE_SEMANTIC"
+        },
+        {
+          "canonical_role": "REMOTE",
+          "canonical_role_candidates": [
+            "REMOTE"
+          ],
+          "raw_id": "entertainment_control",
+          "resolution_status": "DIRECT_FUNCTION_MATCH",
+          "rule": "TYPED_DOMAIN_SEMANTICS",
+          "status": "CANONICAL_EXECUTABLE_SEMANTIC"
+        },
+        {
+          "canonical_role": "PERSONAL_CUP_SAUCER_REGION",
+          "canonical_role_candidates": [
+            "PERSONAL_CUP_SAUCER_REGION"
+          ],
+          "raw_id": "surface",
+          "resolution_status": "DIRECT_FUNCTION_MATCH",
+          "rule": "TYPED_DOMAIN_SEMANTICS",
+          "status": "CANONICAL_EXECUTABLE_SEMANTIC"
+        },
+        {
+          "canonical_entity_kind": "FIXED_TARGET",
+          "canonical_role": "SEATING_POSITION",
+          "declared_entity_kind": "REGION",
+          "raw_id": "seating_location",
+          "status": "ENTITY_KIND_FOLLOWS_CANONICAL_ROLE"
+        },
+        {
+          "canonical_role": "SEATING_POSITION",
+          "canonical_role_candidates": [
+            "SEATING_POSITION"
+          ],
+          "raw_id": "seating_location",
+          "resolution_status": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS",
+          "rule": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS",
+          "status": "CANONICAL_EXECUTABLE_SEMANTIC"
+        },
+        {
+          "canonical_role": "SHARED_REMOTE_REGION",
+          "canonical_role_candidates": [
+            "SHARED_REMOTE_REGION"
+          ],
+          "raw_id": "op_slot__place_remote__source",
+          "resolution_status": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT",
+          "rule": "EXPLICIT_SHARED_CONTROL_SUPPORT_SEMANTICS",
+          "status": "CANONICAL_EXECUTABLE_SEMANTIC"
+        },
+        {
+          "canonical_role": "SEATING_PAIR",
+          "canonical_role_candidates": [
+            "SEATING_PAIR"
+          ],
+          "raw_id": "op_slot__place_remote__anchor",
+          "resolution_status": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT",
+          "rule": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT",
+          "status": "CANONICAL_EXECUTABLE_SEMANTIC"
+        },
+        {
+          "applications": 2,
+          "canonical_role": "SEATING_POSITION",
+          "declared_binding_policy": "SHARED",
+          "declared_count": 1,
+          "operation_id": "personal_support_group",
+          "provenance": "RUNTIME_ROLE_REUSE_ADMISSIBILITY",
+          "raw_role": "seating_location",
+          "rule": "ONE_CONTEXT_INSTANCE_PER_DEDICATED_APPLICATION",
+          "status": "PER_APPLICATION_CONTEXT_CARDINALITY"
+        }
+      ],
+      "surplus_unrepresentable_constraints": [],
+      "task_causal_relations": [],
+      "unresolved_required_operations": [],
+      "unresolved_required_relations": [],
+      "unresolved_roles": []
+    },
+    "contract_missing_reasons": [],
+    "current_state_operation_context_roles": [],
+    "detector_vocabulary_source": "VLM_CANDIDATES_PLUS_RELEVANT_SYSTEM_ALIASES",
+    "executable_contract_missing_reasons": [],
+    "explicit_context_sets": [],
+    "explicit_role_pairings": [
+      {
+        "canonical_context_role": "SEATING_POSITION",
+        "canonical_source_role": "PERSONAL_CUP_SAUCER_REGION",
+        "canonical_target_role": "CUP_SAUCER_SET",
+        "context_set_id": null,
+        "current_state_context_roles": [],
+        "graph_join_relation_id": "near_viewer",
+        "operation_id": "place_refreshments",
+        "provenance": "FM_EXPLICIT_OPERATION",
+        "raw_fm_participant_roles": [
+          "refreshment_setting",
+          "surface"
+        ],
+        "raw_participant_roles": [
+          "refreshment_setting",
+          "surface",
+          "seating_location"
+        ]
+      },
+      {
+        "canonical_context_role": "SEATING_PAIR",
+        "canonical_source_role": "SHARED_REMOTE_REGION",
+        "canonical_target_role": "REMOTE",
+        "context_set_id": null,
+        "current_state_context_roles": [],
+        "graph_join_relation_id": null,
+        "operation_id": "place_remote",
+        "provenance": "FM_EXPLICIT_OPERATION",
+        "raw_fm_participant_roles": [
+          "entertainment_control",
+          "surface",
+          "op_slot__place_remote__source",
+          "op_slot__place_remote__anchor"
+        ],
+        "raw_participant_roles": [
+          "entertainment_control",
+          "surface",
+          "op_slot__place_remote__source",
+          "op_slot__place_remote__anchor"
+        ]
+      }
+    ],
+    "fm_schema_version": 3,
+    "fm_semantic_accounting": [
+      {
+        "canonical_representation": [
+          "SUPPORT_DRINKWARE"
+        ],
+        "disposition": "GRAPH_JOINED_PRIMITIVE_CAPABILITY",
+        "element_kind": "operation",
+        "provenance": "FM_EXPLICIT_OPERATION_PLUS_RELATION",
+        "raw_id": "place_refreshments",
+        "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+      },
+      {
+        "canonical_representation": [
+          "SUPPORT_ENTERTAINMENT_CONTROL"
+        ],
+        "disposition": "PRIMITIVE_CAPABILITY",
+        "element_kind": "operation",
+        "provenance": "FM_EXPLICIT_OPERATION",
+        "raw_id": "place_remote",
+        "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+      },
+      {
+        "canonical_representation": [
+          "CUP_SAUCER_SET"
+        ],
+        "disposition": "GROUNDED_TASK_PARTICIPANT",
+        "element_kind": "role",
+        "provenance": "FM_EXPLICIT_ROLE",
+        "raw_id": "refreshment_setting",
+        "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+      },
+      {
+        "canonical_representation": [
+          "REMOTE"
+        ],
+        "disposition": "GROUNDED_TASK_PARTICIPANT",
+        "element_kind": "role",
+        "provenance": "FM_EXPLICIT_ROLE",
+        "raw_id": "entertainment_control",
+        "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+      },
+      {
+        "canonical_representation": [
+          "PERSONAL_CUP_SAUCER_REGION"
+        ],
+        "disposition": "GROUNDED_TASK_PARTICIPANT",
+        "element_kind": "role",
+        "provenance": "FM_EXPLICIT_ROLE",
+        "raw_id": "surface",
+        "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+      },
+      {
+        "canonical_representation": [
+          "SEATING_POSITION"
+        ],
+        "disposition": "GROUNDED_TASK_PARTICIPANT",
+        "element_kind": "role",
+        "provenance": "FM_EXPLICIT_ROLE",
+        "raw_id": "seating_location",
+        "requirement_provenance": "OBSERVATION_ONLY"
+      },
+      {
+        "canonical_representation": [],
+        "disposition": "GROUNDED_TASK_PARTICIPANT",
+        "element_kind": "role",
+        "provenance": "FM_EXPLICIT_ROLE",
+        "raw_id": "television",
+        "requirement_provenance": "OBSERVATION_ONLY"
+      },
+      {
+        "canonical_representation": "near",
+        "disposition": "GROUNDED_TASK_RELATION",
+        "element_kind": "relation",
+        "provenance": "FM_EXPLICIT_RELATION",
+        "raw_id": "near_viewer",
+        "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+      },
+      {
+        "canonical_representation": "accessible_from",
+        "disposition": "EXPLICIT_RUNTIME_CONTEXT",
+        "element_kind": "relation",
+        "provenance": "FM_EXPLICIT_RELATION",
+        "raw_id": "accessible_to_viewer",
+        "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+      }
+    ],
+    "functional_constraint_interpretation": [
+      {
+        "code": "OPERATION_MEDIATED_RELATION_TARGET_NORMALIZATION",
+        "normalized_participant_roles": [
+          "surface",
+          "seating_location"
+        ],
+        "operation_id": "place_refreshments",
+        "provenance": "FM_EXPLICIT_RELATION_AND_OPERATION",
+        "raw_participant_roles": [
+          "refreshment_setting",
+          "seating_location"
+        ],
+        "relation_id": "near_viewer"
+      },
+      {
+        "capability_id": "SUPPORT_DRINKWARE",
+        "code": "EXPLICIT_RELATION_OPERATION_CONTEXT_JOIN",
+        "joined_context_role": "seating_location",
+        "operation_id": "place_refreshments",
+        "provenance": "FM_EXPLICIT_RELATION",
+        "relation_id": "near_viewer"
+      },
+      {
+        "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+        "code": "OPERATION_INDUCED_ABSTRACT_SLOT_COMPLETION",
+        "fm_semantic_witnesses": {
+          "anchor": [
+            {
+              "origin": "RELATION:accessible_to_viewer",
+              "text": "accessible from"
+            },
+            {
+              "origin": "FM_ROLE_CARDINALITY",
+              "text": "the FM's seating reference stands for two or more seats"
+            }
+          ],
+          "source": [
+            {
+              "origin": "ROLE:surface",
+              "text": "a participant of this slot's kind in a different form"
+            }
+          ]
+        },
+        "induced_roles": [
+          "op_slot__place_remote__source",
+          "op_slot__place_remote__anchor"
+        ],
+        "named_participants": [
+          "entertainment_control",
+          "surface"
+        ],
+        "operation_id": "place_remote",
+        "provenance": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT",
+        "slot_resolution": {
+          "anchor": {
+            "canonical_role": "SEATING_PAIR",
+            "how": "SYSTEM_FIXED_FUNCTIONAL_ANCHOR_FOR_EXPRESSED_SEMANTIC",
+            "role": "op_slot__place_remote__anchor"
+          },
+          "source": {
+            "canonical_role": "SHARED_REMOTE_REGION",
+            "how": "FM_PARTICIPANT_KIND_REALIZED_BY_CAPABILITY_SLOT",
+            "role": "op_slot__place_remote__source"
+          },
+          "target": {
+            "canonical_role": "REMOTE",
+            "how": "FM_PARTICIPANT_TYPE",
+            "role": "entertainment_control"
+          }
+        }
+      },
+      {
+        "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+        "category": "UNRESOLVED_REQUIRED_SEMANTIC",
+        "code": "RELATION_ENFORCED_BY_COMPILED_OPERATION",
+        "enforced_predicates": [
+          "ACCESSIBLE_FROM_BOTH_SEATS"
+        ],
+        "id": "accessible_to_viewer",
+        "operation_id": "place_remote",
+        "participant_roles": [
+          "entertainment_control",
+          "seating_location"
+        ],
+        "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+        "reason": "NO_LEGAL_ORIENTATION_FOR_PARTICIPANTS",
+        "relation": "accessible_from",
+        "required": true
+      }
+    ],
+    "is_v2_specification": false,
+    "is_v3_specification": true,
+    "model_proposed_unverifiable_properties": [],
+    "non_scene_resolvable_blockers": [],
+    "online_executable_contract_complete": true,
+    "partial_functional_graph": false,
+    "precondition_provenance": [
+      {
+        "capability_id": "SUPPORT_DRINKWARE",
+        "predicate": "FITS_SET_ON",
+        "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+        "source_operation_id": "place_refreshments"
+      },
+      {
+        "capability_id": "SUPPORT_DRINKWARE",
+        "predicate": "NEAR_SEAT",
+        "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+        "source_operation_id": "place_refreshments"
+      },
+      {
+        "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+        "predicate": "FITS_ON",
+        "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+        "source_operation_id": "place_remote"
+      },
+      {
+        "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+        "predicate": "ACCESSIBLE_FROM_BOTH_SEATS",
+        "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+        "source_operation_id": "place_remote"
+      }
+    ],
+    "provisional_relation_constraints": [],
+    "raw_decomposition": {
+      "observation_guidance": {
+        "inspectable_regions": [
+          {
+            "id": "desk_storage",
+            "label": "Large wooden desk storage",
+            "reason": "Could be inspected for additional task-relevant candidates.",
+            "visual_description": "Drawers and lower shelves under the main desk surface visible in views 1 and 2."
+          },
+          {
+            "id": "side_table_storage",
+            "label": "Side table storage",
+            "reason": "Could be inspected for additional task-relevant candidates.",
+            "visual_description": "Shelves under the small side tables."
+          }
+        ],
+        "inspection_order": [
+          "desk_storage",
+          "side_table_storage"
+        ],
+        "visible_candidates_per_role": {
+          "entertainment_control": [
+            {
+              "label": "desk_remote",
+              "visual_description": "Black rectangular remote on the large wooden desk."
+            }
+          ],
+          "refreshment_setting": [
+            {
+              "label": "desk_setup",
+              "visual_description": "Two red cups and a white plate on the large wooden desk in the foreground."
+            },
+            {
+              "label": "side_table_item",
+              "visual_description": "One red cup on the small side table to the left of the left chair."
+            }
+          ],
+          "seating_location": [
+            {
+              "label": "carpeted_floor",
+              "visual_description": "Light colored carpeted area between the chairs and the TV."
+            }
+          ],
+          "surface": [
+            {
+              "label": "large_desk",
+              "visual_description": "Large wooden desk in the foreground with drawers."
+            },
+            {
+              "label": "coffee_table",
+              "visual_description": "Low rectangular table in the center with a light top."
+            },
+            {
+              "label": "side_tables",
+              "visual_description": "Two small wooden tables flanking the chairs."
+            }
+          ],
+          "television": [
+            {
+              "label": "wall_mounted_tv",
+              "visual_description": "Black flat screen mounted on the back wall."
+            }
+          ]
+        }
+      },
+      "schema_version": 3,
+      "status": "SUPPORTED",
+      "task_contract": {
+        "functional_relations": [
+          {
+            "id": "near_viewer",
+            "participant_roles": [
+              "refreshment_setting",
+              "seating_location"
+            ],
+            "relation": "near",
+            "required": true
+          },
+          {
+            "id": "accessible_to_viewer",
+            "participant_roles": [
+              "entertainment_control",
+              "seating_location"
+            ],
+            "relation": "accessible_from",
+            "required": true
+          }
+        ],
+        "functional_roles": [
+          {
+            "binding_policy": "DISTINCT",
+            "candidate_categories": [
+              "cup",
+              "plate",
+              "beverage"
+            ],
+            "entity_kind": "OBJECT",
+            "function": "A collection of items for consumption including a cup and plate.",
+            "id": "refreshment_setting",
+            "required_count": 2,
+            "required_properties": [
+              "drinkable_container",
+              "eating_surface"
+            ]
+          },
+          {
+            "binding_policy": "REUSABLE",
+            "candidate_categories": [
+              "remote",
+              "control_panel"
+            ],
+            "entity_kind": "OBJECT",
+            "function": "Device used to operate the television.",
+            "id": "entertainment_control",
+            "required_count": 1,
+            "required_properties": [
+              "button_interface"
+            ]
+          },
+          {
+            "binding_policy": "SHARED",
+            "candidate_categories": [
+              "table",
+              "desk",
+              "shelf"
+            ],
+            "entity_kind": "REGION",
+            "function": "Flat area used to hold items.",
+            "id": "surface",
+            "required_count": 2,
+            "required_properties": [
+              "flat_top",
+              "stable"
+            ]
+          },
+          {
+            "binding_policy": "SHARED",
+            "candidate_categories": [
+              "chair_group",
+              "floor_area"
+            ],
+            "entity_kind": "REGION",
+            "function": "Area where the two people sit.",
+            "id": "seating_location",
+            "required_count": 1,
+            "required_properties": [
+              "furnished",
+              "in_front_of_tv"
+            ]
+          },
+          {
+            "binding_policy": "SHARED",
+            "candidate_categories": [
+              "tv",
+              "screen"
+            ],
+            "entity_kind": "FIXED_TARGET",
+            "function": "Screen providing visual content.",
+            "id": "television",
+            "required_count": 1,
+            "required_properties": [
+              "display"
+            ]
+          }
+        ],
+        "operation_pairings": [
+          {
+            "id": "place_refreshments",
+            "operation": "place_on",
+            "operation_count": 2,
+            "participant_roles": [
+              "refreshment_setting",
+              "surface"
+            ]
+          },
+          {
+            "id": "place_remote",
+            "operation": "place_on",
+            "operation_count": 1,
+            "participant_roles": [
+              "entertainment_control",
+              "surface"
+            ]
+          }
+        ]
+      },
+      "task_summary": "Set up refreshment stations and remote for two viewers.",
+      "unsupported_reason": ""
+    },
+    "raw_role_to_canonical": {
+      "entertainment_control": "REMOTE",
+      "op_slot__place_remote__anchor": "SEATING_PAIR",
+      "op_slot__place_remote__source": "SHARED_REMOTE_REGION",
+      "refreshment_setting": "CUP_SAUCER_SET",
+      "seating_location": "SEATING_POSITION",
+      "surface": "PERSONAL_CUP_SAUCER_REGION"
+    },
+    "raw_vlm_response": {
+      "observation_guidance": {
+        "inspectable_regions": [
+          {
+            "id": "desk_storage",
+            "label": "Large wooden desk storage",
+            "reason": "Could be inspected for additional task-relevant candidates.",
+            "visual_description": "Drawers and lower shelves under the main desk surface visible in views 1 and 2."
+          },
+          {
+            "id": "side_table_storage",
+            "label": "Side table storage",
+            "reason": "Could be inspected for additional task-relevant candidates.",
+            "visual_description": "Shelves under the small side tables."
+          }
+        ],
+        "inspection_order": [
+          "desk_storage",
+          "side_table_storage"
+        ],
+        "visible_candidates_per_role": {
+          "entertainment_control": [
+            {
+              "label": "desk_remote",
+              "visual_description": "Black rectangular remote on the large wooden desk."
+            }
+          ],
+          "refreshment_setting": [
+            {
+              "label": "desk_setup",
+              "visual_description": "Two red cups and a white plate on the large wooden desk in the foreground."
+            },
+            {
+              "label": "side_table_item",
+              "visual_description": "One red cup on the small side table to the left of the left chair."
+            }
+          ],
+          "seating_location": [
+            {
+              "label": "carpeted_floor",
+              "visual_description": "Light colored carpeted area between the chairs and the TV."
+            }
+          ],
+          "surface": [
+            {
+              "label": "large_desk",
+              "visual_description": "Large wooden desk in the foreground with drawers."
+            },
+            {
+              "label": "coffee_table",
+              "visual_description": "Low rectangular table in the center with a light top."
+            },
+            {
+              "label": "side_tables",
+              "visual_description": "Two small wooden tables flanking the chairs."
+            }
+          ],
+          "television": [
+            {
+              "label": "wall_mounted_tv",
+              "visual_description": "Black flat screen mounted on the back wall."
+            }
+          ]
+        }
+      },
+      "schema_version": 3,
+      "status": "SUPPORTED",
+      "task_contract": {
+        "functional_relations": [
+          {
+            "id": "near_viewer",
+            "participant_roles": [
+              "refreshment_setting",
+              "seating_location"
+            ],
+            "relation": "near",
+            "required": true
+          },
+          {
+            "id": "accessible_to_viewer",
+            "participant_roles": [
+              "entertainment_control",
+              "seating_location"
+            ],
+            "relation": "accessible_from",
+            "required": true
+          }
+        ],
+        "functional_roles": [
+          {
+            "binding_policy": "DISTINCT",
+            "candidate_categories": [
+              "cup",
+              "plate",
+              "beverage"
+            ],
+            "entity_kind": "OBJECT",
+            "function": "A collection of items for consumption including a cup and plate.",
+            "id": "refreshment_setting",
+            "required_count": 2,
+            "required_properties": [
+              "drinkable_container",
+              "eating_surface"
+            ]
+          },
+          {
+            "binding_policy": "REUSABLE",
+            "candidate_categories": [
+              "remote",
+              "control_panel"
+            ],
+            "entity_kind": "OBJECT",
+            "function": "Device used to operate the television.",
+            "id": "entertainment_control",
+            "required_count": 1,
+            "required_properties": [
+              "button_interface"
+            ]
+          },
+          {
+            "binding_policy": "SHARED",
+            "candidate_categories": [
+              "table",
+              "desk",
+              "shelf"
+            ],
+            "entity_kind": "REGION",
+            "function": "Flat area used to hold items.",
+            "id": "surface",
+            "required_count": 2,
+            "required_properties": [
+              "flat_top",
+              "stable"
+            ]
+          },
+          {
+            "binding_policy": "SHARED",
+            "candidate_categories": [
+              "chair_group",
+              "floor_area"
+            ],
+            "entity_kind": "REGION",
+            "function": "Area where the two people sit.",
+            "id": "seating_location",
+            "required_count": 1,
+            "required_properties": [
+              "furnished",
+              "in_front_of_tv"
+            ]
+          },
+          {
+            "binding_policy": "SHARED",
+            "candidate_categories": [
+              "tv",
+              "screen"
+            ],
+            "entity_kind": "FIXED_TARGET",
+            "function": "Screen providing visual content.",
+            "id": "television",
+            "required_count": 1,
+            "required_properties": [
+              "display"
+            ]
+          }
+        ],
+        "operation_pairings": [
+          {
+            "id": "place_refreshments",
+            "operation": "place_on",
+            "operation_count": 2,
+            "participant_roles": [
+              "refreshment_setting",
+              "surface"
+            ]
+          },
+          {
+            "id": "place_remote",
+            "operation": "place_on",
+            "operation_count": 1,
+            "participant_roles": [
+              "entertainment_control",
+              "surface"
+            ]
+          }
+        ]
+      },
+      "task_summary": "Set up refreshment stations and remote for two viewers.",
+      "unsupported_reason": ""
+    },
+    "required_contract_complete": true,
+    "role_operation_consistency_audit": [
+      {
+        "explicit_participant_roles": [
+          "refreshment_setting",
+          "surface",
+          "seating_location"
+        ],
+        "normalized_participant_roles": [
+          "refreshment_setting",
+          "surface",
+          "seating_location"
+        ],
+        "operation_id": "place_refreshments",
+        "provenance": "FM_EXPLICIT_OPERATION",
+        "raw_operation": "place_on",
+        "semantic_capability_candidates": [
+          "SUPPORT_DRINKWARE",
+          "SUPPORT_ENTERTAINMENT_CONTROL"
+        ],
+        "status": "PASS",
+        "viable_slot_assignments": 1
+      },
+      {
+        "explicit_participant_roles": [
+          "entertainment_control",
+          "surface",
+          "op_slot__place_remote__source",
+          "op_slot__place_remote__anchor"
+        ],
+        "normalized_participant_roles": [
+          "entertainment_control",
+          "surface",
+          "op_slot__place_remote__source",
+          "op_slot__place_remote__anchor"
+        ],
+        "operation_id": "place_remote",
+        "provenance": "FM_EXPLICIT_OPERATION",
+        "raw_operation": "place_on",
+        "semantic_capability_candidates": [
+          "SUPPORT_DRINKWARE",
+          "SUPPORT_ENTERTAINMENT_CONTROL"
+        ],
+        "status": "PASS",
+        "viable_slot_assignments": 1
+      }
+    ],
+    "role_semantic_ontology_version": "phase3_p3i_4_semantic_ontology_v1",
+    "role_type_hypotheses": {
+      "entertainment_control": {
+        "canonical_role_candidates": [
+          "REMOTE"
+        ],
+        "entity_kind": "OBJECT",
+        "evidence": [
+          {
+            "excluded_roles": [
+              "PERSONAL_CUP_SAUCER_REGION",
+              "SEATING_PAIR",
+              "SEATING_POSITION",
+              "SHARED_REMOTE_REGION",
+              "staging_tray"
+            ],
+            "explicit_families": [
+              "PAYLOAD"
+            ],
+            "family_precedence_rules": [
+              "PAYLOAD_OVER_DISPLAY_CONTEXT"
+            ],
+            "legacy_mapper_rule": "TYPED_DOMAIN_SEMANTICS",
+            "preferred_roles": [
+              "REMOTE"
+            ],
+            "source": "IDENTITY_TEXT+NAME_TEXT+PURPOSE_TEXT",
+            "strength": "EXPLICIT_FAMILY"
+          },
+          {
+            "capabilities": [
+              "SUPPORT_DRINKWARE",
+              "SUPPORT_ENTERTAINMENT_CONTROL"
+            ],
+            "raw_phrase": "place_on",
+            "source": "OPERATION_TEXT"
+          }
+        ],
+        "raw_description": "",
+        "raw_function": "Device used to operate the television.",
+        "raw_role_id": "entertainment_control",
+        "runtime_context_only": false,
+        "status": "DIRECT_FUNCTION_MATCH"
+      },
+      "op_slot__place_remote__anchor": {
+        "canonical_role_candidates": [
+          "SEATING_PAIR"
+        ],
+        "entity_kind": "FIXED_TARGET",
+        "evidence": [
+          {
+            "canonical_role": "SEATING_PAIR",
+            "induced_by_operation": "place_remote",
+            "induced_capability": "SUPPORT_ENTERTAINMENT_CONTROL",
+            "induced_slot": "anchor",
+            "source": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT"
+          },
+          {
+            "allowed_anchor_roles": [
+              "SEATING_PAIR",
+              "SEATING_POSITION"
+            ],
+            "raw_phrase": "place_on",
+            "source": "OPERATION_TEXT"
+          }
+        ],
+        "raw_description": "Existential functional requirement induced by an operation the FM expressed; no concrete object, instance or scene category is bound here.",
+        "raw_function": "seating participant the expressed SUPPORT_ENTERTAINMENT_CONTROL operation requires",
+        "raw_role_id": "op_slot__place_remote__anchor",
+        "runtime_context_only": false,
+        "status": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT"
+      },
+      "op_slot__place_remote__source": {
+        "canonical_role_candidates": [
+          "SHARED_REMOTE_REGION"
+        ],
+        "entity_kind": "REGION",
+        "evidence": [
+          {
+            "canonical_role": "SHARED_REMOTE_REGION",
+            "induced_by_operation": "place_remote",
+            "induced_capability": "SUPPORT_ENTERTAINMENT_CONTROL",
+            "induced_slot": "source",
+            "source": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT"
+          },
+          {
+            "capabilities": [
+              "SUPPORT_DRINKWARE",
+              "SUPPORT_ENTERTAINMENT_CONTROL"
+            ],
+            "raw_phrase": "place_on",
+            "source": "OPERATION_TEXT"
+          }
+        ],
+        "raw_description": "Existential functional requirement induced by an operation the FM expressed; no concrete object, instance or scene category is bound here.",
+        "raw_function": "support participant the expressed SUPPORT_ENTERTAINMENT_CONTROL operation requires",
+        "raw_role_id": "op_slot__place_remote__source",
+        "runtime_context_only": false,
+        "status": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT"
+      },
+      "refreshment_setting": {
+        "canonical_role_candidates": [
+          "CUP_SAUCER_SET"
+        ],
+        "entity_kind": "OBJECT",
+        "evidence": [
+          {
+            "excluded_roles": [
+              "SEATING_PAIR",
+              "SEATING_POSITION"
+            ],
+            "explicit_families": [
+              "PAYLOAD",
+              "SUPPORT"
+            ],
+            "family_precedence_rules": [],
+            "legacy_mapper_rule": "TYPED_DOMAIN_SEMANTICS",
+            "preferred_roles": [
+              "CUP_SAUCER_SET"
+            ],
+            "source": "IDENTITY_TEXT+NAME_TEXT+PURPOSE_TEXT",
+            "strength": "EXPLICIT_FAMILY"
+          },
+          {
+            "capabilities": [
+              "SUPPORT_DRINKWARE",
+              "SUPPORT_ENTERTAINMENT_CONTROL"
+            ],
+            "raw_phrase": "place_on",
+            "source": "OPERATION_TEXT"
+          }
+        ],
+        "raw_description": "",
+        "raw_function": "A collection of items for consumption including a cup and plate.",
+        "raw_role_id": "refreshment_setting",
+        "runtime_context_only": false,
+        "status": "DIRECT_FUNCTION_MATCH"
+      },
+      "seating_location": {
+        "canonical_role_candidates": [
+          "SEATING_POSITION"
+        ],
+        "entity_kind": "REGION",
+        "evidence": [
+          {
+            "excluded_roles": [
+              "CUP_SAUCER_SET",
+              "PERSONAL_CUP_SAUCER_REGION",
+              "REMOTE",
+              "SHARED_REMOTE_REGION",
+              "staging_tray"
+            ],
+            "explicit_families": [
+              "SEATING"
+            ],
+            "family_precedence_rules": [
+              "FUNCTIONAL_FAMILY_OVER_RECOGNISED_CONTEXT"
+            ],
+            "legacy_mapper_rule": "TYPED_DOMAIN_SEMANTICS",
+            "preferred_roles": [
+              "SEATING_POSITION"
+            ],
+            "source": "IDENTITY_TEXT+NAME_TEXT+PURPOSE_TEXT",
+            "strength": "EXPLICIT_FAMILY"
+          },
+          {
+            "allowed_anchor_roles": [
+              "SEATING_PAIR",
+              "SEATING_POSITION"
+            ],
+            "raw_phrase": "place_on",
+            "source": "OPERATION_TEXT"
+          },
+          {
+            "raw_phrase": "near",
+            "readings_unioned": [
+              "PHYSICAL_VERIFIER:NEAR_SEAT:FORWARD"
+            ],
+            "source": "RELATION_TEXT"
+          },
+          {
+            "source": "JOINT_TYPING",
+            "status": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS"
+          }
+        ],
+        "raw_description": "",
+        "raw_function": "Area where the two people sit.",
+        "raw_role_id": "seating_location",
+        "runtime_context_only": false,
+        "status": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS"
+      },
+      "surface": {
+        "canonical_role_candidates": [
+          "PERSONAL_CUP_SAUCER_REGION"
+        ],
+        "entity_kind": "REGION",
+        "evidence": [
+          {
+            "excluded_roles": [
+              "CUP_SAUCER_SET",
+              "REMOTE",
+              "SEATING_PAIR",
+              "SEATING_POSITION"
+            ],
+            "explicit_families": [
+              "SUPPORT"
+            ],
+            "family_precedence_rules": [],
+            "legacy_mapper_rule": "TYPED_DOMAIN_SEMANTICS",
+            "preferred_roles": [
+              "PERSONAL_CUP_SAUCER_REGION"
+            ],
+            "source": "IDENTITY_TEXT+NAME_TEXT+PURPOSE_TEXT",
+            "strength": "EXPLICIT_FAMILY"
+          },
+          {
+            "raw_phrase": "near",
+            "readings_unioned": [
+              "PHYSICAL_VERIFIER:NEAR_SEAT:FORWARD"
+            ],
+            "source": "RELATION_TEXT"
+          },
+          {
+            "capabilities": [
+              "SUPPORT_DRINKWARE",
+              "SUPPORT_ENTERTAINMENT_CONTROL"
+            ],
+            "raw_phrase": "place_on",
+            "source": "OPERATION_TEXT"
+          }
+        ],
+        "raw_description": "",
+        "raw_function": "Flat area used to hold items.",
+        "raw_role_id": "surface",
+        "runtime_context_only": false,
+        "status": "DIRECT_FUNCTION_MATCH"
+      },
+      "television": {
+        "canonical_role_candidates": [],
+        "entity_kind": "FIXED_TARGET",
+        "evidence": [
+          {
+            "excluded_roles": [
+              "CUP_SAUCER_SET",
+              "PERSONAL_CUP_SAUCER_REGION",
+              "REMOTE",
+              "SEATING_PAIR",
+              "SEATING_POSITION",
+              "SHARED_REMOTE_REGION",
+              "staging_tray"
+            ],
+            "explicit_families": [
+              "DISPLAY_CONTEXT"
+            ],
+            "family_precedence_rules": [],
+            "legacy_mapper_rule": "ZERO_SHOT_SEMANTIC_FALLBACK",
+            "preferred_roles": [
+              "PERSONAL_CUP_SAUCER_REGION"
+            ],
+            "source": "IDENTITY_TEXT+NAME_TEXT+PURPOSE_TEXT",
+            "strength": "EXPLICIT_FAMILY"
+          }
+        ],
+        "raw_description": "",
+        "raw_function": "Screen providing visual content.",
+        "raw_role_id": "television",
+        "runtime_context_only": true,
+        "status": "UNREPRESENTED_SEMANTIC"
+      }
+    },
+    "semantic_acceptance_source": "SYSTEM_ROLE_SEMANTIC_ONTOLOGY",
+    "semantic_vocabulary_path": "/home/naren/RA_iiith/mujoco_scenes/configs/l2_integrated_region_function_semantic_vocabulary.yaml",
+    "soft_semantic_evidence": [
+      {
+        "canonical_predicate": null,
+        "raw_phrase": "drinkable_container",
+        "raw_role_id": "refreshment_setting",
+        "status": "SOFT_SEMANTIC_EVIDENCE"
+      },
+      {
+        "canonical_predicate": null,
+        "raw_phrase": "eating_surface",
+        "raw_role_id": "refreshment_setting",
+        "status": "SOFT_SEMANTIC_EVIDENCE"
+      },
+      {
+        "canonical_predicate": null,
+        "raw_phrase": "button_interface",
+        "raw_role_id": "entertainment_control",
+        "status": "SOFT_SEMANTIC_EVIDENCE"
+      },
+      {
+        "canonical_predicate": null,
+        "raw_phrase": "flat_top",
+        "raw_role_id": "surface",
+        "status": "SOFT_SEMANTIC_EVIDENCE"
+      },
+      {
+        "canonical_predicate": null,
+        "raw_phrase": "stable",
+        "raw_role_id": "surface",
+        "status": "SOFT_SEMANTIC_EVIDENCE"
+      },
+      {
+        "canonical_predicate": null,
+        "raw_phrase": "furnished",
+        "raw_role_id": "seating_location",
+        "status": "SOFT_SEMANTIC_EVIDENCE"
+      },
+      {
+        "canonical_predicate": null,
+        "raw_phrase": "in_front_of_tv",
+        "raw_role_id": "seating_location",
+        "status": "SOFT_SEMANTIC_EVIDENCE"
+      }
+    ],
+    "structural_sanitizer": {
+      "document": {
+        "current_state_operation_context_roles": [],
+        "current_state_relations": [],
+        "fm_semantic_accounting": [
+          {
+            "canonical_representation": [
+              "SUPPORT_DRINKWARE"
+            ],
+            "disposition": "GRAPH_JOINED_PRIMITIVE_CAPABILITY",
+            "element_kind": "operation",
+            "provenance": "FM_EXPLICIT_OPERATION_PLUS_RELATION",
+            "raw_id": "place_refreshments",
+            "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+          },
+          {
+            "canonical_representation": [
+              "SUPPORT_ENTERTAINMENT_CONTROL"
+            ],
+            "disposition": "PRIMITIVE_CAPABILITY",
+            "element_kind": "operation",
+            "provenance": "FM_EXPLICIT_OPERATION",
+            "raw_id": "place_remote",
+            "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+          },
+          {
+            "canonical_representation": [
+              "CUP_SAUCER_SET"
+            ],
+            "disposition": "GROUNDED_TASK_PARTICIPANT",
+            "element_kind": "role",
+            "provenance": "FM_EXPLICIT_ROLE",
+            "raw_id": "refreshment_setting",
+            "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+          },
+          {
+            "canonical_representation": [
+              "REMOTE"
+            ],
+            "disposition": "GROUNDED_TASK_PARTICIPANT",
+            "element_kind": "role",
+            "provenance": "FM_EXPLICIT_ROLE",
+            "raw_id": "entertainment_control",
+            "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+          },
+          {
+            "canonical_representation": [
+              "PERSONAL_CUP_SAUCER_REGION"
+            ],
+            "disposition": "GROUNDED_TASK_PARTICIPANT",
+            "element_kind": "role",
+            "provenance": "FM_EXPLICIT_ROLE",
+            "raw_id": "surface",
+            "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+          },
+          {
+            "canonical_representation": [
+              "SEATING_POSITION"
+            ],
+            "disposition": "GROUNDED_TASK_PARTICIPANT",
+            "element_kind": "role",
+            "provenance": "FM_EXPLICIT_ROLE",
+            "raw_id": "seating_location",
+            "requirement_provenance": "OBSERVATION_ONLY"
+          },
+          {
+            "canonical_representation": [],
+            "disposition": "GROUNDED_TASK_PARTICIPANT",
+            "element_kind": "role",
+            "provenance": "FM_EXPLICIT_ROLE",
+            "raw_id": "television",
+            "requirement_provenance": "OBSERVATION_ONLY"
+          },
+          {
+            "canonical_representation": "near",
+            "disposition": "GROUNDED_TASK_RELATION",
+            "element_kind": "relation",
+            "provenance": "FM_EXPLICIT_RELATION",
+            "raw_id": "near_viewer",
+            "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+          },
+          {
+            "canonical_representation": "accessible_from",
+            "disposition": "EXPLICIT_RUNTIME_CONTEXT",
+            "element_kind": "relation",
+            "provenance": "FM_EXPLICIT_RELATION",
+            "raw_id": "accessible_to_viewer",
+            "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+          }
+        ],
+        "functional_constraint_interpretation": [
+          {
+            "code": "OPERATION_MEDIATED_RELATION_TARGET_NORMALIZATION",
+            "normalized_participant_roles": [
+              "surface",
+              "seating_location"
+            ],
+            "operation_id": "place_refreshments",
+            "provenance": "FM_EXPLICIT_RELATION_AND_OPERATION",
+            "raw_participant_roles": [
+              "refreshment_setting",
+              "seating_location"
+            ],
+            "relation_id": "near_viewer"
+          },
+          {
+            "capability_id": "SUPPORT_DRINKWARE",
+            "code": "EXPLICIT_RELATION_OPERATION_CONTEXT_JOIN",
+            "joined_context_role": "seating_location",
+            "operation_id": "place_refreshments",
+            "provenance": "FM_EXPLICIT_RELATION",
+            "relation_id": "near_viewer"
+          },
+          {
+            "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+            "code": "OPERATION_INDUCED_ABSTRACT_SLOT_COMPLETION",
+            "fm_semantic_witnesses": {
+              "anchor": [
+                {
+                  "origin": "RELATION:accessible_to_viewer",
+                  "text": "accessible from"
+                },
+                {
+                  "origin": "FM_ROLE_CARDINALITY",
+                  "text": "the FM's seating reference stands for two or more seats"
+                }
+              ],
+              "source": [
+                {
+                  "origin": "ROLE:surface",
+                  "text": "a participant of this slot's kind in a different form"
+                }
+              ]
+            },
+            "induced_roles": [
+              "op_slot__place_remote__source",
+              "op_slot__place_remote__anchor"
+            ],
+            "named_participants": [
+              "entertainment_control",
+              "surface"
+            ],
+            "operation_id": "place_remote",
+            "provenance": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT",
+            "slot_resolution": {
+              "anchor": {
+                "canonical_role": "SEATING_PAIR",
+                "how": "SYSTEM_FIXED_FUNCTIONAL_ANCHOR_FOR_EXPRESSED_SEMANTIC",
+                "role": "op_slot__place_remote__anchor"
+              },
+              "source": {
+                "canonical_role": "SHARED_REMOTE_REGION",
+                "how": "FM_PARTICIPANT_KIND_REALIZED_BY_CAPABILITY_SLOT",
+                "role": "op_slot__place_remote__source"
+              },
+              "target": {
+                "canonical_role": "REMOTE",
+                "how": "FM_PARTICIPANT_TYPE",
+                "role": "entertainment_control"
+              }
+            }
+          },
+          {
+            "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+            "category": "UNRESOLVED_REQUIRED_SEMANTIC",
+            "code": "RELATION_ENFORCED_BY_COMPILED_OPERATION",
+            "enforced_predicates": [
+              "ACCESSIBLE_FROM_BOTH_SEATS"
+            ],
+            "id": "accessible_to_viewer",
+            "operation_id": "place_remote",
+            "participant_roles": [
+              "entertainment_control",
+              "seating_location"
+            ],
+            "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+            "reason": "NO_LEGAL_ORIENTATION_FOR_PARTICIPANTS",
+            "relation": "accessible_from",
+            "required": true
+          }
+        ],
+        "functional_relations": [
+          {
+            "id": "near_viewer",
+            "object_role": "seating_location",
+            "relation": "near",
+            "required": true,
+            "subject_role": "surface",
+            "unordered_participants": true,
+            "v3_orientation_options": [
+              {
+                "category": "PHYSICAL_VERIFIER",
+                "object_role": "seating_location",
+                "predicate": "NEAR_SEAT",
+                "subject_role": "surface"
+              }
+            ]
+          }
+        ],
+        "functional_roles": [
+          {
+            "binding_policy": "DISTINCT",
+            "candidate_categories": [
+              "cup",
+              "plate",
+              "beverage"
+            ],
+            "description": "",
+            "entity_kind": "OBJECT",
+            "function": "A collection of items for consumption including a cup and plate.",
+            "id": "refreshment_setting",
+            "required_count": 2,
+            "required_properties": [
+              "drinkable_container",
+              "eating_surface"
+            ],
+            "visible_candidates": [
+              {
+                "label": "desk_setup",
+                "visual_description": "Two red cups and a white plate on the large wooden desk in the foreground."
+              },
+              {
+                "label": "side_table_item",
+                "visual_description": "One red cup on the small side table to the left of the left chair."
+              }
+            ]
+          },
+          {
+            "binding_policy": "REUSABLE",
+            "candidate_categories": [
+              "remote",
+              "control_panel"
+            ],
+            "description": "",
+            "entity_kind": "OBJECT",
+            "function": "Device used to operate the television.",
+            "id": "entertainment_control",
+            "required_count": 1,
+            "required_properties": [
+              "button_interface"
+            ],
+            "visible_candidates": [
+              {
+                "label": "desk_remote",
+                "visual_description": "Black rectangular remote on the large wooden desk."
+              }
+            ]
+          },
+          {
+            "binding_policy": "SHARED",
+            "candidate_categories": [
+              "table",
+              "desk",
+              "shelf"
+            ],
+            "description": "",
+            "entity_kind": "REGION",
+            "function": "Flat area used to hold items.",
+            "id": "surface",
+            "required_count": 2,
+            "required_properties": [
+              "flat_top",
+              "stable"
+            ],
+            "visible_candidates": [
+              {
+                "label": "large_desk",
+                "visual_description": "Large wooden desk in the foreground with drawers."
+              },
+              {
+                "label": "coffee_table",
+                "visual_description": "Low rectangular table in the center with a light top."
+              },
+              {
+                "label": "side_tables",
+                "visual_description": "Two small wooden tables flanking the chairs."
+              }
+            ]
+          },
+          {
+            "binding_policy": "SHARED",
+            "candidate_categories": [
+              "chair_group",
+              "floor_area"
+            ],
+            "description": "",
+            "entity_kind": "REGION",
+            "function": "Area where the two people sit.",
+            "id": "seating_location",
+            "required_count": 1,
+            "required_properties": [
+              "furnished",
+              "in_front_of_tv"
+            ],
+            "visible_candidates": [
+              {
+                "label": "carpeted_floor",
+                "visual_description": "Light colored carpeted area between the chairs and the TV."
+              }
+            ]
+          },
+          {
+            "binding_policy": "SHARED",
+            "candidate_categories": [
+              "tv",
+              "screen"
+            ],
+            "description": "",
+            "entity_kind": "FIXED_TARGET",
+            "function": "Screen providing visual content.",
+            "id": "television",
+            "required_count": 1,
+            "required_properties": [
+              "display"
+            ],
+            "visible_candidates": [
+              {
+                "label": "wall_mounted_tv",
+                "visual_description": "Black flat screen mounted on the back wall."
+              }
+            ]
+          },
+          {
+            "binding_policy": "REUSABLE",
+            "candidate_categories": [],
+            "canonical_role": "SHARED_REMOTE_REGION",
+            "description": "Existential functional requirement induced by an operation the FM expressed; no concrete object, instance or scene category is bound here.",
+            "entity_kind": "REGION",
+            "fm_witness_role": "surface",
+            "function": "support participant the expressed SUPPORT_ENTERTAINMENT_CONTROL operation requires",
+            "id": "op_slot__place_remote__source",
+            "induced_by_operation": "place_remote",
+            "induced_capability": "SUPPORT_ENTERTAINMENT_CONTROL",
+            "induced_slot": "source",
+            "provenance": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT",
+            "required_count": 1,
+            "required_properties": [],
+            "visible_candidates": []
+          },
+          {
+            "binding_policy": "SHARED",
+            "candidate_categories": [],
+            "canonical_role": "SEATING_PAIR",
+            "description": "Existential functional requirement induced by an operation the FM expressed; no concrete object, instance or scene category is bound here.",
+            "entity_kind": "FIXED_TARGET",
+            "function": "seating participant the expressed SUPPORT_ENTERTAINMENT_CONTROL operation requires",
+            "id": "op_slot__place_remote__anchor",
+            "induced_by_operation": "place_remote",
+            "induced_capability": "SUPPORT_ENTERTAINMENT_CONTROL",
+            "induced_slot": "anchor",
+            "provenance": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT",
+            "required_count": 1,
+            "required_properties": [],
+            "visible_candidates": []
+          }
+        ],
+        "inspectable_regions": [
+          {
+            "id": "desk_storage",
+            "label": "Large wooden desk storage",
+            "reason": "Could be inspected for additional task-relevant candidates.",
+            "visual_description": "Drawers and lower shelves under the main desk surface visible in views 1 and 2."
+          },
+          {
+            "id": "side_table_storage",
+            "label": "Side table storage",
+            "reason": "Could be inspected for additional task-relevant candidates.",
+            "visual_description": "Shelves under the small side tables."
+          }
+        ],
+        "inspection_order": [
+          "desk_storage",
+          "side_table_storage"
+        ],
+        "interaction_groups": [
+          {
+            "context_relations": [],
+            "context_role": "seating_location",
+            "function": "place_on",
+            "id": "place_refreshments",
+            "required_relations": [],
+            "required_target_count": 2,
+            "target_role": "refreshment_setting",
+            "tool_role": "surface",
+            "usage_policy": "SEQUENTIAL_REUSE_ALLOWED",
+            "v3_current_state_context_roles": [],
+            "v3_explicit_context_set_id": null,
+            "v3_explicit_participant_roles": [
+              "refreshment_setting",
+              "surface",
+              "seating_location"
+            ],
+            "v3_graph_join_relation_id": "near_viewer",
+            "v3_participant_roles": [
+              "refreshment_setting",
+              "surface",
+              "seating_location"
+            ],
+            "v3_raw_fm_participant_roles": [
+              "refreshment_setting",
+              "surface"
+            ],
+            "v3_slot_assignments": [
+              {
+                "anchor_role": "seating_location",
+                "anchor_type": "SEATING_POSITION",
+                "capability_id": "SUPPORT_DRINKWARE",
+                "planner_operation": "SUPPORT_DRINKWARE",
+                "source_role": "surface",
+                "source_type": "PERSONAL_CUP_SAUCER_REGION",
+                "target_role": "refreshment_setting",
+                "target_type": "CUP_SAUCER_SET",
+                "usage_policy": "SEQUENTIAL_REUSE_ALLOWED"
+              }
+            ],
+            "v3_witness_roles": []
+          },
+          {
+            "context_relations": [],
+            "context_role": "op_slot__place_remote__anchor",
+            "function": "place_on",
+            "id": "place_remote",
+            "required_relations": [],
+            "required_target_count": 1,
+            "target_role": "entertainment_control",
+            "tool_role": "op_slot__place_remote__source",
+            "usage_policy": "SEQUENTIAL_REUSE_ALLOWED",
+            "v3_current_state_context_roles": [],
+            "v3_explicit_context_set_id": null,
+            "v3_explicit_participant_roles": [
+              "entertainment_control",
+              "surface",
+              "op_slot__place_remote__source",
+              "op_slot__place_remote__anchor"
+            ],
+            "v3_graph_join_relation_id": null,
+            "v3_participant_roles": [
+              "entertainment_control",
+              "surface",
+              "op_slot__place_remote__source",
+              "op_slot__place_remote__anchor"
+            ],
+            "v3_raw_fm_participant_roles": [
+              "entertainment_control",
+              "surface",
+              "op_slot__place_remote__source",
+              "op_slot__place_remote__anchor"
+            ],
+            "v3_slot_assignments": [
+              {
+                "anchor_role": "op_slot__place_remote__anchor",
+                "anchor_type": "SEATING_PAIR",
+                "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+                "capability_provenance": "OPERATION_INDUCED_SLOT_COMPLETION",
+                "planner_operation": "SUPPORT_ENTERTAINMENT_CONTROL",
+                "source_role": "op_slot__place_remote__source",
+                "source_type": "SHARED_REMOTE_REGION",
+                "target_role": "entertainment_control",
+                "target_type": "REMOTE",
+                "usage_policy": "SEQUENTIAL_REUSE_ALLOWED"
+              }
+            ],
+            "v3_witness_roles": [
+              "surface"
+            ]
+          }
+        ],
+        "operation_induced_slot_completions": [
+          {
+            "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+            "code": "OPERATION_INDUCED_ABSTRACT_SLOT_COMPLETION",
+            "fm_semantic_witnesses": {
+              "anchor": [
+                {
+                  "origin": "RELATION:accessible_to_viewer",
+                  "text": "accessible from"
+                },
+                {
+                  "origin": "FM_ROLE_CARDINALITY",
+                  "text": "the FM's seating reference stands for two or more seats"
+                }
+              ],
+              "source": [
+                {
+                  "origin": "ROLE:surface",
+                  "text": "a participant of this slot's kind in a different form"
+                }
+              ]
+            },
+            "induced_roles": [
+              "op_slot__place_remote__source",
+              "op_slot__place_remote__anchor"
+            ],
+            "named_participants": [
+              "entertainment_control",
+              "surface"
+            ],
+            "operation_id": "place_remote",
+            "provenance": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT",
+            "slot_resolution": {
+              "anchor": {
+                "canonical_role": "SEATING_PAIR",
+                "how": "SYSTEM_FIXED_FUNCTIONAL_ANCHOR_FOR_EXPRESSED_SEMANTIC",
+                "role": "op_slot__place_remote__anchor"
+              },
+              "source": {
+                "canonical_role": "SHARED_REMOTE_REGION",
+                "how": "FM_PARTICIPANT_KIND_REALIZED_BY_CAPABILITY_SLOT",
+                "role": "op_slot__place_remote__source"
+              },
+              "target": {
+                "canonical_role": "REMOTE",
+                "how": "FM_PARTICIPANT_TYPE",
+                "role": "entertainment_control"
+              }
+            }
+          }
+        ],
+        "raw_v3_contract": {
+          "functional_relations": [
+            {
+              "id": "near_viewer",
+              "participant_roles": [
+                "refreshment_setting",
+                "seating_location"
+              ],
+              "relation": "near",
+              "required": true
+            },
+            {
+              "id": "accessible_to_viewer",
+              "participant_roles": [
+                "entertainment_control",
+                "seating_location"
+              ],
+              "relation": "accessible_from",
+              "required": true
+            }
+          ],
+          "functional_roles": [
+            {
+              "binding_policy": "DISTINCT",
+              "candidate_categories": [
+                "cup",
+                "plate",
+                "beverage"
+              ],
+              "entity_kind": "OBJECT",
+              "function": "A collection of items for consumption including a cup and plate.",
+              "id": "refreshment_setting",
+              "required_count": 2,
+              "required_properties": [
+                "drinkable_container",
+                "eating_surface"
+              ]
+            },
+            {
+              "binding_policy": "REUSABLE",
+              "candidate_categories": [
+                "remote",
+                "control_panel"
+              ],
+              "entity_kind": "OBJECT",
+              "function": "Device used to operate the television.",
+              "id": "entertainment_control",
+              "required_count": 1,
+              "required_properties": [
+                "button_interface"
+              ]
+            },
+            {
+              "binding_policy": "SHARED",
+              "candidate_categories": [
+                "table",
+                "desk",
+                "shelf"
+              ],
+              "entity_kind": "REGION",
+              "function": "Flat area used to hold items.",
+              "id": "surface",
+              "required_count": 2,
+              "required_properties": [
+                "flat_top",
+                "stable"
+              ]
+            },
+            {
+              "binding_policy": "SHARED",
+              "candidate_categories": [
+                "chair_group",
+                "floor_area"
+              ],
+              "entity_kind": "REGION",
+              "function": "Area where the two people sit.",
+              "id": "seating_location",
+              "required_count": 1,
+              "required_properties": [
+                "furnished",
+                "in_front_of_tv"
+              ]
+            },
+            {
+              "binding_policy": "SHARED",
+              "candidate_categories": [
+                "tv",
+                "screen"
+              ],
+              "entity_kind": "FIXED_TARGET",
+              "function": "Screen providing visual content.",
+              "id": "television",
+              "required_count": 1,
+              "required_properties": [
+                "display"
+              ]
+            }
+          ],
+          "operation_pairings": [
+            {
+              "id": "place_refreshments",
+              "operation": "place_on",
+              "operation_count": 2,
+              "participant_roles": [
+                "refreshment_setting",
+                "surface"
+              ]
+            },
+            {
+              "id": "place_remote",
+              "operation": "place_on",
+              "operation_count": 1,
+              "participant_roles": [
+                "entertainment_control",
+                "surface"
+              ]
+            }
+          ]
+        },
+        "raw_v3_guidance": {
+          "inspectable_regions": [
+            {
+              "id": "desk_storage",
+              "label": "Large wooden desk storage",
+              "reason": "Could be inspected for additional task-relevant candidates.",
+              "visual_description": "Drawers and lower shelves under the main desk surface visible in views 1 and 2."
+            },
+            {
+              "id": "side_table_storage",
+              "label": "Side table storage",
+              "reason": "Could be inspected for additional task-relevant candidates.",
+              "visual_description": "Shelves under the small side tables."
+            }
+          ],
+          "inspection_order": [
+            "desk_storage",
+            "side_table_storage"
+          ],
+          "visible_candidates_per_role": {
+            "entertainment_control": [
+              {
+                "label": "desk_remote",
+                "visual_description": "Black rectangular remote on the large wooden desk."
+              }
+            ],
+            "refreshment_setting": [
+              {
+                "label": "desk_setup",
+                "visual_description": "Two red cups and a white plate on the large wooden desk in the foreground."
+              },
+              {
+                "label": "side_table_item",
+                "visual_description": "One red cup on the small side table to the left of the left chair."
+              }
+            ],
+            "seating_location": [
+              {
+                "label": "carpeted_floor",
+                "visual_description": "Light colored carpeted area between the chairs and the TV."
+              }
+            ],
+            "surface": [
+              {
+                "label": "large_desk",
+                "visual_description": "Large wooden desk in the foreground with drawers."
+              },
+              {
+                "label": "coffee_table",
+                "visual_description": "Low rectangular table in the center with a light top."
+              },
+              {
+                "label": "side_tables",
+                "visual_description": "Two small wooden tables flanking the chairs."
+              }
+            ],
+            "television": [
+              {
+                "label": "wall_mounted_tv",
+                "visual_description": "Black flat screen mounted on the back wall."
+              }
+            ]
+          }
+        },
+        "relations_enforced_by_operations": [
+          {
+            "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+            "category": "UNRESOLVED_REQUIRED_SEMANTIC",
+            "code": "RELATION_ENFORCED_BY_COMPILED_OPERATION",
+            "enforced_predicates": [
+              "ACCESSIBLE_FROM_BOTH_SEATS"
+            ],
+            "id": "accessible_to_viewer",
+            "operation_id": "place_remote",
+            "participant_roles": [
+              "entertainment_control",
+              "seating_location"
+            ],
+            "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+            "reason": "NO_LEGAL_ORIENTATION_FOR_PARTICIPANTS",
+            "relation": "accessible_from",
+            "required": true
+          }
+        ],
+        "role_operation_consistency_audit": [
+          {
+            "explicit_participant_roles": [
+              "refreshment_setting",
+              "surface",
+              "seating_location"
+            ],
+            "normalized_participant_roles": [
+              "refreshment_setting",
+              "surface",
+              "seating_location"
+            ],
+            "operation_id": "place_refreshments",
+            "provenance": "FM_EXPLICIT_OPERATION",
+            "raw_operation": "place_on",
+            "semantic_capability_candidates": [
+              "SUPPORT_DRINKWARE",
+              "SUPPORT_ENTERTAINMENT_CONTROL"
+            ],
+            "status": "PASS",
+            "viable_slot_assignments": 1
+          },
+          {
+            "explicit_participant_roles": [
+              "entertainment_control",
+              "surface",
+              "op_slot__place_remote__source",
+              "op_slot__place_remote__anchor"
+            ],
+            "normalized_participant_roles": [
+              "entertainment_control",
+              "surface",
+              "op_slot__place_remote__source",
+              "op_slot__place_remote__anchor"
+            ],
+            "operation_id": "place_remote",
+            "provenance": "FM_EXPLICIT_OPERATION",
+            "raw_operation": "place_on",
+            "semantic_capability_candidates": [
+              "SUPPORT_DRINKWARE",
+              "SUPPORT_ENTERTAINMENT_CONTROL"
+            ],
+            "status": "PASS",
+            "viable_slot_assignments": 1
+          }
+        ],
+        "schema_version": 3,
+        "status": "SUPPORTED",
+        "task_summary": "Set up refreshment stations and remote for two viewers.",
+        "unresolved_operation_semantics": [],
+        "unresolved_relation_semantics": [],
+        "unsupported_reason": ""
+      },
+      "repairs": [],
+      "semantically_incomplete": false,
+      "succeeded": true
+    },
+    "task_causal_relations": [],
+    "task_effect_relations": [],
+    "unrepresented_fm_semantics": [],
+    "unresolved_semantics": [],
+    "unverified_required_properties": [],
+    "v3_boundary_normalization_trace": [
+      {
+        "code": "HIDDEN_CONTENT_REASON_SANITIZED",
+        "region_id": "desk_storage"
+      },
+      {
+        "code": "HIDDEN_CONTENT_REASON_SANITIZED",
+        "region_id": "side_table_storage"
+      },
+      {
+        "code": "INSPECTION_ORDER_NORMALIZED",
+        "normalized": [
+          "desk_storage",
+          "side_table_storage"
+        ],
+        "raw": [
+          "desk_storage",
+          "side_table_storage",
+          "wall_mounted_tv"
+        ]
+      }
+    ]
+  },
+  "nodes": {
+    "CUP_SAUCER_SET": {
+      "binding_policy": "DISTINCT",
+      "canonical_role_candidates": [
+        "CUP_SAUCER_SET"
+      ],
+      "count": 2,
+      "description": "",
+      "distinct": true,
+      "entity_kind": "OBJECT",
+      "max_count": null,
+      "min_count": null,
+      "name": "CUP_SAUCER_SET",
+      "numeric_constraints": [],
+      "preference": null,
+      "raw_role_id": "refreshment_setting",
+      "reusable": false,
+      "role_resolution_provenance": [
+        {
+          "excluded_roles": [
+            "SEATING_PAIR",
+            "SEATING_POSITION"
+          ],
+          "explicit_families": [
+            "PAYLOAD",
+            "SUPPORT"
+          ],
+          "family_precedence_rules": [],
+          "legacy_mapper_rule": "TYPED_DOMAIN_SEMANTICS",
+          "preferred_roles": [
+            "CUP_SAUCER_SET"
+          ],
+          "source": "IDENTITY_TEXT+NAME_TEXT+PURPOSE_TEXT",
+          "strength": "EXPLICIT_FAMILY"
+        },
+        {
+          "capabilities": [
+            "SUPPORT_DRINKWARE",
+            "SUPPORT_ENTERTAINMENT_CONTROL"
+          ],
+          "raw_phrase": "place_on",
+          "source": "OPERATION_TEXT"
+        }
+      ],
+      "role_resolution_status": "DIRECT_FUNCTION_MATCH",
+      "semantic_categories": [
+        "cup_saucer_set",
+        "cup",
+        "saucer"
+      ],
+      "semantic_hints": [
+        "drinkable_container",
+        "eating_surface"
+      ],
+      "shared": false,
+      "unary_predicates": [],
+      "verification_mode": "SEMANTIC_AND_GEOMETRIC"
+    },
+    "PERSONAL_CUP_SAUCER_REGION": {
+      "binding_policy": "SHARED",
+      "canonical_role_candidates": [
+        "PERSONAL_CUP_SAUCER_REGION"
+      ],
+      "count": 2,
+      "description": "",
+      "distinct": true,
+      "entity_kind": "REGION",
+      "max_count": null,
+      "min_count": 1,
+      "name": "PERSONAL_CUP_SAUCER_REGION",
+      "numeric_constraints": [],
+      "preference": null,
+      "raw_role_id": "surface",
+      "reusable": false,
+      "role_resolution_provenance": [
+        {
+          "excluded_roles": [
+            "CUP_SAUCER_SET",
+            "REMOTE",
+            "SEATING_PAIR",
+            "SEATING_POSITION"
+          ],
+          "explicit_families": [
+            "SUPPORT"
+          ],
+          "family_precedence_rules": [],
+          "legacy_mapper_rule": "TYPED_DOMAIN_SEMANTICS",
+          "preferred_roles": [
+            "PERSONAL_CUP_SAUCER_REGION"
+          ],
+          "source": "IDENTITY_TEXT+NAME_TEXT+PURPOSE_TEXT",
+          "strength": "EXPLICIT_FAMILY"
+        },
+        {
+          "raw_phrase": "near",
+          "readings_unioned": [
+            "PHYSICAL_VERIFIER:NEAR_SEAT:FORWARD"
+          ],
+          "source": "RELATION_TEXT"
+        },
+        {
+          "capabilities": [
+            "SUPPORT_DRINKWARE",
+            "SUPPORT_ENTERTAINMENT_CONTROL"
+          ],
+          "raw_phrase": "place_on",
+          "source": "OPERATION_TEXT"
+        }
+      ],
+      "role_resolution_status": "DIRECT_FUNCTION_MATCH",
+      "semantic_categories": [
+        "side_table",
+        "end_table"
+      ],
+      "semantic_hints": [
+        "flat_top",
+        "stable"
+      ],
+      "shared": true,
+      "unary_predicates": [],
+      "verification_mode": "SEMANTIC_AND_GEOMETRIC"
+    },
+    "REMOTE": {
+      "binding_policy": "REUSABLE",
+      "canonical_role_candidates": [
+        "REMOTE"
+      ],
+      "count": 1,
+      "description": "",
+      "distinct": false,
+      "entity_kind": "OBJECT",
+      "max_count": null,
+      "min_count": null,
+      "name": "REMOTE",
+      "numeric_constraints": [],
+      "preference": null,
+      "raw_role_id": "entertainment_control",
+      "reusable": true,
+      "role_resolution_provenance": [
+        {
+          "excluded_roles": [
+            "PERSONAL_CUP_SAUCER_REGION",
+            "SEATING_PAIR",
+            "SEATING_POSITION",
+            "SHARED_REMOTE_REGION",
+            "staging_tray"
+          ],
+          "explicit_families": [
+            "PAYLOAD"
+          ],
+          "family_precedence_rules": [
+            "PAYLOAD_OVER_DISPLAY_CONTEXT"
+          ],
+          "legacy_mapper_rule": "TYPED_DOMAIN_SEMANTICS",
+          "preferred_roles": [
+            "REMOTE"
+          ],
+          "source": "IDENTITY_TEXT+NAME_TEXT+PURPOSE_TEXT",
+          "strength": "EXPLICIT_FAMILY"
+        },
+        {
+          "capabilities": [
+            "SUPPORT_DRINKWARE",
+            "SUPPORT_ENTERTAINMENT_CONTROL"
+          ],
+          "raw_phrase": "place_on",
+          "source": "OPERATION_TEXT"
+        }
+      ],
+      "role_resolution_status": "DIRECT_FUNCTION_MATCH",
+      "semantic_categories": [
+        "remote_control",
+        "tv_remote"
+      ],
+      "semantic_hints": [
+        "button_interface"
+      ],
+      "shared": false,
+      "unary_predicates": [],
+      "verification_mode": "SEMANTIC_AND_GEOMETRIC"
+    },
+    "SEATING_PAIR": {
+      "binding_policy": "SHARED",
+      "canonical_role_candidates": [
+        "SEATING_PAIR"
+      ],
+      "count": 1,
+      "description": "Existential functional requirement induced by an operation the FM expressed; no concrete object, instance or scene category is bound here.",
+      "distinct": false,
+      "entity_kind": "FIXED_TARGET",
+      "max_count": null,
+      "min_count": null,
+      "name": "SEATING_PAIR",
+      "numeric_constraints": [],
+      "preference": null,
+      "raw_role_id": "op_slot__place_remote__anchor",
+      "reusable": false,
+      "role_resolution_provenance": [
+        {
+          "canonical_role": "SEATING_PAIR",
+          "induced_by_operation": "place_remote",
+          "induced_capability": "SUPPORT_ENTERTAINMENT_CONTROL",
+          "induced_slot": "anchor",
+          "source": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT"
+        },
+        {
+          "allowed_anchor_roles": [
+            "SEATING_PAIR",
+            "SEATING_POSITION"
+          ],
+          "raw_phrase": "place_on",
+          "source": "OPERATION_TEXT"
+        }
+      ],
+      "role_resolution_status": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT",
+      "semantic_categories": [
+        "armchair",
+        "chair",
+        "sofa",
+        "seating_pair"
+      ],
+      "semantic_hints": [],
+      "shared": true,
+      "unary_predicates": [],
+      "verification_mode": "SEMANTIC_ONLY"
+    },
+    "SEATING_POSITION": {
+      "binding_policy": "DISTINCT",
+      "canonical_role_candidates": [
+        "SEATING_POSITION"
+      ],
+      "count": 2,
+      "description": "",
+      "distinct": true,
+      "entity_kind": "FIXED_TARGET",
+      "max_count": 2,
+      "min_count": 2,
+      "name": "SEATING_POSITION",
+      "numeric_constraints": [],
+      "preference": null,
+      "raw_role_id": "seating_location",
+      "reusable": false,
+      "role_resolution_provenance": [
+        {
+          "excluded_roles": [
+            "CUP_SAUCER_SET",
+            "PERSONAL_CUP_SAUCER_REGION",
+            "REMOTE",
+            "SHARED_REMOTE_REGION",
+            "staging_tray"
+          ],
+          "explicit_families": [
+            "SEATING"
+          ],
+          "family_precedence_rules": [
+            "FUNCTIONAL_FAMILY_OVER_RECOGNISED_CONTEXT"
+          ],
+          "legacy_mapper_rule": "TYPED_DOMAIN_SEMANTICS",
+          "preferred_roles": [
+            "SEATING_POSITION"
+          ],
+          "source": "IDENTITY_TEXT+NAME_TEXT+PURPOSE_TEXT",
+          "strength": "EXPLICIT_FAMILY"
+        },
+        {
+          "allowed_anchor_roles": [
+            "SEATING_PAIR",
+            "SEATING_POSITION"
+          ],
+          "raw_phrase": "place_on",
+          "source": "OPERATION_TEXT"
+        },
+        {
+          "raw_phrase": "near",
+          "readings_unioned": [
+            "PHYSICAL_VERIFIER:NEAR_SEAT:FORWARD"
+          ],
+          "source": "RELATION_TEXT"
+        },
+        {
+          "source": "JOINT_TYPING",
+          "status": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS"
+        }
+      ],
+      "role_resolution_status": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS",
+      "semantic_categories": [
+        "armchair",
+        "chair",
+        "sofa",
+        "seating_position"
+      ],
+      "semantic_hints": [
+        "furnished",
+        "in_front_of_tv"
+      ],
+      "shared": false,
+      "unary_predicates": [],
+      "verification_mode": "SEMANTIC_AND_GEOMETRIC"
+    },
+    "SHARED_REMOTE_REGION": {
+      "binding_policy": "REUSABLE",
+      "canonical_role_candidates": [
+        "SHARED_REMOTE_REGION"
+      ],
+      "count": 1,
+      "description": "Existential functional requirement induced by an operation the FM expressed; no concrete object, instance or scene category is bound here.",
+      "distinct": false,
+      "entity_kind": "REGION",
+      "max_count": null,
+      "min_count": null,
+      "name": "SHARED_REMOTE_REGION",
+      "numeric_constraints": [],
+      "preference": null,
+      "raw_role_id": "op_slot__place_remote__source",
+      "reusable": true,
+      "role_resolution_provenance": [
+        {
+          "canonical_role": "SHARED_REMOTE_REGION",
+          "induced_by_operation": "place_remote",
+          "induced_capability": "SUPPORT_ENTERTAINMENT_CONTROL",
+          "induced_slot": "source",
+          "source": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT"
+        },
+        {
+          "capabilities": [
+            "SUPPORT_DRINKWARE",
+            "SUPPORT_ENTERTAINMENT_CONTROL"
+          ],
+          "raw_phrase": "place_on",
+          "source": "OPERATION_TEXT"
+        }
+      ],
+      "role_resolution_status": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT",
+      "semantic_categories": [
+        "coffee_table",
+        "central_table",
+        "side_table"
+      ],
+      "semantic_hints": [],
+      "shared": false,
+      "unary_predicates": [],
+      "verification_mode": "SEMANTIC_ONLY"
+    }
+  },
+  "operation_groups": [
+    {
+      "capability_id": "SUPPORT_DRINKWARE",
+      "context_relations": [
+        "NEAR_SEAT"
+      ],
+      "context_role": "SEATING_POSITION",
+      "distinct_within_group": true,
+      "function": "SUPPORT_DRINKWARE",
+      "id": "personal_support_group",
+      "physical_preconditions": [
+        [
+          "PERSONAL_CUP_SAUCER_REGION",
+          "FITS_SET_ON",
+          "CUP_SAUCER_SET"
+        ],
+        [
+          "PERSONAL_CUP_SAUCER_REGION",
+          "NEAR_SEAT",
+          "SEATING_POSITION"
+        ]
+      ],
+      "preconditions_provenance": [
+        {
+          "capability_id": "SUPPORT_DRINKWARE",
+          "predicate": "FITS_SET_ON",
+          "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+          "source_operation_id": "place_refreshments"
+        },
+        {
+          "capability_id": "SUPPORT_DRINKWARE",
+          "predicate": "NEAR_SEAT",
+          "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+          "source_operation_id": "place_refreshments"
+        }
+      ],
+      "required_relations": [
+        "FITS_SET_ON"
+      ],
+      "required_target_count": 2,
+      "same_tool_must_cover_all_targets": false,
+      "selection_preference": null,
+      "target_role": "CUP_SAUCER_SET",
+      "tool_role": "PERSONAL_CUP_SAUCER_REGION",
+      "usage_policy": "DEDICATED_PER_TARGET"
+    },
+    {
+      "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+      "context_relations": [
+        "ACCESSIBLE_FROM_BOTH_SEATS"
+      ],
+      "context_role": "SEATING_PAIR",
+      "distinct_within_group": false,
+      "function": "SUPPORT_ENTERTAINMENT_CONTROL",
+      "id": "shared_entertainment_group",
+      "physical_preconditions": [
+        [
+          "SHARED_REMOTE_REGION",
+          "FITS_ON",
+          "REMOTE"
+        ],
+        [
+          "SHARED_REMOTE_REGION",
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          "SEATING_PAIR"
+        ]
+      ],
+      "preconditions_provenance": [
+        {
+          "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+          "predicate": "FITS_ON",
+          "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+          "source_operation_id": "place_remote"
+        },
+        {
+          "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+          "predicate": "ACCESSIBLE_FROM_BOTH_SEATS",
+          "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+          "source_operation_id": "place_remote"
+        }
+      ],
+      "required_relations": [
+        "FITS_ON"
+      ],
+      "required_target_count": 1,
+      "same_tool_must_cover_all_targets": false,
+      "selection_preference": null,
+      "target_role": "REMOTE",
+      "tool_role": "SHARED_REMOTE_REGION",
+      "usage_policy": "SEQUENTIAL_REUSE_ALLOWED"
+    }
+  ],
+  "provisional_operation_constraints": [],
+  "provisional_relation_constraints": [],
+  "region_ranking": [],
+  "relations": [],
+  "roles": [
+    {
+      "binding_policy": "DISTINCT",
+      "canonical_role_candidates": [
+        "CUP_SAUCER_SET"
+      ],
+      "count": 2,
+      "description": "",
+      "distinct": true,
+      "entity_kind": "OBJECT",
+      "max_count": null,
+      "min_count": null,
+      "name": "CUP_SAUCER_SET",
+      "numeric_constraints": [],
+      "preference": null,
+      "raw_role_id": "refreshment_setting",
+      "reusable": false,
+      "role_resolution_provenance": [
+        {
+          "excluded_roles": [
+            "SEATING_PAIR",
+            "SEATING_POSITION"
+          ],
+          "explicit_families": [
+            "PAYLOAD",
+            "SUPPORT"
+          ],
+          "family_precedence_rules": [],
+          "legacy_mapper_rule": "TYPED_DOMAIN_SEMANTICS",
+          "preferred_roles": [
+            "CUP_SAUCER_SET"
+          ],
+          "source": "IDENTITY_TEXT+NAME_TEXT+PURPOSE_TEXT",
+          "strength": "EXPLICIT_FAMILY"
+        },
+        {
+          "capabilities": [
+            "SUPPORT_DRINKWARE",
+            "SUPPORT_ENTERTAINMENT_CONTROL"
+          ],
+          "raw_phrase": "place_on",
+          "source": "OPERATION_TEXT"
+        }
+      ],
+      "role_resolution_status": "DIRECT_FUNCTION_MATCH",
+      "semantic_categories": [
+        "cup_saucer_set",
+        "cup",
+        "saucer"
+      ],
+      "semantic_hints": [
+        "drinkable_container",
+        "eating_surface"
+      ],
+      "shared": false,
+      "unary_predicates": [],
+      "verification_mode": "SEMANTIC_AND_GEOMETRIC"
+    },
+    {
+      "binding_policy": "SHARED",
+      "canonical_role_candidates": [
+        "PERSONAL_CUP_SAUCER_REGION"
+      ],
+      "count": 2,
+      "description": "",
+      "distinct": true,
+      "entity_kind": "REGION",
+      "max_count": null,
+      "min_count": 1,
+      "name": "PERSONAL_CUP_SAUCER_REGION",
+      "numeric_constraints": [],
+      "preference": null,
+      "raw_role_id": "surface",
+      "reusable": false,
+      "role_resolution_provenance": [
+        {
+          "excluded_roles": [
+            "CUP_SAUCER_SET",
+            "REMOTE",
+            "SEATING_PAIR",
+            "SEATING_POSITION"
+          ],
+          "explicit_families": [
+            "SUPPORT"
+          ],
+          "family_precedence_rules": [],
+          "legacy_mapper_rule": "TYPED_DOMAIN_SEMANTICS",
+          "preferred_roles": [
+            "PERSONAL_CUP_SAUCER_REGION"
+          ],
+          "source": "IDENTITY_TEXT+NAME_TEXT+PURPOSE_TEXT",
+          "strength": "EXPLICIT_FAMILY"
+        },
+        {
+          "raw_phrase": "near",
+          "readings_unioned": [
+            "PHYSICAL_VERIFIER:NEAR_SEAT:FORWARD"
+          ],
+          "source": "RELATION_TEXT"
+        },
+        {
+          "capabilities": [
+            "SUPPORT_DRINKWARE",
+            "SUPPORT_ENTERTAINMENT_CONTROL"
+          ],
+          "raw_phrase": "place_on",
+          "source": "OPERATION_TEXT"
+        }
+      ],
+      "role_resolution_status": "DIRECT_FUNCTION_MATCH",
+      "semantic_categories": [
+        "side_table",
+        "end_table"
+      ],
+      "semantic_hints": [
+        "flat_top",
+        "stable"
+      ],
+      "shared": true,
+      "unary_predicates": [],
+      "verification_mode": "SEMANTIC_AND_GEOMETRIC"
+    },
+    {
+      "binding_policy": "REUSABLE",
+      "canonical_role_candidates": [
+        "REMOTE"
+      ],
+      "count": 1,
+      "description": "",
+      "distinct": false,
+      "entity_kind": "OBJECT",
+      "max_count": null,
+      "min_count": null,
+      "name": "REMOTE",
+      "numeric_constraints": [],
+      "preference": null,
+      "raw_role_id": "entertainment_control",
+      "reusable": true,
+      "role_resolution_provenance": [
+        {
+          "excluded_roles": [
+            "PERSONAL_CUP_SAUCER_REGION",
+            "SEATING_PAIR",
+            "SEATING_POSITION",
+            "SHARED_REMOTE_REGION",
+            "staging_tray"
+          ],
+          "explicit_families": [
+            "PAYLOAD"
+          ],
+          "family_precedence_rules": [
+            "PAYLOAD_OVER_DISPLAY_CONTEXT"
+          ],
+          "legacy_mapper_rule": "TYPED_DOMAIN_SEMANTICS",
+          "preferred_roles": [
+            "REMOTE"
+          ],
+          "source": "IDENTITY_TEXT+NAME_TEXT+PURPOSE_TEXT",
+          "strength": "EXPLICIT_FAMILY"
+        },
+        {
+          "capabilities": [
+            "SUPPORT_DRINKWARE",
+            "SUPPORT_ENTERTAINMENT_CONTROL"
+          ],
+          "raw_phrase": "place_on",
+          "source": "OPERATION_TEXT"
+        }
+      ],
+      "role_resolution_status": "DIRECT_FUNCTION_MATCH",
+      "semantic_categories": [
+        "remote_control",
+        "tv_remote"
+      ],
+      "semantic_hints": [
+        "button_interface"
+      ],
+      "shared": false,
+      "unary_predicates": [],
+      "verification_mode": "SEMANTIC_AND_GEOMETRIC"
+    },
+    {
+      "binding_policy": "SHARED",
+      "canonical_role_candidates": [
+        "SEATING_PAIR"
+      ],
+      "count": 1,
+      "description": "Existential functional requirement induced by an operation the FM expressed; no concrete object, instance or scene category is bound here.",
+      "distinct": false,
+      "entity_kind": "FIXED_TARGET",
+      "max_count": null,
+      "min_count": null,
+      "name": "SEATING_PAIR",
+      "numeric_constraints": [],
+      "preference": null,
+      "raw_role_id": "op_slot__place_remote__anchor",
+      "reusable": false,
+      "role_resolution_provenance": [
+        {
+          "canonical_role": "SEATING_PAIR",
+          "induced_by_operation": "place_remote",
+          "induced_capability": "SUPPORT_ENTERTAINMENT_CONTROL",
+          "induced_slot": "anchor",
+          "source": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT"
+        },
+        {
+          "allowed_anchor_roles": [
+            "SEATING_PAIR",
+            "SEATING_POSITION"
+          ],
+          "raw_phrase": "place_on",
+          "source": "OPERATION_TEXT"
+        }
+      ],
+      "role_resolution_status": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT",
+      "semantic_categories": [
+        "armchair",
+        "chair",
+        "sofa",
+        "seating_pair"
+      ],
+      "semantic_hints": [],
+      "shared": true,
+      "unary_predicates": [],
+      "verification_mode": "SEMANTIC_ONLY"
+    },
+    {
+      "binding_policy": "DISTINCT",
+      "canonical_role_candidates": [
+        "SEATING_POSITION"
+      ],
+      "count": 2,
+      "description": "",
+      "distinct": true,
+      "entity_kind": "FIXED_TARGET",
+      "max_count": 2,
+      "min_count": 2,
+      "name": "SEATING_POSITION",
+      "numeric_constraints": [],
+      "preference": null,
+      "raw_role_id": "seating_location",
+      "reusable": false,
+      "role_resolution_provenance": [
+        {
+          "excluded_roles": [
+            "CUP_SAUCER_SET",
+            "PERSONAL_CUP_SAUCER_REGION",
+            "REMOTE",
+            "SHARED_REMOTE_REGION",
+            "staging_tray"
+          ],
+          "explicit_families": [
+            "SEATING"
+          ],
+          "family_precedence_rules": [
+            "FUNCTIONAL_FAMILY_OVER_RECOGNISED_CONTEXT"
+          ],
+          "legacy_mapper_rule": "TYPED_DOMAIN_SEMANTICS",
+          "preferred_roles": [
+            "SEATING_POSITION"
+          ],
+          "source": "IDENTITY_TEXT+NAME_TEXT+PURPOSE_TEXT",
+          "strength": "EXPLICIT_FAMILY"
+        },
+        {
+          "allowed_anchor_roles": [
+            "SEATING_PAIR",
+            "SEATING_POSITION"
+          ],
+          "raw_phrase": "place_on",
+          "source": "OPERATION_TEXT"
+        },
+        {
+          "raw_phrase": "near",
+          "readings_unioned": [
+            "PHYSICAL_VERIFIER:NEAR_SEAT:FORWARD"
+          ],
+          "source": "RELATION_TEXT"
+        },
+        {
+          "source": "JOINT_TYPING",
+          "status": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS"
+        }
+      ],
+      "role_resolution_status": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS",
+      "semantic_categories": [
+        "armchair",
+        "chair",
+        "sofa",
+        "seating_position"
+      ],
+      "semantic_hints": [
+        "furnished",
+        "in_front_of_tv"
+      ],
+      "shared": false,
+      "unary_predicates": [],
+      "verification_mode": "SEMANTIC_AND_GEOMETRIC"
+    },
+    {
+      "binding_policy": "REUSABLE",
+      "canonical_role_candidates": [
+        "SHARED_REMOTE_REGION"
+      ],
+      "count": 1,
+      "description": "Existential functional requirement induced by an operation the FM expressed; no concrete object, instance or scene category is bound here.",
+      "distinct": false,
+      "entity_kind": "REGION",
+      "max_count": null,
+      "min_count": null,
+      "name": "SHARED_REMOTE_REGION",
+      "numeric_constraints": [],
+      "preference": null,
+      "raw_role_id": "op_slot__place_remote__source",
+      "reusable": true,
+      "role_resolution_provenance": [
+        {
+          "canonical_role": "SHARED_REMOTE_REGION",
+          "induced_by_operation": "place_remote",
+          "induced_capability": "SUPPORT_ENTERTAINMENT_CONTROL",
+          "induced_slot": "source",
+          "source": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT"
+        },
+        {
+          "capabilities": [
+            "SUPPORT_DRINKWARE",
+            "SUPPORT_ENTERTAINMENT_CONTROL"
+          ],
+          "raw_phrase": "place_on",
+          "source": "OPERATION_TEXT"
+        }
+      ],
+      "role_resolution_status": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT",
+      "semantic_categories": [
+        "coffee_table",
+        "central_table",
+        "side_table"
+      ],
+      "semantic_hints": [],
+      "shared": false,
+      "unary_predicates": [],
+      "verification_mode": "SEMANTIC_ONLY"
+    }
+  ],
+  "source": "VLM_CANONICAL_G_F",
+  "task_causal_relations": [],
+  "task_effect_relations": [],
+  "task_instruction": "Prepare the living room for two people to enjoy refreshments while watching television. Provide each person with their own refreshment setting nearby, and place the entertainment control where it is accessible to both people."
+}

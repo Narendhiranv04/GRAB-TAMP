@@ -1,0 +1,2359 @@
+{
+  "candidate_regions": [
+    "TOOL_CABINET",
+    "RIGHT_DRAWER"
+  ],
+  "cross_group_reuse_allowed": false,
+  "detector_vocabulary": [
+    "bracket",
+    "panel",
+    "assembly_part",
+    "screw",
+    "bolt",
+    "clip",
+    "screwdriver",
+    "drill",
+    "wrench",
+    "table_top",
+    "desk_surface",
+    "Phillips screw",
+    "Phillips head screw",
+    "power driver",
+    "power drill",
+    "Phillips screwdriver",
+    "cordless power drill"
+  ],
+  "domain": "workshop",
+  "metadata": {
+    "alias_to_canonical": {
+      "cordless drill": "power_driver",
+      "cordless power drill": "power_driver",
+      "cordless screwdriver": "power_driver",
+      "cross-head screw": "screw",
+      "cross-head screwdriver": "screwdriver",
+      "drill driver": "power_driver",
+      "electric screwdriver": "power_driver",
+      "fastener": "screw",
+      "hammer": "hammer",
+      "hand screwdriver": "screwdriver",
+      "machine screw": "screw",
+      "mallet": "hammer",
+      "manual screwdriver": "screwdriver",
+      "phillips head screw": "screw",
+      "phillips screw": "screw",
+      "phillips screwdriver": "screwdriver",
+      "power drill": "power_driver",
+      "power driver": "power_driver",
+      "power_driver": "power_driver",
+      "powered screwdriver": "power_driver",
+      "screw": "screw",
+      "screwdriver": "screwdriver",
+      "threaded screw": "screw",
+      "wood mallet": "hammer",
+      "wooden hammer": "hammer"
+    },
+    "candidate_categories_used_for_detector_vocabulary": true,
+    "candidate_categories_used_for_grounding_acceptance": false,
+    "candidate_categories_used_for_role_identity": true,
+    "candidate_requirement_statuses": [
+      {
+        "id": "workbench_surface",
+        "status": "CONTEXT_ONLY"
+      },
+      {
+        "id": "fastening_target",
+        "requirement": "needs_attachment",
+        "status": "SOFT_SEMANTIC_ONLY"
+      },
+      {
+        "id": "fastener_component",
+        "requirement": "fits_target",
+        "status": "SOFT_SEMANTIC_ONLY"
+      },
+      {
+        "id": "fastening_tool",
+        "requirement": "drives_fastener",
+        "status": "SOFT_SEMANTIC_ONLY"
+      },
+      {
+        "id": "drive_fastener_group",
+        "missing_roles": [],
+        "roles": [
+          "driver",
+          "fastener",
+          "repair_target"
+        ],
+        "status": "UNINSTANTIABLE_UNGROUNDED_ROLE"
+      }
+    ],
+    "canonicalization_status": "FULL",
+    "canonicalization_trace": {
+      "constraints_outside_the_runtime_task": [],
+      "context_only_roles": [
+        {
+          "canonical_role": "MAIN_WORKBENCH_ZONE",
+          "raw_role": {
+            "binding_policy": "SHARED",
+            "candidate_categories": [
+              "table_top",
+              "desk_surface"
+            ],
+            "description": "",
+            "entity_kind": "REGION",
+            "function": "The flat area where the target is placed and the tool is returned.",
+            "id": "workbench_surface",
+            "required_count": 1,
+            "required_properties": [
+              "flat",
+              "supportive"
+            ],
+            "visible_candidates": [
+              {
+                "label": "wooden_table_top",
+                "visual_description": "The main surface of the desk."
+              }
+            ]
+          },
+          "rule": "SUPPORT_CONTEXT",
+          "status": "PLANNER_CONTEXT_CONSTANT"
+        }
+      ],
+      "disabled_groups": [],
+      "disambiguated_roles": [],
+      "explicit_context_set_canonicalizations": [],
+      "explicit_role_pairings": [],
+      "groups": [
+        {
+          "capability_id": "FASTEN_JOINT",
+          "context_relations": [
+            "REACHES_TARGET",
+            "COMPATIBLE_WITH_TARGET"
+          ],
+          "interp_status": "LEXICAL_SEMANTIC_MATCH",
+          "planner_operation": "DRIVE_FASTENER_INTO_TARGET",
+          "preconditions_provenance": [
+            {
+              "capability_id": "FASTEN_JOINT",
+              "predicate": "COMPATIBLE_WITH",
+              "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+              "source_operation_id": "apply_fastening"
+            },
+            {
+              "capability_id": "FASTEN_JOINT",
+              "predicate": "REACHES_TARGET",
+              "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+              "source_operation_id": "apply_fastening"
+            },
+            {
+              "capability_id": "FASTEN_JOINT",
+              "predicate": "COMPATIBLE_WITH_TARGET",
+              "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+              "source_operation_id": "apply_fastening"
+            }
+          ],
+          "raw_group": {
+            "context_relations": [],
+            "context_role": "fastening_target",
+            "function": "Robot uses the tool to secure the component to the target.",
+            "id": "apply_fastening",
+            "required_relations": [],
+            "required_target_count": 1,
+            "target_role": "fastener_component",
+            "tool_role": "fastening_tool",
+            "usage_policy": "DEDICATED_PER_TARGET",
+            "v3_current_state_context_roles": [],
+            "v3_explicit_context_set_id": null,
+            "v3_explicit_participant_roles": [
+              "fastening_tool",
+              "fastener_component",
+              "fastening_target"
+            ],
+            "v3_graph_join_relation_id": null,
+            "v3_participant_roles": [
+              "fastening_tool",
+              "fastener_component",
+              "fastening_target"
+            ],
+            "v3_raw_fm_participant_roles": [
+              "fastening_tool",
+              "fastener_component",
+              "fastening_target"
+            ],
+            "v3_slot_assignments": [
+              {
+                "anchor_role": "fastening_target",
+                "anchor_type": "repair_target",
+                "capability_id": "FASTEN_JOINT",
+                "planner_operation": "DRIVE_FASTENER_INTO_TARGET",
+                "source_role": "fastening_tool",
+                "source_type": "driver",
+                "target_role": "fastener_component",
+                "target_type": "fastener",
+                "usage_policy": "DEDICATED_PER_TARGET"
+              }
+            ],
+            "v3_witness_roles": []
+          },
+          "required_relations": [
+            "COMPATIBLE_WITH"
+          ],
+          "status": "CANONICAL_OPERATION_GROUP"
+        }
+      ],
+      "merged_roles": [],
+      "operation_participant_slot_resolutions": [
+        {
+          "anchor_role": "fastening_target",
+          "capability_id": "FASTEN_JOINT",
+          "operation_id": "apply_fastening",
+          "participant_roles": [
+            "fastener_component",
+            "fastening_target",
+            "fastening_tool"
+          ],
+          "source_role": "fastening_tool",
+          "target_role": "fastener_component",
+          "usage_policy": "DEDICATED_PER_TARGET"
+        }
+      ],
+      "planner_context_transitions": [
+        {
+          "code": "OPERATION_RETURNS_SOMETHING_TO_A_PLACE_THE_PLANNER_OWNS",
+          "operation": "Robot places the tool on the workbench surface.",
+          "operation_id": "return_equipment",
+          "planner_context_constant": "MAIN_WORKBENCH_ZONE",
+          "provenance": "PLANNER_CONTEXT_TRANSITION",
+          "source_role": "driver"
+        }
+      ],
+      "precondition_provenance": [
+        {
+          "capability_id": "FASTEN_JOINT",
+          "predicate": "COMPATIBLE_WITH",
+          "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+          "source_operation_id": "apply_fastening"
+        },
+        {
+          "capability_id": "FASTEN_JOINT",
+          "predicate": "REACHES_TARGET",
+          "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+          "source_operation_id": "apply_fastening"
+        },
+        {
+          "capability_id": "FASTEN_JOINT",
+          "predicate": "COMPATIBLE_WITH_TARGET",
+          "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+          "source_operation_id": "apply_fastening"
+        }
+      ],
+      "properties": [
+        {
+          "canonical_predicate": null,
+          "raw_phrase": "needs_attachment",
+          "raw_role_id": "fastening_target",
+          "status": "SOFT_SEMANTIC_EVIDENCE"
+        },
+        {
+          "canonical_predicate": null,
+          "raw_phrase": "fits_target",
+          "raw_role_id": "fastener_component",
+          "status": "SOFT_SEMANTIC_EVIDENCE"
+        },
+        {
+          "canonical_predicate": null,
+          "raw_phrase": "drives_fastener",
+          "raw_role_id": "fastening_tool",
+          "status": "SOFT_SEMANTIC_EVIDENCE"
+        }
+      ],
+      "provisional_operation_constraints": [],
+      "provisional_relation_constraints": [],
+      "provisional_roles": [],
+      "relation_orientation_resolutions": [
+        {
+          "canonical": [
+            [
+              "fastener",
+              "COMPATIBLE_WITH_TARGET",
+              "repair_target"
+            ]
+          ],
+          "direction_normalized": false,
+          "raw_participants": [
+            "fastener_component",
+            "fastening_target"
+          ]
+        },
+        {
+          "canonical": [
+            [
+              "driver",
+              "COMPATIBLE_WITH",
+              "fastener"
+            ]
+          ],
+          "direction_normalized": false,
+          "raw_participants": [
+            "fastening_tool",
+            "fastener_component"
+          ]
+        }
+      ],
+      "relations": [
+        {
+          "canonical": [
+            [
+              "fastener",
+              "COMPATIBLE_WITH_TARGET",
+              "repair_target"
+            ]
+          ],
+          "category": "PHYSICAL_VERIFIER",
+          "direction_normalized": false,
+          "interp_status": "LEXICAL_SEMANTIC_MATCH",
+          "raw_object": "fastening_target",
+          "raw_phrase": "The fastener component is suitable for the fastening target.",
+          "raw_subject": "fastener_component",
+          "status": "CANONICAL_EXECUTABLE_SEMANTIC"
+        },
+        {
+          "canonical": [
+            [
+              "driver",
+              "COMPATIBLE_WITH",
+              "fastener"
+            ]
+          ],
+          "category": "PHYSICAL_VERIFIER",
+          "direction_normalized": false,
+          "interp_status": "LEXICAL_SEMANTIC_MATCH",
+          "raw_object": "fastener_component",
+          "raw_phrase": "The fastening tool is used to apply the fastener component.",
+          "raw_subject": "fastening_tool",
+          "status": "CANONICAL_EXECUTABLE_SEMANTIC"
+        }
+      ],
+      "relations_enforced_by_operations": [],
+      "role_operation_reconciliations": [],
+      "roles": [
+        {
+          "canonical_entity_kind": "FIXED_TARGET",
+          "canonical_role": "repair_target",
+          "declared_entity_kind": "OBJECT",
+          "raw_id": "fastening_target",
+          "status": "ENTITY_KIND_FOLLOWS_CANONICAL_ROLE"
+        },
+        {
+          "canonical_role": "repair_target",
+          "canonical_role_candidates": [
+            "repair_target"
+          ],
+          "raw_id": "fastening_target",
+          "resolution_status": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS",
+          "rule": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS",
+          "status": "CANONICAL_EXECUTABLE_SEMANTIC"
+        },
+        {
+          "canonical_role": "fastener",
+          "canonical_role_candidates": [
+            "fastener"
+          ],
+          "raw_id": "fastener_component",
+          "resolution_status": "GLOBAL_GRAPH_CONSISTENCY_OVERRIDE",
+          "rule": "CAUSAL_OPERATION_PARTICIPANT",
+          "status": "CANONICAL_EXECUTABLE_SEMANTIC"
+        },
+        {
+          "canonical_role": "driver",
+          "canonical_role_candidates": [
+            "driver"
+          ],
+          "raw_id": "fastening_tool",
+          "resolution_status": "DIRECT_FUNCTION_MATCH",
+          "rule": "CAUSAL_OPERATION_PARTICIPANT",
+          "status": "CANONICAL_EXECUTABLE_SEMANTIC"
+        }
+      ],
+      "surplus_unrepresentable_constraints": [],
+      "task_causal_relations": [],
+      "unresolved_required_operations": [
+        {
+          "id": "search_for_parts",
+          "operation": "Robot inspects closed storage regions to locate the fastener and tool.",
+          "participant_roles": [
+            "fastener_component",
+            "fastening_tool"
+          ],
+          "reason": "NO_CAPABILITY_SIGNATURE_ACCEPTS_THESE_PARTICIPANTS",
+          "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION",
+          "semantic_capability_candidates": [
+            "RETURN_REUSABLE_ITEM_TO_SUPPORT"
+          ],
+          "status": "UNRESOLVED_REQUIRED_SEMANTIC"
+        }
+      ],
+      "unresolved_required_relations": [],
+      "unresolved_roles": []
+    },
+    "contract_missing_reasons": [
+      "Unresolved required operations: [{'id': 'search_for_parts', 'operation': 'Robot inspects closed storage regions to locate the fastener and tool.', 'participant_roles': ['fastener_component', 'fastening_tool'], 'semantic_capability_candidates': ['RETURN_REUSABLE_ITEM_TO_SUPPORT'], 'reason': 'NO_CAPABILITY_SIGNATURE_ACCEPTS_THESE_PARTICIPANTS', 'requirement_provenance': 'DERIVED_FROM_EXPLICIT_OPERATION', 'status': 'UNRESOLVED_REQUIRED_SEMANTIC'}]"
+    ],
+    "current_state_operation_context_roles": [],
+    "detector_label_to_canonical": {
+      "power drill": "power_driver",
+      "screw": "screw",
+      "screwdriver": "screwdriver",
+      "wooden hammer": "hammer"
+    },
+    "detector_vocabulary_source": "VLM_CANDIDATES_PLUS_RELEVANT_SYSTEM_ALIASES",
+    "executable_contract_missing_reasons": [
+      "Required operations the runtime cannot represent: [{'id': 'search_for_parts', 'operation': 'Robot inspects closed storage regions to locate the fastener and tool.', 'participant_roles': ['fastener_component', 'fastening_tool'], 'semantic_capability_candidates': ['RETURN_REUSABLE_ITEM_TO_SUPPORT'], 'reason': 'NO_CAPABILITY_SIGNATURE_ACCEPTS_THESE_PARTICIPANTS', 'requirement_provenance': 'DERIVED_FROM_EXPLICIT_OPERATION', 'status': 'UNRESOLVED_REQUIRED_SEMANTIC'}]"
+    ],
+    "explicit_context_sets": [],
+    "explicit_role_pairings": [],
+    "fm_schema_version": 3,
+    "fm_semantic_accounting": [
+      {
+        "canonical_representation": null,
+        "disposition": "UNRESOLVED_REQUIRED_SEMANTIC",
+        "element_kind": "operation",
+        "provenance": "FM_EXPLICIT_OPERATION",
+        "raw_id": "search_for_parts",
+        "reason": "NO_CAPABILITY_SIGNATURE_ACCEPTS_THESE_PARTICIPANTS",
+        "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+      },
+      {
+        "canonical_representation": [
+          "FASTEN_JOINT"
+        ],
+        "disposition": "PRIMITIVE_CAPABILITY",
+        "element_kind": "operation",
+        "provenance": "FM_EXPLICIT_OPERATION",
+        "raw_id": "apply_fastening",
+        "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+      },
+      {
+        "canonical_representation": [
+          "RETURN_REUSABLE_ITEM_TO_SUPPORT"
+        ],
+        "disposition": "PRIMITIVE_CAPABILITY",
+        "element_kind": "operation",
+        "provenance": "FM_EXPLICIT_OPERATION",
+        "raw_id": "return_equipment",
+        "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+      },
+      {
+        "canonical_representation": [
+          "driver",
+          "repair_target"
+        ],
+        "disposition": "GROUNDED_TASK_PARTICIPANT",
+        "element_kind": "role",
+        "provenance": "FM_EXPLICIT_ROLE",
+        "raw_id": "fastening_target",
+        "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+      },
+      {
+        "canonical_representation": [
+          "fastener"
+        ],
+        "disposition": "GROUNDED_TASK_PARTICIPANT",
+        "element_kind": "role",
+        "provenance": "FM_EXPLICIT_ROLE",
+        "raw_id": "fastener_component",
+        "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+      },
+      {
+        "canonical_representation": [
+          "driver"
+        ],
+        "disposition": "GROUNDED_TASK_PARTICIPANT",
+        "element_kind": "role",
+        "provenance": "FM_EXPLICIT_ROLE",
+        "raw_id": "fastening_tool",
+        "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+      },
+      {
+        "canonical_representation": [
+          "MAIN_WORKBENCH_ZONE"
+        ],
+        "disposition": "GROUNDED_TASK_PARTICIPANT",
+        "element_kind": "role",
+        "provenance": "FM_EXPLICIT_ROLE",
+        "raw_id": "workbench_surface",
+        "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+      },
+      {
+        "canonical_representation": "The fastening target is situated on the workbench surface.",
+        "disposition": "CURRENT_STATE_CONTEXT",
+        "element_kind": "relation",
+        "provenance": "FM_EXPLICIT_RELATION",
+        "raw_id": "located_on",
+        "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+      },
+      {
+        "canonical_representation": "The fastener component is suitable for the fastening target.",
+        "disposition": "GROUNDED_TASK_RELATION",
+        "element_kind": "relation",
+        "provenance": "FM_EXPLICIT_RELATION",
+        "raw_id": "compatible_with",
+        "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+      },
+      {
+        "canonical_representation": "The fastening tool is used to apply the fastener component.",
+        "disposition": "GROUNDED_TASK_RELATION",
+        "element_kind": "relation",
+        "provenance": "FM_EXPLICIT_RELATION",
+        "raw_id": "operates_on",
+        "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+      }
+    ],
+    "functional_constraint_interpretation": [],
+    "is_v2_specification": false,
+    "is_v3_specification": true,
+    "model_proposed_unverifiable_properties": [],
+    "non_scene_resolvable_blockers": [
+      "REQUIRED_OPERATION_HAS_NO_RUNTIME_CAPABILITY"
+    ],
+    "online_executable_contract_complete": false,
+    "partial_functional_graph": true,
+    "precondition_provenance": [
+      {
+        "capability_id": "FASTEN_JOINT",
+        "predicate": "COMPATIBLE_WITH",
+        "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+        "source_operation_id": "apply_fastening"
+      },
+      {
+        "capability_id": "FASTEN_JOINT",
+        "predicate": "REACHES_TARGET",
+        "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+        "source_operation_id": "apply_fastening"
+      },
+      {
+        "capability_id": "FASTEN_JOINT",
+        "predicate": "COMPATIBLE_WITH_TARGET",
+        "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+        "source_operation_id": "apply_fastening"
+      }
+    ],
+    "provisional_relation_constraints": [],
+    "raw_decomposition": {
+      "observation_guidance": {
+        "inspectable_regions": [
+          {
+            "id": "storage_cabinet",
+            "label": "Blue cabinet",
+            "reason": "Could be inspected for additional task-relevant candidates.",
+            "visual_description": "Tall blue cabinet behind the table."
+          },
+          {
+            "id": "table_drawers",
+            "label": "Under-table drawers",
+            "reason": "Could be inspected for additional task-relevant candidates.",
+            "visual_description": "Two blue drawers beneath the table."
+          }
+        ],
+        "inspection_order": [
+          "storage_cabinet",
+          "table_drawers"
+        ],
+        "visible_candidates_per_role": {
+          "fastener_component": [],
+          "fastening_target": [
+            {
+              "label": "yellow_and_blue_blocks",
+              "visual_description": "Rectangular blocks on a black tray on the table."
+            }
+          ],
+          "fastening_tool": [],
+          "workbench_surface": [
+            {
+              "label": "wooden_table_top",
+              "visual_description": "The main surface of the desk."
+            }
+          ]
+        }
+      },
+      "schema_version": 3,
+      "status": "SUPPORTED",
+      "task_contract": {
+        "functional_relations": [
+          {
+            "id": "located_on",
+            "participant_roles": [
+              "fastening_target",
+              "workbench_surface"
+            ],
+            "relation": "The fastening target is situated on the workbench surface.",
+            "required": true
+          },
+          {
+            "id": "compatible_with",
+            "participant_roles": [
+              "fastener_component",
+              "fastening_target"
+            ],
+            "relation": "The fastener component is suitable for the fastening target.",
+            "required": true
+          },
+          {
+            "id": "operates_on",
+            "participant_roles": [
+              "fastening_tool",
+              "fastener_component"
+            ],
+            "relation": "The fastening tool is used to apply the fastener component.",
+            "required": true
+          }
+        ],
+        "functional_roles": [
+          {
+            "binding_policy": "DISTINCT",
+            "candidate_categories": [
+              "bracket",
+              "panel",
+              "assembly_part"
+            ],
+            "entity_kind": "OBJECT",
+            "function": "The item that needs to be secured or attached.",
+            "id": "fastening_target",
+            "required_count": 1,
+            "required_properties": [
+              "needs_attachment"
+            ]
+          },
+          {
+            "binding_policy": "DISTINCT",
+            "candidate_categories": [
+              "screw",
+              "bolt",
+              "clip"
+            ],
+            "entity_kind": "OBJECT",
+            "function": "The hardware used to join the target to the surface.",
+            "id": "fastener_component",
+            "required_count": 1,
+            "required_properties": [
+              "fits_target"
+            ]
+          },
+          {
+            "binding_policy": "DISTINCT",
+            "candidate_categories": [
+              "screwdriver",
+              "drill",
+              "wrench"
+            ],
+            "entity_kind": "OBJECT",
+            "function": "The implement used to drive the fastener.",
+            "id": "fastening_tool",
+            "required_count": 1,
+            "required_properties": [
+              "drives_fastener"
+            ]
+          },
+          {
+            "binding_policy": "SHARED",
+            "candidate_categories": [
+              "table_top",
+              "desk_surface"
+            ],
+            "entity_kind": "REGION",
+            "function": "The flat area where the target is placed and the tool is returned.",
+            "id": "workbench_surface",
+            "required_count": 1,
+            "required_properties": [
+              "flat",
+              "supportive"
+            ]
+          }
+        ],
+        "operation_pairings": [
+          {
+            "id": "search_for_parts",
+            "operation": "Robot inspects closed storage regions to locate the fastener and tool.",
+            "operation_count": 1,
+            "participant_roles": [
+              "fastener_component",
+              "fastening_tool"
+            ]
+          },
+          {
+            "id": "apply_fastening",
+            "operation": "Robot uses the tool to secure the component to the target.",
+            "operation_count": 1,
+            "participant_roles": [
+              "fastening_tool",
+              "fastener_component",
+              "fastening_target"
+            ]
+          },
+          {
+            "id": "return_equipment",
+            "operation": "Robot places the tool on the workbench surface.",
+            "operation_count": 1,
+            "participant_roles": [
+              "fastening_tool",
+              "workbench_surface"
+            ]
+          }
+        ]
+      },
+      "task_summary": "Find fastening parts and tool, perform fastening, return tool to table.",
+      "unsupported_reason": ""
+    },
+    "raw_role_to_canonical": {
+      "fastener_component": "fastener",
+      "fastening_target": "repair_target",
+      "fastening_tool": "driver"
+    },
+    "raw_vlm_response": {
+      "observation_guidance": {
+        "inspectable_regions": [
+          {
+            "id": "storage_cabinet",
+            "label": "Blue cabinet",
+            "reason": "Could be inspected for additional task-relevant candidates.",
+            "visual_description": "Tall blue cabinet behind the table."
+          },
+          {
+            "id": "table_drawers",
+            "label": "Under-table drawers",
+            "reason": "Could be inspected for additional task-relevant candidates.",
+            "visual_description": "Two blue drawers beneath the table."
+          }
+        ],
+        "inspection_order": [
+          "storage_cabinet",
+          "table_drawers"
+        ],
+        "visible_candidates_per_role": {
+          "fastener_component": [],
+          "fastening_target": [
+            {
+              "label": "yellow_and_blue_blocks",
+              "visual_description": "Rectangular blocks on a black tray on the table."
+            }
+          ],
+          "fastening_tool": [],
+          "workbench_surface": [
+            {
+              "label": "wooden_table_top",
+              "visual_description": "The main surface of the desk."
+            }
+          ]
+        }
+      },
+      "schema_version": 3,
+      "status": "SUPPORTED",
+      "task_contract": {
+        "functional_relations": [
+          {
+            "id": "located_on",
+            "participant_roles": [
+              "fastening_target",
+              "workbench_surface"
+            ],
+            "relation": "The fastening target is situated on the workbench surface.",
+            "required": true
+          },
+          {
+            "id": "compatible_with",
+            "participant_roles": [
+              "fastener_component",
+              "fastening_target"
+            ],
+            "relation": "The fastener component is suitable for the fastening target.",
+            "required": true
+          },
+          {
+            "id": "operates_on",
+            "participant_roles": [
+              "fastening_tool",
+              "fastener_component"
+            ],
+            "relation": "The fastening tool is used to apply the fastener component.",
+            "required": true
+          }
+        ],
+        "functional_roles": [
+          {
+            "binding_policy": "DISTINCT",
+            "candidate_categories": [
+              "bracket",
+              "panel",
+              "assembly_part"
+            ],
+            "entity_kind": "OBJECT",
+            "function": "The item that needs to be secured or attached.",
+            "id": "fastening_target",
+            "required_count": 1,
+            "required_properties": [
+              "needs_attachment"
+            ]
+          },
+          {
+            "binding_policy": "DISTINCT",
+            "candidate_categories": [
+              "screw",
+              "bolt",
+              "clip"
+            ],
+            "entity_kind": "OBJECT",
+            "function": "The hardware used to join the target to the surface.",
+            "id": "fastener_component",
+            "required_count": 1,
+            "required_properties": [
+              "fits_target"
+            ]
+          },
+          {
+            "binding_policy": "DISTINCT",
+            "candidate_categories": [
+              "screwdriver",
+              "drill",
+              "wrench"
+            ],
+            "entity_kind": "OBJECT",
+            "function": "The implement used to drive the fastener.",
+            "id": "fastening_tool",
+            "required_count": 1,
+            "required_properties": [
+              "drives_fastener"
+            ]
+          },
+          {
+            "binding_policy": "SHARED",
+            "candidate_categories": [
+              "table_top",
+              "desk_surface"
+            ],
+            "entity_kind": "REGION",
+            "function": "The flat area where the target is placed and the tool is returned.",
+            "id": "workbench_surface",
+            "required_count": 1,
+            "required_properties": [
+              "flat",
+              "supportive"
+            ]
+          }
+        ],
+        "operation_pairings": [
+          {
+            "id": "search_for_parts",
+            "operation": "Robot inspects closed storage regions to locate the fastener and tool.",
+            "operation_count": 1,
+            "participant_roles": [
+              "fastener_component",
+              "fastening_tool"
+            ]
+          },
+          {
+            "id": "apply_fastening",
+            "operation": "Robot uses the tool to secure the component to the target.",
+            "operation_count": 1,
+            "participant_roles": [
+              "fastening_tool",
+              "fastener_component",
+              "fastening_target"
+            ]
+          },
+          {
+            "id": "return_equipment",
+            "operation": "Robot places the tool on the workbench surface.",
+            "operation_count": 1,
+            "participant_roles": [
+              "fastening_tool",
+              "workbench_surface"
+            ]
+          }
+        ]
+      },
+      "task_summary": "Find fastening parts and tool, perform fastening, return tool to table.",
+      "unsupported_reason": ""
+    },
+    "required_contract_complete": false,
+    "role_operation_consistency_audit": [
+      {
+        "explicit_participant_roles": [
+          "fastener_component",
+          "fastening_tool"
+        ],
+        "normalized_participant_roles": [
+          "fastener_component",
+          "fastening_tool"
+        ],
+        "operation_id": "search_for_parts",
+        "provenance": "FM_EXPLICIT_OPERATION",
+        "raw_operation": "Robot inspects closed storage regions to locate the fastener and tool.",
+        "semantic_capability_candidates": [
+          "RETURN_REUSABLE_ITEM_TO_SUPPORT"
+        ],
+        "status": "FAIL",
+        "viable_slot_assignments": 0
+      },
+      {
+        "explicit_participant_roles": [
+          "fastening_tool",
+          "fastener_component",
+          "fastening_target"
+        ],
+        "normalized_participant_roles": [
+          "fastening_tool",
+          "fastener_component",
+          "fastening_target"
+        ],
+        "operation_id": "apply_fastening",
+        "provenance": "FM_EXPLICIT_OPERATION",
+        "raw_operation": "Robot uses the tool to secure the component to the target.",
+        "semantic_capability_candidates": [
+          "FASTEN_JOINT"
+        ],
+        "status": "PASS",
+        "viable_slot_assignments": 1
+      },
+      {
+        "explicit_participant_roles": [
+          "fastening_tool",
+          "workbench_surface"
+        ],
+        "normalized_participant_roles": [
+          "fastening_tool",
+          "workbench_surface"
+        ],
+        "operation_id": "return_equipment",
+        "provenance": "FM_EXPLICIT_OPERATION",
+        "raw_operation": "Robot places the tool on the workbench surface.",
+        "semantic_capability_candidates": [
+          "FASTEN_JOINT",
+          "RETURN_REUSABLE_ITEM_TO_SUPPORT"
+        ],
+        "status": "PASS",
+        "viable_slot_assignments": 1
+      }
+    ],
+    "role_semantic_ontology_version": "phase3_p3i_4_semantic_ontology_v1",
+    "role_type_hypotheses": {
+      "fastener_component": {
+        "canonical_role_candidates": [
+          "fastener"
+        ],
+        "entity_kind": "OBJECT",
+        "evidence": [
+          {
+            "excluded_roles": [
+              "MAIN_WORKBENCH_ZONE",
+              "driver",
+              "repair_target",
+              "workshop_frame_joint"
+            ],
+            "explicit_families": [
+              "COMPONENT"
+            ],
+            "family_precedence_rules": [
+              "CANDIDATE_CATEGORY_KIND_OVER_JOB_DESCRIPTION"
+            ],
+            "legacy_mapper_rule": "CAUSAL_OPERATION_PARTICIPANT",
+            "preferred_roles": [
+              "fastener"
+            ],
+            "source": "GLOBAL_GRAPH_CONSISTENCY_OVERRIDE",
+            "strength": "EXPLICIT_FAMILY"
+          },
+          {
+            "raw_phrase": "The fastener component is suitable for the fastening target.",
+            "readings_unioned": [
+              "PHYSICAL_VERIFIER:COMPATIBLE_WITH:FORWARD",
+              "PHYSICAL_VERIFIER:COMPATIBLE_WITH_TARGET:FORWARD",
+              "PHYSICAL_VERIFIER:REACHES_TARGET:FORWARD",
+              "TASK_CAUSAL_SEMANTICS:INSTALLED_AT:FORWARD"
+            ],
+            "source": "RELATION_TEXT"
+          },
+          {
+            "raw_phrase": "The fastening tool is used to apply the fastener component.",
+            "readings_unioned": [
+              "PHYSICAL_VERIFIER:COMPATIBLE_WITH:FORWARD",
+              "PHYSICAL_VERIFIER:COMPATIBLE_WITH_TARGET:FORWARD",
+              "PHYSICAL_VERIFIER:REACHES_TARGET:FORWARD",
+              "TASK_CAUSAL_SEMANTICS:ACTS_ON:FORWARD",
+              "TASK_CAUSAL_SEMANTICS:INSTALLED_AT:FORWARD"
+            ],
+            "source": "RELATION_TEXT"
+          },
+          {
+            "capabilities": [
+              "FASTEN_JOINT"
+            ],
+            "raw_phrase": "Robot uses the tool to secure the component to the target.",
+            "source": "OPERATION_TEXT"
+          },
+          {
+            "raw_function": "The hardware used to join the target to the surface.",
+            "resolved_role": "fastener",
+            "source": "GLOBAL_GRAPH_CONSISTENCY_OVERRIDE",
+            "status": "UNIQUE_MINIMAL_REPAIR"
+          }
+        ],
+        "raw_description": "",
+        "raw_function": "The hardware used to join the target to the surface.",
+        "raw_role_id": "fastener_component",
+        "runtime_context_only": false,
+        "status": "GLOBAL_GRAPH_CONSISTENCY_OVERRIDE"
+      },
+      "fastening_target": {
+        "canonical_role_candidates": [
+          "repair_target"
+        ],
+        "entity_kind": "OBJECT",
+        "evidence": [
+          {
+            "excluded_roles": [],
+            "explicit_families": [],
+            "family_precedence_rules": [],
+            "legacy_mapper_rule": "ZERO_SHOT_SEMANTIC_FALLBACK",
+            "preferred_roles": [
+              "fastener"
+            ],
+            "source": "NO_FAMILY_EVIDENCE",
+            "strength": "WEAK_ALIAS"
+          },
+          {
+            "allowed_anchor_roles": [
+              "repair_target"
+            ],
+            "raw_phrase": "Robot uses the tool to secure the component to the target.",
+            "source": "OPERATION_TEXT"
+          },
+          {
+            "raw_phrase": "The fastener component is suitable for the fastening target.",
+            "readings_unioned": [
+              "PHYSICAL_VERIFIER:COMPATIBLE_WITH:FORWARD",
+              "PHYSICAL_VERIFIER:COMPATIBLE_WITH_TARGET:FORWARD",
+              "PHYSICAL_VERIFIER:REACHES_TARGET:FORWARD",
+              "TASK_CAUSAL_SEMANTICS:INSTALLED_AT:FORWARD"
+            ],
+            "source": "RELATION_TEXT"
+          },
+          {
+            "source": "JOINT_TYPING",
+            "status": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS"
+          }
+        ],
+        "raw_description": "",
+        "raw_function": "The item that needs to be secured or attached.",
+        "raw_role_id": "fastening_target",
+        "runtime_context_only": false,
+        "status": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS"
+      },
+      "fastening_tool": {
+        "canonical_role_candidates": [
+          "driver"
+        ],
+        "entity_kind": "OBJECT",
+        "evidence": [
+          {
+            "excluded_roles": [
+              "MAIN_WORKBENCH_ZONE",
+              "fastener",
+              "repair_target",
+              "workshop_frame_joint"
+            ],
+            "explicit_families": [
+              "INSTRUMENT"
+            ],
+            "family_precedence_rules": [
+              "EXPLICIT_IMPLEMENT_OVER_COMPONENT"
+            ],
+            "legacy_mapper_rule": "CAUSAL_OPERATION_PARTICIPANT",
+            "preferred_roles": [
+              "driver"
+            ],
+            "source": "IDENTITY_TEXT+NAME_TEXT+PURPOSE_TEXT",
+            "strength": "EXPLICIT_FAMILY"
+          },
+          {
+            "raw_phrase": "The fastening tool is used to apply the fastener component.",
+            "readings_unioned": [
+              "PHYSICAL_VERIFIER:COMPATIBLE_WITH:FORWARD",
+              "PHYSICAL_VERIFIER:COMPATIBLE_WITH_TARGET:FORWARD",
+              "PHYSICAL_VERIFIER:REACHES_TARGET:FORWARD",
+              "TASK_CAUSAL_SEMANTICS:ACTS_ON:FORWARD",
+              "TASK_CAUSAL_SEMANTICS:INSTALLED_AT:FORWARD"
+            ],
+            "source": "RELATION_TEXT"
+          },
+          {
+            "capabilities": [
+              "FASTEN_JOINT"
+            ],
+            "raw_phrase": "Robot uses the tool to secure the component to the target.",
+            "source": "OPERATION_TEXT"
+          },
+          {
+            "capabilities": [
+              "FASTEN_JOINT",
+              "RETURN_REUSABLE_ITEM_TO_SUPPORT"
+            ],
+            "raw_phrase": "Robot places the tool on the workbench surface.",
+            "source": "OPERATION_TEXT"
+          }
+        ],
+        "raw_description": "",
+        "raw_function": "The implement used to drive the fastener.",
+        "raw_role_id": "fastening_tool",
+        "runtime_context_only": false,
+        "status": "DIRECT_FUNCTION_MATCH"
+      },
+      "workbench_surface": {
+        "canonical_role_candidates": [
+          "MAIN_WORKBENCH_ZONE"
+        ],
+        "entity_kind": "REGION",
+        "evidence": [
+          {
+            "excluded_roles": [
+              "driver",
+              "fastener",
+              "repair_target",
+              "workshop_frame_joint"
+            ],
+            "explicit_families": [
+              "SUPPORT"
+            ],
+            "family_precedence_rules": [
+              "CANDIDATE_CATEGORY_KIND_OVER_JOB_DESCRIPTION"
+            ],
+            "legacy_mapper_rule": "SUPPORT_CONTEXT",
+            "preferred_roles": [
+              "MAIN_WORKBENCH_ZONE"
+            ],
+            "source": "GLOBAL_GRAPH_CONSISTENCY_OVERRIDE",
+            "strength": "EXPLICIT_FAMILY"
+          },
+          {
+            "capabilities": [
+              "FASTEN_JOINT",
+              "RETURN_REUSABLE_ITEM_TO_SUPPORT"
+            ],
+            "raw_phrase": "Robot places the tool on the workbench surface.",
+            "source": "OPERATION_TEXT"
+          },
+          {
+            "raw_function": "The flat area where the target is placed and the tool is returned.",
+            "resolved_role": "MAIN_WORKBENCH_ZONE",
+            "source": "GLOBAL_GRAPH_CONSISTENCY_OVERRIDE",
+            "status": "UNIQUE_MINIMAL_REPAIR"
+          }
+        ],
+        "raw_description": "",
+        "raw_function": "The flat area where the target is placed and the tool is returned.",
+        "raw_role_id": "workbench_surface",
+        "runtime_context_only": false,
+        "status": "GLOBAL_GRAPH_CONSISTENCY_OVERRIDE"
+      }
+    },
+    "semantic_acceptance_source": "SYSTEM_ROLE_SEMANTIC_ONTOLOGY",
+    "soft_semantic_evidence": [
+      {
+        "canonical_predicate": null,
+        "raw_phrase": "needs_attachment",
+        "raw_role_id": "fastening_target",
+        "status": "SOFT_SEMANTIC_EVIDENCE"
+      },
+      {
+        "canonical_predicate": null,
+        "raw_phrase": "fits_target",
+        "raw_role_id": "fastener_component",
+        "status": "SOFT_SEMANTIC_EVIDENCE"
+      },
+      {
+        "canonical_predicate": null,
+        "raw_phrase": "drives_fastener",
+        "raw_role_id": "fastening_tool",
+        "status": "SOFT_SEMANTIC_EVIDENCE"
+      }
+    ],
+    "structural_sanitizer": {
+      "document": {
+        "current_state_operation_context_roles": [],
+        "current_state_relations": [
+          {
+            "category": "CURRENT_STATE_CONTEXT",
+            "id": "located_on",
+            "participant_roles": [
+              "fastening_target",
+              "workbench_surface"
+            ],
+            "provenance": "FM_EXPLICIT_SEMANTIC",
+            "relation": "The fastening target is situated on the workbench surface.",
+            "required": true
+          }
+        ],
+        "fm_semantic_accounting": [
+          {
+            "canonical_representation": null,
+            "disposition": "UNRESOLVED_REQUIRED_SEMANTIC",
+            "element_kind": "operation",
+            "provenance": "FM_EXPLICIT_OPERATION",
+            "raw_id": "search_for_parts",
+            "reason": "NO_CAPABILITY_SIGNATURE_ACCEPTS_THESE_PARTICIPANTS",
+            "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+          },
+          {
+            "canonical_representation": [
+              "FASTEN_JOINT"
+            ],
+            "disposition": "PRIMITIVE_CAPABILITY",
+            "element_kind": "operation",
+            "provenance": "FM_EXPLICIT_OPERATION",
+            "raw_id": "apply_fastening",
+            "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+          },
+          {
+            "canonical_representation": [
+              "RETURN_REUSABLE_ITEM_TO_SUPPORT"
+            ],
+            "disposition": "PRIMITIVE_CAPABILITY",
+            "element_kind": "operation",
+            "provenance": "FM_EXPLICIT_OPERATION",
+            "raw_id": "return_equipment",
+            "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+          },
+          {
+            "canonical_representation": [
+              "driver",
+              "repair_target"
+            ],
+            "disposition": "GROUNDED_TASK_PARTICIPANT",
+            "element_kind": "role",
+            "provenance": "FM_EXPLICIT_ROLE",
+            "raw_id": "fastening_target",
+            "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+          },
+          {
+            "canonical_representation": [
+              "fastener"
+            ],
+            "disposition": "GROUNDED_TASK_PARTICIPANT",
+            "element_kind": "role",
+            "provenance": "FM_EXPLICIT_ROLE",
+            "raw_id": "fastener_component",
+            "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+          },
+          {
+            "canonical_representation": [
+              "driver"
+            ],
+            "disposition": "GROUNDED_TASK_PARTICIPANT",
+            "element_kind": "role",
+            "provenance": "FM_EXPLICIT_ROLE",
+            "raw_id": "fastening_tool",
+            "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+          },
+          {
+            "canonical_representation": [
+              "MAIN_WORKBENCH_ZONE"
+            ],
+            "disposition": "GROUNDED_TASK_PARTICIPANT",
+            "element_kind": "role",
+            "provenance": "FM_EXPLICIT_ROLE",
+            "raw_id": "workbench_surface",
+            "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+          },
+          {
+            "canonical_representation": "The fastening target is situated on the workbench surface.",
+            "disposition": "CURRENT_STATE_CONTEXT",
+            "element_kind": "relation",
+            "provenance": "FM_EXPLICIT_RELATION",
+            "raw_id": "located_on",
+            "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+          },
+          {
+            "canonical_representation": "The fastener component is suitable for the fastening target.",
+            "disposition": "GROUNDED_TASK_RELATION",
+            "element_kind": "relation",
+            "provenance": "FM_EXPLICIT_RELATION",
+            "raw_id": "compatible_with",
+            "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+          },
+          {
+            "canonical_representation": "The fastening tool is used to apply the fastener component.",
+            "disposition": "GROUNDED_TASK_RELATION",
+            "element_kind": "relation",
+            "provenance": "FM_EXPLICIT_RELATION",
+            "raw_id": "operates_on",
+            "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION"
+          }
+        ],
+        "functional_constraint_interpretation": [],
+        "functional_relations": [
+          {
+            "id": "compatible_with",
+            "object_role": "fastening_target",
+            "relation": "The fastener component is suitable for the fastening target.",
+            "required": true,
+            "subject_role": "fastener_component",
+            "unordered_participants": true,
+            "v3_orientation_options": [
+              {
+                "category": "PHYSICAL_VERIFIER",
+                "object_role": "fastener_component",
+                "predicate": "COMPATIBLE_WITH",
+                "subject_role": "fastening_target"
+              },
+              {
+                "category": "PHYSICAL_VERIFIER",
+                "object_role": "fastening_target",
+                "predicate": "COMPATIBLE_WITH_TARGET",
+                "subject_role": "fastener_component"
+              },
+              {
+                "category": "TASK_CAUSAL_SEMANTICS",
+                "object_role": "fastening_target",
+                "predicate": "INSTALLED_AT",
+                "subject_role": "fastener_component"
+              }
+            ]
+          },
+          {
+            "id": "operates_on",
+            "object_role": "fastener_component",
+            "relation": "The fastening tool is used to apply the fastener component.",
+            "required": true,
+            "subject_role": "fastening_tool",
+            "unordered_participants": true,
+            "v3_orientation_options": [
+              {
+                "category": "PHYSICAL_VERIFIER",
+                "object_role": "fastener_component",
+                "predicate": "COMPATIBLE_WITH",
+                "subject_role": "fastening_tool"
+              },
+              {
+                "category": "TASK_CAUSAL_SEMANTICS",
+                "object_role": "fastener_component",
+                "predicate": "ACTS_ON",
+                "subject_role": "fastening_tool"
+              }
+            ]
+          }
+        ],
+        "functional_roles": [
+          {
+            "binding_policy": "DISTINCT",
+            "candidate_categories": [
+              "bracket",
+              "panel",
+              "assembly_part"
+            ],
+            "description": "",
+            "entity_kind": "OBJECT",
+            "function": "The item that needs to be secured or attached.",
+            "id": "fastening_target",
+            "required_count": 1,
+            "required_properties": [
+              "needs_attachment"
+            ],
+            "visible_candidates": [
+              {
+                "label": "yellow_and_blue_blocks",
+                "visual_description": "Rectangular blocks on a black tray on the table."
+              }
+            ]
+          },
+          {
+            "binding_policy": "DISTINCT",
+            "candidate_categories": [
+              "screw",
+              "bolt",
+              "clip"
+            ],
+            "description": "",
+            "entity_kind": "OBJECT",
+            "function": "The hardware used to join the target to the surface.",
+            "id": "fastener_component",
+            "required_count": 1,
+            "required_properties": [
+              "fits_target"
+            ],
+            "visible_candidates": []
+          },
+          {
+            "binding_policy": "DISTINCT",
+            "candidate_categories": [
+              "screwdriver",
+              "drill",
+              "wrench"
+            ],
+            "description": "",
+            "entity_kind": "OBJECT",
+            "function": "The implement used to drive the fastener.",
+            "id": "fastening_tool",
+            "required_count": 1,
+            "required_properties": [
+              "drives_fastener"
+            ],
+            "visible_candidates": []
+          },
+          {
+            "binding_policy": "SHARED",
+            "candidate_categories": [
+              "table_top",
+              "desk_surface"
+            ],
+            "description": "",
+            "entity_kind": "REGION",
+            "function": "The flat area where the target is placed and the tool is returned.",
+            "id": "workbench_surface",
+            "required_count": 1,
+            "required_properties": [
+              "flat",
+              "supportive"
+            ],
+            "visible_candidates": [
+              {
+                "label": "wooden_table_top",
+                "visual_description": "The main surface of the desk."
+              }
+            ]
+          }
+        ],
+        "inspectable_regions": [
+          {
+            "id": "storage_cabinet",
+            "label": "Blue cabinet",
+            "reason": "Could be inspected for additional task-relevant candidates.",
+            "visual_description": "Tall blue cabinet behind the table."
+          },
+          {
+            "id": "table_drawers",
+            "label": "Under-table drawers",
+            "reason": "Could be inspected for additional task-relevant candidates.",
+            "visual_description": "Two blue drawers beneath the table."
+          }
+        ],
+        "inspection_order": [
+          "storage_cabinet",
+          "table_drawers"
+        ],
+        "interaction_groups": [
+          {
+            "context_relations": [],
+            "context_role": "fastening_target",
+            "function": "Robot uses the tool to secure the component to the target.",
+            "id": "apply_fastening",
+            "required_relations": [],
+            "required_target_count": 1,
+            "target_role": "fastener_component",
+            "tool_role": "fastening_tool",
+            "usage_policy": "DEDICATED_PER_TARGET",
+            "v3_current_state_context_roles": [],
+            "v3_explicit_context_set_id": null,
+            "v3_explicit_participant_roles": [
+              "fastening_tool",
+              "fastener_component",
+              "fastening_target"
+            ],
+            "v3_graph_join_relation_id": null,
+            "v3_participant_roles": [
+              "fastening_tool",
+              "fastener_component",
+              "fastening_target"
+            ],
+            "v3_raw_fm_participant_roles": [
+              "fastening_tool",
+              "fastener_component",
+              "fastening_target"
+            ],
+            "v3_slot_assignments": [
+              {
+                "anchor_role": "fastening_target",
+                "anchor_type": "repair_target",
+                "capability_id": "FASTEN_JOINT",
+                "planner_operation": "DRIVE_FASTENER_INTO_TARGET",
+                "source_role": "fastening_tool",
+                "source_type": "driver",
+                "target_role": "fastener_component",
+                "target_type": "fastener",
+                "usage_policy": "DEDICATED_PER_TARGET"
+              }
+            ],
+            "v3_witness_roles": []
+          },
+          {
+            "context_relations": [],
+            "context_role": null,
+            "function": "Robot places the tool on the workbench surface.",
+            "id": "return_equipment",
+            "required_relations": [],
+            "required_target_count": 1,
+            "target_role": "workbench_surface",
+            "tool_role": "fastening_tool",
+            "usage_policy": "DEDICATED_PER_TARGET",
+            "v3_current_state_context_roles": [],
+            "v3_explicit_context_set_id": null,
+            "v3_explicit_participant_roles": [
+              "fastening_tool",
+              "workbench_surface"
+            ],
+            "v3_graph_join_relation_id": null,
+            "v3_participant_roles": [
+              "fastening_tool",
+              "workbench_surface"
+            ],
+            "v3_raw_fm_participant_roles": [
+              "fastening_tool",
+              "workbench_surface"
+            ],
+            "v3_slot_assignments": [
+              {
+                "anchor_role": null,
+                "anchor_type": null,
+                "capability_id": "RETURN_REUSABLE_ITEM_TO_SUPPORT",
+                "planner_operation": "PLACE",
+                "source_role": "fastening_tool",
+                "source_type": "driver",
+                "target_role": "workbench_surface",
+                "target_type": "MAIN_WORKBENCH_ZONE",
+                "usage_policy": "DEDICATED_PER_TARGET"
+              }
+            ],
+            "v3_witness_roles": []
+          }
+        ],
+        "raw_v3_contract": {
+          "functional_relations": [
+            {
+              "id": "located_on",
+              "participant_roles": [
+                "fastening_target",
+                "workbench_surface"
+              ],
+              "relation": "The fastening target is situated on the workbench surface.",
+              "required": true
+            },
+            {
+              "id": "compatible_with",
+              "participant_roles": [
+                "fastener_component",
+                "fastening_target"
+              ],
+              "relation": "The fastener component is suitable for the fastening target.",
+              "required": true
+            },
+            {
+              "id": "operates_on",
+              "participant_roles": [
+                "fastening_tool",
+                "fastener_component"
+              ],
+              "relation": "The fastening tool is used to apply the fastener component.",
+              "required": true
+            }
+          ],
+          "functional_roles": [
+            {
+              "binding_policy": "DISTINCT",
+              "candidate_categories": [
+                "bracket",
+                "panel",
+                "assembly_part"
+              ],
+              "entity_kind": "OBJECT",
+              "function": "The item that needs to be secured or attached.",
+              "id": "fastening_target",
+              "required_count": 1,
+              "required_properties": [
+                "needs_attachment"
+              ]
+            },
+            {
+              "binding_policy": "DISTINCT",
+              "candidate_categories": [
+                "screw",
+                "bolt",
+                "clip"
+              ],
+              "entity_kind": "OBJECT",
+              "function": "The hardware used to join the target to the surface.",
+              "id": "fastener_component",
+              "required_count": 1,
+              "required_properties": [
+                "fits_target"
+              ]
+            },
+            {
+              "binding_policy": "DISTINCT",
+              "candidate_categories": [
+                "screwdriver",
+                "drill",
+                "wrench"
+              ],
+              "entity_kind": "OBJECT",
+              "function": "The implement used to drive the fastener.",
+              "id": "fastening_tool",
+              "required_count": 1,
+              "required_properties": [
+                "drives_fastener"
+              ]
+            },
+            {
+              "binding_policy": "SHARED",
+              "candidate_categories": [
+                "table_top",
+                "desk_surface"
+              ],
+              "entity_kind": "REGION",
+              "function": "The flat area where the target is placed and the tool is returned.",
+              "id": "workbench_surface",
+              "required_count": 1,
+              "required_properties": [
+                "flat",
+                "supportive"
+              ]
+            }
+          ],
+          "operation_pairings": [
+            {
+              "id": "search_for_parts",
+              "operation": "Robot inspects closed storage regions to locate the fastener and tool.",
+              "operation_count": 1,
+              "participant_roles": [
+                "fastener_component",
+                "fastening_tool"
+              ]
+            },
+            {
+              "id": "apply_fastening",
+              "operation": "Robot uses the tool to secure the component to the target.",
+              "operation_count": 1,
+              "participant_roles": [
+                "fastening_tool",
+                "fastener_component",
+                "fastening_target"
+              ]
+            },
+            {
+              "id": "return_equipment",
+              "operation": "Robot places the tool on the workbench surface.",
+              "operation_count": 1,
+              "participant_roles": [
+                "fastening_tool",
+                "workbench_surface"
+              ]
+            }
+          ]
+        },
+        "raw_v3_guidance": {
+          "inspectable_regions": [
+            {
+              "id": "storage_cabinet",
+              "label": "Blue cabinet",
+              "reason": "Could be inspected for additional task-relevant candidates.",
+              "visual_description": "Tall blue cabinet behind the table."
+            },
+            {
+              "id": "table_drawers",
+              "label": "Under-table drawers",
+              "reason": "Could be inspected for additional task-relevant candidates.",
+              "visual_description": "Two blue drawers beneath the table."
+            }
+          ],
+          "inspection_order": [
+            "storage_cabinet",
+            "table_drawers"
+          ],
+          "visible_candidates_per_role": {
+            "fastener_component": [],
+            "fastening_target": [
+              {
+                "label": "yellow_and_blue_blocks",
+                "visual_description": "Rectangular blocks on a black tray on the table."
+              }
+            ],
+            "fastening_tool": [],
+            "workbench_surface": [
+              {
+                "label": "wooden_table_top",
+                "visual_description": "The main surface of the desk."
+              }
+            ]
+          }
+        },
+        "role_operation_consistency_audit": [
+          {
+            "explicit_participant_roles": [
+              "fastener_component",
+              "fastening_tool"
+            ],
+            "normalized_participant_roles": [
+              "fastener_component",
+              "fastening_tool"
+            ],
+            "operation_id": "search_for_parts",
+            "provenance": "FM_EXPLICIT_OPERATION",
+            "raw_operation": "Robot inspects closed storage regions to locate the fastener and tool.",
+            "semantic_capability_candidates": [
+              "RETURN_REUSABLE_ITEM_TO_SUPPORT"
+            ],
+            "status": "FAIL",
+            "viable_slot_assignments": 0
+          },
+          {
+            "explicit_participant_roles": [
+              "fastening_tool",
+              "fastener_component",
+              "fastening_target"
+            ],
+            "normalized_participant_roles": [
+              "fastening_tool",
+              "fastener_component",
+              "fastening_target"
+            ],
+            "operation_id": "apply_fastening",
+            "provenance": "FM_EXPLICIT_OPERATION",
+            "raw_operation": "Robot uses the tool to secure the component to the target.",
+            "semantic_capability_candidates": [
+              "FASTEN_JOINT"
+            ],
+            "status": "PASS",
+            "viable_slot_assignments": 1
+          },
+          {
+            "explicit_participant_roles": [
+              "fastening_tool",
+              "workbench_surface"
+            ],
+            "normalized_participant_roles": [
+              "fastening_tool",
+              "workbench_surface"
+            ],
+            "operation_id": "return_equipment",
+            "provenance": "FM_EXPLICIT_OPERATION",
+            "raw_operation": "Robot places the tool on the workbench surface.",
+            "semantic_capability_candidates": [
+              "FASTEN_JOINT",
+              "RETURN_REUSABLE_ITEM_TO_SUPPORT"
+            ],
+            "status": "PASS",
+            "viable_slot_assignments": 1
+          }
+        ],
+        "schema_version": 3,
+        "status": "SUPPORTED",
+        "task_summary": "Find fastening parts and tool, perform fastening, return tool to table.",
+        "unresolved_operation_semantics": [
+          {
+            "id": "search_for_parts",
+            "operation": "Robot inspects closed storage regions to locate the fastener and tool.",
+            "participant_roles": [
+              "fastener_component",
+              "fastening_tool"
+            ],
+            "reason": "NO_CAPABILITY_SIGNATURE_ACCEPTS_THESE_PARTICIPANTS",
+            "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION",
+            "semantic_capability_candidates": [
+              "RETURN_REUSABLE_ITEM_TO_SUPPORT"
+            ]
+          }
+        ],
+        "unresolved_relation_semantics": [],
+        "unsupported_reason": ""
+      },
+      "repairs": [],
+      "semantically_incomplete": false,
+      "succeeded": true
+    },
+    "task_causal_relations": [],
+    "task_effect_relations": [],
+    "unrepresented_fm_semantics": [
+      {
+        "id": "search_for_parts",
+        "operation": "Robot inspects closed storage regions to locate the fastener and tool.",
+        "participant_roles": [
+          "fastener_component",
+          "fastening_tool"
+        ],
+        "reason": "NO_CAPABILITY_SIGNATURE_ACCEPTS_THESE_PARTICIPANTS",
+        "requirement_provenance": "DERIVED_FROM_EXPLICIT_OPERATION",
+        "semantic_capability_candidates": [
+          "RETURN_REUSABLE_ITEM_TO_SUPPORT"
+        ],
+        "status": "UNRESOLVED_REQUIRED_SEMANTIC"
+      }
+    ],
+    "unresolved_semantics": [],
+    "unverified_required_properties": [],
+    "v3_boundary_normalization_trace": [
+      {
+        "code": "HIDDEN_CONTENT_REASON_SANITIZED",
+        "region_id": "storage_cabinet"
+      },
+      {
+        "code": "HIDDEN_CONTENT_REASON_SANITIZED",
+        "region_id": "table_drawers"
+      }
+    ]
+  },
+  "nodes": {
+    "driver": {
+      "binding_policy": "DISTINCT",
+      "canonical_role_candidates": [
+        "driver"
+      ],
+      "count": 1,
+      "description": "",
+      "distinct": true,
+      "entity_kind": "OBJECT",
+      "max_count": null,
+      "min_count": null,
+      "name": "driver",
+      "numeric_constraints": [],
+      "preference": null,
+      "raw_role_id": "fastening_tool",
+      "reusable": false,
+      "role_resolution_provenance": [
+        {
+          "excluded_roles": [
+            "MAIN_WORKBENCH_ZONE",
+            "fastener",
+            "repair_target",
+            "workshop_frame_joint"
+          ],
+          "explicit_families": [
+            "INSTRUMENT"
+          ],
+          "family_precedence_rules": [
+            "EXPLICIT_IMPLEMENT_OVER_COMPONENT"
+          ],
+          "legacy_mapper_rule": "CAUSAL_OPERATION_PARTICIPANT",
+          "preferred_roles": [
+            "driver"
+          ],
+          "source": "IDENTITY_TEXT+NAME_TEXT+PURPOSE_TEXT",
+          "strength": "EXPLICIT_FAMILY"
+        },
+        {
+          "raw_phrase": "The fastening tool is used to apply the fastener component.",
+          "readings_unioned": [
+            "PHYSICAL_VERIFIER:COMPATIBLE_WITH:FORWARD",
+            "PHYSICAL_VERIFIER:COMPATIBLE_WITH_TARGET:FORWARD",
+            "PHYSICAL_VERIFIER:REACHES_TARGET:FORWARD",
+            "TASK_CAUSAL_SEMANTICS:ACTS_ON:FORWARD",
+            "TASK_CAUSAL_SEMANTICS:INSTALLED_AT:FORWARD"
+          ],
+          "source": "RELATION_TEXT"
+        },
+        {
+          "capabilities": [
+            "FASTEN_JOINT"
+          ],
+          "raw_phrase": "Robot uses the tool to secure the component to the target.",
+          "source": "OPERATION_TEXT"
+        },
+        {
+          "capabilities": [
+            "FASTEN_JOINT",
+            "RETURN_REUSABLE_ITEM_TO_SUPPORT"
+          ],
+          "raw_phrase": "Robot places the tool on the workbench surface.",
+          "source": "OPERATION_TEXT"
+        }
+      ],
+      "role_resolution_status": "DIRECT_FUNCTION_MATCH",
+      "semantic_categories": [
+        "screwdriver",
+        "power_driver",
+        "power_drill",
+        "Phillips screwdriver",
+        "cordless power drill"
+      ],
+      "semantic_hints": [
+        "drives_fastener"
+      ],
+      "shared": false,
+      "unary_predicates": [],
+      "verification_mode": "SEMANTIC_AND_GEOMETRIC"
+    },
+    "fastener": {
+      "binding_policy": "DISTINCT",
+      "canonical_role_candidates": [
+        "fastener"
+      ],
+      "count": 1,
+      "description": "",
+      "distinct": true,
+      "entity_kind": "OBJECT",
+      "max_count": null,
+      "min_count": null,
+      "name": "fastener",
+      "numeric_constraints": [],
+      "preference": null,
+      "raw_role_id": "fastener_component",
+      "reusable": false,
+      "role_resolution_provenance": [
+        {
+          "excluded_roles": [
+            "MAIN_WORKBENCH_ZONE",
+            "driver",
+            "repair_target",
+            "workshop_frame_joint"
+          ],
+          "explicit_families": [
+            "COMPONENT"
+          ],
+          "family_precedence_rules": [
+            "CANDIDATE_CATEGORY_KIND_OVER_JOB_DESCRIPTION"
+          ],
+          "legacy_mapper_rule": "CAUSAL_OPERATION_PARTICIPANT",
+          "preferred_roles": [
+            "fastener"
+          ],
+          "source": "GLOBAL_GRAPH_CONSISTENCY_OVERRIDE",
+          "strength": "EXPLICIT_FAMILY"
+        },
+        {
+          "raw_phrase": "The fastener component is suitable for the fastening target.",
+          "readings_unioned": [
+            "PHYSICAL_VERIFIER:COMPATIBLE_WITH:FORWARD",
+            "PHYSICAL_VERIFIER:COMPATIBLE_WITH_TARGET:FORWARD",
+            "PHYSICAL_VERIFIER:REACHES_TARGET:FORWARD",
+            "TASK_CAUSAL_SEMANTICS:INSTALLED_AT:FORWARD"
+          ],
+          "source": "RELATION_TEXT"
+        },
+        {
+          "raw_phrase": "The fastening tool is used to apply the fastener component.",
+          "readings_unioned": [
+            "PHYSICAL_VERIFIER:COMPATIBLE_WITH:FORWARD",
+            "PHYSICAL_VERIFIER:COMPATIBLE_WITH_TARGET:FORWARD",
+            "PHYSICAL_VERIFIER:REACHES_TARGET:FORWARD",
+            "TASK_CAUSAL_SEMANTICS:ACTS_ON:FORWARD",
+            "TASK_CAUSAL_SEMANTICS:INSTALLED_AT:FORWARD"
+          ],
+          "source": "RELATION_TEXT"
+        },
+        {
+          "capabilities": [
+            "FASTEN_JOINT"
+          ],
+          "raw_phrase": "Robot uses the tool to secure the component to the target.",
+          "source": "OPERATION_TEXT"
+        },
+        {
+          "raw_function": "The hardware used to join the target to the surface.",
+          "resolved_role": "fastener",
+          "source": "GLOBAL_GRAPH_CONSISTENCY_OVERRIDE",
+          "status": "UNIQUE_MINIMAL_REPAIR"
+        }
+      ],
+      "role_resolution_status": "GLOBAL_GRAPH_CONSISTENCY_OVERRIDE",
+      "semantic_categories": [
+        "screw",
+        "Phillips screw",
+        "Phillips head screw"
+      ],
+      "semantic_hints": [
+        "fits_target"
+      ],
+      "shared": false,
+      "unary_predicates": [],
+      "verification_mode": "SEMANTIC_AND_GEOMETRIC"
+    },
+    "repair_target": {
+      "binding_policy": "DISTINCT",
+      "canonical_role_candidates": [
+        "repair_target"
+      ],
+      "count": 1,
+      "description": "",
+      "distinct": true,
+      "entity_kind": "FIXED_TARGET",
+      "max_count": null,
+      "min_count": null,
+      "name": "repair_target",
+      "numeric_constraints": [],
+      "preference": null,
+      "raw_role_id": "fastening_target",
+      "reusable": false,
+      "role_resolution_provenance": [
+        {
+          "excluded_roles": [],
+          "explicit_families": [],
+          "family_precedence_rules": [],
+          "legacy_mapper_rule": "ZERO_SHOT_SEMANTIC_FALLBACK",
+          "preferred_roles": [
+            "fastener"
+          ],
+          "source": "NO_FAMILY_EVIDENCE",
+          "strength": "WEAK_ALIAS"
+        },
+        {
+          "allowed_anchor_roles": [
+            "repair_target"
+          ],
+          "raw_phrase": "Robot uses the tool to secure the component to the target.",
+          "source": "OPERATION_TEXT"
+        },
+        {
+          "raw_phrase": "The fastener component is suitable for the fastening target.",
+          "readings_unioned": [
+            "PHYSICAL_VERIFIER:COMPATIBLE_WITH:FORWARD",
+            "PHYSICAL_VERIFIER:COMPATIBLE_WITH_TARGET:FORWARD",
+            "PHYSICAL_VERIFIER:REACHES_TARGET:FORWARD",
+            "TASK_CAUSAL_SEMANTICS:INSTALLED_AT:FORWARD"
+          ],
+          "source": "RELATION_TEXT"
+        },
+        {
+          "source": "JOINT_TYPING",
+          "status": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS"
+        }
+      ],
+      "role_resolution_status": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS",
+      "semantic_categories": [
+        "repair_target",
+        "workshop_frame_joint",
+        "recess"
+      ],
+      "semantic_hints": [
+        "needs_attachment"
+      ],
+      "shared": false,
+      "unary_predicates": [],
+      "verification_mode": "GEOMETRIC_ONLY"
+    }
+  },
+  "operation_groups": [
+    {
+      "capability_id": "FASTEN_JOINT",
+      "context_relations": [
+        "REACHES_TARGET",
+        "COMPATIBLE_WITH_TARGET"
+      ],
+      "context_role": "repair_target",
+      "distinct_within_group": true,
+      "function": "DRIVE_FASTENER_INTO_TARGET",
+      "id": "drive_fastener_group",
+      "physical_preconditions": [
+        [
+          "driver",
+          "COMPATIBLE_WITH",
+          "fastener"
+        ],
+        [
+          "driver",
+          "REACHES_TARGET",
+          "repair_target"
+        ],
+        [
+          "fastener",
+          "COMPATIBLE_WITH_TARGET",
+          "repair_target"
+        ]
+      ],
+      "preconditions_provenance": [
+        {
+          "capability_id": "FASTEN_JOINT",
+          "predicate": "COMPATIBLE_WITH",
+          "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+          "source_operation_id": "apply_fastening"
+        },
+        {
+          "capability_id": "FASTEN_JOINT",
+          "predicate": "REACHES_TARGET",
+          "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+          "source_operation_id": "apply_fastening"
+        },
+        {
+          "capability_id": "FASTEN_JOINT",
+          "predicate": "COMPATIBLE_WITH_TARGET",
+          "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+          "source_operation_id": "apply_fastening"
+        }
+      ],
+      "required_relations": [
+        "COMPATIBLE_WITH"
+      ],
+      "required_target_count": 1,
+      "same_tool_must_cover_all_targets": false,
+      "selection_preference": null,
+      "target_role": "fastener",
+      "tool_role": "driver",
+      "usage_policy": "DEDICATED_PER_TARGET"
+    }
+  ],
+  "provisional_operation_constraints": [],
+  "provisional_relation_constraints": [],
+  "region_ranking": [
+    "TOOL_CABINET",
+    "RIGHT_DRAWER"
+  ],
+  "relations": [
+    {
+      "capability_id": null,
+      "category": "PHYSICAL_VERIFIER",
+      "expected": true,
+      "object_role": "repair_target",
+      "predicate": "COMPATIBLE_WITH_TARGET",
+      "provenance": "EXPLICIT_REQUIREMENT",
+      "source_operation_id": null,
+      "subject_role": "fastener"
+    },
+    {
+      "capability_id": null,
+      "category": "PHYSICAL_VERIFIER",
+      "expected": true,
+      "object_role": "fastener",
+      "predicate": "COMPATIBLE_WITH",
+      "provenance": "EXPLICIT_REQUIREMENT",
+      "source_operation_id": null,
+      "subject_role": "driver"
+    },
+    {
+      "capability_id": "FASTEN_JOINT",
+      "category": "PHYSICAL_VERIFIER",
+      "expected": true,
+      "object_role": "repair_target",
+      "predicate": "REACHES_TARGET",
+      "provenance": "ROBOT_CAPABILITY_PRECONDITION",
+      "source_operation_id": "apply_fastening",
+      "subject_role": "driver"
+    }
+  ],
+  "roles": [
+    {
+      "binding_policy": "DISTINCT",
+      "canonical_role_candidates": [
+        "driver"
+      ],
+      "count": 1,
+      "description": "",
+      "distinct": true,
+      "entity_kind": "OBJECT",
+      "max_count": null,
+      "min_count": null,
+      "name": "driver",
+      "numeric_constraints": [],
+      "preference": null,
+      "raw_role_id": "fastening_tool",
+      "reusable": false,
+      "role_resolution_provenance": [
+        {
+          "excluded_roles": [
+            "MAIN_WORKBENCH_ZONE",
+            "fastener",
+            "repair_target",
+            "workshop_frame_joint"
+          ],
+          "explicit_families": [
+            "INSTRUMENT"
+          ],
+          "family_precedence_rules": [
+            "EXPLICIT_IMPLEMENT_OVER_COMPONENT"
+          ],
+          "legacy_mapper_rule": "CAUSAL_OPERATION_PARTICIPANT",
+          "preferred_roles": [
+            "driver"
+          ],
+          "source": "IDENTITY_TEXT+NAME_TEXT+PURPOSE_TEXT",
+          "strength": "EXPLICIT_FAMILY"
+        },
+        {
+          "raw_phrase": "The fastening tool is used to apply the fastener component.",
+          "readings_unioned": [
+            "PHYSICAL_VERIFIER:COMPATIBLE_WITH:FORWARD",
+            "PHYSICAL_VERIFIER:COMPATIBLE_WITH_TARGET:FORWARD",
+            "PHYSICAL_VERIFIER:REACHES_TARGET:FORWARD",
+            "TASK_CAUSAL_SEMANTICS:ACTS_ON:FORWARD",
+            "TASK_CAUSAL_SEMANTICS:INSTALLED_AT:FORWARD"
+          ],
+          "source": "RELATION_TEXT"
+        },
+        {
+          "capabilities": [
+            "FASTEN_JOINT"
+          ],
+          "raw_phrase": "Robot uses the tool to secure the component to the target.",
+          "source": "OPERATION_TEXT"
+        },
+        {
+          "capabilities": [
+            "FASTEN_JOINT",
+            "RETURN_REUSABLE_ITEM_TO_SUPPORT"
+          ],
+          "raw_phrase": "Robot places the tool on the workbench surface.",
+          "source": "OPERATION_TEXT"
+        }
+      ],
+      "role_resolution_status": "DIRECT_FUNCTION_MATCH",
+      "semantic_categories": [
+        "screwdriver",
+        "power_driver",
+        "power_drill",
+        "Phillips screwdriver",
+        "cordless power drill"
+      ],
+      "semantic_hints": [
+        "drives_fastener"
+      ],
+      "shared": false,
+      "unary_predicates": [],
+      "verification_mode": "SEMANTIC_AND_GEOMETRIC"
+    },
+    {
+      "binding_policy": "DISTINCT",
+      "canonical_role_candidates": [
+        "fastener"
+      ],
+      "count": 1,
+      "description": "",
+      "distinct": true,
+      "entity_kind": "OBJECT",
+      "max_count": null,
+      "min_count": null,
+      "name": "fastener",
+      "numeric_constraints": [],
+      "preference": null,
+      "raw_role_id": "fastener_component",
+      "reusable": false,
+      "role_resolution_provenance": [
+        {
+          "excluded_roles": [
+            "MAIN_WORKBENCH_ZONE",
+            "driver",
+            "repair_target",
+            "workshop_frame_joint"
+          ],
+          "explicit_families": [
+            "COMPONENT"
+          ],
+          "family_precedence_rules": [
+            "CANDIDATE_CATEGORY_KIND_OVER_JOB_DESCRIPTION"
+          ],
+          "legacy_mapper_rule": "CAUSAL_OPERATION_PARTICIPANT",
+          "preferred_roles": [
+            "fastener"
+          ],
+          "source": "GLOBAL_GRAPH_CONSISTENCY_OVERRIDE",
+          "strength": "EXPLICIT_FAMILY"
+        },
+        {
+          "raw_phrase": "The fastener component is suitable for the fastening target.",
+          "readings_unioned": [
+            "PHYSICAL_VERIFIER:COMPATIBLE_WITH:FORWARD",
+            "PHYSICAL_VERIFIER:COMPATIBLE_WITH_TARGET:FORWARD",
+            "PHYSICAL_VERIFIER:REACHES_TARGET:FORWARD",
+            "TASK_CAUSAL_SEMANTICS:INSTALLED_AT:FORWARD"
+          ],
+          "source": "RELATION_TEXT"
+        },
+        {
+          "raw_phrase": "The fastening tool is used to apply the fastener component.",
+          "readings_unioned": [
+            "PHYSICAL_VERIFIER:COMPATIBLE_WITH:FORWARD",
+            "PHYSICAL_VERIFIER:COMPATIBLE_WITH_TARGET:FORWARD",
+            "PHYSICAL_VERIFIER:REACHES_TARGET:FORWARD",
+            "TASK_CAUSAL_SEMANTICS:ACTS_ON:FORWARD",
+            "TASK_CAUSAL_SEMANTICS:INSTALLED_AT:FORWARD"
+          ],
+          "source": "RELATION_TEXT"
+        },
+        {
+          "capabilities": [
+            "FASTEN_JOINT"
+          ],
+          "raw_phrase": "Robot uses the tool to secure the component to the target.",
+          "source": "OPERATION_TEXT"
+        },
+        {
+          "raw_function": "The hardware used to join the target to the surface.",
+          "resolved_role": "fastener",
+          "source": "GLOBAL_GRAPH_CONSISTENCY_OVERRIDE",
+          "status": "UNIQUE_MINIMAL_REPAIR"
+        }
+      ],
+      "role_resolution_status": "GLOBAL_GRAPH_CONSISTENCY_OVERRIDE",
+      "semantic_categories": [
+        "screw",
+        "Phillips screw",
+        "Phillips head screw"
+      ],
+      "semantic_hints": [
+        "fits_target"
+      ],
+      "shared": false,
+      "unary_predicates": [],
+      "verification_mode": "SEMANTIC_AND_GEOMETRIC"
+    },
+    {
+      "binding_policy": "DISTINCT",
+      "canonical_role_candidates": [
+        "repair_target"
+      ],
+      "count": 1,
+      "description": "",
+      "distinct": true,
+      "entity_kind": "FIXED_TARGET",
+      "max_count": null,
+      "min_count": null,
+      "name": "repair_target",
+      "numeric_constraints": [],
+      "preference": null,
+      "raw_role_id": "fastening_target",
+      "reusable": false,
+      "role_resolution_provenance": [
+        {
+          "excluded_roles": [],
+          "explicit_families": [],
+          "family_precedence_rules": [],
+          "legacy_mapper_rule": "ZERO_SHOT_SEMANTIC_FALLBACK",
+          "preferred_roles": [
+            "fastener"
+          ],
+          "source": "NO_FAMILY_EVIDENCE",
+          "strength": "WEAK_ALIAS"
+        },
+        {
+          "allowed_anchor_roles": [
+            "repair_target"
+          ],
+          "raw_phrase": "Robot uses the tool to secure the component to the target.",
+          "source": "OPERATION_TEXT"
+        },
+        {
+          "raw_phrase": "The fastener component is suitable for the fastening target.",
+          "readings_unioned": [
+            "PHYSICAL_VERIFIER:COMPATIBLE_WITH:FORWARD",
+            "PHYSICAL_VERIFIER:COMPATIBLE_WITH_TARGET:FORWARD",
+            "PHYSICAL_VERIFIER:REACHES_TARGET:FORWARD",
+            "TASK_CAUSAL_SEMANTICS:INSTALLED_AT:FORWARD"
+          ],
+          "source": "RELATION_TEXT"
+        },
+        {
+          "source": "JOINT_TYPING",
+          "status": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS"
+        }
+      ],
+      "role_resolution_status": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS",
+      "semantic_categories": [
+        "repair_target",
+        "workshop_frame_joint",
+        "recess"
+      ],
+      "semantic_hints": [
+        "needs_attachment"
+      ],
+      "shared": false,
+      "unary_predicates": [],
+      "verification_mode": "GEOMETRIC_ONLY"
+    }
+  ],
+  "source": "VLM_CANONICAL_G_F",
+  "task_causal_relations": [],
+  "task_effect_relations": [],
+  "task_instruction": "Identify the compatible components required to complete the fastening at the marked workbench location, complete the fastening, and leave any reusable equipment used for the task safely on the workbench."
+}

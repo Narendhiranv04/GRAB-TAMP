@@ -1,0 +1,499 @@
+{
+  "initial_atoms": [
+    [
+      "available",
+      "object_0001"
+    ],
+    [
+      "available",
+      "object_0003"
+    ],
+    [
+      "available",
+      "object_0004"
+    ],
+    [
+      "available",
+      "object_0005"
+    ],
+    [
+      "hand_empty"
+    ],
+    [
+      "object",
+      "object_0001"
+    ],
+    [
+      "object",
+      "object_0003"
+    ],
+    [
+      "object",
+      "object_0004"
+    ],
+    [
+      "object",
+      "object_0005"
+    ],
+    [
+      "on",
+      "object_0001",
+      "region_0002"
+    ],
+    [
+      "on",
+      "object_0004",
+      "region_0002"
+    ],
+    [
+      "region",
+      "region_0001"
+    ],
+    [
+      "region",
+      "region_0002"
+    ]
+  ],
+  "goal_atoms": [
+    [
+      "on",
+      "object_0001",
+      "region_0001"
+    ],
+    [
+      "on",
+      "object_0003",
+      "region_0002"
+    ],
+    [
+      "on",
+      "object_0004",
+      "region_0001"
+    ],
+    [
+      "on",
+      "object_0005",
+      "region_0002"
+    ]
+  ],
+  "actions": [
+    {
+      "name": "pick",
+      "arguments": [
+        "object_0001"
+      ],
+      "positive_preconditions": [
+        [
+          "available",
+          "object_0001"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "holding",
+          "object_0001"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "available",
+          "object_0001"
+        ],
+        [
+          "hand_empty"
+        ],
+        [
+          "on",
+          "object_0001",
+          "region_0002"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "pick",
+      "arguments": [
+        "object_0003"
+      ],
+      "positive_preconditions": [
+        [
+          "available",
+          "object_0003"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "holding",
+          "object_0003"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "available",
+          "object_0003"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "pick",
+      "arguments": [
+        "object_0004"
+      ],
+      "positive_preconditions": [
+        [
+          "available",
+          "object_0004"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "holding",
+          "object_0004"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "available",
+          "object_0004"
+        ],
+        [
+          "hand_empty"
+        ],
+        [
+          "on",
+          "object_0004",
+          "region_0002"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "pick",
+      "arguments": [
+        "object_0005"
+      ],
+      "positive_preconditions": [
+        [
+          "available",
+          "object_0005"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "holding",
+          "object_0005"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "available",
+          "object_0005"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "place",
+      "arguments": [
+        "object_0001",
+        "region_0001"
+      ],
+      "positive_preconditions": [
+        [
+          "holding",
+          "object_0001"
+        ],
+        [
+          "region",
+          "region_0001"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "hand_empty"
+        ],
+        [
+          "on",
+          "object_0001",
+          "region_0001"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0001"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "place",
+      "arguments": [
+        "object_0001",
+        "region_0002"
+      ],
+      "positive_preconditions": [
+        [
+          "holding",
+          "object_0001"
+        ],
+        [
+          "region",
+          "region_0002"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "hand_empty"
+        ],
+        [
+          "on",
+          "object_0001",
+          "region_0002"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0001"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "place",
+      "arguments": [
+        "object_0003",
+        "region_0001"
+      ],
+      "positive_preconditions": [
+        [
+          "holding",
+          "object_0003"
+        ],
+        [
+          "region",
+          "region_0001"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "hand_empty"
+        ],
+        [
+          "on",
+          "object_0003",
+          "region_0001"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0003"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "place",
+      "arguments": [
+        "object_0003",
+        "region_0002"
+      ],
+      "positive_preconditions": [
+        [
+          "holding",
+          "object_0003"
+        ],
+        [
+          "region",
+          "region_0002"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "hand_empty"
+        ],
+        [
+          "on",
+          "object_0003",
+          "region_0002"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0003"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "place",
+      "arguments": [
+        "object_0004",
+        "region_0001"
+      ],
+      "positive_preconditions": [
+        [
+          "holding",
+          "object_0004"
+        ],
+        [
+          "region",
+          "region_0001"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "hand_empty"
+        ],
+        [
+          "on",
+          "object_0004",
+          "region_0001"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0004"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "place",
+      "arguments": [
+        "object_0004",
+        "region_0002"
+      ],
+      "positive_preconditions": [
+        [
+          "holding",
+          "object_0004"
+        ],
+        [
+          "region",
+          "region_0002"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "hand_empty"
+        ],
+        [
+          "on",
+          "object_0004",
+          "region_0002"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0004"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "place",
+      "arguments": [
+        "object_0005",
+        "region_0001"
+      ],
+      "positive_preconditions": [
+        [
+          "holding",
+          "object_0005"
+        ],
+        [
+          "region",
+          "region_0001"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "hand_empty"
+        ],
+        [
+          "on",
+          "object_0005",
+          "region_0001"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0005"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "place",
+      "arguments": [
+        "object_0005",
+        "region_0002"
+      ],
+      "positive_preconditions": [
+        [
+          "holding",
+          "object_0005"
+        ],
+        [
+          "region",
+          "region_0002"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "hand_empty"
+        ],
+        [
+          "on",
+          "object_0005",
+          "region_0002"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0005"
+        ]
+      ],
+      "cost": 1
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "diagnostic_only": true,
+  "shared_observation_evidence": true,
+  "stages": [
+    {
+      "modes": {
+        "geometry-only": {
+          "reason_codes": [
+            "COMPLETE_GEOMETRY_ONLY_ABLATION"
+          ],
+          "selected_candidate_edges": [
+            {
+              "canonical_label": null,
+              "confidence": null,
+              "object_id": "object_0001",
+              "role": "coffee_container",
+              "semantic_rank": null
+            },
+            {
+              "canonical_label": "cup",
+              "confidence": 0.7904621839523316,
+              "object_id": "object_0002",
+              "role": "coffee_container",
+              "semantic_rank": 1
+            },
+            {
+              "canonical_label": "bowl",
+              "confidence": 0.612914502620697,
+              "object_id": "object_0003",
+              "role": "soup_container",
+              "semantic_rank": 1
+            },
+            {
+              "canonical_label": "bowl",
+              "confidence": 0.5797007858753205,
+              "object_id": "object_0004",
+              "role": "soup_container",
+              "semantic_rank": 1
+            },
+            {
+              "canonical_label": "spoon",
+              "confidence": 0.590575248003006,
+              "object_id": "object_0005",
+              "role": "coffee_stirrer",
+              "semantic_rank": 1
+            },
+            {
+              "canonical_label": "spoon",
+              "confidence": 0.6094186961650848,
+              "object_id": "object_0006",
+              "role": "coffee_stirrer",
+              "semantic_rank": 1
+            },
+            {
+              "canonical_label": "spoon",
+              "confidence": 0.6371697008609771,
+              "object_id": "object_0007",
+              "role": "soup_eating_utensil",
+              "semantic_rank": 1
+            },
+            {
+              "canonical_label": "kettle",
+              "confidence": 0.8223793625831604,
+              "object_id": "object_0008",
+              "role": "soup_eating_utensil",
+              "semantic_rank": null
+            }
+          ],
+          "selected_witness": {
+            "coffee_container": [
+              "object_0001",
+              "object_0002"
+            ],
+            "coffee_stirrer": [
+              "object_0005",
+              "object_0006"
+            ],
+            "soup_container": [
+              "object_0003",
+              "object_0004"
+            ],
+            "soup_eating_utensil": [
+              "object_0007",
+              "object_0008"
+            ]
+          },
+          "status": "COMPLETE"
+        },
+        "joint": {
+          "reason_codes": [
+            "NO_VALID_ROLE_ASSIGNMENT"
+          ],
+          "selected_candidate_edges": [],
+          "selected_witness": null,
+          "status": "INCOMPLETE"
+        },
+        "semantic-only": {
+          "reason_codes": [
+            "NO_VALID_ROLE_ASSIGNMENT"
+          ],
+          "selected_candidate_edges": [],
+          "selected_witness": null,
+          "status": "INCOMPLETE"
+        }
+      },
+      "region_id": "INITIAL",
+      "stage": 0
+    }
+  ],
+  "task_id": "s1_integrated_prepare_and_serve_coffee_and_soup"
+}

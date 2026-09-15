@@ -1,0 +1,132 @@
+{
+  "artifacts": {
+    "action_plan": "action_plan.json",
+    "detection_diagnostics": "detection_diagnostics.json",
+    "final_plan": "action_plan.json",
+    "functional_graph": "functional_requirement_graph.json",
+    "functional_specification": "functional_specification.json",
+    "grounding": "graph_grounding_result.json",
+    "grounding_snapshots": "grounding_snapshots.json",
+    "observed_graph": "observed_scene_graph.json",
+    "physical_relation_verification_trace": "physical_relation_verification_trace.json",
+    "plan_grounding_audit": "plan_grounding_audit.json",
+    "result": "result.json",
+    "satisfaction": "satisfaction.json",
+    "target_anchor_provenance": "target_anchor_provenance.json"
+  },
+  "astar_invocations": 1,
+  "candidate_plan": [
+    {
+      "action_index": 1,
+      "action_instance_id": "fact_001_pick",
+      "arguments": [
+        "object_0001",
+        "TOOL_CABINET"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 2,
+      "action_instance_id": "fact_002_place",
+      "arguments": [
+        "object_0001",
+        "MAIN_WORKBENCH_ZONE"
+      ],
+      "operator": "PLACE"
+    }
+  ],
+  "candidate_search_statistics": {
+    "algorithm": "deterministic_astar_symbolic_state_search",
+    "expanded_states": 8,
+    "frontier_peak": 2,
+    "generated_states": 8,
+    "is_partial": true,
+    "plan_cost": 2,
+    "plan_length": 2,
+    "satisfied_goals": 2,
+    "search_time_ms": 0.028964015655219555,
+    "total_goals": 3,
+    "visited_states": 8
+  },
+  "canonicalization_succeeded": true,
+  "domain": "workshop",
+  "execution_state": "planning_only",
+  "exploration_actuation": "direct_sim_articulation",
+  "failure_category": null,
+  "failure_reason": null,
+  "finished_at_utc": "2026-09-14T05:02:23.528470+00:00",
+  "fm_schema_version": 3,
+  "functional_spec_complete": false,
+  "git_commit": "caec01bc280ab419ba62f76d91c0642d928ca310",
+  "git_dirty": false,
+  "high_level_replans": 0,
+  "inference_config": {},
+  "internal_variant": "F1_POWER_FIRST_ONE_REGION",
+  "observer_errors": [],
+  "pipeline_runtime_seconds": 43.0541,
+  "prompt_schema_hash": "9960dbf1022da5138ac8f41432f4ce2cbfc5ee4460664d049793f706fdad0e25",
+  "provider_model": null,
+  "provider_region_ranking": [
+    "TOOL_CABINET",
+    "RIGHT_DRAWER"
+  ],
+  "region_order_used": [
+    "TOOL_CABINET",
+    "RIGHT_DRAWER",
+    "LEFT_DRAWER"
+  ],
+  "robot_capability_registry_hash": "98055ba6579345151cd1b7a9ccea32fc2ad47dd0f51f51cf40e3eb9cdb01aef7",
+  "runtime_semantic_ontology_hash": "4fee971c3f494023adadc94fa350d3d9e27d81dbe41c001c2b8fc1d20bf49d41",
+  "schema_version": 1,
+  "search_contract": {
+    "canonical_region_ids": [
+      "TOOL_CABINET",
+      "RIGHT_DRAWER",
+      "LEFT_DRAWER"
+    ],
+    "domain": "workshop",
+    "no_search_required": false,
+    "policy_version": "phase3_p3h_1_v1",
+    "proposal_trace": [],
+    "region_proposal_trace": [],
+    "search_policy_trace": [
+      {
+        "final_rank": 0,
+        "origin": "PROVIDER_RANKED",
+        "provider_rank": 0,
+        "region_id": "TOOL_CABINET"
+      },
+      {
+        "final_rank": 1,
+        "origin": "PROVIDER_RANKED",
+        "provider_rank": 1,
+        "region_id": "RIGHT_DRAWER"
+      },
+      {
+        "final_rank": 2,
+        "origin": "SYSTEM_COMPLETION",
+        "provider_rank": null,
+        "region_id": "LEFT_DRAWER"
+      }
+    ],
+    "search_seed": null,
+    "source": "VLM_PROVIDER_RANKED_SYSTEM_COMPLETED"
+  },
+  "search_order_source_effective": "provider",
+  "search_order_source_requested": "auto",
+  "search_policy_version": "phase3_p3h_1_v1",
+  "search_seed_effective": null,
+  "search_seed_requested": null,
+  "semantic_vlm_requests": 0,
+  "spec_acquisition": "archived_raw_provider_response",
+  "spec_mode": "vlm",
+  "spec_provider_source": "VLM_CANONICAL_G_F",
+  "specification_input": "/home/naren/RA_iiith/benchmark_reports/full320_s03/repeat_03/attempt_01/workshop/W2/vlm/fm_diagnostics/fm_call_001.json",
+  "specification_sha256": "f834c09c6f57a742af54f3d8c36204553c7a393296e4db67f3bcd8e246481015",
+  "started_at_utc": "2026-09-14T05:01:40.474347+00:00",
+  "terminal_status": "PARTIAL_ACTION_SEQUENCE_READY",
+  "transport_retries": 0,
+  "variant": "W2",
+  "visualization_requested": false,
+  "vlm_request_count": 0
+}

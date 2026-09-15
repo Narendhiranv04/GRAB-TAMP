@@ -1,0 +1,53 @@
+{
+  "allocation_policy": "USE_EXACT_PHASE1_WITNESS_SELECTION_NO_REALLOCATION",
+  "compilation_status": "SUCCESS",
+  "goal_atoms": [
+    [
+      "on",
+      "object_0002",
+      "region_0002"
+    ]
+  ],
+  "initial_atoms": [
+    [
+      "available",
+      "object_0002"
+    ],
+    [
+      "hand_empty"
+    ],
+    [
+      "object",
+      "object_0002"
+    ],
+    [
+      "region",
+      "region_0002"
+    ]
+  ],
+  "initial_location_abstraction": "OBSERVED_SUPPORT_MEMBERSHIP_OR_STAGING_AVAILABLE",
+  "initial_object_regions": {},
+  "objects": [
+    "object_0002"
+  ],
+  "operator_vocabulary": [
+    "PICK",
+    "PLACE"
+  ],
+  "planner_invoked": false,
+  "regions": [
+    "region_0002"
+  ],
+  "schema_version": 1,
+  "source_phase1_status": "COMPLETE",
+  "source_variant": "observed_grounding",
+  "task_id": null,
+  "witness_selected_bindings": [
+    {
+      "function_id": "SHARED_REMOTE_REGION",
+      "object_id": "object_0002",
+      "region_id": "region_0002",
+      "slot_id": "shared_remote_slot"
+    }
+  ]
+}

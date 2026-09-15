@@ -1,0 +1,143 @@
+{
+  "assignment": {
+    "driver": "object_0001",
+    "fastener": "object_0003",
+    "repair_target": "repair_target"
+  },
+  "candidate_plan": [
+    {
+      "action_index": 1,
+      "action_instance_id": "fact_001_pick",
+      "arguments": [
+        "object_0003",
+        "RIGHT_DRAWER"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 2,
+      "action_instance_id": "fact_002_place",
+      "arguments": [
+        "object_0003",
+        "workshop_frame_joint"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 3,
+      "action_instance_id": "fact_003_pick",
+      "arguments": [
+        "object_0001",
+        "TOOL_CABINET"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 4,
+      "action_instance_id": "fact_004_screw",
+      "arguments": [
+        "object_0001",
+        "object_0003",
+        "workshop_frame_joint"
+      ],
+      "operator": "SCREW"
+    },
+    {
+      "action_index": 5,
+      "action_instance_id": "fact_005_place",
+      "arguments": [
+        "object_0001",
+        "MAIN_WORKBENCH_ZONE"
+      ],
+      "operator": "PLACE"
+    }
+  ],
+  "candidate_search_statistics": {
+    "algorithm": "deterministic_astar_symbolic_state_search",
+    "expanded_states": 7,
+    "frontier_peak": 2,
+    "generated_states": 7,
+    "is_partial": false,
+    "plan_cost": 5,
+    "plan_length": 5,
+    "satisfied_goals": 3,
+    "search_time_ms": 0.025126966647803783,
+    "total_goals": 3,
+    "visited_states": 7
+  },
+  "canonicalization_succeeded": true,
+  "domain": "workshop",
+  "failure_category": null,
+  "failure_reason": null,
+  "functional_spec_complete": true,
+  "inspected_regions": [
+    "TOOL_CABINET",
+    "LEFT_DRAWER",
+    "RIGHT_DRAWER"
+  ],
+  "mode": "vlm",
+  "outcome_category": "SUCCESS",
+  "plan": [
+    {
+      "action_index": 1,
+      "action_instance_id": "fact_001_pick",
+      "arguments": [
+        "object_0003",
+        "RIGHT_DRAWER"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 2,
+      "action_instance_id": "fact_002_place",
+      "arguments": [
+        "object_0003",
+        "workshop_frame_joint"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 3,
+      "action_instance_id": "fact_003_pick",
+      "arguments": [
+        "object_0001",
+        "TOOL_CABINET"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 4,
+      "action_instance_id": "fact_004_screw",
+      "arguments": [
+        "object_0001",
+        "object_0003",
+        "workshop_frame_joint"
+      ],
+      "operator": "SCREW"
+    },
+    {
+      "action_index": 5,
+      "action_instance_id": "fact_005_place",
+      "arguments": [
+        "object_0001",
+        "MAIN_WORKBENCH_ZONE"
+      ],
+      "operator": "PLACE"
+    }
+  ],
+  "search_statistics": {
+    "algorithm": "deterministic_astar_symbolic_state_search",
+    "expanded_states": 7,
+    "frontier_peak": 2,
+    "generated_states": 7,
+    "is_partial": false,
+    "plan_cost": 5,
+    "plan_length": 5,
+    "satisfied_goals": 3,
+    "search_time_ms": 0.025126966647803783,
+    "total_goals": 3,
+    "visited_states": 7
+  },
+  "status": "ACTION_SEQUENCE_READY",
+  "variant": "W7"
+}

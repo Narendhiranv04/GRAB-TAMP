@@ -1,0 +1,473 @@
+{
+  "assignment": {
+    "coffee_container": [
+      "object_0002",
+      "object_0001"
+    ],
+    "coffee_source": "object_0009",
+    "coffee_stirrer": "object_0005",
+    "soup_container": [
+      "object_0003",
+      "object_0004"
+    ],
+    "soup_eating_utensil": [
+      "object_0006",
+      "object_0007"
+    ],
+    "water_source": "object_0008"
+  },
+  "candidate_plan": [
+    {
+      "action_index": 1,
+      "action_instance_id": "fact_001_pick",
+      "arguments": [
+        "object_0006"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 2,
+      "action_instance_id": "fact_002_place_serving_utensil",
+      "arguments": [
+        "object_0006",
+        "object_0003"
+      ],
+      "operator": "PLACE_SERVING_UTENSIL"
+    },
+    {
+      "action_index": 3,
+      "action_instance_id": "fact_003_pick",
+      "arguments": [
+        "object_0003"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 4,
+      "action_instance_id": "fact_004_place",
+      "arguments": [
+        "object_0003",
+        "dining_table"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 5,
+      "action_instance_id": "fact_005_pick",
+      "arguments": [
+        "object_0007"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 6,
+      "action_instance_id": "fact_006_place_serving_utensil",
+      "arguments": [
+        "object_0007",
+        "object_0004"
+      ],
+      "operator": "PLACE_SERVING_UTENSIL"
+    },
+    {
+      "action_index": 7,
+      "action_instance_id": "fact_007_pick",
+      "arguments": [
+        "object_0004"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 8,
+      "action_instance_id": "fact_008_place",
+      "arguments": [
+        "object_0004",
+        "dining_table"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 9,
+      "action_instance_id": "fact_009_pick",
+      "arguments": [
+        "object_0008"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 10,
+      "action_instance_id": "fact_010_pour",
+      "arguments": [
+        "object_0008",
+        "object_0001"
+      ],
+      "operator": "POUR"
+    },
+    {
+      "action_index": 11,
+      "action_instance_id": "fact_011_pour",
+      "arguments": [
+        "object_0008",
+        "object_0002"
+      ],
+      "operator": "POUR"
+    },
+    {
+      "action_index": 12,
+      "action_instance_id": "fact_012_place",
+      "arguments": [
+        "object_0008",
+        "countertop"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 13,
+      "action_instance_id": "fact_013_pick",
+      "arguments": [
+        "object_0009"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 14,
+      "action_instance_id": "fact_014_pour",
+      "arguments": [
+        "object_0009",
+        "object_0001"
+      ],
+      "operator": "POUR"
+    },
+    {
+      "action_index": 15,
+      "action_instance_id": "fact_015_pour",
+      "arguments": [
+        "object_0009",
+        "object_0002"
+      ],
+      "operator": "POUR"
+    },
+    {
+      "action_index": 16,
+      "action_instance_id": "fact_016_place",
+      "arguments": [
+        "object_0009",
+        "countertop"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 17,
+      "action_instance_id": "fact_017_pick",
+      "arguments": [
+        "object_0005"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 18,
+      "action_instance_id": "fact_018_stir",
+      "arguments": [
+        "object_0005",
+        "object_0001"
+      ],
+      "operator": "STIR"
+    },
+    {
+      "action_index": 19,
+      "action_instance_id": "fact_019_stir",
+      "arguments": [
+        "object_0005",
+        "object_0002"
+      ],
+      "operator": "STIR"
+    },
+    {
+      "action_index": 20,
+      "action_instance_id": "fact_020_place",
+      "arguments": [
+        "object_0005",
+        "countertop"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 21,
+      "action_instance_id": "fact_021_pick",
+      "arguments": [
+        "object_0001"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 22,
+      "action_instance_id": "fact_022_place",
+      "arguments": [
+        "object_0001",
+        "dining_table"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 23,
+      "action_instance_id": "fact_023_pick",
+      "arguments": [
+        "object_0002"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 24,
+      "action_instance_id": "fact_024_place",
+      "arguments": [
+        "object_0002",
+        "dining_table"
+      ],
+      "operator": "PLACE"
+    }
+  ],
+  "candidate_search_statistics": {
+    "algorithm": "deterministic_astar_symbolic_state_search",
+    "expanded_states": 3620,
+    "frontier_peak": 710,
+    "generated_states": 10522,
+    "is_partial": false,
+    "plan_cost": 24,
+    "plan_length": 24,
+    "satisfied_goals": 13,
+    "search_time_ms": 23.22020789142698,
+    "total_goals": 13,
+    "visited_states": 4109
+  },
+  "canonicalization_succeeded": true,
+  "domain": "kitchen",
+  "failure_category": null,
+  "failure_reason": null,
+  "functional_spec_complete": true,
+  "inspected_regions": [],
+  "mode": "vlm",
+  "outcome_category": "SUCCESS",
+  "plan": [
+    {
+      "action_index": 1,
+      "action_instance_id": "fact_001_pick",
+      "arguments": [
+        "object_0006"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 2,
+      "action_instance_id": "fact_002_place_serving_utensil",
+      "arguments": [
+        "object_0006",
+        "object_0003"
+      ],
+      "operator": "PLACE_SERVING_UTENSIL"
+    },
+    {
+      "action_index": 3,
+      "action_instance_id": "fact_003_pick",
+      "arguments": [
+        "object_0003"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 4,
+      "action_instance_id": "fact_004_place",
+      "arguments": [
+        "object_0003",
+        "dining_table"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 5,
+      "action_instance_id": "fact_005_pick",
+      "arguments": [
+        "object_0007"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 6,
+      "action_instance_id": "fact_006_place_serving_utensil",
+      "arguments": [
+        "object_0007",
+        "object_0004"
+      ],
+      "operator": "PLACE_SERVING_UTENSIL"
+    },
+    {
+      "action_index": 7,
+      "action_instance_id": "fact_007_pick",
+      "arguments": [
+        "object_0004"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 8,
+      "action_instance_id": "fact_008_place",
+      "arguments": [
+        "object_0004",
+        "dining_table"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 9,
+      "action_instance_id": "fact_009_pick",
+      "arguments": [
+        "object_0008"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 10,
+      "action_instance_id": "fact_010_pour",
+      "arguments": [
+        "object_0008",
+        "object_0001"
+      ],
+      "operator": "POUR"
+    },
+    {
+      "action_index": 11,
+      "action_instance_id": "fact_011_pour",
+      "arguments": [
+        "object_0008",
+        "object_0002"
+      ],
+      "operator": "POUR"
+    },
+    {
+      "action_index": 12,
+      "action_instance_id": "fact_012_place",
+      "arguments": [
+        "object_0008",
+        "countertop"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 13,
+      "action_instance_id": "fact_013_pick",
+      "arguments": [
+        "object_0009"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 14,
+      "action_instance_id": "fact_014_pour",
+      "arguments": [
+        "object_0009",
+        "object_0001"
+      ],
+      "operator": "POUR"
+    },
+    {
+      "action_index": 15,
+      "action_instance_id": "fact_015_pour",
+      "arguments": [
+        "object_0009",
+        "object_0002"
+      ],
+      "operator": "POUR"
+    },
+    {
+      "action_index": 16,
+      "action_instance_id": "fact_016_place",
+      "arguments": [
+        "object_0009",
+        "countertop"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 17,
+      "action_instance_id": "fact_017_pick",
+      "arguments": [
+        "object_0005"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 18,
+      "action_instance_id": "fact_018_stir",
+      "arguments": [
+        "object_0005",
+        "object_0001"
+      ],
+      "operator": "STIR"
+    },
+    {
+      "action_index": 19,
+      "action_instance_id": "fact_019_stir",
+      "arguments": [
+        "object_0005",
+        "object_0002"
+      ],
+      "operator": "STIR"
+    },
+    {
+      "action_index": 20,
+      "action_instance_id": "fact_020_place",
+      "arguments": [
+        "object_0005",
+        "countertop"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 21,
+      "action_instance_id": "fact_021_pick",
+      "arguments": [
+        "object_0001"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 22,
+      "action_instance_id": "fact_022_place",
+      "arguments": [
+        "object_0001",
+        "dining_table"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 23,
+      "action_instance_id": "fact_023_pick",
+      "arguments": [
+        "object_0002"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 24,
+      "action_instance_id": "fact_024_place",
+      "arguments": [
+        "object_0002",
+        "dining_table"
+      ],
+      "operator": "PLACE"
+    }
+  ],
+  "search_statistics": {
+    "algorithm": "deterministic_astar_symbolic_state_search",
+    "expanded_states": 3620,
+    "frontier_peak": 710,
+    "generated_states": 10522,
+    "is_partial": false,
+    "plan_cost": 24,
+    "plan_length": 24,
+    "satisfied_goals": 13,
+    "search_time_ms": 23.22020789142698,
+    "total_goals": 13,
+    "visited_states": 4109
+  },
+  "status": "ACTION_SEQUENCE_READY",
+  "variant": "K1"
+}
