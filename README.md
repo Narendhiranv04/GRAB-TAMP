@@ -1,3 +1,8 @@
+> **This branch is the FM-guided functional TAMP experiment suite.** For the
+> system and how to run it see [PIPELINE.md](PIPELINE.md); for every experiment,
+> its result and where the data lives see [RESULTS.md](RESULTS.md). The document
+> below describes the original S1 coffee scene and predates that work.
+
 # S1: Coffee Preparation with a Missing Mug
 
 ## Intended Workflow
