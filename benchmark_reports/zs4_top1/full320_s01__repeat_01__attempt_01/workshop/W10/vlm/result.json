@@ -1,0 +1,67 @@
+{
+  "assignment": {
+    "driver": "object_0002",
+    "repair_target": "repair_target"
+  },
+  "candidate_plan": [
+    {
+      "action_index": 1,
+      "action_instance_id": "fact_001_pick",
+      "arguments": [
+        "object_0002",
+        "LEFT_DRAWER"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 2,
+      "action_instance_id": "fact_002_place",
+      "arguments": [
+        "object_0002",
+        "MAIN_WORKBENCH_ZONE"
+      ],
+      "operator": "PLACE"
+    }
+  ],
+  "candidate_search_statistics": {
+    "algorithm": "deterministic_astar_symbolic_state_search",
+    "expanded_states": 3,
+    "frontier_peak": 1,
+    "generated_states": 3,
+    "is_partial": false,
+    "plan_cost": 2,
+    "plan_length": 2,
+    "satisfied_goals": 2,
+    "search_time_ms": 0.012513948604464531,
+    "total_goals": 2,
+    "visited_states": 3
+  },
+  "canonicalization_succeeded": true,
+  "domain": "workshop",
+  "failure_category": null,
+  "failure_reason": null,
+  "functional_spec_complete": false,
+  "inspected_regions": [
+    "TOOL_CABINET",
+    "LEFT_DRAWER",
+    "RIGHT_DRAWER"
+  ],
+  "mode": "vlm",
+  "outcome_category": "FUNCTIONAL_ASSIGNMENT_FAILURE",
+  "plan": [],
+  "search_statistics": {
+    "algorithm": "deterministic_astar_symbolic_state_search",
+    "expanded_states": 3,
+    "frontier_peak": 1,
+    "generated_states": 3,
+    "is_partial": false,
+    "plan_cost": 2,
+    "plan_length": 2,
+    "satisfied_goals": 2,
+    "search_time_ms": 0.012513948604464531,
+    "total_goals": 2,
+    "visited_states": 3
+  },
+  "status": "EXHAUSTED_NO_VALID_GROUNDING",
+  "variant": "W10"
+}

@@ -22,6 +22,8 @@ raw response          fm_diagnostics/fm_call_001.json
         │  v3 → canonical document, dangling references repaired
         ▼  semantic compilation            functional_specification.json
         │  ── this is where free-form wording becomes fixed vocabulary ──
+        │  cue tables first; zero-shot NLI fallback only where they return
+        │  nothing, so a resolvable phrase takes the identical path
         │     roles        coffee_cup      → coffee_container
         │     capabilities "pour"          → TRANSFER_CONTENT_TO_CONTAINER
         │     relations    "placed_on"     → FITS_SET_ON
@@ -112,7 +114,7 @@ pipeline file is edited, and each arm replays the frozen responses.
 | `mujoco_scenes/fm_evidence_ablation.py`, `fm_ablation_shadow.py` | `grounding.ground_graph` |
 | `mujoco_scenes/fm_search_order_shadow.py` | `run.search_until_satisfied`, the domain `run_to_plan` functions |
 | `mujoco_scenes/fm_worst_case_order.py` | the inspection order |
-| `mujoco_scenes/fm_zs_canonicalization_shadow.py` | the four canonicalization resolvers |
+| `mujoco_scenes/fm_zs_canonicalization_shadow.py` | the four canonicalization resolvers — **part of the reported method**, run with `--baseline` to turn it off |
 
 Three rules keep a shadow honest.
 

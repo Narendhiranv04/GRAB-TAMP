@@ -24,10 +24,11 @@ case "$MODE" in
 
   --replay)
     echo "==> recompiling every archived attempt from its raw response"
+    echo "    (reported configuration: zero-shot canonicalization fallback on)"
+    export TAMP_ZS_MIN_SCORE=0.0 TAMP_ZS_MIN_MARGIN=0.0 TOKENIZERS_PARALLELISM=false
     for root in benchmark_reports/full320_s0*/repeat_*/attempt_*; do
       [ -d "$root" ] || continue
-      python3 scripts/evaluate_vlm_functional_tamp.py \
-        --mode vlm --spec-source raw-replay \
+      python3 scripts/evaluate_vlm_zs_canonicalization.py \
         --specification-root "$root" \
         --output-root "results/runs/replay/$(echo "$root" | tr '/' '_')"
     done

@@ -10,7 +10,9 @@ sequence of actions achieves the goal** — without being told which object is
 which. GRAB-TAMP makes exactly one foundation-model call, at the start. The
 model's free-form answer is structurally sanitized and compiled into a
 functional requirement graph over a small fixed vocabulary of roles,
-capabilities, relations and regions. Everything after that call is
+capabilities, relations and regions — with a zero-shot NLI fallback that
+resolves wording the hand-written cue tables do not cover. Everything after
+that call is
 deterministic: the region inspection order is frozen before any perception
 runs, open-vocabulary detection and point-cloud geometry build an observed
 scene graph, a joint grounding binds roles to observed objects subject to both
@@ -73,6 +75,7 @@ Python 3.13 (pinned in `.python-version`).
 ```bash
 python3 -m venv .venv && . .venv/bin/activate
 pip install -r mujoco_scenes/requirements.txt -r requirements-test.txt
+pip install -r requirements-zs.txt              # zero-shot canonicalization
 python3 mujoco_scenes/scripts/prepare_semantic_models.py   # fetches detector + CLIP weights
 ```
 
@@ -83,7 +86,7 @@ python3 mujoco_scenes/scripts/prepare_semantic_models.py   # fetches detector + 
 | foundation model | `qwen35-9b`, served over an OpenAI-compatible endpoint | only needed for `--spec-source live` |
 | open-vocabulary detector | YOLO-World `yolov8m-worldv2.pt` | fetched by `prepare_semantic_models.py` |
 | detector embedding | CLIP `ViT-B-32` | same |
-| alias-resolution study | `MoritzLaurer/deberta-v3-large-zeroshot-v2.0-c` rev `b2730f16` | CPU, offline, separate experiment |
+| canonicalization fallback | `MoritzLaurer/deberta-v3-large-zeroshot-v2.0-c` rev `b2730f16` | CPU, offline; also the alias-resolution study |
 
 **Hardware.** Replaying the archived runs and regenerating every table needs
 **no GPU** — the frozen foundation-model responses are on disk. Serving the
@@ -108,9 +111,17 @@ PYTHONPATH=. python3 scripts/make_paper_tables.py \
     --assume-unscored-successful --out results/tables
 ```
 
-This writes `results/tables/paper_tables.md`: the headline metrics, the
-per-domain breakdown (Table III), the first-cause failure analysis (Table IV),
-and the inspection-order ablation with measured opening costs.
+This writes `results/tables/paper_tables.md` — Table III and both halves of
+Table IV — from `benchmark_reports/zs4_top1/full_metrics.json`, the scored
+320-trial run, plus `results/verification_ablation.json` and the
+inspection-order aggregates.
+
+Two definitions to read the tables by. **E2E succ.** is the share of feasible
+trials satisfying *every* reference goal; that is not the same as matching the
+reference action multiset, and the two diverge in workshop (62.5% against
+47.5%), where a trial can reach the goal state by a different sequence. **CR**
+counts an infeasible trial as correctly rejected when it produced no plan and
+did not report `ACTION_SEQUENCE_READY`.
 
 ### One trial, end to end
 
@@ -134,11 +145,19 @@ repository** — `benchmark_reports/full320_s0{1,2,3}/**/fm_diagnostics/fm_call_
 GPU and no model access, recompiling from the model's own words:
 
 ```bash
-# One attempt root of the archive, recompiled from the raw responses.
-PYTHONPATH=. python3 scripts/evaluate_vlm_functional_tamp.py \
-    --mode vlm --spec-source raw-replay \
+# The reported configuration: zero-shot canonicalization fallback enabled,
+# recompiled from the raw responses. This is the arm every table is computed
+# from; scripts/evaluate_vlm_zs_canonicalization.py installs the fallback and
+# then calls the unmodified evaluator.
+TAMP_ZS_MIN_SCORE=0.0 TAMP_ZS_MIN_MARGIN=0.0 \
+PYTHONPATH=. python3 scripts/evaluate_vlm_zs_canonicalization.py \
     --specification-root benchmark_reports/full320_s01/repeat_01/attempt_01 \
     --output-root results/runs/replay
+
+# Without the fallback, to pair against on the same commit.
+PYTHONPATH=. python3 scripts/evaluate_vlm_zs_canonicalization.py --baseline \
+    --specification-root benchmark_reports/full320_s01/repeat_01/attempt_01 \
+    --output-root results/runs/replay_baseline
 
 # A fresh live run instead: requires the model served at the given endpoint.
 PYTHONPATH=. python3 scripts/run_live_repeat_experiment.py \
@@ -185,7 +204,13 @@ can differ from another because the model happened to answer differently.
 | `mujoco_scenes/fm_evidence_ablation.py`, `fm_ablation_shadow.py` | `grounding.ground_graph` | withhold semantic / unary geometric / binary relational evidence |
 | `mujoco_scenes/fm_search_order_shadow.py` | `run.search_until_satisfied`, the domain `run_to_plan` functions | region inspection order, with phase timing |
 | `mujoco_scenes/fm_worst_case_order.py` | the inspection order | privileged adversarial order |
-| `mujoco_scenes/fm_zs_canonicalization_shadow.py` | the four canonicalization resolvers | zero-shot fallback |
+
+`mujoco_scenes/fm_zs_canonicalization_shadow.py` uses the same mechanism but is
+**part of the reported method, not an ablation**: it installs the zero-shot
+fallback on the four canonicalization resolvers. It is augment-only — the
+hand-written cue table is consulted first and the NLI model runs only where
+that returns nothing — so it cannot change a trial the cue tables already
+resolve. `--baseline` turns it off for a paired comparison.
 
 ### Evidence ablation — semantic / unary / binary
 
@@ -284,8 +309,11 @@ scripts/                      evaluation, scoring and table generation
 experiments/
   alias_resolution_study/     zero-shot canonicalization study
 GT_*/                         evaluation-only ground truth
-benchmark_reports/            frozen scored results, and the raw
-                              foundation-model response for all 320 trials
+benchmark_reports/
+  zs4_top1/                   the reported run: scored metrics and per-trial
+                              outcome records
+  full320_s0{1,2,3}/          the raw foundation-model response for all 320
+                              trials, plus outcome and manifest records
 results/                      generated tables and ablation aggregates
 examples/                     one archived trial per domain, every stage
 docs/PIPELINE.md              stage-by-stage reference, failure modes,

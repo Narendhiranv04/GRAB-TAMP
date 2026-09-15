@@ -1,0 +1,6 @@
+{
+  "_provenance": "Kitchen containers are opened by direct simulator articulation (run._get_exploration_actuation returns direct_sim_articulation for kitchen unconditionally), not by robot actuation. Only the per-region mean was retained from the measurement pass; the per-region breakdown was not. Recorded as a mean so the composition in scripts/score_inspection_open_cost.py is explicit about what it multiplies.",
+  "_units": "simulated seconds to open one region from the home pose",
+  "mean_seconds_per_region": 13.1,
+  "regions": ["C1", "C2", "D1", "D2", "B1"]
+}
