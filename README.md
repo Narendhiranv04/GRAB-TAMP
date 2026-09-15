@@ -39,8 +39,15 @@ either install the distribution's `python3-venv` package or use conda
 | detector embedding | CLIP `ViT-B-32` |
 | canonicalization fallback | `MoritzLaurer/deberta-v3-large-zeroshot-v2.0-c` (CPU) |
 
-Replaying the archived responses needs **no GPU**. Serving the foundation model
-for a `--live` run needs a GPU with room for a 9B VLM at 32k context.
+Replaying the archived responses needs **no GPU**; a replay of all 32 variants
+takes about 15 minutes on a CPU (kitchen ~39 s/trial, workshop ~29 s, living
+room ~13 s). Serving the foundation model for a `--live` run needs a GPU with
+room for a 9B VLM at 32k context.
+
+The scene loader can also compose two other robot backends — Fetch, via
+`gymnasium-robotics`, and Google Robot, via a MuJoCo Menagerie checkout. Neither
+is needed for the reported results, and neither is installed by the
+requirements; `mujoco_scenes/THIRD_PARTY_NOTICES.md` covers their licensing.
 
 ## Run
 

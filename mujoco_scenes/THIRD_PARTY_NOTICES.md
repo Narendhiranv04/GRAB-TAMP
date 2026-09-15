@@ -8,9 +8,11 @@ Farama Foundation's `gymnasium-robotics` package under the MIT License.
 - Asset notice: the Fetch model is based on models provided by Fetch Robotics
   and was adapted/refined by OpenAI.
 
-The assets are not copied into this repository. They are installed as the
-pinned Python dependency `gymnasium-robotics==1.4.2` in the Docker image and
-composed into the kitchen model at runtime.
+The assets are not copied into this repository, and they are **not needed to
+reproduce the reported results**: the Fetch backend is one of several robot
+options the scene loader can compose, selected only when asked for. To use it,
+install `gymnasium-robotics==1.4.2`; without it the loader raises a clear error
+rather than failing silently.
 
 ## Google Robot from MuJoCo Menagerie
 
@@ -21,7 +23,8 @@ manipulator developed by Google and is distributed under Apache-2.0:
 - Model: https://github.com/google-deepmind/mujoco_menagerie/tree/main/google_robot
 - License: https://github.com/google-deepmind/mujoco_menagerie/blob/main/google_robot/LICENSE
 
-The assets are not copied into this repository. At runtime, the kitchen
+The assets are not copied into this repository, and this backend is likewise
+**not needed to reproduce the reported results**. At runtime, the kitchen
 adapter namespaces the model, adds ideal planar base joints and robot-mounted
 cameras, and composes it with the shared scene.
 
