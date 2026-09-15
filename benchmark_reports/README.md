@@ -42,6 +42,26 @@ which makes no model calls.
 | `zs4_thresh` | 22 | margin-gated four-layer arm, abandoned; kept as provenance |
 | `workshop_open_costs.json` | — | measured robot opening cost per region from the home position |
 
+### Counting the FM responses
+
+Three numbers that do not match, and should not:
+
+| count | what it is |
+|---:|---|
+| 320 | scored rows in `final_10x32.json` |
+| **309** | rows whose `fm_diagnostics/fm_call_001.json` is still on disk — **the replay denominator** |
+| 365 | `fm_call_001.json` files actually under `full320_s0*` |
+
+The 309 is what every replay arm runs, because
+`run_search_order_replay_timing.surviving_groups` keeps exactly those rows whose
+raw response survives. The extra 56 files belong to attempt directories that no
+scored row points at — retries and aborted attempts. They are committed anyway:
+they cost little and a response that exists is worth keeping.
+
+Do not derive the trial count by stripping path segments from these filenames.
+The `repeat_NN__attempt_NN` segment is part of a trial's identity, and dropping
+it collapses 365 paths to 127.
+
 The 11 trials missing from 320 are `INFRASTRUCTURE_UNAVAILABLE`: the endpoint
 died before the model was reached. They are not observations of the method
 and are excluded from every denominator, which is why the scorable count is
