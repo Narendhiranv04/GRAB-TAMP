@@ -1,0 +1,260 @@
+{
+  "assignment": {
+    "CUP_SAUCER_SET": [
+      "personal_table_slot_1",
+      "personal_table_slot_2"
+    ],
+    "REMOTE": "object_0003",
+    "SEATING_PAIR": "SEATING_PAIR",
+    "SEATING_POSITION": [
+      "seat_0001",
+      "seat_0002"
+    ],
+    "SHARED_REMOTE_REGION": "region_0001"
+  },
+  "complete": false,
+  "evidence": {
+    "binding_provenance": {
+      "CUP_SAUCER_SET:personal_table_slot_1": {
+        "grounding_mode": "FUNCTION_AND_RELATION",
+        "observed_instance": "personal_table_slot_1",
+        "operation_evidence": [],
+        "relation_evidence": [],
+        "role": "CUP_SAUCER_SET",
+        "role_resolution": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT",
+        "semantic_status": "TRUE"
+      },
+      "CUP_SAUCER_SET:personal_table_slot_2": {
+        "grounding_mode": "FUNCTION_AND_RELATION",
+        "observed_instance": "personal_table_slot_2",
+        "operation_evidence": [],
+        "relation_evidence": [],
+        "role": "CUP_SAUCER_SET",
+        "role_resolution": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT",
+        "semantic_status": "TRUE"
+      },
+      "REMOTE:object_0003": {
+        "grounding_mode": "FUNCTION_AND_RELATION",
+        "observed_instance": "object_0003",
+        "operation_evidence": [
+          {
+            "capability": "SUPPORT_ENTERTAINMENT_CONTROL",
+            "source_operation_id": "shared_entertainment_group"
+          }
+        ],
+        "relation_evidence": [
+          {
+            "object_id": "object_0003",
+            "predicate": "FITS_ON",
+            "status": "TRUE",
+            "subject_id": "region_0001"
+          }
+        ],
+        "role": "REMOTE",
+        "role_resolution": "DIRECT_FUNCTION_MATCH",
+        "semantic_status": "TRUE"
+      },
+      "SEATING_PAIR:SEATING_PAIR": {
+        "grounding_mode": "FUNCTION_AND_RELATION",
+        "observed_instance": "SEATING_PAIR",
+        "operation_evidence": [
+          {
+            "capability": "SUPPORT_ENTERTAINMENT_CONTROL",
+            "source_operation_id": "shared_entertainment_group"
+          }
+        ],
+        "relation_evidence": [
+          {
+            "object_id": "SEATING_PAIR",
+            "predicate": "ACCESSIBLE_FROM_BOTH_SEATS",
+            "status": "TRUE",
+            "subject_id": "region_0001"
+          }
+        ],
+        "role": "SEATING_PAIR",
+        "role_resolution": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT",
+        "semantic_status": "TRUE"
+      },
+      "SEATING_POSITION:seat_0001": {
+        "grounding_mode": "FUNCTION_AND_RELATION",
+        "observed_instance": "seat_0001",
+        "operation_evidence": [],
+        "relation_evidence": [],
+        "role": "SEATING_POSITION",
+        "role_resolution": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS",
+        "semantic_status": "TRUE"
+      },
+      "SEATING_POSITION:seat_0002": {
+        "grounding_mode": "FUNCTION_AND_RELATION",
+        "observed_instance": "seat_0002",
+        "operation_evidence": [],
+        "relation_evidence": [],
+        "role": "SEATING_POSITION",
+        "role_resolution": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS",
+        "semantic_status": "TRUE"
+      },
+      "SHARED_REMOTE_REGION:region_0001": {
+        "grounding_mode": "FUNCTION_AND_RELATION",
+        "observed_instance": "region_0001",
+        "operation_evidence": [
+          {
+            "capability": "SUPPORT_ENTERTAINMENT_CONTROL",
+            "source_operation_id": "shared_entertainment_group"
+          }
+        ],
+        "relation_evidence": [
+          {
+            "object_id": "object_0003",
+            "predicate": "FITS_ON",
+            "status": "TRUE",
+            "subject_id": "region_0001"
+          },
+          {
+            "object_id": "SEATING_PAIR",
+            "predicate": "ACCESSIBLE_FROM_BOTH_SEATS",
+            "status": "TRUE",
+            "subject_id": "region_0001"
+          }
+        ],
+        "role": "SHARED_REMOTE_REGION",
+        "role_resolution": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT",
+        "semantic_status": "TRUE"
+      }
+    },
+    "candidate_roles": [
+      "CUP_SAUCER_SET",
+      "REMOTE",
+      "SEATING_PAIR",
+      "SEATING_POSITION",
+      "SHARED_REMOTE_REGION"
+    ],
+    "individual_candidates_sufficient": false,
+    "joint_assignment_prefixes_examined": 5,
+    "operation_binding_complete": true,
+    "original_grounding_status": "INFEASIBLE",
+    "projected_role_plausibility": {
+      "CUP_SAUCER_SET": {
+        "minimum_count": 2,
+        "plausible": 6,
+        "sufficient": true,
+        "true": 2,
+        "unknown": 4
+      },
+      "REMOTE": {
+        "minimum_count": 1,
+        "plausible": 5,
+        "sufficient": true,
+        "true": 1,
+        "unknown": 4
+      },
+      "SEATING_PAIR": {
+        "minimum_count": 1,
+        "plausible": 1,
+        "sufficient": true,
+        "true": 1,
+        "unknown": 0
+      },
+      "SEATING_POSITION": {
+        "minimum_count": 2,
+        "plausible": 2,
+        "sufficient": true,
+        "true": 2,
+        "unknown": 0
+      },
+      "SHARED_REMOTE_REGION": {
+        "minimum_count": 1,
+        "plausible": 2,
+        "sufficient": true,
+        "true": 2,
+        "unknown": 0
+      }
+    },
+    "role_plausibility": {
+      "CUP_SAUCER_SET": {
+        "minimum_count": 2,
+        "plausible": 6,
+        "sufficient": true,
+        "true": 2,
+        "unknown": 4
+      },
+      "PERSONAL_CUP_SAUCER_REGION": {
+        "minimum_count": 2,
+        "plausible": 1,
+        "sufficient": false,
+        "true": 1,
+        "unknown": 0
+      },
+      "REMOTE": {
+        "minimum_count": 1,
+        "plausible": 5,
+        "sufficient": true,
+        "true": 1,
+        "unknown": 4
+      },
+      "SEATING_PAIR": {
+        "minimum_count": 1,
+        "plausible": 1,
+        "sufficient": true,
+        "true": 1,
+        "unknown": 0
+      },
+      "SEATING_POSITION": {
+        "minimum_count": 2,
+        "plausible": 2,
+        "sufficient": true,
+        "true": 2,
+        "unknown": 0
+      },
+      "SHARED_REMOTE_REGION": {
+        "minimum_count": 1,
+        "plausible": 2,
+        "sufficient": true,
+        "true": 2,
+        "unknown": 0
+      }
+    },
+    "search_exhausted": true,
+    "valid_assignment_count": 1
+  },
+  "failure_kind": "OBJECT_DISCOVERY_FAILURE",
+  "missing_requirements": [
+    "PERSONAL_CUP_SAUCER_REGION"
+  ],
+  "missing_roles": [
+    "PERSONAL_CUP_SAUCER_REGION"
+  ],
+  "operation_bindings": {
+    "shared_entertainment_group": [
+      {
+        "capability_id": "SUPPORT_ENTERTAINMENT_CONTROL",
+        "context": {
+          "SEATING_PAIR": "SEATING_PAIR"
+        },
+        "planner_operation": "SUPPORT_ENTERTAINMENT_CONTROL",
+        "relation_evidence": [
+          {
+            "object_id": "object_0003",
+            "predicate": "FITS_ON",
+            "status": "TRUE",
+            "subject_id": "region_0001"
+          },
+          {
+            "object_id": "SEATING_PAIR",
+            "predicate": "ACCESSIBLE_FROM_BOTH_SEATS",
+            "status": "TRUE",
+            "subject_id": "region_0001"
+          }
+        ],
+        "source_operation_id": "shared_entertainment_group",
+        "target_id": "object_0003",
+        "tool_id": "region_0001"
+      }
+    ]
+  },
+  "resolved_graph": null,
+  "resolved_role_types": {},
+  "satisfied": false,
+  "status": "PARTIAL_VERIFIED_GROUNDING",
+  "unresolved_constraints": [],
+  "unsatisfied_relations": []
+}

@@ -1,0 +1,68 @@
+{
+  "actions": [
+    {
+      "arguments": {
+        "object": "object_0001"
+      },
+      "cost": 1,
+      "operator": "PICK",
+      "step": 0
+    },
+    {
+      "arguments": {
+        "object": "object_0001",
+        "region": "region_0001"
+      },
+      "cost": 1,
+      "operator": "PLACE",
+      "step": 1
+    },
+    {
+      "arguments": {
+        "object": "object_0002"
+      },
+      "cost": 1,
+      "operator": "PICK",
+      "step": 2
+    },
+    {
+      "arguments": {
+        "object": "object_0002",
+        "region": "region_0001"
+      },
+      "cost": 1,
+      "operator": "PLACE",
+      "step": 3
+    },
+    {
+      "arguments": {
+        "object": "object_0003"
+      },
+      "cost": 1,
+      "operator": "PICK",
+      "step": 4
+    },
+    {
+      "arguments": {
+        "object": "object_0003",
+        "region": "region_0001"
+      },
+      "cost": 1,
+      "operator": "PLACE",
+      "step": 5
+    }
+  ],
+  "search_statistics": {
+    "algorithm": "deterministic_astar_symbolic_state_search",
+    "expanded_states": 20,
+    "frontier_peak": 6,
+    "generated_states": 24,
+    "is_partial": false,
+    "plan_cost": 6,
+    "plan_length": 6,
+    "satisfied_goals": 3,
+    "search_time_ms": 0.05310005508363247,
+    "total_goals": 3,
+    "visited_states": 20
+  }
+}

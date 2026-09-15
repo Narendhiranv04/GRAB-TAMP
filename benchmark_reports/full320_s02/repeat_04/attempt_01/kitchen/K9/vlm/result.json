@@ -1,0 +1,89 @@
+{
+  "assignment": {
+    "coffee_stirrer": "object_0005",
+    "soup_container": [
+      "object_0002",
+      "object_0008"
+    ],
+    "water_source": "object_0003"
+  },
+  "candidate_plan": [
+    {
+      "action_index": 1,
+      "action_instance_id": "fact_001_pick",
+      "arguments": [
+        "object_0002"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 2,
+      "action_instance_id": "fact_002_place",
+      "arguments": [
+        "object_0002",
+        "dining_table"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 3,
+      "action_instance_id": "fact_003_pick",
+      "arguments": [
+        "object_0008"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 4,
+      "action_instance_id": "fact_004_place",
+      "arguments": [
+        "object_0008",
+        "dining_table"
+      ],
+      "operator": "PLACE"
+    }
+  ],
+  "candidate_search_statistics": {
+    "algorithm": "deterministic_astar_symbolic_state_search",
+    "expanded_states": 13,
+    "frontier_peak": 12,
+    "generated_states": 30,
+    "is_partial": false,
+    "plan_cost": 4,
+    "plan_length": 4,
+    "satisfied_goals": 3,
+    "search_time_ms": 0.05815899930894375,
+    "total_goals": 3,
+    "visited_states": 24
+  },
+  "canonicalization_succeeded": true,
+  "domain": "kitchen",
+  "failure_category": null,
+  "failure_reason": null,
+  "functional_spec_complete": false,
+  "inspected_regions": [
+    "D1",
+    "D2",
+    "C2",
+    "B1",
+    "C1"
+  ],
+  "mode": "vlm",
+  "outcome_category": "FUNCTIONAL_ASSIGNMENT_FAILURE",
+  "plan": [],
+  "search_statistics": {
+    "algorithm": "deterministic_astar_symbolic_state_search",
+    "expanded_states": 13,
+    "frontier_peak": 12,
+    "generated_states": 30,
+    "is_partial": false,
+    "plan_cost": 4,
+    "plan_length": 4,
+    "satisfied_goals": 3,
+    "search_time_ms": 0.05815899930894375,
+    "total_goals": 3,
+    "visited_states": 24
+  },
+  "status": "EXHAUSTED_NO_VALID_GROUNDING",
+  "variant": "K9"
+}
