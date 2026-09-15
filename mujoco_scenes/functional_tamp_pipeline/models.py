@@ -1,0 +1,682 @@
+"""Small shared data contracts for the canonical functional TAMP pipeline."""
+
+from __future__ import annotations
+
+from dataclasses import asdict, dataclass, field
+from typing import Any, Mapping
+
+
+@dataclass(frozen=True)
+class NumericConstraint:
+    """Explicit numeric property requirement."""
+
+    property_name: str
+    operator: str  # ">=", "<=", "=="
+    threshold: float
+    unit: str
+
+    def matches(self, value: float | int | None) -> bool:
+        if value is None:
+            return False
+        val = float(value)
+        if self.operator == ">=":
+            return val >= self.threshold
+        if self.operator == "<=":
+            return val <= self.threshold
+        if self.operator == "==":
+            return abs(val - self.threshold) < 1e-6
+        return False
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, data: Mapping[str, Any]) -> NumericConstraint:
+        return cls(
+            property_name=str(data["property_name"]),
+            operator=str(data["operator"]),
+            threshold=float(data["threshold"]),
+            unit=str(data["unit"]),
+        )
+
+
+@dataclass(frozen=True)
+class FunctionalRelation:
+    """Explicit required directional binary relation between functional roles."""
+
+    subject_role: str
+    predicate: str
+    object_role: str
+    expected: bool = True
+    provenance: str = "EXPLICIT_REQUIREMENT"
+    source_operation_id: str | None = None
+    capability_id: str | None = None
+    category: str = "PHYSICAL_VERIFIER"  # "PHYSICAL_VERIFIER" or "TASK_CAUSAL_SEMANTICS"
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, data: Mapping[str, Any]) -> FunctionalRelation:
+        return cls(
+            subject_role=str(data["subject_role"]),
+            predicate=str(data["predicate"]),
+            object_role=str(data["object_role"]),
+            expected=bool(data.get("expected", True)),
+            provenance=str(data.get("provenance", "EXPLICIT_REQUIREMENT")),
+            source_operation_id=str(data["source_operation_id"]) if data.get("source_operation_id") else None,
+            capability_id=str(data["capability_id"]) if data.get("capability_id") else None,
+            category=str(data.get("category", "PHYSICAL_VERIFIER")),
+        )
+
+
+@dataclass(frozen=True)
+class TaskEffectRelation:
+    """FM-expressed resulting state, excluded from physical G_O verification."""
+
+    subject_role: str
+    predicate: str
+    object_value: str
+    object_is_literal: bool = False
+    provenance: str = "FM_EXPLICIT_SEMANTIC"
+    source_operation_id: str | None = None
+    category: str = "TASK_EFFECT_SEMANTICS"
+    raw_subject: str | None = None
+    raw_phrase: str | None = None
+    raw_object: str | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, data: Mapping[str, Any]) -> TaskEffectRelation:
+        return cls(
+            subject_role=str(data["subject_role"]),
+            predicate=str(data["predicate"]),
+            object_value=str(data["object_value"]),
+            object_is_literal=bool(data.get("object_is_literal", False)),
+            provenance=str(data.get("provenance", "FM_EXPLICIT_SEMANTIC")),
+            source_operation_id=(
+                str(data["source_operation_id"])
+                if data.get("source_operation_id") else None
+            ),
+            category=str(data.get("category", "TASK_EFFECT_SEMANTICS")),
+            raw_subject=str(data["raw_subject"]) if data.get("raw_subject") else None,
+            raw_phrase=str(data["raw_phrase"]) if data.get("raw_phrase") else None,
+            raw_object=str(data["raw_object"]) if data.get("raw_object") else None,
+        )
+
+
+@dataclass(frozen=True)
+class FunctionalRole:
+    """Node in the functional requirement graph G_F representing a required role."""
+
+    name: str
+    entity_kind: str = "OBJECT"  # "OBJECT", "REGION", "FIXED_TARGET"
+    count: int = 1
+    min_count: int | None = None
+    max_count: int | None = None
+    preference: str | None = None  # e.g. "minimize_distinct"
+    semantic_categories: tuple[str, ...] = ()
+    unary_predicates: tuple[str, ...] = ()
+    numeric_constraints: tuple[NumericConstraint, ...] = ()
+    binding_policy: str = "DISTINCT"  # "DISTINCT", "REUSABLE", "SHARED"
+    verification_mode: str = "SEMANTIC_AND_GEOMETRIC"  # "SEMANTIC_ONLY", "SEMANTIC_AND_GEOMETRIC"
+    description: str = ""
+    semantic_hints: tuple[str, ...] = ()
+    raw_role_id: str | None = None
+    canonical_role_candidates: tuple[str, ...] = ()
+    role_resolution_status: str = "DIRECT_FUNCTION_MATCH"
+    role_resolution_provenance: tuple[dict[str, Any], ...] = ()
+
+    @property
+    def minimum_count(self) -> int:
+        return self.min_count if self.min_count is not None else self.count
+
+    @property
+    def maximum_count(self) -> int:
+        return self.max_count if self.max_count is not None else self.count
+
+    # Backward compatibility properties & aliases
+    @property
+    def distinct(self) -> bool:
+        return self.binding_policy == "DISTINCT" or self.maximum_count > 1
+
+    @property
+    def reusable(self) -> bool:
+        return self.binding_policy == "REUSABLE"
+
+    @property
+    def shared(self) -> bool:
+        return self.binding_policy == "SHARED"
+
+    @property
+    def unary_properties(self) -> tuple[str, ...]:
+        return self.unary_predicates
+
+    @property
+    def required_relations(self) -> tuple[str, ...]:
+        return ()
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "entity_kind": self.entity_kind,
+            "count": self.count,
+            "min_count": self.min_count,
+            "max_count": self.max_count,
+            "preference": self.preference,
+            "semantic_categories": list(self.semantic_categories),
+            "unary_predicates": list(self.unary_predicates),
+            "numeric_constraints": [c.to_dict() for c in self.numeric_constraints],
+            "binding_policy": self.binding_policy,
+            "verification_mode": self.verification_mode,
+            "description": self.description,
+            "semantic_hints": list(self.semantic_hints),
+            "raw_role_id": self.raw_role_id,
+            "canonical_role_candidates": list(self.canonical_role_candidates or (self.name,)),
+            "role_resolution_status": self.role_resolution_status,
+            "role_resolution_provenance": list(self.role_resolution_provenance),
+            "distinct": self.distinct,
+            "reusable": self.reusable,
+            "shared": self.shared,
+        }
+
+    @classmethod
+    def from_dict(cls, data: Mapping[str, Any]) -> FunctionalRole:
+        constraints = tuple(
+            NumericConstraint.from_dict(c)
+            for c in data.get("numeric_constraints", [])
+        )
+        binding = data.get("binding_policy")
+        if not binding:
+            if data.get("reusable"):
+                binding = "REUSABLE"
+            elif data.get("shared"):
+                binding = "SHARED"
+            else:
+                binding = "DISTINCT"
+        count = int(data.get("count", 1))
+        min_c = data.get("min_count")
+        max_c = data.get("max_count")
+        return cls(
+            name=str(data["name"]),
+            entity_kind=str(data.get("entity_kind", "OBJECT")),
+            count=count,
+            min_count=int(min_c) if min_c is not None else None,
+            max_count=int(max_c) if max_c is not None else None,
+            preference=str(data["preference"]) if data.get("preference") else None,
+            semantic_categories=tuple(map(str, data.get("semantic_categories", ()))),
+            unary_predicates=tuple(map(str, data.get("unary_predicates", data.get("unary_properties", ())))),
+            numeric_constraints=constraints,
+            binding_policy=str(binding),
+            verification_mode=str(data.get("verification_mode", "SEMANTIC_AND_GEOMETRIC")),
+            description=str(data.get("description", "")),
+            semantic_hints=tuple(map(str, data.get("semantic_hints", ()))),
+            raw_role_id=str(data["raw_role_id"]) if data.get("raw_role_id") else None,
+            canonical_role_candidates=tuple(map(str, data.get("canonical_role_candidates", ()))),
+            role_resolution_status=str(data.get("role_resolution_status", "DIRECT_FUNCTION_MATCH")),
+            role_resolution_provenance=tuple(dict(item) for item in data.get("role_resolution_provenance", ())),
+        )
+
+
+@dataclass(frozen=True)
+class RoleTypeHypothesis:
+    """Compiler-time canonical role domain for one FM-declared role."""
+
+    raw_role_id: str
+    raw_function: str
+    raw_description: str
+    entity_kind: str
+    canonical_role_candidates: tuple[str, ...]
+    status: str
+    evidence: tuple[dict[str, Any], ...] = ()
+    # True when the role's own wording put it wholly in families this domain
+    # recognizes as context rather than realizes with a functional role -- a
+    # cupboard to search, a television being watched.  Having no canonical role
+    # then means the runtime understood the role and holds it as context, which
+    # is a different thing from not understanding it at all.
+    runtime_context_only: bool = False
+
+    @property
+    def resolved_role(self) -> str | None:
+        return self.canonical_role_candidates[0] if len(self.canonical_role_candidates) == 1 else None
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class ProvisionalRelationConstraint:
+    """FM relation whose canonical endpoint types are resolved during grounding."""
+
+    raw_subject_role: str
+    raw_object_role: str
+    subject_node: str
+    object_node: str
+    semantic_candidates: tuple[dict[str, Any], ...]
+    allowed_canonical_role_pairs: tuple[tuple[str, str, str, str], ...]
+    expected: bool = True
+    provenance: str = "FM_EXPLICIT_SEMANTIC"
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class ProvisionalOperationConstraint:
+    """FM operation with a finite capability/endpoint-type interpretation set."""
+
+    raw_operation_id: str
+    raw_source_role: str
+    raw_target_role: str
+    raw_anchor_role: str | None
+    source_node: str
+    target_node: str
+    anchor_node: str | None
+    capability_candidates: tuple[dict[str, Any], ...]
+    required_count: int
+    reuse_policy: str
+    slot_assignments: tuple[dict[str, Any], ...] = ()
+    provenance: str = "FM_EXPLICIT_OPERATION"
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class OperationGroup:
+    """Structure for repeated / multi-target tool operations (e.g. Kitchen, Living Room)."""
+
+    id: str
+    function: str
+    tool_role: str
+    target_role: str
+    required_target_count: int
+    usage_policy: str  # "SEQUENTIAL_REUSE_ALLOWED", "DEDICATED_PER_TARGET"
+    required_relations: tuple[str, ...] = ()
+    context_role: str | None = None
+    context_relations: tuple[str, ...] = ()
+    distinct_within_group: bool = True
+    same_tool_must_cover_all_targets: bool = False
+    selection_preference: str | None = None
+    capability_id: str | None = None
+    preconditions_provenance: tuple[dict[str, Any], ...] = ()
+    physical_preconditions: tuple[tuple[str, str, str], ...] = ()
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, data: Mapping[str, Any]) -> OperationGroup:
+        return cls(
+            id=str(data["id"]),
+            function=str(data["function"]),
+            tool_role=str(data["tool_role"]),
+            target_role=str(data["target_role"]),
+            required_target_count=int(data["required_target_count"]),
+            usage_policy=str(data["usage_policy"]),
+            required_relations=tuple(map(str, data.get("required_relations", ()))),
+            context_role=str(data["context_role"]) if data.get("context_role") else None,
+            context_relations=tuple(map(str, data.get("context_relations", ()))),
+            distinct_within_group=bool(data.get("distinct_within_group", True)),
+            same_tool_must_cover_all_targets=bool(data.get("same_tool_must_cover_all_targets", False)),
+            selection_preference=str(data["selection_preference"]) if data.get("selection_preference") else None,
+            capability_id=str(data["capability_id"]) if data.get("capability_id") else None,
+            preconditions_provenance=tuple(data.get("preconditions_provenance", ())),
+            physical_preconditions=tuple(tuple(map(str, item)) for item in data.get("physical_preconditions", ())),
+        )
+
+
+@dataclass(frozen=True)
+class FunctionalRequirementGraph:
+    """Canonical Functional Requirement Graph G_F = (V_F, E_F)."""
+
+    domain: str
+    task_instruction: str
+    nodes: dict[str, FunctionalRole]
+    relations: tuple[FunctionalRelation, ...] = ()
+    task_causal_relations: tuple[FunctionalRelation, ...] = ()
+    task_effect_relations: tuple[TaskEffectRelation, ...] = ()
+    operation_groups: tuple[OperationGroup, ...] = ()
+    provisional_relation_constraints: tuple[ProvisionalRelationConstraint, ...] = ()
+    provisional_operation_constraints: tuple[ProvisionalOperationConstraint, ...] = ()
+    cross_group_reuse_allowed: bool = True
+    detector_vocabulary: tuple[str, ...] = ()
+    candidate_regions: tuple[str, ...] = ()
+    region_ranking: tuple[str, ...] = ()
+    source: str = "UNKNOWN"
+    raw_requirements: tuple[Any, ...] = field(default_factory=tuple, repr=False)
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    @property
+    def roles(self) -> tuple[FunctionalRole, ...]:
+        return tuple(self.nodes.values())
+
+    def get_node(self, name: str) -> FunctionalRole | None:
+        return self.nodes.get(name)
+
+    def get_outgoing_relations(self, subject_role: str) -> tuple[FunctionalRelation, ...]:
+        return tuple(r for r in self.relations if r.subject_role == subject_role)
+
+    @property
+    def required_contract_complete(self) -> bool:
+        if "required_contract_complete" in self.metadata:
+            return bool(self.metadata["required_contract_complete"])
+        return bool(self.nodes)
+
+    @property
+    def online_executable_contract_complete(self) -> bool:
+        if "online_executable_contract_complete" in self.metadata:
+            return bool(self.metadata["online_executable_contract_complete"])
+        return self.required_contract_complete
+
+    def get_incoming_relations(self, object_role: str) -> tuple[FunctionalRelation, ...]:
+        return tuple(r for r in self.relations if r.object_role == object_role)
+
+    def validate(self) -> None:
+        """Validate structural integrity of the functional requirement graph."""
+        for name, node in self.nodes.items():
+            if node.minimum_count < 1:
+                raise ValueError(
+                    f"Invalid functional graph: role {name!r} minimum count must be >= 1, got {node.minimum_count}"
+                )
+            if node.maximum_count < node.minimum_count:
+                raise ValueError(
+                    f"Invalid functional graph: role {name!r} max_count ({node.maximum_count}) "
+                    f"< min_count ({node.minimum_count})"
+                )
+            if node.binding_policy not in {"DISTINCT", "REUSABLE", "SHARED"}:
+                raise ValueError(
+                    f"Invalid functional graph: role {name!r} has unknown binding_policy {node.binding_policy!r}"
+                )
+
+        for rel in self.relations:
+            if rel.subject_role not in self.nodes:
+                raise ValueError(
+                    f"Invalid functional graph: relation subject {rel.subject_role!r} "
+                    f"not in nodes ({list(self.nodes.keys())})"
+                )
+            if rel.object_role not in self.nodes:
+                raise ValueError(
+                    f"Invalid functional graph: relation object {rel.object_role!r} "
+                    f"not in nodes ({list(self.nodes.keys())})"
+                )
+            if not rel.predicate:
+                raise ValueError(f"Invalid functional graph: relation has empty predicate: {rel}")
+
+        for rel in self.task_causal_relations:
+            if rel.subject_role not in self.nodes:
+                raise ValueError(
+                    f"Invalid functional graph: task causal relation subject {rel.subject_role!r} "
+                    f"not in nodes ({list(self.nodes.keys())})"
+                )
+            if rel.object_role not in self.nodes:
+                raise ValueError(
+                    f"Invalid functional graph: task causal relation object {rel.object_role!r} "
+                    f"not in nodes ({list(self.nodes.keys())})"
+                )
+            if not rel.predicate:
+                raise ValueError(f"Invalid functional graph: task causal relation has empty predicate: {rel}")
+
+        for rel in self.task_effect_relations:
+            if rel.subject_role not in self.nodes:
+                raise ValueError(
+                    f"Invalid functional graph: task effect carrier {rel.subject_role!r} "
+                    f"not in nodes ({list(self.nodes.keys())})"
+                )
+            if not rel.object_is_literal and rel.object_value not in self.nodes:
+                raise ValueError(
+                    f"Invalid functional graph: task effect object {rel.object_value!r} "
+                    f"not in nodes ({list(self.nodes.keys())})"
+                )
+            if not rel.predicate or rel.category != "TASK_EFFECT_SEMANTICS":
+                raise ValueError(f"Invalid functional graph task effect relation: {rel}")
+
+        seen_op_ids: set[str] = set()
+        for grp in self.operation_groups:
+            if grp.id in seen_op_ids:
+                raise ValueError(f"Invalid functional graph: duplicate operation group id {grp.id!r}")
+            seen_op_ids.add(grp.id)
+
+            if grp.tool_role not in self.nodes:
+                raise ValueError(
+                    f"Invalid functional graph: operation group {grp.id!r} tool_role "
+                    f"{grp.tool_role!r} not in nodes ({list(self.nodes.keys())})"
+                )
+            if grp.target_role not in self.nodes:
+                raise ValueError(
+                    f"Invalid functional graph: operation group {grp.id!r} target_role "
+                    f"{grp.target_role!r} not in nodes ({list(self.nodes.keys())})"
+                )
+            if grp.context_role and grp.context_role not in self.nodes:
+                raise ValueError(
+                    f"Invalid functional graph: operation group {grp.id!r} context_role "
+                    f"{grp.context_role!r} not in nodes ({list(self.nodes.keys())})"
+                )
+            if grp.usage_policy not in {"SEQUENTIAL_REUSE_ALLOWED", "DEDICATED_PER_TARGET"}:
+                raise ValueError(
+                    f"Invalid functional graph: operation group {grp.id!r} usage_policy "
+                    f"{grp.usage_policy!r} not supported"
+                )
+            target_node = self.nodes[grp.target_role]
+            if grp.required_target_count > target_node.maximum_count:
+                raise ValueError(
+                    f"Invalid functional graph: operation group {grp.id!r} required_target_count "
+                    f"{grp.required_target_count} exceeds target role {grp.target_role!r} max_count {target_node.maximum_count}"
+                )
+
+        if self.candidate_regions and self.region_ranking:
+            if len(self.region_ranking) != len(set(self.region_ranking)):
+                raise ValueError(
+                    f"Invalid functional graph: duplicate regions in region_ranking: {self.region_ranking}"
+                )
+            if set(self.region_ranking) != set(self.candidate_regions):
+                raise ValueError(
+                    f"Invalid functional graph: region_ranking {self.region_ranking} "
+                    f"must match candidate_regions {self.candidate_regions}"
+                )
+
+    def to_dict(self) -> dict[str, Any]:
+        sorted_nodes = {name: self.nodes[name] for name in sorted(self.nodes.keys())}
+        return {
+            "domain": self.domain,
+            "task_instruction": self.task_instruction,
+            "roles": [sorted_nodes[name].to_dict() for name in sorted_nodes],
+            "nodes": {name: sorted_nodes[name].to_dict() for name in sorted_nodes},
+            "relations": [r.to_dict() for r in self.relations],
+            "task_causal_relations": [r.to_dict() for r in self.task_causal_relations],
+            "task_effect_relations": [r.to_dict() for r in self.task_effect_relations],
+            "operation_groups": [g.to_dict() for g in self.operation_groups],
+            "provisional_relation_constraints": [r.to_dict() for r in self.provisional_relation_constraints],
+            "provisional_operation_constraints": [o.to_dict() for o in self.provisional_operation_constraints],
+            "cross_group_reuse_allowed": self.cross_group_reuse_allowed,
+            "detector_vocabulary": list(self.detector_vocabulary),
+            "candidate_regions": list(self.candidate_regions),
+            "region_ranking": list(self.region_ranking),
+            "source": self.source,
+            "metadata": self.metadata,
+        }
+
+    @classmethod
+    def from_dict(cls, data: Mapping[str, Any]) -> FunctionalRequirementGraph:
+        if "roles" in data and isinstance(data["roles"], (list, tuple)):
+            nodes = {
+                role_data["name"]: FunctionalRole.from_dict(role_data)
+                for role_data in data["roles"]
+            }
+        elif "nodes" in data and isinstance(data["nodes"], dict):
+            nodes = {
+                name: FunctionalRole.from_dict(node_data)
+                for name, node_data in data["nodes"].items()
+            }
+        else:
+            nodes = {}
+
+        relations = tuple(
+            FunctionalRelation.from_dict(r)
+            for r in data.get("relations", ())
+        )
+        task_causal_relations = tuple(
+            FunctionalRelation.from_dict(r)
+            for r in data.get("task_causal_relations", ())
+        )
+        task_effect_relations = tuple(
+            TaskEffectRelation.from_dict(r)
+            for r in data.get("task_effect_relations", ())
+        )
+        operation_groups = tuple(
+            OperationGroup.from_dict(g)
+            for g in data.get("operation_groups", ())
+        )
+        provisional_relation_constraints = tuple(
+            ProvisionalRelationConstraint(**r)
+            for r in data.get("provisional_relation_constraints", ())
+        )
+        provisional_operation_constraints = tuple(
+            ProvisionalOperationConstraint(**o)
+            for o in data.get("provisional_operation_constraints", ())
+        )
+        graph = cls(
+            domain=str(data["domain"]),
+            task_instruction=str(data["task_instruction"]),
+            nodes=nodes,
+            relations=relations,
+            task_causal_relations=task_causal_relations,
+            task_effect_relations=task_effect_relations,
+            operation_groups=operation_groups,
+            provisional_relation_constraints=provisional_relation_constraints,
+            provisional_operation_constraints=provisional_operation_constraints,
+            cross_group_reuse_allowed=bool(data.get("cross_group_reuse_allowed", True)),
+            detector_vocabulary=tuple(map(str, data.get("detector_vocabulary", ()))),
+            candidate_regions=tuple(map(str, data.get("candidate_regions", ()))),
+            region_ranking=tuple(map(str, data.get("region_ranking", ()))),
+            source=str(data.get("source", "UNKNOWN")),
+            metadata=dict(data.get("metadata", {})),
+        )
+        return graph
+
+
+# Backward-compatible alias
+FunctionalSpecification = FunctionalRequirementGraph
+
+
+@dataclass(frozen=True)
+class GraphGroundingResult:
+    """Output of graph grounding phi : G_F -> G_O."""
+
+    status: str  # "COMPLETE", "INCOMPLETE", "INFEASIBLE"
+    complete: bool
+    assignment: dict[str, Any] | None = None
+    operation_bindings: dict[str, list[dict[str, Any]]] = field(default_factory=dict)
+    missing_roles: tuple[str, ...] = ()
+    unsatisfied_relations: tuple[dict[str, Any], ...] = ()
+    unresolved_constraints: tuple[str, ...] = ()
+    evidence: dict[str, Any] = field(default_factory=dict)
+    failure_kind: str | None = None
+    resolved_role_types: dict[str, str] = field(default_factory=dict)
+    resolved_graph: dict[str, Any] | None = None
+
+    # Backward compatibility properties
+    @property
+    def satisfied(self) -> bool:
+        return self.complete
+
+    @property
+    def missing_requirements(self) -> tuple[str, ...]:
+        reqs = list(self.missing_roles)
+        reqs.extend(self.unresolved_constraints)
+        for rel in self.unsatisfied_relations:
+            if isinstance(rel, dict):
+                reqs.append(f"{rel.get('predicate')}({rel.get('subject_role')}, {rel.get('object_role')})")
+            else:
+                reqs.append(str(rel))
+        return tuple(reqs)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "status": self.status,
+            "complete": self.complete,
+            "satisfied": self.satisfied,
+            "assignment": self.assignment,
+            "operation_bindings": self.operation_bindings,
+            "missing_roles": list(self.missing_roles),
+            "missing_requirements": list(self.missing_requirements),
+            "unsatisfied_relations": list(self.unsatisfied_relations),
+            "unresolved_constraints": list(self.unresolved_constraints),
+            "evidence": self.evidence,
+            "failure_kind": self.failure_kind,
+            "resolved_role_types": self.resolved_role_types,
+            "resolved_graph": self.resolved_graph,
+        }
+
+    @classmethod
+    def from_dict(cls, data: Mapping[str, Any]) -> GraphGroundingResult:
+        return cls(
+            status=str(data["status"]),
+            complete=bool(data.get("complete", data.get("satisfied", False))),
+            assignment=dict(data["assignment"]) if data.get("assignment") is not None else None,
+            operation_bindings=dict(data.get("operation_bindings", {})),
+            missing_roles=tuple(map(str, data.get("missing_roles", ()))),
+            unsatisfied_relations=tuple(dict(r) for r in data.get("unsatisfied_relations", ())),
+            unresolved_constraints=tuple(map(str, data.get("unresolved_constraints", ()))),
+            evidence=dict(data.get("evidence", {})),
+            failure_kind=str(data["failure_kind"]) if data.get("failure_kind") else None,
+            resolved_role_types=dict(data.get("resolved_role_types", {})),
+            resolved_graph=dict(data["resolved_graph"]) if data.get("resolved_graph") else None,
+        )
+
+
+# Backward-compatible alias
+SatisfactionResult = GraphGroundingResult
+
+
+@dataclass(frozen=True)
+class PipelineResult:
+    domain: str
+    variant: str
+    mode: str
+    status: str
+    inspected_regions: tuple[str, ...] = ()
+    assignment: dict[str, Any] | None = None
+    plan: tuple[dict[str, Any], ...] = ()
+    search_statistics: dict[str, Any] = field(default_factory=dict)
+    failure_reason: str | None = None
+    failure_category: str | None = None
+    canonicalization_succeeded: bool = False
+    functional_spec_complete: bool = False
+    candidate_plan: tuple[dict[str, Any], ...] = ()
+    candidate_search_statistics: dict[str, Any] = field(default_factory=dict)
+    outcome_category: str | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, data: Mapping[str, Any]) -> PipelineResult:
+        return cls(
+            domain=str(data["domain"]),
+            variant=str(data["variant"]),
+            mode=str(data["mode"]),
+            status=str(data["status"]),
+            inspected_regions=tuple(map(str, data.get("inspected_regions", ()))),
+            assignment=dict(data["assignment"]) if data.get("assignment") is not None else None,
+            plan=tuple(dict(p) for p in data.get("plan", ())),
+            search_statistics=dict(data.get("search_statistics", {})),
+            failure_reason=str(data["failure_reason"]) if data.get("failure_reason") is not None else None,
+            failure_category=str(data["failure_category"]) if data.get("failure_category") is not None else None,
+            canonicalization_succeeded=bool(data.get("canonicalization_succeeded", False)),
+            functional_spec_complete=bool(data.get("functional_spec_complete", False)),
+            candidate_plan=tuple(dict(p) for p in data.get("candidate_plan", ())),
+            candidate_search_statistics=dict(data.get("candidate_search_statistics", {})),
+            outcome_category=str(data["outcome_category"]) if data.get("outcome_category") else None,
+        )
+
+
+from .search_contract import (
+    CANONICAL_SEARCH_REGIONS,
+    PHASE3_SEARCH_REGION_POLICY_VERSION,
+    SearchRegionContract,
+    SearchRegionContractError,
+    freeze_search_region_contract,
+)

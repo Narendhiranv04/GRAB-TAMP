@@ -1,0 +1,249 @@
+[
+  {
+    "domain": "kitchen",
+    "predicate": "ELONGATED_OBJECT",
+    "arity": 1,
+    "category": "",
+    "subject_kinds": [
+      "OBJECT"
+    ],
+    "object_kinds": [],
+    "allowed_subject_roles": [
+      "coffee_stirrer",
+      "soup_eating_utensil"
+    ],
+    "allowed_object_roles": [],
+    "description": "Object has an elongated aspect ratio suitable for stirring or eating.",
+    "status": "ACTIVE_CANONICAL",
+    "hypothesis_text": "ELONGATED_OBJECT: Object has an elongated aspect ratio suitable for stirring or eating."
+  },
+  {
+    "domain": "kitchen",
+    "predicate": "INSERTABLE_IN",
+    "arity": 2,
+    "category": "",
+    "subject_kinds": [
+      "OBJECT"
+    ],
+    "object_kinds": [
+      "OBJECT"
+    ],
+    "allowed_subject_roles": [
+      "coffee_stirrer",
+      "soup_eating_utensil"
+    ],
+    "allowed_object_roles": [
+      "coffee_container",
+      "soup_container"
+    ],
+    "description": "Tool object cross-section fits inside the opening of the target container.",
+    "status": "ACTIVE_CANONICAL",
+    "hypothesis_text": "INSERTABLE_IN: Tool object cross-section fits inside the opening of the target container."
+  },
+  {
+    "domain": "kitchen",
+    "predicate": "OPEN_CAVITY",
+    "arity": 1,
+    "category": "",
+    "subject_kinds": [
+      "OBJECT"
+    ],
+    "object_kinds": [],
+    "allowed_subject_roles": [
+      "coffee_container",
+      "soup_container"
+    ],
+    "allowed_object_roles": [],
+    "description": "Container has an open upper cavity capable of receiving liquid or items.",
+    "status": "ACTIVE_CANONICAL",
+    "hypothesis_text": "OPEN_CAVITY: Container has an open upper cavity capable of receiving liquid or items."
+  },
+  {
+    "domain": "kitchen",
+    "predicate": "REACHES_BOTTOM",
+    "arity": 2,
+    "category": "",
+    "subject_kinds": [
+      "OBJECT"
+    ],
+    "object_kinds": [
+      "OBJECT"
+    ],
+    "allowed_subject_roles": [
+      "coffee_stirrer",
+      "soup_eating_utensil"
+    ],
+    "allowed_object_roles": [
+      "coffee_container",
+      "soup_container"
+    ],
+    "description": "Tool object length reaches the bottom of the target container with manipulation clearance.",
+    "status": "ACTIVE_CANONICAL",
+    "hypothesis_text": "REACHES_BOTTOM: Tool object length reaches the bottom of the target container with manipulation clearance."
+  },
+  {
+    "domain": "living_room",
+    "predicate": "ACCESSIBLE_FROM_BOTH_SEATS",
+    "arity": 2,
+    "category": "",
+    "subject_kinds": [
+      "REGION"
+    ],
+    "object_kinds": [
+      "FIXED_TARGET"
+    ],
+    "allowed_subject_roles": [
+      "SHARED_REMOTE_REGION"
+    ],
+    "allowed_object_roles": [
+      "SEATING_PAIR"
+    ],
+    "description": "Region is accessible to seated viewers from both seating positions in the pair.",
+    "status": "ACTIVE_CANONICAL",
+    "hypothesis_text": "ACCESSIBLE_FROM_BOTH_SEATS: Region is accessible to seated viewers from both seating positions in the pair."
+  },
+  {
+    "domain": "living_room",
+    "predicate": "FITS_ON",
+    "arity": 2,
+    "category": "",
+    "subject_kinds": [
+      "REGION"
+    ],
+    "object_kinds": [
+      "OBJECT"
+    ],
+    "allowed_subject_roles": [
+      "SHARED_REMOTE_REGION"
+    ],
+    "allowed_object_roles": [
+      "REMOTE"
+    ],
+    "description": "Region surface area and boundary support the handheld remote control device.",
+    "status": "ACTIVE_CANONICAL",
+    "hypothesis_text": "FITS_ON: Region surface area and boundary support the handheld remote control device."
+  },
+  {
+    "domain": "living_room",
+    "predicate": "FITS_SET_ON",
+    "arity": 2,
+    "category": "",
+    "subject_kinds": [
+      "REGION"
+    ],
+    "object_kinds": [
+      "OBJECT"
+    ],
+    "allowed_subject_roles": [
+      "PERSONAL_CUP_SAUCER_REGION"
+    ],
+    "allowed_object_roles": [
+      "CUP_SAUCER_SET"
+    ],
+    "description": "Region surface area and boundary support the composite cup and saucer drinkware set.",
+    "status": "ACTIVE_CANONICAL",
+    "hypothesis_text": "FITS_SET_ON: Region surface area and boundary support the composite cup and saucer drinkware set."
+  },
+  {
+    "domain": "living_room",
+    "predicate": "NEAR_SEAT",
+    "arity": 2,
+    "category": "",
+    "subject_kinds": [
+      "REGION"
+    ],
+    "object_kinds": [
+      "FIXED_TARGET"
+    ],
+    "allowed_subject_roles": [
+      "PERSONAL_CUP_SAUCER_REGION"
+    ],
+    "allowed_object_roles": [
+      "SEATING_POSITION"
+    ],
+    "description": "Region is adjacent / reachable from a specific viewer seating position.",
+    "status": "ACTIVE_CANONICAL",
+    "hypothesis_text": "NEAR_SEAT: Region is adjacent / reachable from a specific viewer seating position."
+  },
+  {
+    "domain": "living_room",
+    "predicate": "PLANAR_SUPPORT",
+    "arity": 1,
+    "category": "",
+    "subject_kinds": [
+      "REGION"
+    ],
+    "object_kinds": [],
+    "allowed_subject_roles": [
+      "PERSONAL_CUP_SAUCER_REGION",
+      "SHARED_REMOTE_REGION"
+    ],
+    "allowed_object_roles": [],
+    "description": "Region provides a horizontal planar surface suitable for supporting items.",
+    "status": "ACTIVE_CANONICAL",
+    "hypothesis_text": "PLANAR_SUPPORT: Region provides a horizontal planar surface suitable for supporting items."
+  },
+  {
+    "domain": "workshop",
+    "predicate": "COMPATIBLE_WITH",
+    "arity": 2,
+    "category": "",
+    "subject_kinds": [
+      "OBJECT"
+    ],
+    "object_kinds": [
+      "OBJECT"
+    ],
+    "allowed_subject_roles": [
+      "driver"
+    ],
+    "allowed_object_roles": [
+      "fastener"
+    ],
+    "description": "Driver tool head geometry is compatible with the fastener head recess.",
+    "status": "ACTIVE_CANONICAL",
+    "hypothesis_text": "COMPATIBLE_WITH: Driver tool head geometry is compatible with the fastener head recess."
+  },
+  {
+    "domain": "workshop",
+    "predicate": "COMPATIBLE_WITH_TARGET",
+    "arity": 2,
+    "category": "",
+    "subject_kinds": [
+      "OBJECT"
+    ],
+    "object_kinds": [
+      "FIXED_TARGET"
+    ],
+    "allowed_subject_roles": [
+      "fastener"
+    ],
+    "allowed_object_roles": [
+      "repair_target"
+    ],
+    "description": "Fastener size and threading are compatible with the target repair hole on the workpiece.",
+    "status": "ACTIVE_CANONICAL",
+    "hypothesis_text": "COMPATIBLE_WITH_TARGET: Fastener size and threading are compatible with the target repair hole on the workpiece."
+  },
+  {
+    "domain": "workshop",
+    "predicate": "REACHES_TARGET",
+    "arity": 2,
+    "category": "",
+    "subject_kinds": [
+      "OBJECT"
+    ],
+    "object_kinds": [
+      "FIXED_TARGET"
+    ],
+    "allowed_subject_roles": [
+      "driver"
+    ],
+    "allowed_object_roles": [
+      "repair_target"
+    ],
+    "description": "Driver tool reach is sufficient to access the target repair recess on the workpiece.",
+    "status": "ACTIVE_CANONICAL",
+    "hypothesis_text": "REACHES_TARGET: Driver tool reach is sufficient to access the target repair recess on the workpiece."
+  }
+]

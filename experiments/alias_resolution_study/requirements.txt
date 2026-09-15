@@ -1,0 +1,9 @@
+# Experiment-local only; the production environment is not modified.
+# Versions recorded are those already present on the study machine.
+torch==2.9.1
+transformers==4.57.3
+tokenizers==0.22.1
+# DeBERTa-v3 uses a SentencePiece vocabulary. The fast tokenizer loads from the
+# hub's tokenizer.json when present; sentencepiece is required only if the slow
+# tokenizer has to convert it.
+sentencepiece>=0.1.99

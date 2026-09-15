@@ -1,0 +1,1552 @@
+{
+  "n": 53,
+  "errors": [
+    {
+      "domain": "living_room",
+      "variant": "L3",
+      "stream": "full320_s01",
+      "repeat": "repeat_01",
+      "raw_relation_text": "The refreshment item is placed on the surface.",
+      "gold_predicate": "FITS_SET_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.47752803564071655
+        ],
+        [
+          "NEAR_SEAT",
+          0.3023518919944763
+        ],
+        [
+          "FITS_SET_ON",
+          0.15624657273292542
+        ],
+        [
+          "FITS_ON",
+          0.06387346982955933
+        ]
+      ],
+      "participant_roles": [
+        "refreshment_item",
+        "surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L4",
+      "stream": "full320_s01",
+      "repeat": "repeat_01",
+      "raw_relation_text": "refreshment_container is placed on surface_near_seating",
+      "gold_predicate": "FITS_SET_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.5258088111877441
+        ],
+        [
+          "NEAR_SEAT",
+          0.3007694482803345
+        ],
+        [
+          "FITS_SET_ON",
+          0.12211667746305466
+        ],
+        [
+          "FITS_ON",
+          0.05130505934357643
+        ]
+      ],
+      "participant_roles": [
+        "refreshment_container",
+        "surface_near_seating"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L4",
+      "stream": "full320_s01",
+      "repeat": "repeat_01",
+      "raw_relation_text": "entertainment_control is placed on shared_accessible_surface",
+      "gold_predicate": "FITS_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.7311955094337463
+        ],
+        [
+          "NEAR_SEAT",
+          0.1668373942375183
+        ],
+        [
+          "FITS_ON",
+          0.061676472425460815
+        ],
+        [
+          "FITS_SET_ON",
+          0.040290724486112595
+        ]
+      ],
+      "participant_roles": [
+        "entertainment_control",
+        "shared_accessible_surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L7",
+      "stream": "full320_s01",
+      "repeat": "repeat_01",
+      "raw_relation_text": "placed_on",
+      "gold_predicate": "FITS_SET_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.4693633019924164
+        ],
+        [
+          "NEAR_SEAT",
+          0.2759244441986084
+        ],
+        [
+          "FITS_SET_ON",
+          0.1304648071527481
+        ],
+        [
+          "FITS_ON",
+          0.1242474913597107
+        ]
+      ],
+      "participant_roles": [
+        "refreshment_setting",
+        "surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W1",
+      "stream": "full320_s01",
+      "repeat": "repeat_01",
+      "raw_relation_text": "Parts must be attached to the assembly point.",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.646460235118866
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.3535397946834564
+        ]
+      ],
+      "participant_roles": [
+        "parts",
+        "assembly_point"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W8",
+      "stream": "full320_s01",
+      "repeat": "repeat_01",
+      "raw_relation_text": "suitable_for",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.5491570234298706
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.4508429169654846
+        ]
+      ],
+      "participant_roles": [
+        "compatible_component",
+        "fastening_target"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L10",
+      "stream": "full320_s01",
+      "repeat": "repeat_02",
+      "raw_relation_text": "refreshment_setting is placed on surface",
+      "gold_predicate": "FITS_SET_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.6402804255485535
+        ],
+        [
+          "NEAR_SEAT",
+          0.15599077939987183
+        ],
+        [
+          "FITS_SET_ON",
+          0.12932088971138
+        ],
+        [
+          "FITS_ON",
+          0.0744079202413559
+        ]
+      ],
+      "participant_roles": [
+        "refreshment_setting",
+        "surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L5",
+      "stream": "full320_s01",
+      "repeat": "repeat_02",
+      "raw_relation_text": "Each refreshment setting is placed on a surface near a seating area.",
+      "gold_predicate": "FITS_SET_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.5875979065895081
+        ],
+        [
+          "NEAR_SEAT",
+          0.20526154339313507
+        ],
+        [
+          "FITS_SET_ON",
+          0.15539413690567017
+        ],
+        [
+          "FITS_ON",
+          0.0517464205622673
+        ]
+      ],
+      "participant_roles": [
+        "refreshment_setting",
+        "surface",
+        "seating_area"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L7",
+      "stream": "full320_s01",
+      "repeat": "repeat_02",
+      "raw_relation_text": "entertainment_control is ON accessible_surface",
+      "gold_predicate": "FITS_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.6565293669700623
+        ],
+        [
+          "NEAR_SEAT",
+          0.20790161192417145
+        ],
+        [
+          "FITS_ON",
+          0.07128974050283432
+        ],
+        [
+          "FITS_SET_ON",
+          0.06427925080060959
+        ]
+      ],
+      "participant_roles": [
+        "entertainment_control",
+        "accessible_surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W1",
+      "stream": "full320_s01",
+      "repeat": "repeat_02",
+      "raw_relation_text": "A fastening component must be compatible with the target location.",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.5515736937522888
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.4484262466430664
+        ]
+      ],
+      "participant_roles": [
+        "fastening_component",
+        "fastening_target"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W3",
+      "stream": "full320_s01",
+      "repeat": "repeat_02",
+      "raw_relation_text": "The fastener_component is designed to fit into or onto the workpiece.",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.6043989062309265
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.3956010937690735
+        ]
+      ],
+      "participant_roles": [
+        "fastener_component",
+        "workpiece"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W4",
+      "stream": "full320_s01",
+      "repeat": "repeat_02",
+      "raw_relation_text": "fastener is attached to target",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.5607337951660156
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.43926626443862915
+        ]
+      ],
+      "participant_roles": [
+        "fastener",
+        "target"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L10",
+      "stream": "full320_s01",
+      "repeat": "repeat_03",
+      "raw_relation_text": "Refreshment settings must rest upon a surface.",
+      "gold_predicate": "FITS_SET_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.482959508895874
+        ],
+        [
+          "NEAR_SEAT",
+          0.22393998503684998
+        ],
+        [
+          "FITS_SET_ON",
+          0.1911722868680954
+        ],
+        [
+          "FITS_ON",
+          0.1019282117486
+        ]
+      ],
+      "participant_roles": [
+        "refreshment_setting",
+        "surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L3",
+      "stream": "full320_s01",
+      "repeat": "repeat_03",
+      "raw_relation_text": "placed_on",
+      "gold_predicate": "FITS_SET_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.4693633019924164
+        ],
+        [
+          "NEAR_SEAT",
+          0.2759244441986084
+        ],
+        [
+          "FITS_SET_ON",
+          0.1304648071527481
+        ],
+        [
+          "FITS_ON",
+          0.1242474913597107
+        ]
+      ],
+      "participant_roles": [
+        "refreshment_setting",
+        "surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L5",
+      "stream": "full320_s01",
+      "repeat": "repeat_03",
+      "raw_relation_text": "The refreshment setting is placed on the surface near the seating area.",
+      "gold_predicate": "FITS_SET_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.48260608315467834
+        ],
+        [
+          "NEAR_SEAT",
+          0.31419113278388977
+        ],
+        [
+          "FITS_SET_ON",
+          0.13955768942832947
+        ],
+        [
+          "FITS_ON",
+          0.06364506483078003
+        ]
+      ],
+      "participant_roles": [
+        "refreshment_setting",
+        "surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L7",
+      "stream": "full320_s01",
+      "repeat": "repeat_03",
+      "raw_relation_text": "on_surface",
+      "gold_predicate": "FITS_SET_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.4559982120990753
+        ],
+        [
+          "NEAR_SEAT",
+          0.2704339921474457
+        ],
+        [
+          "FITS_SET_ON",
+          0.15274028480052948
+        ],
+        [
+          "FITS_ON",
+          0.12082750350236893
+        ]
+      ],
+      "participant_roles": [
+        "refreshment_setting",
+        "surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W1",
+      "stream": "full320_s01",
+      "repeat": "repeat_03",
+      "raw_relation_text": "fits",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.553987979888916
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.44601207971572876
+        ]
+      ],
+      "participant_roles": [
+        "fastening_component",
+        "assembly_point"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "kitchen",
+      "variant": "K7",
+      "stream": "full320_s02",
+      "repeat": "repeat_01",
+      "raw_relation_text": "stirred_by",
+      "gold_predicate": "INSERTABLE_IN",
+      "predicted": "REACHES_BOTTOM",
+      "ranked": [
+        [
+          "REACHES_BOTTOM",
+          0.5122045874595642
+        ],
+        [
+          "INSERTABLE_IN",
+          0.4877953827381134
+        ]
+      ],
+      "participant_roles": [
+        "coffee_cup",
+        "stirring_implementation"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "OBJECT"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L1",
+      "stream": "full320_s02",
+      "repeat": "repeat_01",
+      "raw_relation_text": "placed_on",
+      "gold_predicate": "FITS_SET_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.4693633019924164
+        ],
+        [
+          "NEAR_SEAT",
+          0.2759244441986084
+        ],
+        [
+          "FITS_SET_ON",
+          0.1304648071527481
+        ],
+        [
+          "FITS_ON",
+          0.1242474913597107
+        ]
+      ],
+      "participant_roles": [
+        "refreshment_cup",
+        "surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L3",
+      "stream": "full320_s02",
+      "repeat": "repeat_01",
+      "raw_relation_text": "is located on",
+      "gold_predicate": "FITS_SET_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.47295674681663513
+        ],
+        [
+          "NEAR_SEAT",
+          0.24801670014858246
+        ],
+        [
+          "FITS_SET_ON",
+          0.15672798454761505
+        ],
+        [
+          "FITS_ON",
+          0.12229850888252258
+        ]
+      ],
+      "participant_roles": [
+        "refreshment_item",
+        "placement_surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L3",
+      "stream": "full320_s02",
+      "repeat": "repeat_01",
+      "raw_relation_text": "is near",
+      "gold_predicate": "NEAR_SEAT",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.6302298903465271
+        ],
+        [
+          "NEAR_SEAT",
+          0.3697701096534729
+        ]
+      ],
+      "participant_roles": [
+        "placement_surface",
+        "seating_area"
+      ],
+      "subject_entity_kind": "REGION",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L5",
+      "stream": "full320_s02",
+      "repeat": "repeat_01",
+      "raw_relation_text": "rests_on",
+      "gold_predicate": "FITS_SET_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.589590847492218
+        ],
+        [
+          "NEAR_SEAT",
+          0.21197740733623505
+        ],
+        [
+          "FITS_SET_ON",
+          0.10260572284460068
+        ],
+        [
+          "FITS_ON",
+          0.09582604467868805
+        ]
+      ],
+      "participant_roles": [
+        "refreshment_item",
+        "refreshment_surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W3",
+      "stream": "full320_s02",
+      "repeat": "repeat_01",
+      "raw_relation_text": "The component must fit the location using the tool.",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.3761357367038727
+        ],
+        [
+          "COMPATIBLE_WITH",
+          0.3688605725765228
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.2550037205219269
+        ]
+      ],
+      "participant_roles": [
+        "fastening_location",
+        "fastening_component",
+        "fastening_tool"
+      ],
+      "subject_entity_kind": "FIXED_TARGET",
+      "object_entity_kind": "OBJECT"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W5",
+      "stream": "full320_s02",
+      "repeat": "repeat_01",
+      "raw_relation_text": "The compatible_component must physically fit into the marked_location.",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.6825737357139587
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.31742626428604126
+        ]
+      ],
+      "participant_roles": [
+        "compatible_component",
+        "marked_location"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W8",
+      "stream": "full320_s02",
+      "repeat": "repeat_01",
+      "raw_relation_text": "fastening_component must be attached to fastening_location",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.6118459105491638
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.3881540596485138
+        ]
+      ],
+      "participant_roles": [
+        "fastening_component",
+        "fastening_location"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W9",
+      "stream": "full320_s02",
+      "repeat": "repeat_01",
+      "raw_relation_text": "compatible_component is suitable for fastening at fastening_location",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.5722447037696838
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.4277552366256714
+        ]
+      ],
+      "participant_roles": [
+        "compatible_component",
+        "fastening_location"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L3",
+      "stream": "full320_s02",
+      "repeat": "repeat_02",
+      "raw_relation_text": "is_placed_on",
+      "gold_predicate": "FITS_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.4963892996311188
+        ],
+        [
+          "NEAR_SEAT",
+          0.2714681923389435
+        ],
+        [
+          "FITS_SET_ON",
+          0.12489553540945053
+        ],
+        [
+          "FITS_ON",
+          0.10724694281816483
+        ]
+      ],
+      "participant_roles": [
+        "entertainment_control",
+        "central_surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L6",
+      "stream": "full320_s02",
+      "repeat": "repeat_02",
+      "raw_relation_text": "placed_on",
+      "gold_predicate": "FITS_SET_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.4693633019924164
+        ],
+        [
+          "NEAR_SEAT",
+          0.2759244441986084
+        ],
+        [
+          "FITS_SET_ON",
+          0.1304648071527481
+        ],
+        [
+          "FITS_ON",
+          0.1242474913597107
+        ]
+      ],
+      "participant_roles": [
+        "refreshment_setting",
+        "surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L7",
+      "stream": "full320_s02",
+      "repeat": "repeat_02",
+      "raw_relation_text": "Refreshment Item is placed on Refreshment Setting",
+      "gold_predicate": "FITS_SET_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.47773677110671997
+        ],
+        [
+          "NEAR_SEAT",
+          0.2677244544029236
+        ],
+        [
+          "FITS_SET_ON",
+          0.13124524056911469
+        ],
+        [
+          "FITS_ON",
+          0.12329350411891937
+        ]
+      ],
+      "participant_roles": [
+        "refreshment_item",
+        "refreshment_setting"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L7",
+      "stream": "full320_s02",
+      "repeat": "repeat_02",
+      "raw_relation_text": "Entertainment Control is placed on Console Surface",
+      "gold_predicate": "FITS_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.5375995635986328
+        ],
+        [
+          "NEAR_SEAT",
+          0.2914327383041382
+        ],
+        [
+          "FITS_SET_ON",
+          0.08656902611255646
+        ],
+        [
+          "FITS_ON",
+          0.08439867198467255
+        ]
+      ],
+      "participant_roles": [
+        "entertainment_control",
+        "console_surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W7",
+      "stream": "full320_s02",
+      "repeat": "repeat_02",
+      "raw_relation_text": "is_compatible_with",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.6025294661521912
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.3974705636501312
+        ]
+      ],
+      "participant_roles": [
+        "fastener_piece",
+        "fastening_site"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L6",
+      "stream": "full320_s02",
+      "repeat": "repeat_03",
+      "raw_relation_text": "placed_on",
+      "gold_predicate": "FITS_SET_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.4693633019924164
+        ],
+        [
+          "NEAR_SEAT",
+          0.2759244441986084
+        ],
+        [
+          "FITS_SET_ON",
+          0.1304648071527481
+        ],
+        [
+          "FITS_ON",
+          0.1242474913597107
+        ]
+      ],
+      "participant_roles": [
+        "refreshment_set",
+        "surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W6",
+      "stream": "full320_s02",
+      "repeat": "repeat_03",
+      "raw_relation_text": "Fastening Component is compatible with Fastening Target.",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.6057990193367004
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.3942009508609772
+        ]
+      ],
+      "participant_roles": [
+        "fastening_component",
+        "fastening_target"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W7",
+      "stream": "full320_s02",
+      "repeat": "repeat_03",
+      "raw_relation_text": "fastening_component fits onto fastening_target",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.5467380881309509
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.4532619118690491
+        ]
+      ],
+      "participant_roles": [
+        "fastening_component",
+        "fastening_target"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L2",
+      "stream": "full320_s03",
+      "repeat": "repeat_01",
+      "raw_relation_text": "The refreshment_setting must be located on or immediately next to the side_table.",
+      "gold_predicate": "FITS_SET_ON",
+      "predicted": "NEAR_SEAT",
+      "ranked": [
+        [
+          "NEAR_SEAT",
+          0.7006454467773438
+        ],
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.2521513104438782
+        ],
+        [
+          "FITS_SET_ON",
+          0.03333446383476257
+        ],
+        [
+          "FITS_ON",
+          0.013868759386241436
+        ]
+      ],
+      "participant_roles": [
+        "refreshment_setting",
+        "side_table"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L2",
+      "stream": "full320_s03",
+      "repeat": "repeat_01",
+      "raw_relation_text": "The remote_control must be located on the central_surface.",
+      "gold_predicate": "FITS_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.5396845936775208
+        ],
+        [
+          "FITS_ON",
+          0.22651715576648712
+        ],
+        [
+          "NEAR_SEAT",
+          0.17065049707889557
+        ],
+        [
+          "FITS_SET_ON",
+          0.06314773112535477
+        ]
+      ],
+      "participant_roles": [
+        "remote_control",
+        "central_surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L8",
+      "stream": "full320_s03",
+      "repeat": "repeat_01",
+      "raw_relation_text": "placed_upon",
+      "gold_predicate": "FITS_SET_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.48190683126449585
+        ],
+        [
+          "NEAR_SEAT",
+          0.2674368619918823
+        ],
+        [
+          "FITS_SET_ON",
+          0.13046567142009735
+        ],
+        [
+          "FITS_ON",
+          0.12019060552120209
+        ]
+      ],
+      "participant_roles": [
+        "refreshment_item",
+        "surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W3",
+      "stream": "full320_s03",
+      "repeat": "repeat_01",
+      "raw_relation_text": "suit",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.5161076188087463
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.4838922917842865
+        ]
+      ],
+      "participant_roles": [
+        "fastening_component",
+        "fastening_target"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W3",
+      "stream": "full320_s03",
+      "repeat": "repeat_01",
+      "raw_relation_text": "attached_to",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.5808276534080505
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.41917234659194946
+        ]
+      ],
+      "participant_roles": [
+        "fastening_component",
+        "fastening_target"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L2",
+      "stream": "full320_s03",
+      "repeat": "repeat_02",
+      "raw_relation_text": "situated_on",
+      "gold_predicate": "FITS_SET_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.5990310311317444
+        ],
+        [
+          "NEAR_SEAT",
+          0.2321908175945282
+        ],
+        [
+          "FITS_SET_ON",
+          0.09235912561416626
+        ],
+        [
+          "FITS_ON",
+          0.07641900330781937
+        ]
+      ],
+      "participant_roles": [
+        "refreshment_setting",
+        "side_table"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L2",
+      "stream": "full320_s03",
+      "repeat": "repeat_02",
+      "raw_relation_text": "situated_on",
+      "gold_predicate": "FITS_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.5990310311317444
+        ],
+        [
+          "NEAR_SEAT",
+          0.2321908175945282
+        ],
+        [
+          "FITS_SET_ON",
+          0.09235912561416626
+        ],
+        [
+          "FITS_ON",
+          0.07641900330781937
+        ]
+      ],
+      "participant_roles": [
+        "entertainment_control",
+        "coffee_table"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W3",
+      "stream": "full320_s03",
+      "repeat": "repeat_02",
+      "raw_relation_text": "fastening_components are physically attached to fastening_target",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.6680145263671875
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.3319854438304901
+        ]
+      ],
+      "participant_roles": [
+        "fastening_components",
+        "fastening_target"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W5",
+      "stream": "full320_s03",
+      "repeat": "repeat_02",
+      "raw_relation_text": "A compatible component must fit the fastening target.",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.5588085651397705
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.4411914646625519
+        ]
+      ],
+      "participant_roles": [
+        "compatible_component",
+        "fastening_target"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "kitchen",
+      "variant": "K5",
+      "stream": "full320_s03",
+      "repeat": "repeat_03",
+      "raw_relation_text": "Stirs the coffee in the cup.",
+      "gold_predicate": "INSERTABLE_IN",
+      "predicted": "REACHES_BOTTOM",
+      "ranked": [
+        [
+          "REACHES_BOTTOM",
+          0.5048826932907104
+        ],
+        [
+          "INSERTABLE_IN",
+          0.49511733651161194
+        ]
+      ],
+      "participant_roles": [
+        "coffee_cup",
+        "stirrer"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "OBJECT"
+    },
+    {
+      "domain": "kitchen",
+      "variant": "K9",
+      "stream": "full320_s03",
+      "repeat": "repeat_03",
+      "raw_relation_text": "is_stirred_by",
+      "gold_predicate": "INSERTABLE_IN",
+      "predicted": "REACHES_BOTTOM",
+      "ranked": [
+        [
+          "REACHES_BOTTOM",
+          0.5808277130126953
+        ],
+        [
+          "INSERTABLE_IN",
+          0.4191723167896271
+        ]
+      ],
+      "participant_roles": [
+        "coffee_cup",
+        "stirrer"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "OBJECT"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L6",
+      "stream": "full320_s03",
+      "repeat": "repeat_03",
+      "raw_relation_text": "The entertainment control is placed on a surface accessible to both people.",
+      "gold_predicate": "FITS_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.7749937176704407
+        ],
+        [
+          "NEAR_SEAT",
+          0.1403808295726776
+        ],
+        [
+          "FITS_ON",
+          0.057331543415784836
+        ],
+        [
+          "FITS_SET_ON",
+          0.02729390747845173
+        ]
+      ],
+      "participant_roles": [
+        "entertainment_control",
+        "surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W4",
+      "stream": "full320_s03",
+      "repeat": "repeat_03",
+      "raw_relation_text": "attached_to",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.5808276534080505
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.41917234659194946
+        ]
+      ],
+      "participant_roles": [
+        "part_to_fasten",
+        "fastening_location"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L3",
+      "stream": "full320_s03",
+      "repeat": "repeat_04",
+      "raw_relation_text": "A refreshment item rests on a refreshment surface.",
+      "gold_predicate": "FITS_SET_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.4865328073501587
+        ],
+        [
+          "NEAR_SEAT",
+          0.3098636865615845
+        ],
+        [
+          "FITS_SET_ON",
+          0.1445227861404419
+        ],
+        [
+          "FITS_ON",
+          0.05908079445362091
+        ]
+      ],
+      "participant_roles": [
+        "refreshment_item",
+        "refreshment_surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L6",
+      "stream": "full320_s03",
+      "repeat": "repeat_04",
+      "raw_relation_text": "physical support",
+      "gold_predicate": "FITS_SET_ON",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.3833864629268646
+        ],
+        [
+          "NEAR_SEAT",
+          0.3429948091506958
+        ],
+        [
+          "FITS_SET_ON",
+          0.15566033124923706
+        ],
+        [
+          "FITS_ON",
+          0.11795846372842789
+        ]
+      ],
+      "participant_roles": [
+        "refreshment_container",
+        "surface"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "REGION"
+    },
+    {
+      "domain": "living_room",
+      "variant": "L7",
+      "stream": "full320_s03",
+      "repeat": "repeat_04",
+      "raw_relation_text": "NEXT_TO",
+      "gold_predicate": "NEAR_SEAT",
+      "predicted": "ACCESSIBLE_FROM_BOTH_SEATS",
+      "ranked": [
+        [
+          "ACCESSIBLE_FROM_BOTH_SEATS",
+          0.6435533165931702
+        ],
+        [
+          "NEAR_SEAT",
+          0.35644668340682983
+        ]
+      ],
+      "participant_roles": [
+        "surface",
+        "seat"
+      ],
+      "subject_entity_kind": "REGION",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W1",
+      "stream": "full320_s03",
+      "repeat": "repeat_04",
+      "raw_relation_text": "The fastening part must be physically secured to the target location.",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.6959583163261414
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.30404168367385864
+        ]
+      ],
+      "participant_roles": [
+        "fastening_part",
+        "fastening_target"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W5",
+      "stream": "full320_s03",
+      "repeat": "repeat_04",
+      "raw_relation_text": "The fastener must be physically compatible with the target.",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.5156199336051941
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.4843800961971283
+        ]
+      ],
+      "participant_roles": [
+        "fastener",
+        "target"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "FIXED_TARGET"
+    },
+    {
+      "domain": "workshop",
+      "variant": "W7",
+      "stream": "full320_s03",
+      "repeat": "repeat_04",
+      "raw_relation_text": "The component part must be compatible with the fastening location.",
+      "gold_predicate": "COMPATIBLE_WITH_TARGET",
+      "predicted": "REACHES_TARGET",
+      "ranked": [
+        [
+          "REACHES_TARGET",
+          0.5583269596099854
+        ],
+        [
+          "COMPATIBLE_WITH_TARGET",
+          0.44167301058769226
+        ]
+      ],
+      "participant_roles": [
+        "component_part",
+        "fastening_location"
+      ],
+      "subject_entity_kind": "OBJECT",
+      "object_entity_kind": "FIXED_TARGET"
+    }
+  ]
+}

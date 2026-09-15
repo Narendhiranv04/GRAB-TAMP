@@ -1,0 +1,1138 @@
+{
+  "K1": {
+    "domain": "kitchen",
+    "internal_variant": "F0_ALL_VISIBLE",
+    "description": "All required objects are initially visible.",
+    "gt_action_count": 24,
+    "unary_roles": {
+      "water_source": [
+        "s1i_compact_kettle"
+      ],
+      "coffee_source": [
+        "s1i_compact_coffee_jar"
+      ],
+      "coffee_stirrer": [
+        "s1i_final_long_narrow_spoon"
+      ],
+      "coffee_container": [
+        "ab3_narrow_deep_cup",
+        "ab3_medium_deep_mug"
+      ],
+      "soup_container": [
+        "ab3_deep_bowl",
+        "ab3_shallow_bowl"
+      ],
+      "soup_eating_utensil": [
+        "s1i_oversized_spoon",
+        "ab3_partial_spoon"
+      ]
+    },
+    "binary_role_bindings": {
+      "STIR (stirrer -> coffee_container, REUSABLE)": [
+        [
+          "s1i_final_long_narrow_spoon",
+          "ab3_narrow_deep_cup"
+        ],
+        [
+          "s1i_final_long_narrow_spoon",
+          "ab3_medium_deep_mug"
+        ]
+      ],
+      "PLACE_SERVING_UTENSIL (utensil -> soup_container, DEDICATED)": [
+        [
+          "s1i_oversized_spoon",
+          "ab3_deep_bowl"
+        ],
+        [
+          "ab3_partial_spoon",
+          "ab3_shallow_bowl"
+        ]
+      ],
+      "PLACE (container -> serving_area)": [
+        [
+          "ab3_narrow_deep_cup",
+          "serving_area"
+        ],
+        [
+          "ab3_medium_deep_mug",
+          "serving_area"
+        ],
+        [
+          "ab3_deep_bowl",
+          "serving_area"
+        ],
+        [
+          "ab3_shallow_bowl",
+          "serving_area"
+        ]
+      ]
+    }
+  },
+  "K2": {
+    "domain": "kitchen",
+    "internal_variant": "F1_HIDDEN_COFFEE_VESSEL",
+    "description": "The second coffee vessel is in cupboard C2.",
+    "gt_action_count": 27,
+    "unary_roles": {
+      "water_source": [
+        "s1i_compact_kettle"
+      ],
+      "coffee_source": [
+        "s1i_compact_coffee_jar"
+      ],
+      "coffee_stirrer": [
+        "s1i_final_long_narrow_spoon"
+      ],
+      "coffee_container": [
+        "ab3_narrow_deep_cup",
+        "ab3_medium_deep_mug"
+      ],
+      "soup_container": [
+        "ab3_deep_bowl",
+        "ab3_shallow_bowl"
+      ],
+      "soup_eating_utensil": [
+        "s1i_oversized_spoon",
+        "ab3_partial_spoon"
+      ]
+    },
+    "binary_role_bindings": {
+      "STIR (stirrer -> coffee_container, REUSABLE)": [
+        [
+          "s1i_final_long_narrow_spoon",
+          "ab3_narrow_deep_cup"
+        ],
+        [
+          "s1i_final_long_narrow_spoon",
+          "ab3_medium_deep_mug"
+        ]
+      ],
+      "PLACE_SERVING_UTENSIL (utensil -> soup_container, DEDICATED)": [
+        [
+          "s1i_oversized_spoon",
+          "ab3_deep_bowl"
+        ],
+        [
+          "ab3_partial_spoon",
+          "ab3_shallow_bowl"
+        ]
+      ],
+      "PLACE (container -> serving_area)": [
+        [
+          "ab3_narrow_deep_cup",
+          "serving_area"
+        ],
+        [
+          "ab3_medium_deep_mug",
+          "serving_area"
+        ],
+        [
+          "ab3_deep_bowl",
+          "serving_area"
+        ],
+        [
+          "ab3_shallow_bowl",
+          "serving_area"
+        ]
+      ]
+    }
+  },
+  "K3": {
+    "domain": "kitchen",
+    "internal_variant": "F2_HIDDEN_SOUP_BOWL",
+    "description": "The second soup bowl is in box B1.",
+    "gt_action_count": 25,
+    "unary_roles": {
+      "water_source": [
+        "s1i_compact_kettle"
+      ],
+      "coffee_source": [
+        "s1i_compact_coffee_jar"
+      ],
+      "coffee_stirrer": [
+        "s1i_final_long_narrow_spoon"
+      ],
+      "coffee_container": [
+        "ab3_narrow_deep_cup",
+        "ab3_medium_deep_mug"
+      ],
+      "soup_container": [
+        "ab3_deep_bowl",
+        "ab3_shallow_bowl"
+      ],
+      "soup_eating_utensil": [
+        "s1i_oversized_spoon",
+        "ab3_partial_spoon"
+      ]
+    },
+    "binary_role_bindings": {
+      "STIR (stirrer -> coffee_container, REUSABLE)": [
+        [
+          "s1i_final_long_narrow_spoon",
+          "ab3_narrow_deep_cup"
+        ],
+        [
+          "s1i_final_long_narrow_spoon",
+          "ab3_medium_deep_mug"
+        ]
+      ],
+      "PLACE_SERVING_UTENSIL (utensil -> soup_container, DEDICATED)": [
+        [
+          "s1i_oversized_spoon",
+          "ab3_deep_bowl"
+        ],
+        [
+          "ab3_partial_spoon",
+          "ab3_shallow_bowl"
+        ]
+      ],
+      "PLACE (container -> serving_area)": [
+        [
+          "ab3_narrow_deep_cup",
+          "serving_area"
+        ],
+        [
+          "ab3_medium_deep_mug",
+          "serving_area"
+        ],
+        [
+          "ab3_deep_bowl",
+          "serving_area"
+        ],
+        [
+          "ab3_shallow_bowl",
+          "serving_area"
+        ]
+      ]
+    }
+  },
+  "K4": {
+    "domain": "kitchen",
+    "internal_variant": "F3_HIDDEN_VESSELS_MIXED",
+    "description": "The second coffee vessel is in C2 and the second soup bowl is in B1.",
+    "gt_action_count": 28,
+    "unary_roles": {
+      "water_source": [
+        "s1i_compact_kettle"
+      ],
+      "coffee_source": [
+        "s1i_compact_coffee_jar"
+      ],
+      "coffee_stirrer": [
+        "s1i_final_long_narrow_spoon"
+      ],
+      "coffee_container": [
+        "ab3_narrow_deep_cup",
+        "ab3_medium_deep_mug"
+      ],
+      "soup_container": [
+        "ab3_deep_bowl",
+        "ab3_shallow_bowl"
+      ],
+      "soup_eating_utensil": [
+        "s1i_oversized_spoon",
+        "ab3_partial_spoon"
+      ]
+    },
+    "binary_role_bindings": {
+      "STIR (stirrer -> coffee_container, REUSABLE)": [
+        [
+          "s1i_final_long_narrow_spoon",
+          "ab3_narrow_deep_cup"
+        ],
+        [
+          "s1i_final_long_narrow_spoon",
+          "ab3_medium_deep_mug"
+        ]
+      ],
+      "PLACE_SERVING_UTENSIL (utensil -> soup_container, DEDICATED)": [
+        [
+          "s1i_oversized_spoon",
+          "ab3_deep_bowl"
+        ],
+        [
+          "ab3_partial_spoon",
+          "ab3_shallow_bowl"
+        ]
+      ],
+      "PLACE (container -> serving_area)": [
+        [
+          "ab3_narrow_deep_cup",
+          "serving_area"
+        ],
+        [
+          "ab3_medium_deep_mug",
+          "serving_area"
+        ],
+        [
+          "ab3_deep_bowl",
+          "serving_area"
+        ],
+        [
+          "ab3_shallow_bowl",
+          "serving_area"
+        ]
+      ]
+    }
+  },
+  "K5": {
+    "domain": "kitchen",
+    "internal_variant": "F4_TOOLS_IN_DRAWERS",
+    "description": "The coffee stirrer and one soup utensil are in drawers D1 and D2.",
+    "gt_action_count": 26,
+    "unary_roles": {
+      "water_source": [
+        "s1i_compact_kettle"
+      ],
+      "coffee_source": [
+        "s1i_compact_coffee_jar"
+      ],
+      "coffee_stirrer": [
+        "s1i_final_long_narrow_spoon"
+      ],
+      "coffee_container": [
+        "ab3_narrow_deep_cup",
+        "ab3_medium_deep_mug"
+      ],
+      "soup_container": [
+        "ab3_deep_bowl",
+        "ab3_shallow_bowl"
+      ],
+      "soup_eating_utensil": [
+        "s1i_oversized_spoon",
+        "ab3_partial_spoon"
+      ]
+    },
+    "binary_role_bindings": {
+      "STIR (stirrer -> coffee_container, REUSABLE)": [
+        [
+          "s1i_final_long_narrow_spoon",
+          "ab3_narrow_deep_cup"
+        ],
+        [
+          "s1i_final_long_narrow_spoon",
+          "ab3_medium_deep_mug"
+        ]
+      ],
+      "PLACE_SERVING_UTENSIL (utensil -> soup_container, DEDICATED)": [
+        [
+          "s1i_oversized_spoon",
+          "ab3_deep_bowl"
+        ],
+        [
+          "ab3_partial_spoon",
+          "ab3_shallow_bowl"
+        ]
+      ],
+      "PLACE (container -> serving_area)": [
+        [
+          "ab3_narrow_deep_cup",
+          "serving_area"
+        ],
+        [
+          "ab3_medium_deep_mug",
+          "serving_area"
+        ],
+        [
+          "ab3_deep_bowl",
+          "serving_area"
+        ],
+        [
+          "ab3_shallow_bowl",
+          "serving_area"
+        ]
+      ]
+    }
+  },
+  "K6": {
+    "domain": "kitchen",
+    "internal_variant": "F5_FULL_DISTRIBUTED_SEARCH",
+    "description": "One required object is distributed through each storage region.",
+    "gt_action_count": 31,
+    "unary_roles": {
+      "water_source": [
+        "s1i_compact_kettle"
+      ],
+      "coffee_source": [
+        "s1i_compact_coffee_jar"
+      ],
+      "coffee_stirrer": [
+        "s1i_final_long_narrow_spoon"
+      ],
+      "coffee_container": [
+        "ab3_narrow_deep_cup",
+        "ab3_medium_deep_mug"
+      ],
+      "soup_container": [
+        "ab3_deep_bowl",
+        "ab3_shallow_bowl"
+      ],
+      "soup_eating_utensil": [
+        "s1i_oversized_spoon",
+        "ab3_partial_spoon"
+      ]
+    },
+    "binary_role_bindings": {
+      "STIR (stirrer -> coffee_container, REUSABLE)": [
+        [
+          "s1i_final_long_narrow_spoon",
+          "ab3_narrow_deep_cup"
+        ],
+        [
+          "s1i_final_long_narrow_spoon",
+          "ab3_medium_deep_mug"
+        ]
+      ],
+      "PLACE_SERVING_UTENSIL (utensil -> soup_container, DEDICATED)": [
+        [
+          "s1i_oversized_spoon",
+          "ab3_deep_bowl"
+        ],
+        [
+          "ab3_partial_spoon",
+          "ab3_shallow_bowl"
+        ]
+      ],
+      "PLACE (container -> serving_area)": [
+        [
+          "ab3_narrow_deep_cup",
+          "serving_area"
+        ],
+        [
+          "ab3_medium_deep_mug",
+          "serving_area"
+        ],
+        [
+          "ab3_deep_bowl",
+          "serving_area"
+        ],
+        [
+          "ab3_shallow_bowl",
+          "serving_area"
+        ]
+      ]
+    }
+  },
+  "W1": {
+    "domain": "workshop",
+    "internal_variant": "F0_MANUAL_FIRST_ONE_REGION",
+    "description": "Manual driver and screw are both in the first region; search stops after one inspection.",
+    "gt_action_count": 6,
+    "unary_roles": {
+      "driver": [
+        "workshop_long_phillips_driver"
+      ],
+      "fastener": [
+        "workshop_medium_phillips_screw"
+      ],
+      "repair_target": [
+        "workshop_frame_joint"
+      ]
+    },
+    "binary_role_bindings": {
+      "SCREW (driver + fastener -> target)": [
+        [
+          "workshop_long_phillips_driver",
+          "workshop_medium_phillips_screw",
+          "workshop_frame_joint"
+        ]
+      ],
+      "PLACE (fastener -> target)": [
+        [
+          "workshop_medium_phillips_screw",
+          "workshop_frame_joint"
+        ]
+      ],
+      "source_region (role -> region)": [
+        [
+          "workshop_medium_phillips_screw",
+          "LEFT_DRAWER"
+        ],
+        [
+          "workshop_long_phillips_driver",
+          "LEFT_DRAWER"
+        ]
+      ],
+      "PLACE (driver -> return zone)": [
+        [
+          "workshop_long_phillips_driver",
+          "MAIN_WORKBENCH_ZONE"
+        ]
+      ]
+    },
+    "opened_regions": [
+      "LEFT_DRAWER"
+    ]
+  },
+  "W2": {
+    "domain": "workshop",
+    "internal_variant": "F1_POWER_FIRST_ONE_REGION",
+    "description": "Power driver and screw are both in the first region; search stops after one inspection.",
+    "gt_action_count": 6,
+    "unary_roles": {
+      "driver": [
+        "workshop_power_driver"
+      ],
+      "fastener": [
+        "workshop_medium_phillips_screw"
+      ],
+      "repair_target": [
+        "workshop_frame_joint"
+      ]
+    },
+    "binary_role_bindings": {
+      "SCREW (driver + fastener -> target)": [
+        [
+          "workshop_power_driver",
+          "workshop_medium_phillips_screw",
+          "workshop_frame_joint"
+        ]
+      ],
+      "PLACE (fastener -> target)": [
+        [
+          "workshop_medium_phillips_screw",
+          "workshop_frame_joint"
+        ]
+      ],
+      "source_region (role -> region)": [
+        [
+          "workshop_medium_phillips_screw",
+          "LEFT_DRAWER"
+        ],
+        [
+          "workshop_power_driver",
+          "LEFT_DRAWER"
+        ]
+      ],
+      "PLACE (driver -> return zone)": [
+        [
+          "workshop_power_driver",
+          "MAIN_WORKBENCH_ZONE"
+        ]
+      ]
+    },
+    "opened_regions": [
+      "LEFT_DRAWER"
+    ]
+  },
+  "W3": {
+    "domain": "workshop",
+    "internal_variant": "F2_MANUAL_FIRST_TWO_REGIONS",
+    "description": "Screw in the left drawer; the first driver found is the manual driver in the right drawer.",
+    "gt_action_count": 7,
+    "unary_roles": {
+      "driver": [
+        "workshop_long_phillips_driver"
+      ],
+      "fastener": [
+        "workshop_medium_phillips_screw"
+      ],
+      "repair_target": [
+        "workshop_frame_joint"
+      ]
+    },
+    "binary_role_bindings": {
+      "SCREW (driver + fastener -> target)": [
+        [
+          "workshop_long_phillips_driver",
+          "workshop_medium_phillips_screw",
+          "workshop_frame_joint"
+        ]
+      ],
+      "PLACE (fastener -> target)": [
+        [
+          "workshop_medium_phillips_screw",
+          "workshop_frame_joint"
+        ]
+      ],
+      "source_region (role -> region)": [
+        [
+          "workshop_medium_phillips_screw",
+          "LEFT_DRAWER"
+        ],
+        [
+          "workshop_long_phillips_driver",
+          "RIGHT_DRAWER"
+        ]
+      ],
+      "PLACE (driver -> return zone)": [
+        [
+          "workshop_long_phillips_driver",
+          "MAIN_WORKBENCH_ZONE"
+        ]
+      ]
+    },
+    "opened_regions": [
+      "LEFT_DRAWER",
+      "RIGHT_DRAWER"
+    ]
+  },
+  "W4": {
+    "domain": "workshop",
+    "internal_variant": "F3_POWER_FIRST_TWO_REGIONS",
+    "description": "Screw in the left drawer; the first driver found is the power driver in the right drawer.",
+    "gt_action_count": 7,
+    "unary_roles": {
+      "driver": [
+        "workshop_power_driver"
+      ],
+      "fastener": [
+        "workshop_medium_phillips_screw"
+      ],
+      "repair_target": [
+        "workshop_frame_joint"
+      ]
+    },
+    "binary_role_bindings": {
+      "SCREW (driver + fastener -> target)": [
+        [
+          "workshop_power_driver",
+          "workshop_medium_phillips_screw",
+          "workshop_frame_joint"
+        ]
+      ],
+      "PLACE (fastener -> target)": [
+        [
+          "workshop_medium_phillips_screw",
+          "workshop_frame_joint"
+        ]
+      ],
+      "source_region (role -> region)": [
+        [
+          "workshop_medium_phillips_screw",
+          "LEFT_DRAWER"
+        ],
+        [
+          "workshop_power_driver",
+          "RIGHT_DRAWER"
+        ]
+      ],
+      "PLACE (driver -> return zone)": [
+        [
+          "workshop_power_driver",
+          "MAIN_WORKBENCH_ZONE"
+        ]
+      ]
+    },
+    "opened_regions": [
+      "LEFT_DRAWER",
+      "RIGHT_DRAWER"
+    ]
+  },
+  "W5": {
+    "domain": "workshop",
+    "internal_variant": "F4_MANUAL_FIRST_THREE_REGIONS",
+    "description": "Manual driver is found second; the screw is only found in the third region.",
+    "gt_action_count": 8,
+    "unary_roles": {
+      "driver": [
+        "workshop_long_phillips_driver"
+      ],
+      "fastener": [
+        "workshop_medium_phillips_screw"
+      ],
+      "repair_target": [
+        "workshop_frame_joint"
+      ]
+    },
+    "binary_role_bindings": {
+      "SCREW (driver + fastener -> target)": [
+        [
+          "workshop_long_phillips_driver",
+          "workshop_medium_phillips_screw",
+          "workshop_frame_joint"
+        ]
+      ],
+      "PLACE (fastener -> target)": [
+        [
+          "workshop_medium_phillips_screw",
+          "workshop_frame_joint"
+        ]
+      ],
+      "source_region (role -> region)": [
+        [
+          "workshop_medium_phillips_screw",
+          "TOOL_CABINET"
+        ],
+        [
+          "workshop_long_phillips_driver",
+          "RIGHT_DRAWER"
+        ]
+      ],
+      "PLACE (driver -> return zone)": [
+        [
+          "workshop_long_phillips_driver",
+          "MAIN_WORKBENCH_ZONE"
+        ]
+      ]
+    },
+    "opened_regions": [
+      "LEFT_DRAWER",
+      "RIGHT_DRAWER",
+      "TOOL_CABINET"
+    ]
+  },
+  "W6": {
+    "domain": "workshop",
+    "internal_variant": "F5_POWER_FIRST_THREE_REGIONS",
+    "description": "Power driver is found first; the screw is only found in the third region.",
+    "gt_action_count": 8,
+    "unary_roles": {
+      "driver": [
+        "workshop_power_driver"
+      ],
+      "fastener": [
+        "workshop_medium_phillips_screw"
+      ],
+      "repair_target": [
+        "workshop_frame_joint"
+      ]
+    },
+    "binary_role_bindings": {
+      "SCREW (driver + fastener -> target)": [
+        [
+          "workshop_power_driver",
+          "workshop_medium_phillips_screw",
+          "workshop_frame_joint"
+        ]
+      ],
+      "PLACE (fastener -> target)": [
+        [
+          "workshop_medium_phillips_screw",
+          "workshop_frame_joint"
+        ]
+      ],
+      "source_region (role -> region)": [
+        [
+          "workshop_medium_phillips_screw",
+          "TOOL_CABINET"
+        ],
+        [
+          "workshop_power_driver",
+          "LEFT_DRAWER"
+        ]
+      ],
+      "PLACE (driver -> return zone)": [
+        [
+          "workshop_power_driver",
+          "MAIN_WORKBENCH_ZONE"
+        ]
+      ]
+    },
+    "opened_regions": [
+      "LEFT_DRAWER",
+      "RIGHT_DRAWER",
+      "TOOL_CABINET"
+    ]
+  },
+  "W7": {
+    "domain": "workshop",
+    "internal_variant": "F6_MANUAL_ONLY",
+    "description": "Power driver absent; manual driver and screw remain sufficient.",
+    "gt_action_count": 8,
+    "unary_roles": {
+      "driver": [
+        "workshop_long_phillips_driver"
+      ],
+      "fastener": [
+        "workshop_medium_phillips_screw"
+      ],
+      "repair_target": [
+        "workshop_frame_joint"
+      ]
+    },
+    "binary_role_bindings": {
+      "SCREW (driver + fastener -> target)": [
+        [
+          "workshop_long_phillips_driver",
+          "workshop_medium_phillips_screw",
+          "workshop_frame_joint"
+        ]
+      ],
+      "PLACE (fastener -> target)": [
+        [
+          "workshop_medium_phillips_screw",
+          "workshop_frame_joint"
+        ]
+      ],
+      "source_region (role -> region)": [
+        [
+          "workshop_medium_phillips_screw",
+          "RIGHT_DRAWER"
+        ],
+        [
+          "workshop_long_phillips_driver",
+          "TOOL_CABINET"
+        ]
+      ],
+      "PLACE (driver -> return zone)": [
+        [
+          "workshop_long_phillips_driver",
+          "MAIN_WORKBENCH_ZONE"
+        ]
+      ]
+    },
+    "opened_regions": [
+      "LEFT_DRAWER",
+      "RIGHT_DRAWER",
+      "TOOL_CABINET"
+    ]
+  },
+  "W8": {
+    "domain": "workshop",
+    "internal_variant": "F7_POWER_ONLY",
+    "description": "Manual driver absent; power driver and screw remain sufficient.",
+    "gt_action_count": 8,
+    "unary_roles": {
+      "driver": [
+        "workshop_power_driver"
+      ],
+      "fastener": [
+        "workshop_medium_phillips_screw"
+      ],
+      "repair_target": [
+        "workshop_frame_joint"
+      ]
+    },
+    "binary_role_bindings": {
+      "SCREW (driver + fastener -> target)": [
+        [
+          "workshop_power_driver",
+          "workshop_medium_phillips_screw",
+          "workshop_frame_joint"
+        ]
+      ],
+      "PLACE (fastener -> target)": [
+        [
+          "workshop_medium_phillips_screw",
+          "workshop_frame_joint"
+        ]
+      ],
+      "source_region (role -> region)": [
+        [
+          "workshop_medium_phillips_screw",
+          "RIGHT_DRAWER"
+        ],
+        [
+          "workshop_power_driver",
+          "TOOL_CABINET"
+        ]
+      ],
+      "PLACE (driver -> return zone)": [
+        [
+          "workshop_power_driver",
+          "MAIN_WORKBENCH_ZONE"
+        ]
+      ]
+    },
+    "opened_regions": [
+      "LEFT_DRAWER",
+      "RIGHT_DRAWER",
+      "TOOL_CABINET"
+    ]
+  },
+  "L1": {
+    "domain": "living_room",
+    "internal_variant": "F0_ALL_OBJECTS_IN_STAGING",
+    "description": "All five objects begin in the staging area.",
+    "gt_action_count": 10,
+    "note": "The living-room catalogue is positional by design: the runtime discovers regions, so GT names object_000N/region_000N rather than scene bodies. Roles are therefore given functionally.",
+    "unary_roles": {
+      "personal_support_region": [
+        "<left personal table>",
+        "<right personal table>"
+      ],
+      "shared_remote_region": [
+        "<control/coffee table>"
+      ],
+      "refreshment_payload": [
+        "<left drink>",
+        "<left snack>",
+        "<right drink>",
+        "<right snack>"
+      ],
+      "remote_payload": [
+        "<remote>"
+      ]
+    },
+    "binary_role_bindings": {
+      "PLACE (refreshment pair -> the personal support at its own seat)": [
+        [
+          "object_0001",
+          "region_0001"
+        ],
+        [
+          "object_0002",
+          "region_0001"
+        ],
+        [
+          "object_0004",
+          "region_0003"
+        ],
+        [
+          "object_0005",
+          "region_0003"
+        ]
+      ],
+      "PLACE (remote -> shared region reachable from both seats)": [
+        [
+          "object_0003",
+          "region_0002"
+        ]
+      ]
+    },
+    "objects_requiring_movement": 5
+  },
+  "L2": {
+    "domain": "living_room",
+    "internal_variant": "F1_LEFT_SAUCER_PREPLACED",
+    "description": "The left saucer is already correctly placed on the left personal table.",
+    "gt_action_count": 8,
+    "note": "The living-room catalogue is positional by design: the runtime discovers regions, so GT names object_000N/region_000N rather than scene bodies. Roles are therefore given functionally.",
+    "unary_roles": {
+      "personal_support_region": [
+        "<left personal table>",
+        "<right personal table>"
+      ],
+      "shared_remote_region": [
+        "<control/coffee table>"
+      ],
+      "refreshment_payload": [
+        "<left drink>",
+        "<left snack>",
+        "<right drink>",
+        "<right snack>"
+      ],
+      "remote_payload": [
+        "<remote>"
+      ]
+    },
+    "binary_role_bindings": {
+      "PLACE (refreshment pair -> the personal support at its own seat)": [
+        [
+          "object_0004",
+          "region_0003"
+        ],
+        [
+          "object_0005",
+          "region_0003"
+        ]
+      ],
+      "PLACE (remote -> shared region reachable from both seats)": [
+        [
+          "object_0002",
+          "region_0001"
+        ],
+        [
+          "object_0003",
+          "region_0002"
+        ]
+      ]
+    },
+    "objects_requiring_movement": 4
+  },
+  "L3": {
+    "domain": "living_room",
+    "internal_variant": "F2_LEFT_SAUCER_ON_SHARED",
+    "description": "The left saucer begins on the shared table and must be moved to a personal table.",
+    "gt_action_count": 10,
+    "note": "The living-room catalogue is positional by design: the runtime discovers regions, so GT names object_000N/region_000N rather than scene bodies. Roles are therefore given functionally.",
+    "unary_roles": {
+      "personal_support_region": [
+        "<left personal table>",
+        "<right personal table>"
+      ],
+      "shared_remote_region": [
+        "<control/coffee table>"
+      ],
+      "refreshment_payload": [
+        "<left drink>",
+        "<left snack>",
+        "<right drink>",
+        "<right snack>"
+      ],
+      "remote_payload": [
+        "<remote>"
+      ]
+    },
+    "binary_role_bindings": {
+      "PLACE (refreshment pair -> the personal support at its own seat)": [
+        [
+          "object_0001",
+          "region_0001"
+        ],
+        [
+          "object_0003",
+          "region_0003"
+        ],
+        [
+          "object_0004",
+          "region_0001"
+        ],
+        [
+          "object_0005",
+          "region_0003"
+        ]
+      ],
+      "PLACE (remote -> shared region reachable from both seats)": [
+        [
+          "object_0002",
+          "region_0002"
+        ]
+      ]
+    },
+    "objects_requiring_movement": 5
+  },
+  "L4": {
+    "domain": "living_room",
+    "internal_variant": "F3_LEFT_CUP_ON_SHARED",
+    "description": "The left cup begins on the shared table and must be moved to a personal table.",
+    "gt_action_count": 10,
+    "note": "The living-room catalogue is positional by design: the runtime discovers regions, so GT names object_000N/region_000N rather than scene bodies. Roles are therefore given functionally.",
+    "unary_roles": {
+      "personal_support_region": [
+        "<left personal table>",
+        "<right personal table>"
+      ],
+      "shared_remote_region": [
+        "<control/coffee table>"
+      ],
+      "refreshment_payload": [
+        "<left drink>",
+        "<left snack>",
+        "<right drink>",
+        "<right snack>"
+      ],
+      "remote_payload": [
+        "<remote>"
+      ]
+    },
+    "binary_role_bindings": {
+      "PLACE (refreshment pair -> the personal support at its own seat)": [
+        [
+          "object_0001",
+          "region_0001"
+        ],
+        [
+          "object_0002",
+          "region_0001"
+        ],
+        [
+          "object_0004",
+          "region_0003"
+        ],
+        [
+          "object_0005",
+          "region_0003"
+        ]
+      ],
+      "PLACE (remote -> shared region reachable from both seats)": [
+        [
+          "object_0003",
+          "region_0002"
+        ]
+      ]
+    },
+    "objects_requiring_movement": 5
+  },
+  "L5": {
+    "domain": "living_room",
+    "internal_variant": "F4_SAUCER_PREPLACED_CUP_ON_SHARED",
+    "description": "The left saucer is correctly preplaced while the left cup begins on the shared table.",
+    "gt_action_count": 8,
+    "note": "The living-room catalogue is positional by design: the runtime discovers regions, so GT names object_000N/region_000N rather than scene bodies. Roles are therefore given functionally.",
+    "unary_roles": {
+      "personal_support_region": [
+        "<left personal table>",
+        "<right personal table>"
+      ],
+      "shared_remote_region": [
+        "<control/coffee table>"
+      ],
+      "refreshment_payload": [
+        "<left drink>",
+        "<left snack>",
+        "<right drink>",
+        "<right snack>"
+      ],
+      "remote_payload": [
+        "<remote>"
+      ]
+    },
+    "binary_role_bindings": {
+      "PLACE (refreshment pair -> the personal support at its own seat)": [
+        [
+          "object_0004",
+          "region_0003"
+        ],
+        [
+          "object_0005",
+          "region_0003"
+        ]
+      ],
+      "PLACE (remote -> shared region reachable from both seats)": [
+        [
+          "object_0002",
+          "region_0001"
+        ],
+        [
+          "object_0003",
+          "region_0002"
+        ]
+      ]
+    },
+    "objects_requiring_movement": 4
+  },
+  "L6": {
+    "domain": "living_room",
+    "internal_variant": "F5_LEFT_PAIR_ON_SHARED",
+    "description": "The left cup and left saucer both begin on the shared table and must be moved.",
+    "gt_action_count": 10,
+    "note": "The living-room catalogue is positional by design: the runtime discovers regions, so GT names object_000N/region_000N rather than scene bodies. Roles are therefore given functionally.",
+    "unary_roles": {
+      "personal_support_region": [
+        "<left personal table>",
+        "<right personal table>"
+      ],
+      "shared_remote_region": [
+        "<control/coffee table>"
+      ],
+      "refreshment_payload": [
+        "<left drink>",
+        "<left snack>",
+        "<right drink>",
+        "<right snack>"
+      ],
+      "remote_payload": [
+        "<remote>"
+      ]
+    },
+    "binary_role_bindings": {
+      "PLACE (refreshment pair -> the personal support at its own seat)": [
+        [
+          "object_0001",
+          "region_0001"
+        ],
+        [
+          "object_0003",
+          "region_0003"
+        ],
+        [
+          "object_0004",
+          "region_0001"
+        ],
+        [
+          "object_0005",
+          "region_0003"
+        ]
+      ],
+      "PLACE (remote -> shared region reachable from both seats)": [
+        [
+          "object_0002",
+          "region_0002"
+        ]
+      ]
+    },
+    "objects_requiring_movement": 5
+  }
+}

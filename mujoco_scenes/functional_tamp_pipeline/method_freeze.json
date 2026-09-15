@@ -1,0 +1,34 @@
+{
+  "method_name": "Corrected Functional-TAMP Pipeline",
+  "freeze_stage": "Stage 11",
+  "freeze_timestamp": "2026-09-12T04:42:49+00:00",
+  "git_branch": "vlm-testing-pipeline",
+  "active_prompt_sha256": "a707f32b98a6d5af69c044dfc70d9f1550fd5f848cb10fb38e2ebd633d5d8e75",
+  "response_schema_sha256": "a74f0df906c13dd9e2dcd5f93b276aee2efd704f52b2b70e227a2467dec2556a",
+  "combined_prompt_schema_sha256": "af8768706c4b1639f3a78127e1cb363925bff366f56b2b7454b0bfd047c9a798",
+  "runtime_semantic_ontology_sha256": "4fee971c3f494023adadc94fa350d3d9e27d81dbe41c001c2b8fc1d20bf49d41",
+  "robot_capability_registry_sha256": "98055ba6579345151cd1b7a9ccea32fc2ad47dd0f51f51cf40e3eb9cdb01aef7",
+  "predicate_registry_file_sha256": "f8afb189d77138e58994ec525ba7d72b4be26254a2af2d5a9c8b2042c599e639",
+  "semantic_compiler_file_sha256": "f4332b85ec3441dfde97744c32259b18d464860eed35ccc7c89ce26706a59d0e",
+  "planning_file_sha256": "508edd701670975f6f9896973e8c4daae99237f44fd5a3cd2c97b22d5e0b3828",
+  "domains": {
+    "kitchen_domain_sha256": "1f5a069fc5b1fd9b61517ed8170503c525fa3ac80e5facdb0973bace642061f5",
+    "living_room_domain_sha256": "80ee9e4b7a1d94855fa2eca4683a806d78340c11ef909c60ffa1d0902b3745a3",
+    "workshop_domain_sha256": "02f337f361f514160c0099a65899cbe20346313039ff12ab34427993f155038b"
+  },
+  "inference_config": {
+    "model": "qwen35-9b",
+    "base_url": "http://127.0.0.1:18000/v1",
+    "enable_thinking": false,
+    "temperature": 0.0,
+    "max_tokens": 24000,
+    "top_p": 1.0,
+    "top_k": 20,
+    "presence_penalty": 0.0,
+    "repetition_penalty": 1.0,
+    "response_format": "json_schema",
+    "schema_name": "functional_specification",
+    "strict": true
+  },
+  "inference_config_sha256": "32744750702e4862fe17f9462bf975b3a87c166cc272b44ef55b50fa7a8c1222"
+}

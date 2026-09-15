@@ -1,0 +1,151 @@
+{
+  "role": {
+    "rows": 1707,
+    "labelled": 1152,
+    "instance_top1": 0.8098958333333334,
+    "unique_top1": 0.7397260273972602,
+    "unique_n": 146,
+    "chance": 0.2015335648148148,
+    "lift": 4.018664752333095,
+    "hand_coverage": 0.593,
+    "per_domain": {
+      "kitchen": {
+        "n": 601,
+        "top1": 0.9467554076539102
+      },
+      "living_room": {
+        "n": 310,
+        "top1": 0.8548387096774194
+      },
+      "workshop": {
+        "n": 241,
+        "top1": 0.4107883817427386
+      }
+    },
+    "top_confusions": [
+      {
+        "gold": "driver",
+        "pred": "fastener",
+        "n": 72
+      },
+      {
+        "gold": "repair_target",
+        "pred": "fastener",
+        "n": 69
+      },
+      {
+        "gold": "PERSONAL_CUP_SAUCER_REGION",
+        "pred": "SHARED_REMOTE_REGION",
+        "n": 17
+      },
+      {
+        "gold": "coffee_source",
+        "pred": "water_source",
+        "n": 14
+      },
+      {
+        "gold": "CUP_SAUCER_SET",
+        "pred": "SHARED_REMOTE_REGION",
+        "n": 4
+      }
+    ]
+  },
+  "region": {
+    "rows": 692,
+    "labelled": 485,
+    "instance_top1": 0.8927835051546392,
+    "unique_top1": 0.8869179600886918,
+    "unique_n": 451,
+    "chance": 0.2588316151202749,
+    "lift": 3.4492830589484864,
+    "hand_coverage": 0.59,
+    "per_domain": {
+      "kitchen": {
+        "n": 271,
+        "top1": 0.977859778597786
+      },
+      "workshop": {
+        "n": 214,
+        "top1": 0.7850467289719626
+      }
+    },
+    "top_confusions": [
+      {
+        "gold": "TOOL_CABINET",
+        "pred": "RIGHT_DRAWER",
+        "n": 46
+      },
+      {
+        "gold": "D2",
+        "pred": "C2",
+        "n": 2
+      },
+      {
+        "gold": "D2",
+        "pred": "C1",
+        "n": 1
+      },
+      {
+        "gold": "D1",
+        "pred": "C1",
+        "n": 1
+      },
+      {
+        "gold": "C2",
+        "pred": "D2",
+        "n": 1
+      }
+    ]
+  },
+  "capability": {
+    "rows": 1024,
+    "labelled": 460,
+    "instance_top1": 0.8804347826086957,
+    "unique_top1": 0.8478260869565217,
+    "unique_n": 276,
+    "chance": 0.41739130434782606,
+    "lift": 2.109375,
+    "hand_coverage": 0.441,
+    "per_domain": {
+      "kitchen": {
+        "n": 228,
+        "top1": 0.9122807017543859
+      },
+      "living_room": {
+        "n": 89,
+        "top1": 0.8314606741573034
+      },
+      "workshop": {
+        "n": 143,
+        "top1": 0.8601398601398601
+      }
+    },
+    "top_confusions": [
+      {
+        "gold": "SUPPORT_DRINKWARE",
+        "pred": "SUPPORT_ENTERTAINMENT_CONTROL",
+        "n": 15
+      },
+      {
+        "gold": "TRANSFER_CONTENT_TO_CONTAINER",
+        "pred": "PROVIDE_SOUP_EATING_UTENSIL",
+        "n": 13
+      },
+      {
+        "gold": "FASTEN_JOINT",
+        "pred": "RETURN_REUSABLE_ITEM_TO_SUPPORT",
+        "n": 12
+      },
+      {
+        "gold": "RETURN_REUSABLE_ITEM_TO_SUPPORT",
+        "pred": "FASTEN_JOINT",
+        "n": 8
+      },
+      {
+        "gold": "TRANSFER_CONTENT_TO_CONTAINER",
+        "pred": "STIR_COFFEE",
+        "n": 3
+      }
+    ]
+  }
+}
