@@ -2,6 +2,12 @@
 # and the offline alias-resolution study. Installed alongside the base
 # requirements; the detector and simulator stack does not depend on these.
 torch==2.9.1
+# Pinned explicitly. ultralytics (base requirements) pulls whatever torchvision
+# is current, which then demands a newer torch than this pin; the two files can
+# resolve to torch 2.9 with torchvision 0.29 beside it, and transformers then
+# fails to import its pipeline API with "Could not import module 'pipeline'",
+# which reads as a missing module rather than a version conflict.
+torchvision==0.24.1
 transformers==4.57.3
 tokenizers==0.22.1
 # DeBERTa-v3 uses a SentencePiece vocabulary. The fast tokenizer loads from the
