@@ -1,0 +1,111 @@
+{
+  "initial_atoms": [
+    [
+      "at",
+      "object_0001",
+      "LEFT_DRAWER"
+    ],
+    [
+      "hand_empty"
+    ],
+    [
+      "open",
+      "LEFT_DRAWER"
+    ],
+    [
+      "open",
+      "RIGHT_DRAWER"
+    ],
+    [
+      "open",
+      "TOOL_CABINET"
+    ]
+  ],
+  "goal_atoms": [
+    [
+      "hand_empty"
+    ],
+    [
+      "inserted",
+      "object_0001",
+      "workshop_frame_joint"
+    ]
+  ],
+  "actions": [
+    {
+      "name": "PICK",
+      "arguments": [
+        "object_0001",
+        "LEFT_DRAWER"
+      ],
+      "positive_preconditions": [
+        [
+          "at",
+          "object_0001",
+          "LEFT_DRAWER"
+        ],
+        [
+          "hand_empty"
+        ],
+        [
+          "open",
+          "LEFT_DRAWER"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "holding",
+          "object_0001"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "at",
+          "object_0001",
+          "LEFT_DRAWER"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PLACE",
+      "arguments": [
+        "object_0001",
+        "workshop_frame_joint"
+      ],
+      "positive_preconditions": [
+        [
+          "holding",
+          "object_0001"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "at",
+          "object_0001",
+          "workshop_frame_joint"
+        ],
+        [
+          "hand_empty"
+        ],
+        [
+          "inserted",
+          "object_0001",
+          "workshop_frame_joint"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0001"
+        ]
+      ],
+      "cost": 1
+    }
+  ]
+}

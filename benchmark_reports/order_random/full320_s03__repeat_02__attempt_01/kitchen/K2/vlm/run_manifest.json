@@ -1,0 +1,352 @@
+{
+  "artifacts": {
+    "action_plan": "action_sequence/action_plan.json",
+    "canonical_grounding_witness": "canonical_grounding_witness.json",
+    "final_plan": "action_sequence/action_plan.json",
+    "functional_graph": "functional_requirement_graph.json",
+    "functional_specification": "functional_specification.json",
+    "grounding": "graph_grounding_result.json",
+    "grounding_snapshots": "grounding_snapshots.json",
+    "observed_graph": "observed_scene_graph.json",
+    "plan_grounding_audit": "plan_grounding_audit.json",
+    "result": "result.json"
+  },
+  "astar_invocations": 1,
+  "candidate_plan": [
+    {
+      "action_index": 1,
+      "action_instance_id": "fact_001_pick",
+      "arguments": [
+        "object_0005"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 2,
+      "action_instance_id": "fact_002_place_serving_utensil",
+      "arguments": [
+        "object_0005",
+        "object_0002"
+      ],
+      "operator": "PLACE_SERVING_UTENSIL"
+    },
+    {
+      "action_index": 3,
+      "action_instance_id": "fact_003_pick",
+      "arguments": [
+        "object_0002"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 4,
+      "action_instance_id": "fact_004_place",
+      "arguments": [
+        "object_0002",
+        "dining_table"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 5,
+      "action_instance_id": "fact_005_pick",
+      "arguments": [
+        "object_0006"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 6,
+      "action_instance_id": "fact_006_place_serving_utensil",
+      "arguments": [
+        "object_0006",
+        "object_0003"
+      ],
+      "operator": "PLACE_SERVING_UTENSIL"
+    },
+    {
+      "action_index": 7,
+      "action_instance_id": "fact_007_pick",
+      "arguments": [
+        "object_0003"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 8,
+      "action_instance_id": "fact_008_place",
+      "arguments": [
+        "object_0003",
+        "dining_table"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 9,
+      "action_instance_id": "fact_009_pick",
+      "arguments": [
+        "object_0009"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 10,
+      "action_instance_id": "fact_010_place",
+      "arguments": [
+        "object_0009",
+        "countertop"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 11,
+      "action_instance_id": "fact_011_pick",
+      "arguments": [
+        "object_0007"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 12,
+      "action_instance_id": "fact_012_pour",
+      "arguments": [
+        "object_0007",
+        "object_0001"
+      ],
+      "operator": "POUR"
+    },
+    {
+      "action_index": 13,
+      "action_instance_id": "fact_013_pour",
+      "arguments": [
+        "object_0007",
+        "object_0009"
+      ],
+      "operator": "POUR"
+    },
+    {
+      "action_index": 14,
+      "action_instance_id": "fact_014_place",
+      "arguments": [
+        "object_0007",
+        "countertop"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 15,
+      "action_instance_id": "fact_015_pick",
+      "arguments": [
+        "object_0008"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 16,
+      "action_instance_id": "fact_016_pour",
+      "arguments": [
+        "object_0008",
+        "object_0001"
+      ],
+      "operator": "POUR"
+    },
+    {
+      "action_index": 17,
+      "action_instance_id": "fact_017_pour",
+      "arguments": [
+        "object_0008",
+        "object_0009"
+      ],
+      "operator": "POUR"
+    },
+    {
+      "action_index": 18,
+      "action_instance_id": "fact_018_place",
+      "arguments": [
+        "object_0008",
+        "countertop"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 19,
+      "action_instance_id": "fact_019_pick",
+      "arguments": [
+        "object_0004"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 20,
+      "action_instance_id": "fact_020_stir",
+      "arguments": [
+        "object_0004",
+        "object_0001"
+      ],
+      "operator": "STIR"
+    },
+    {
+      "action_index": 21,
+      "action_instance_id": "fact_021_stir",
+      "arguments": [
+        "object_0004",
+        "object_0009"
+      ],
+      "operator": "STIR"
+    },
+    {
+      "action_index": 22,
+      "action_instance_id": "fact_022_place",
+      "arguments": [
+        "object_0004",
+        "countertop"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 23,
+      "action_instance_id": "fact_023_pick",
+      "arguments": [
+        "object_0001"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 24,
+      "action_instance_id": "fact_024_place",
+      "arguments": [
+        "object_0001",
+        "dining_table"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 25,
+      "action_instance_id": "fact_025_pick",
+      "arguments": [
+        "object_0009"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 26,
+      "action_instance_id": "fact_026_place",
+      "arguments": [
+        "object_0009",
+        "dining_table"
+      ],
+      "operator": "PLACE"
+    }
+  ],
+  "candidate_search_statistics": {
+    "algorithm": "deterministic_astar_symbolic_state_search",
+    "expanded_states": 4268,
+    "frontier_peak": 773,
+    "generated_states": 12268,
+    "is_partial": false,
+    "plan_cost": 26,
+    "plan_length": 26,
+    "satisfied_goals": 13,
+    "search_time_ms": 23.7934289034456,
+    "total_goals": 13,
+    "visited_states": 4759
+  },
+  "canonicalization_succeeded": true,
+  "domain": "kitchen",
+  "execution_state": "planning_only",
+  "exploration_actuation": "direct_sim_articulation",
+  "failure_category": null,
+  "failure_reason": null,
+  "finished_at_utc": "2026-09-13T17:50:18.062814+00:00",
+  "fm_schema_version": 3,
+  "functional_spec_complete": true,
+  "git_commit": "02b41d35d7ca0b42491315e30c75cc99c290ecf1",
+  "git_dirty": false,
+  "high_level_replans": 0,
+  "inference_config": {},
+  "internal_variant": "F1_HIDDEN_COFFEE_VESSEL",
+  "observer_errors": [],
+  "pipeline_runtime_seconds": 21.3502,
+  "prompt_schema_hash": "9960dbf1022da5138ac8f41432f4ce2cbfc5ee4460664d049793f706fdad0e25",
+  "provider_model": null,
+  "provider_region_ranking": [
+    "B1",
+    "C1",
+    "C2"
+  ],
+  "region_order_used": [
+    "B1",
+    "C2",
+    "D2",
+    "C1",
+    "D1"
+  ],
+  "robot_capability_registry_hash": "98055ba6579345151cd1b7a9ccea32fc2ad47dd0f51f51cf40e3eb9cdb01aef7",
+  "runtime_semantic_ontology_hash": "4fee971c3f494023adadc94fa350d3d9e27d81dbe41c001c2b8fc1d20bf49d41",
+  "schema_version": 1,
+  "search_contract": {
+    "canonical_region_ids": [
+      "B1",
+      "C2",
+      "D2",
+      "C1",
+      "D1"
+    ],
+    "domain": "kitchen",
+    "no_search_required": false,
+    "policy_version": "phase3_p3h_1_v1",
+    "proposal_trace": [],
+    "region_proposal_trace": [],
+    "search_policy_trace": [
+      {
+        "final_rank": 0,
+        "origin": "SEEDED_RANDOM",
+        "provider_rank": null,
+        "region_id": "B1"
+      },
+      {
+        "final_rank": 1,
+        "origin": "SEEDED_RANDOM",
+        "provider_rank": null,
+        "region_id": "C2"
+      },
+      {
+        "final_rank": 2,
+        "origin": "SEEDED_RANDOM",
+        "provider_rank": null,
+        "region_id": "D2"
+      },
+      {
+        "final_rank": 3,
+        "origin": "SEEDED_RANDOM",
+        "provider_rank": null,
+        "region_id": "C1"
+      },
+      {
+        "final_rank": 4,
+        "origin": "SEEDED_RANDOM",
+        "provider_rank": null,
+        "region_id": "D1"
+      }
+    ],
+    "search_seed": 1677459169,
+    "source": "SEEDED_RANDOM_SYSTEM_SEARCH_POLICY"
+  },
+  "search_order_source_effective": "random",
+  "search_order_source_requested": "random",
+  "search_policy_version": "phase3_p3h_1_v1",
+  "search_seed_effective": 1677459169,
+  "search_seed_requested": 1677459169,
+  "semantic_vlm_requests": 0,
+  "spec_acquisition": "archived_raw_provider_response",
+  "spec_mode": "vlm",
+  "spec_provider_source": "VLM_CANONICAL_G_F",
+  "specification_input": "/home/naren/RA_iiith/benchmark_reports/full320_s03/repeat_02/attempt_01/kitchen/K2/vlm/fm_diagnostics/fm_call_001.json",
+  "specification_sha256": "874eeda82ec4958cb99566de2d8607c43fdde6ad7f6bbccc838c9b946548bfad",
+  "started_at_utc": "2026-09-13T17:49:56.712677+00:00",
+  "terminal_status": "ACTION_SEQUENCE_READY",
+  "transport_retries": 0,
+  "variant": "K2",
+  "visualization_requested": false,
+  "vlm_request_count": 0
+}

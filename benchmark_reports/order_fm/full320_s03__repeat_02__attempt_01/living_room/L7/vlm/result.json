@@ -1,0 +1,80 @@
+{
+  "assignment": {
+    "CUP_SAUCER_SET": [
+      "personal_table_slot_1",
+      "personal_table_slot_2"
+    ],
+    "PERSONAL_CUP_SAUCER_REGION": "region_0001",
+    "REMOTE": "object_0003",
+    "SEATING_PAIR": "SEATING_PAIR"
+  },
+  "candidate_plan": [
+    {
+      "action_index": 1,
+      "arguments": [
+        "object_0001"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 2,
+      "arguments": [
+        "object_0001",
+        "region_0001"
+      ],
+      "operator": "PLACE"
+    },
+    {
+      "action_index": 3,
+      "arguments": [
+        "object_0002"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 4,
+      "arguments": [
+        "object_0002",
+        "region_0001"
+      ],
+      "operator": "PLACE"
+    }
+  ],
+  "candidate_search_statistics": {
+    "algorithm": "deterministic_astar_symbolic_state_search",
+    "expanded_states": 8,
+    "frontier_peak": 2,
+    "generated_states": 8,
+    "is_partial": false,
+    "plan_cost": 4,
+    "plan_length": 4,
+    "satisfied_goals": 2,
+    "search_time_ms": 0.023153959773480892,
+    "total_goals": 2,
+    "visited_states": 8
+  },
+  "canonicalization_succeeded": true,
+  "domain": "living_room",
+  "failure_category": null,
+  "failure_reason": null,
+  "functional_spec_complete": false,
+  "inspected_regions": [],
+  "mode": "vlm",
+  "outcome_category": "FUNCTIONAL_ASSIGNMENT_FAILURE",
+  "plan": [],
+  "search_statistics": {
+    "algorithm": "deterministic_astar_symbolic_state_search",
+    "expanded_states": 8,
+    "frontier_peak": 2,
+    "generated_states": 8,
+    "is_partial": false,
+    "plan_cost": 4,
+    "plan_length": 4,
+    "satisfied_goals": 2,
+    "search_time_ms": 0.023153959773480892,
+    "total_goals": 2,
+    "visited_states": 8
+  },
+  "status": "EXHAUSTED_NO_VALID_GROUNDING",
+  "variant": "L7"
+}

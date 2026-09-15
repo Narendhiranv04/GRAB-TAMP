@@ -1,0 +1,5011 @@
+{
+  "assignment": {
+    "coffee_container": [
+      "object_0008",
+      "object_0001"
+    ],
+    "coffee_source": "object_0007",
+    "coffee_stirrer": "object_0003",
+    "soup_container": [
+      "object_0002",
+      "object_0009"
+    ],
+    "soup_eating_utensil": [
+      "object_0004",
+      "object_0005"
+    ],
+    "water_source": "object_0006"
+  },
+  "complete": true,
+  "evidence": {
+    "binding_provenance": {
+      "coffee_container:object_0001": {
+        "grounding_mode": "RELATIONALLY_VERIFIED_GROUNDING",
+        "observed_instance": "object_0001",
+        "operation_evidence": [
+          {
+            "capability": "TRANSFER_CONTENT_TO_CONTAINER",
+            "source_operation_id": "material_transfer"
+          },
+          {
+            "capability": "TRANSFER_CONTENT_TO_CONTAINER",
+            "source_operation_id": "prepare_coffee__primitive_2"
+          },
+          {
+            "capability": "STIR_COFFEE",
+            "source_operation_id": "coffee_stirring"
+          }
+        ],
+        "relation_evidence": [
+          {
+            "object_id": "object_0001",
+            "predicate": "INSERTABLE_IN",
+            "status": "TRUE",
+            "subject_id": "object_0003"
+          },
+          {
+            "object_id": "object_0001",
+            "predicate": "REACHES_BOTTOM",
+            "status": "TRUE",
+            "subject_id": "object_0003"
+          }
+        ],
+        "role": "coffee_container",
+        "role_resolution": "DIRECT_FUNCTION_MATCH",
+        "semantic_status": "UNKNOWN"
+      },
+      "coffee_container:object_0008": {
+        "grounding_mode": "FUNCTION_AND_RELATION",
+        "observed_instance": "object_0008",
+        "operation_evidence": [
+          {
+            "capability": "TRANSFER_CONTENT_TO_CONTAINER",
+            "source_operation_id": "material_transfer"
+          },
+          {
+            "capability": "TRANSFER_CONTENT_TO_CONTAINER",
+            "source_operation_id": "prepare_coffee__primitive_2"
+          },
+          {
+            "capability": "STIR_COFFEE",
+            "source_operation_id": "coffee_stirring"
+          }
+        ],
+        "relation_evidence": [
+          {
+            "object_id": "object_0008",
+            "predicate": "INSERTABLE_IN",
+            "status": "TRUE",
+            "subject_id": "object_0003"
+          },
+          {
+            "object_id": "object_0008",
+            "predicate": "REACHES_BOTTOM",
+            "status": "TRUE",
+            "subject_id": "object_0003"
+          }
+        ],
+        "role": "coffee_container",
+        "role_resolution": "DIRECT_FUNCTION_MATCH",
+        "semantic_status": "TRUE"
+      },
+      "coffee_source:object_0007": {
+        "grounding_mode": "FUNCTION_AND_RELATION",
+        "observed_instance": "object_0007",
+        "operation_evidence": [
+          {
+            "capability": "TRANSFER_CONTENT_TO_CONTAINER",
+            "source_operation_id": "material_transfer"
+          }
+        ],
+        "relation_evidence": [],
+        "role": "coffee_source",
+        "role_resolution": "DIRECT_FUNCTION_MATCH",
+        "semantic_status": "TRUE"
+      },
+      "coffee_stirrer:object_0003": {
+        "grounding_mode": "FUNCTION_AND_RELATION",
+        "observed_instance": "object_0003",
+        "operation_evidence": [
+          {
+            "capability": "STIR_COFFEE",
+            "source_operation_id": "coffee_stirring"
+          }
+        ],
+        "relation_evidence": [
+          {
+            "object_id": "object_0008",
+            "predicate": "INSERTABLE_IN",
+            "status": "TRUE",
+            "subject_id": "object_0003"
+          },
+          {
+            "object_id": "object_0008",
+            "predicate": "REACHES_BOTTOM",
+            "status": "TRUE",
+            "subject_id": "object_0003"
+          },
+          {
+            "object_id": "object_0001",
+            "predicate": "INSERTABLE_IN",
+            "status": "TRUE",
+            "subject_id": "object_0003"
+          },
+          {
+            "object_id": "object_0001",
+            "predicate": "REACHES_BOTTOM",
+            "status": "TRUE",
+            "subject_id": "object_0003"
+          }
+        ],
+        "role": "coffee_stirrer",
+        "role_resolution": "DIRECT_FUNCTION_MATCH",
+        "semantic_status": "TRUE"
+      },
+      "soup_container:object_0002": {
+        "grounding_mode": "FUNCTION_AND_RELATION",
+        "observed_instance": "object_0002",
+        "operation_evidence": [],
+        "relation_evidence": [],
+        "role": "soup_container",
+        "role_resolution": "DIRECT_FUNCTION_MATCH",
+        "semantic_status": "TRUE"
+      },
+      "soup_container:object_0009": {
+        "grounding_mode": "FUNCTION_AND_RELATION",
+        "observed_instance": "object_0009",
+        "operation_evidence": [],
+        "relation_evidence": [],
+        "role": "soup_container",
+        "role_resolution": "DIRECT_FUNCTION_MATCH",
+        "semantic_status": "TRUE"
+      },
+      "soup_eating_utensil:object_0004": {
+        "grounding_mode": "FUNCTION_AND_RELATION",
+        "observed_instance": "object_0004",
+        "operation_evidence": [],
+        "relation_evidence": [],
+        "role": "soup_eating_utensil",
+        "role_resolution": "DIRECT_FUNCTION_MATCH",
+        "semantic_status": "TRUE"
+      },
+      "soup_eating_utensil:object_0005": {
+        "grounding_mode": "FUNCTION_AND_RELATION",
+        "observed_instance": "object_0005",
+        "operation_evidence": [],
+        "relation_evidence": [],
+        "role": "soup_eating_utensil",
+        "role_resolution": "DIRECT_FUNCTION_MATCH",
+        "semantic_status": "TRUE"
+      },
+      "water_source:object_0006": {
+        "grounding_mode": "FUNCTION_AND_RELATION",
+        "observed_instance": "object_0006",
+        "operation_evidence": [
+          {
+            "capability": "TRANSFER_CONTENT_TO_CONTAINER",
+            "source_operation_id": "prepare_coffee__primitive_2"
+          }
+        ],
+        "relation_evidence": [],
+        "role": "water_source",
+        "role_resolution": "DIRECT_FUNCTION_MATCH",
+        "semantic_status": "TRUE"
+      }
+    },
+    "causal_search_recovery": true,
+    "grounding_snapshots": [
+      {
+        "grounding": {
+          "assignment": null,
+          "complete": false,
+          "evidence": {
+            "candidate_evaluations": {
+              "coffee_container:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "UNKNOWN"
+                  },
+                  "unary_predicate_OPEN_CAVITY": {
+                    "predicate": "OPEN_CAVITY",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "coffee_container"
+              },
+              "coffee_source:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "UNKNOWN"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": "coffee canister",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "coffee_source"
+              },
+              "coffee_stirrer:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "coffee_stirrer"
+              },
+              "soup_container:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": "bowl",
+                    "status": "TRUE"
+                  },
+                  "unary_predicate_OPEN_CAVITY": {
+                    "predicate": "OPEN_CAVITY",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "soup_container"
+              },
+              "soup_eating_utensil:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "soup_eating_utensil"
+              },
+              "water_source:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "water_source"
+              },
+              "water_source:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "water_source"
+              },
+              "water_source:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "water_source"
+              },
+              "water_source:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "water_source"
+              },
+              "water_source:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "water_source"
+              },
+              "water_source:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": "kettle",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "water_source"
+              },
+              "water_source:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "water_source"
+              }
+            },
+            "individual_candidates_sufficient": false,
+            "role_plausibility": {
+              "coffee_container": {
+                "minimum_count": 2,
+                "plausible": 1,
+                "sufficient": false,
+                "true": 0,
+                "unknown": 1
+              },
+              "coffee_source": {
+                "minimum_count": 1,
+                "plausible": 2,
+                "sufficient": true,
+                "true": 1,
+                "unknown": 1
+              },
+              "coffee_stirrer": {
+                "minimum_count": 1,
+                "plausible": 3,
+                "sufficient": true,
+                "true": 3,
+                "unknown": 0
+              },
+              "soup_container": {
+                "minimum_count": 2,
+                "plausible": 1,
+                "sufficient": false,
+                "true": 1,
+                "unknown": 0
+              },
+              "soup_eating_utensil": {
+                "minimum_count": 2,
+                "plausible": 3,
+                "sufficient": true,
+                "true": 3,
+                "unknown": 0
+              },
+              "water_source": {
+                "minimum_count": 1,
+                "plausible": 1,
+                "sufficient": true,
+                "true": 1,
+                "unknown": 0
+              }
+            }
+          },
+          "failure_kind": null,
+          "missing_requirements": [
+            "coffee_container",
+            "soup_container",
+            "coffee_container",
+            "soup_container"
+          ],
+          "missing_roles": [
+            "coffee_container",
+            "soup_container"
+          ],
+          "operation_bindings": {},
+          "resolved_graph": null,
+          "resolved_role_types": {},
+          "satisfied": false,
+          "status": "INCOMPLETE",
+          "unresolved_constraints": [
+            "coffee_container",
+            "soup_container"
+          ],
+          "unsatisfied_relations": []
+        },
+        "inspected_regions": [],
+        "search_state": "SEARCH_RECOVERABLE",
+        "stage": "initial"
+      },
+      {
+        "grounding": {
+          "assignment": null,
+          "complete": false,
+          "evidence": {
+            "candidate_evaluations": {
+              "coffee_container:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "UNKNOWN"
+                  },
+                  "unary_predicate_OPEN_CAVITY": {
+                    "predicate": "OPEN_CAVITY",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": "cup",
+                    "status": "TRUE"
+                  },
+                  "unary_predicate_OPEN_CAVITY": {
+                    "predicate": "OPEN_CAVITY",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "coffee_container"
+              },
+              "coffee_source:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "UNKNOWN"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": "coffee canister",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "coffee_source"
+              },
+              "coffee_stirrer:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "coffee_stirrer"
+              },
+              "soup_container:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": "bowl",
+                    "status": "TRUE"
+                  },
+                  "unary_predicate_OPEN_CAVITY": {
+                    "predicate": "OPEN_CAVITY",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "soup_container"
+              },
+              "soup_eating_utensil:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "soup_eating_utensil"
+              },
+              "water_source:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "water_source"
+              },
+              "water_source:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "water_source"
+              },
+              "water_source:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "water_source"
+              },
+              "water_source:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "water_source"
+              },
+              "water_source:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "water_source"
+              },
+              "water_source:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": "kettle",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "water_source"
+              },
+              "water_source:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "water_source"
+              },
+              "water_source:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "water_source"
+              }
+            },
+            "individual_candidates_sufficient": false,
+            "role_plausibility": {
+              "coffee_container": {
+                "minimum_count": 2,
+                "plausible": 2,
+                "sufficient": true,
+                "true": 1,
+                "unknown": 1
+              },
+              "coffee_source": {
+                "minimum_count": 1,
+                "plausible": 2,
+                "sufficient": true,
+                "true": 1,
+                "unknown": 1
+              },
+              "coffee_stirrer": {
+                "minimum_count": 1,
+                "plausible": 3,
+                "sufficient": true,
+                "true": 3,
+                "unknown": 0
+              },
+              "soup_container": {
+                "minimum_count": 2,
+                "plausible": 1,
+                "sufficient": false,
+                "true": 1,
+                "unknown": 0
+              },
+              "soup_eating_utensil": {
+                "minimum_count": 2,
+                "plausible": 3,
+                "sufficient": true,
+                "true": 3,
+                "unknown": 0
+              },
+              "water_source": {
+                "minimum_count": 1,
+                "plausible": 1,
+                "sufficient": true,
+                "true": 1,
+                "unknown": 0
+              }
+            }
+          },
+          "failure_kind": null,
+          "missing_requirements": [
+            "soup_container",
+            "soup_container"
+          ],
+          "missing_roles": [
+            "soup_container"
+          ],
+          "operation_bindings": {},
+          "resolved_graph": null,
+          "resolved_role_types": {},
+          "satisfied": false,
+          "status": "INCOMPLETE",
+          "unresolved_constraints": [
+            "soup_container"
+          ],
+          "unsatisfied_relations": []
+        },
+        "inspected_regions": [
+          "C2"
+        ],
+        "search_state": "SEARCH_RECOVERABLE",
+        "stage": "after_C2"
+      },
+      {
+        "grounding": {
+          "assignment": null,
+          "complete": false,
+          "evidence": {
+            "candidate_evaluations": {
+              "coffee_container:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "UNKNOWN"
+                  },
+                  "unary_predicate_OPEN_CAVITY": {
+                    "predicate": "OPEN_CAVITY",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": "cup",
+                    "status": "TRUE"
+                  },
+                  "unary_predicate_OPEN_CAVITY": {
+                    "predicate": "OPEN_CAVITY",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "coffee_container"
+              },
+              "coffee_source:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "UNKNOWN"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": "coffee canister",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "coffee_source"
+              },
+              "coffee_stirrer:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "coffee_stirrer"
+              },
+              "soup_container:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": "bowl",
+                    "status": "TRUE"
+                  },
+                  "unary_predicate_OPEN_CAVITY": {
+                    "predicate": "OPEN_CAVITY",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "soup_container"
+              },
+              "soup_eating_utensil:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "soup_eating_utensil"
+              },
+              "water_source:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "water_source"
+              },
+              "water_source:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "water_source"
+              },
+              "water_source:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "water_source"
+              },
+              "water_source:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "water_source"
+              },
+              "water_source:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "water_source"
+              },
+              "water_source:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": "kettle",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "water_source"
+              },
+              "water_source:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "water_source"
+              },
+              "water_source:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "water_source"
+              }
+            },
+            "individual_candidates_sufficient": false,
+            "role_plausibility": {
+              "coffee_container": {
+                "minimum_count": 2,
+                "plausible": 2,
+                "sufficient": true,
+                "true": 1,
+                "unknown": 1
+              },
+              "coffee_source": {
+                "minimum_count": 1,
+                "plausible": 2,
+                "sufficient": true,
+                "true": 1,
+                "unknown": 1
+              },
+              "coffee_stirrer": {
+                "minimum_count": 1,
+                "plausible": 3,
+                "sufficient": true,
+                "true": 3,
+                "unknown": 0
+              },
+              "soup_container": {
+                "minimum_count": 2,
+                "plausible": 1,
+                "sufficient": false,
+                "true": 1,
+                "unknown": 0
+              },
+              "soup_eating_utensil": {
+                "minimum_count": 2,
+                "plausible": 3,
+                "sufficient": true,
+                "true": 3,
+                "unknown": 0
+              },
+              "water_source": {
+                "minimum_count": 1,
+                "plausible": 1,
+                "sufficient": true,
+                "true": 1,
+                "unknown": 0
+              }
+            }
+          },
+          "failure_kind": null,
+          "missing_requirements": [
+            "soup_container",
+            "soup_container"
+          ],
+          "missing_roles": [
+            "soup_container"
+          ],
+          "operation_bindings": {},
+          "resolved_graph": null,
+          "resolved_role_types": {},
+          "satisfied": false,
+          "status": "INCOMPLETE",
+          "unresolved_constraints": [
+            "soup_container"
+          ],
+          "unsatisfied_relations": []
+        },
+        "inspected_regions": [
+          "C2",
+          "D2"
+        ],
+        "search_state": "SEARCH_RECOVERABLE",
+        "stage": "after_D2"
+      },
+      {
+        "grounding": {
+          "assignment": null,
+          "complete": false,
+          "evidence": {
+            "candidate_evaluations": {
+              "coffee_container:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "UNKNOWN"
+                  },
+                  "unary_predicate_OPEN_CAVITY": {
+                    "predicate": "OPEN_CAVITY",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": "cup",
+                    "status": "TRUE"
+                  },
+                  "unary_predicate_OPEN_CAVITY": {
+                    "predicate": "OPEN_CAVITY",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "coffee_container"
+              },
+              "coffee_source:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "UNKNOWN"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": "coffee canister",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "coffee_source"
+              },
+              "coffee_stirrer:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "coffee_stirrer"
+              },
+              "soup_container:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": "bowl",
+                    "status": "TRUE"
+                  },
+                  "unary_predicate_OPEN_CAVITY": {
+                    "predicate": "OPEN_CAVITY",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "soup_container"
+              },
+              "soup_eating_utensil:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "soup_eating_utensil"
+              },
+              "water_source:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "water_source"
+              },
+              "water_source:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "water_source"
+              },
+              "water_source:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "water_source"
+              },
+              "water_source:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "water_source"
+              },
+              "water_source:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "water_source"
+              },
+              "water_source:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": "kettle",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "water_source"
+              },
+              "water_source:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "water_source"
+              },
+              "water_source:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "water_source"
+              }
+            },
+            "individual_candidates_sufficient": false,
+            "role_plausibility": {
+              "coffee_container": {
+                "minimum_count": 2,
+                "plausible": 2,
+                "sufficient": true,
+                "true": 1,
+                "unknown": 1
+              },
+              "coffee_source": {
+                "minimum_count": 1,
+                "plausible": 2,
+                "sufficient": true,
+                "true": 1,
+                "unknown": 1
+              },
+              "coffee_stirrer": {
+                "minimum_count": 1,
+                "plausible": 3,
+                "sufficient": true,
+                "true": 3,
+                "unknown": 0
+              },
+              "soup_container": {
+                "minimum_count": 2,
+                "plausible": 1,
+                "sufficient": false,
+                "true": 1,
+                "unknown": 0
+              },
+              "soup_eating_utensil": {
+                "minimum_count": 2,
+                "plausible": 3,
+                "sufficient": true,
+                "true": 3,
+                "unknown": 0
+              },
+              "water_source": {
+                "minimum_count": 1,
+                "plausible": 1,
+                "sufficient": true,
+                "true": 1,
+                "unknown": 0
+              }
+            }
+          },
+          "failure_kind": null,
+          "missing_requirements": [
+            "soup_container",
+            "soup_container"
+          ],
+          "missing_roles": [
+            "soup_container"
+          ],
+          "operation_bindings": {},
+          "resolved_graph": null,
+          "resolved_role_types": {},
+          "satisfied": false,
+          "status": "INCOMPLETE",
+          "unresolved_constraints": [
+            "soup_container"
+          ],
+          "unsatisfied_relations": []
+        },
+        "inspected_regions": [
+          "C2",
+          "D2",
+          "C1"
+        ],
+        "search_state": "SEARCH_RECOVERABLE",
+        "stage": "after_C1"
+      },
+      {
+        "grounding": {
+          "assignment": null,
+          "complete": false,
+          "evidence": {
+            "candidate_evaluations": {
+              "coffee_container:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "UNKNOWN"
+                  },
+                  "unary_predicate_OPEN_CAVITY": {
+                    "predicate": "OPEN_CAVITY",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "coffee_container"
+              },
+              "coffee_container:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "cup",
+                      "mug"
+                    ],
+                    "matched": "cup",
+                    "status": "TRUE"
+                  },
+                  "unary_predicate_OPEN_CAVITY": {
+                    "predicate": "OPEN_CAVITY",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "coffee_container"
+              },
+              "coffee_source:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "UNKNOWN"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": "coffee canister",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "coffee_source"
+              },
+              "coffee_source:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "coffee_source",
+                      "coffee_jar",
+                      "coffee_container",
+                      "coffee_tin",
+                      "jar",
+                      "coffee canister",
+                      "coffee_canister",
+                      "canister",
+                      "coffee caddy"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "coffee_source"
+              },
+              "coffee_stirrer:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "coffee_stirrer"
+              },
+              "coffee_stirrer:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "coffee_stirrer"
+              },
+              "soup_container:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": "bowl",
+                    "status": "TRUE"
+                  },
+                  "unary_predicate_OPEN_CAVITY": {
+                    "predicate": "OPEN_CAVITY",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "soup_container"
+              },
+              "soup_container:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "bowl"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "soup_container"
+              },
+              "soup_eating_utensil:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": "spoon",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "soup_eating_utensil"
+              },
+              "soup_eating_utensil:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "spoon"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "soup_eating_utensil"
+              },
+              "water_source:object_0001": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0001",
+                "role_name": "water_source"
+              },
+              "water_source:object_0002": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0002",
+                "role_name": "water_source"
+              },
+              "water_source:object_0003": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0003",
+                "role_name": "water_source"
+              },
+              "water_source:object_0004": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0004",
+                "role_name": "water_source"
+              },
+              "water_source:object_0005": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0005",
+                "role_name": "water_source"
+              },
+              "water_source:object_0006": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": "kettle",
+                    "status": "TRUE"
+                  }
+                },
+                "instance_id": "object_0006",
+                "role_name": "water_source"
+              },
+              "water_source:object_0007": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0007",
+                "role_name": "water_source"
+              },
+              "water_source:object_0008": {
+                "checks": {
+                  "semantic_categories": {
+                    "expected": [
+                      "kettle",
+                      "water_source",
+                      "water_container",
+                      "teapot"
+                    ],
+                    "matched": null,
+                    "status": "FALSE"
+                  }
+                },
+                "instance_id": "object_0008",
+                "role_name": "water_source"
+              }
+            },
+            "individual_candidates_sufficient": false,
+            "role_plausibility": {
+              "coffee_container": {
+                "minimum_count": 2,
+                "plausible": 2,
+                "sufficient": true,
+                "true": 1,
+                "unknown": 1
+              },
+              "coffee_source": {
+                "minimum_count": 1,
+                "plausible": 2,
+                "sufficient": true,
+                "true": 1,
+                "unknown": 1
+              },
+              "coffee_stirrer": {
+                "minimum_count": 1,
+                "plausible": 3,
+                "sufficient": true,
+                "true": 3,
+                "unknown": 0
+              },
+              "soup_container": {
+                "minimum_count": 2,
+                "plausible": 1,
+                "sufficient": false,
+                "true": 1,
+                "unknown": 0
+              },
+              "soup_eating_utensil": {
+                "minimum_count": 2,
+                "plausible": 3,
+                "sufficient": true,
+                "true": 3,
+                "unknown": 0
+              },
+              "water_source": {
+                "minimum_count": 1,
+                "plausible": 1,
+                "sufficient": true,
+                "true": 1,
+                "unknown": 0
+              }
+            }
+          },
+          "failure_kind": null,
+          "missing_requirements": [
+            "soup_container",
+            "soup_container"
+          ],
+          "missing_roles": [
+            "soup_container"
+          ],
+          "operation_bindings": {},
+          "resolved_graph": null,
+          "resolved_role_types": {},
+          "satisfied": false,
+          "status": "INCOMPLETE",
+          "unresolved_constraints": [
+            "soup_container"
+          ],
+          "unsatisfied_relations": []
+        },
+        "inspected_regions": [
+          "C2",
+          "D2",
+          "C1",
+          "D1"
+        ],
+        "search_state": "SEARCH_RECOVERABLE",
+        "stage": "after_D1"
+      },
+      {
+        "grounding": {
+          "assignment": {
+            "coffee_container": [
+              "object_0008",
+              "object_0001"
+            ],
+            "coffee_source": "object_0007",
+            "coffee_stirrer": "object_0003",
+            "soup_container": [
+              "object_0002",
+              "object_0009"
+            ],
+            "soup_eating_utensil": [
+              "object_0004",
+              "object_0005"
+            ],
+            "water_source": "object_0006"
+          },
+          "complete": true,
+          "evidence": {
+            "binding_provenance": {
+              "coffee_container:object_0001": {
+                "grounding_mode": "RELATIONALLY_VERIFIED_GROUNDING",
+                "observed_instance": "object_0001",
+                "operation_evidence": [
+                  {
+                    "capability": "TRANSFER_CONTENT_TO_CONTAINER",
+                    "source_operation_id": "material_transfer"
+                  },
+                  {
+                    "capability": "TRANSFER_CONTENT_TO_CONTAINER",
+                    "source_operation_id": "prepare_coffee__primitive_2"
+                  },
+                  {
+                    "capability": "STIR_COFFEE",
+                    "source_operation_id": "coffee_stirring"
+                  }
+                ],
+                "relation_evidence": [
+                  {
+                    "object_id": "object_0001",
+                    "predicate": "INSERTABLE_IN",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  },
+                  {
+                    "object_id": "object_0001",
+                    "predicate": "REACHES_BOTTOM",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  }
+                ],
+                "role": "coffee_container",
+                "role_resolution": "DIRECT_FUNCTION_MATCH",
+                "semantic_status": "UNKNOWN"
+              },
+              "coffee_container:object_0008": {
+                "grounding_mode": "FUNCTION_AND_RELATION",
+                "observed_instance": "object_0008",
+                "operation_evidence": [
+                  {
+                    "capability": "TRANSFER_CONTENT_TO_CONTAINER",
+                    "source_operation_id": "material_transfer"
+                  },
+                  {
+                    "capability": "TRANSFER_CONTENT_TO_CONTAINER",
+                    "source_operation_id": "prepare_coffee__primitive_2"
+                  },
+                  {
+                    "capability": "STIR_COFFEE",
+                    "source_operation_id": "coffee_stirring"
+                  }
+                ],
+                "relation_evidence": [
+                  {
+                    "object_id": "object_0008",
+                    "predicate": "INSERTABLE_IN",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  },
+                  {
+                    "object_id": "object_0008",
+                    "predicate": "REACHES_BOTTOM",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  }
+                ],
+                "role": "coffee_container",
+                "role_resolution": "DIRECT_FUNCTION_MATCH",
+                "semantic_status": "TRUE"
+              },
+              "coffee_source:object_0007": {
+                "grounding_mode": "FUNCTION_AND_RELATION",
+                "observed_instance": "object_0007",
+                "operation_evidence": [
+                  {
+                    "capability": "TRANSFER_CONTENT_TO_CONTAINER",
+                    "source_operation_id": "material_transfer"
+                  }
+                ],
+                "relation_evidence": [],
+                "role": "coffee_source",
+                "role_resolution": "DIRECT_FUNCTION_MATCH",
+                "semantic_status": "TRUE"
+              },
+              "coffee_stirrer:object_0003": {
+                "grounding_mode": "FUNCTION_AND_RELATION",
+                "observed_instance": "object_0003",
+                "operation_evidence": [
+                  {
+                    "capability": "STIR_COFFEE",
+                    "source_operation_id": "coffee_stirring"
+                  }
+                ],
+                "relation_evidence": [
+                  {
+                    "object_id": "object_0008",
+                    "predicate": "INSERTABLE_IN",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  },
+                  {
+                    "object_id": "object_0008",
+                    "predicate": "REACHES_BOTTOM",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  },
+                  {
+                    "object_id": "object_0001",
+                    "predicate": "INSERTABLE_IN",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  },
+                  {
+                    "object_id": "object_0001",
+                    "predicate": "REACHES_BOTTOM",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  }
+                ],
+                "role": "coffee_stirrer",
+                "role_resolution": "DIRECT_FUNCTION_MATCH",
+                "semantic_status": "TRUE"
+              },
+              "soup_container:object_0002": {
+                "grounding_mode": "FUNCTION_AND_RELATION",
+                "observed_instance": "object_0002",
+                "operation_evidence": [],
+                "relation_evidence": [],
+                "role": "soup_container",
+                "role_resolution": "DIRECT_FUNCTION_MATCH",
+                "semantic_status": "TRUE"
+              },
+              "soup_container:object_0009": {
+                "grounding_mode": "FUNCTION_AND_RELATION",
+                "observed_instance": "object_0009",
+                "operation_evidence": [],
+                "relation_evidence": [],
+                "role": "soup_container",
+                "role_resolution": "DIRECT_FUNCTION_MATCH",
+                "semantic_status": "TRUE"
+              },
+              "soup_eating_utensil:object_0004": {
+                "grounding_mode": "FUNCTION_AND_RELATION",
+                "observed_instance": "object_0004",
+                "operation_evidence": [],
+                "relation_evidence": [],
+                "role": "soup_eating_utensil",
+                "role_resolution": "DIRECT_FUNCTION_MATCH",
+                "semantic_status": "TRUE"
+              },
+              "soup_eating_utensil:object_0005": {
+                "grounding_mode": "FUNCTION_AND_RELATION",
+                "observed_instance": "object_0005",
+                "operation_evidence": [],
+                "relation_evidence": [],
+                "role": "soup_eating_utensil",
+                "role_resolution": "DIRECT_FUNCTION_MATCH",
+                "semantic_status": "TRUE"
+              },
+              "water_source:object_0006": {
+                "grounding_mode": "FUNCTION_AND_RELATION",
+                "observed_instance": "object_0006",
+                "operation_evidence": [
+                  {
+                    "capability": "TRANSFER_CONTENT_TO_CONTAINER",
+                    "source_operation_id": "prepare_coffee__primitive_2"
+                  }
+                ],
+                "relation_evidence": [],
+                "role": "water_source",
+                "role_resolution": "DIRECT_FUNCTION_MATCH",
+                "semantic_status": "TRUE"
+              }
+            },
+            "individual_candidates_sufficient": true,
+            "joint_assignment_prefixes_examined": 6,
+            "operation_binding_complete": true,
+            "role_plausibility": {
+              "coffee_container": {
+                "minimum_count": 2,
+                "plausible": 2,
+                "sufficient": true,
+                "true": 1,
+                "unknown": 1
+              },
+              "coffee_source": {
+                "minimum_count": 1,
+                "plausible": 2,
+                "sufficient": true,
+                "true": 1,
+                "unknown": 1
+              },
+              "coffee_stirrer": {
+                "minimum_count": 1,
+                "plausible": 3,
+                "sufficient": true,
+                "true": 3,
+                "unknown": 0
+              },
+              "soup_container": {
+                "minimum_count": 2,
+                "plausible": 2,
+                "sufficient": true,
+                "true": 2,
+                "unknown": 0
+              },
+              "soup_eating_utensil": {
+                "minimum_count": 2,
+                "plausible": 3,
+                "sufficient": true,
+                "true": 3,
+                "unknown": 0
+              },
+              "water_source": {
+                "minimum_count": 1,
+                "plausible": 1,
+                "sufficient": true,
+                "true": 1,
+                "unknown": 0
+              }
+            },
+            "valid_assignment_count": 1
+          },
+          "failure_kind": null,
+          "missing_requirements": [],
+          "missing_roles": [],
+          "operation_bindings": {
+            "coffee_stirring": [
+              {
+                "capability_id": "STIR_COFFEE",
+                "context": {},
+                "planner_operation": "STIR_COFFEE",
+                "relation_evidence": [
+                  {
+                    "object_id": "object_0008",
+                    "predicate": "INSERTABLE_IN",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  },
+                  {
+                    "object_id": "object_0008",
+                    "predicate": "REACHES_BOTTOM",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  }
+                ],
+                "source_operation_id": "coffee_stirring",
+                "target_id": "object_0008",
+                "tool_id": "object_0003"
+              },
+              {
+                "capability_id": "STIR_COFFEE",
+                "context": {},
+                "planner_operation": "STIR_COFFEE",
+                "relation_evidence": [
+                  {
+                    "object_id": "object_0001",
+                    "predicate": "INSERTABLE_IN",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  },
+                  {
+                    "object_id": "object_0001",
+                    "predicate": "REACHES_BOTTOM",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  }
+                ],
+                "source_operation_id": "coffee_stirring",
+                "target_id": "object_0001",
+                "tool_id": "object_0003"
+              }
+            ],
+            "material_transfer": [
+              {
+                "capability_id": "TRANSFER_CONTENT_TO_CONTAINER",
+                "context": {},
+                "planner_operation": "POUR",
+                "relation_evidence": [],
+                "source_operation_id": "material_transfer",
+                "target_id": "object_0008",
+                "tool_id": "object_0007"
+              },
+              {
+                "capability_id": "TRANSFER_CONTENT_TO_CONTAINER",
+                "context": {},
+                "planner_operation": "POUR",
+                "relation_evidence": [],
+                "source_operation_id": "material_transfer",
+                "target_id": "object_0001",
+                "tool_id": "object_0007"
+              }
+            ],
+            "prepare_coffee__primitive_2": [
+              {
+                "capability_id": "TRANSFER_CONTENT_TO_CONTAINER",
+                "context": {},
+                "planner_operation": "POUR",
+                "relation_evidence": [],
+                "source_operation_id": "prepare_coffee__primitive_2",
+                "target_id": "object_0008",
+                "tool_id": "object_0006"
+              },
+              {
+                "capability_id": "TRANSFER_CONTENT_TO_CONTAINER",
+                "context": {},
+                "planner_operation": "POUR",
+                "relation_evidence": [],
+                "source_operation_id": "prepare_coffee__primitive_2",
+                "target_id": "object_0001",
+                "tool_id": "object_0006"
+              }
+            ]
+          },
+          "resolved_graph": null,
+          "resolved_role_types": {},
+          "satisfied": true,
+          "status": "COMPLETE",
+          "unresolved_constraints": [],
+          "unsatisfied_relations": []
+        },
+        "inspected_regions": [
+          "C2",
+          "D2",
+          "C1",
+          "D1",
+          "B1"
+        ],
+        "search_state": "SATISFIED",
+        "stage": "after_B1"
+      },
+      {
+        "grounding": {
+          "assignment": {
+            "coffee_container": [
+              "object_0008",
+              "object_0001"
+            ],
+            "coffee_source": "object_0007",
+            "coffee_stirrer": "object_0003",
+            "soup_container": [
+              "object_0002",
+              "object_0009"
+            ],
+            "soup_eating_utensil": [
+              "object_0004",
+              "object_0005"
+            ],
+            "water_source": "object_0006"
+          },
+          "complete": true,
+          "evidence": {
+            "binding_provenance": {
+              "coffee_container:object_0001": {
+                "grounding_mode": "RELATIONALLY_VERIFIED_GROUNDING",
+                "observed_instance": "object_0001",
+                "operation_evidence": [
+                  {
+                    "capability": "TRANSFER_CONTENT_TO_CONTAINER",
+                    "source_operation_id": "material_transfer"
+                  },
+                  {
+                    "capability": "TRANSFER_CONTENT_TO_CONTAINER",
+                    "source_operation_id": "prepare_coffee__primitive_2"
+                  },
+                  {
+                    "capability": "STIR_COFFEE",
+                    "source_operation_id": "coffee_stirring"
+                  }
+                ],
+                "relation_evidence": [
+                  {
+                    "object_id": "object_0001",
+                    "predicate": "INSERTABLE_IN",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  },
+                  {
+                    "object_id": "object_0001",
+                    "predicate": "REACHES_BOTTOM",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  }
+                ],
+                "role": "coffee_container",
+                "role_resolution": "DIRECT_FUNCTION_MATCH",
+                "semantic_status": "UNKNOWN"
+              },
+              "coffee_container:object_0008": {
+                "grounding_mode": "FUNCTION_AND_RELATION",
+                "observed_instance": "object_0008",
+                "operation_evidence": [
+                  {
+                    "capability": "TRANSFER_CONTENT_TO_CONTAINER",
+                    "source_operation_id": "material_transfer"
+                  },
+                  {
+                    "capability": "TRANSFER_CONTENT_TO_CONTAINER",
+                    "source_operation_id": "prepare_coffee__primitive_2"
+                  },
+                  {
+                    "capability": "STIR_COFFEE",
+                    "source_operation_id": "coffee_stirring"
+                  }
+                ],
+                "relation_evidence": [
+                  {
+                    "object_id": "object_0008",
+                    "predicate": "INSERTABLE_IN",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  },
+                  {
+                    "object_id": "object_0008",
+                    "predicate": "REACHES_BOTTOM",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  }
+                ],
+                "role": "coffee_container",
+                "role_resolution": "DIRECT_FUNCTION_MATCH",
+                "semantic_status": "TRUE"
+              },
+              "coffee_source:object_0007": {
+                "grounding_mode": "FUNCTION_AND_RELATION",
+                "observed_instance": "object_0007",
+                "operation_evidence": [
+                  {
+                    "capability": "TRANSFER_CONTENT_TO_CONTAINER",
+                    "source_operation_id": "material_transfer"
+                  }
+                ],
+                "relation_evidence": [],
+                "role": "coffee_source",
+                "role_resolution": "DIRECT_FUNCTION_MATCH",
+                "semantic_status": "TRUE"
+              },
+              "coffee_stirrer:object_0003": {
+                "grounding_mode": "FUNCTION_AND_RELATION",
+                "observed_instance": "object_0003",
+                "operation_evidence": [
+                  {
+                    "capability": "STIR_COFFEE",
+                    "source_operation_id": "coffee_stirring"
+                  }
+                ],
+                "relation_evidence": [
+                  {
+                    "object_id": "object_0008",
+                    "predicate": "INSERTABLE_IN",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  },
+                  {
+                    "object_id": "object_0008",
+                    "predicate": "REACHES_BOTTOM",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  },
+                  {
+                    "object_id": "object_0001",
+                    "predicate": "INSERTABLE_IN",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  },
+                  {
+                    "object_id": "object_0001",
+                    "predicate": "REACHES_BOTTOM",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  }
+                ],
+                "role": "coffee_stirrer",
+                "role_resolution": "DIRECT_FUNCTION_MATCH",
+                "semantic_status": "TRUE"
+              },
+              "soup_container:object_0002": {
+                "grounding_mode": "FUNCTION_AND_RELATION",
+                "observed_instance": "object_0002",
+                "operation_evidence": [],
+                "relation_evidence": [],
+                "role": "soup_container",
+                "role_resolution": "DIRECT_FUNCTION_MATCH",
+                "semantic_status": "TRUE"
+              },
+              "soup_container:object_0009": {
+                "grounding_mode": "FUNCTION_AND_RELATION",
+                "observed_instance": "object_0009",
+                "operation_evidence": [],
+                "relation_evidence": [],
+                "role": "soup_container",
+                "role_resolution": "DIRECT_FUNCTION_MATCH",
+                "semantic_status": "TRUE"
+              },
+              "soup_eating_utensil:object_0004": {
+                "grounding_mode": "FUNCTION_AND_RELATION",
+                "observed_instance": "object_0004",
+                "operation_evidence": [],
+                "relation_evidence": [],
+                "role": "soup_eating_utensil",
+                "role_resolution": "DIRECT_FUNCTION_MATCH",
+                "semantic_status": "TRUE"
+              },
+              "soup_eating_utensil:object_0005": {
+                "grounding_mode": "FUNCTION_AND_RELATION",
+                "observed_instance": "object_0005",
+                "operation_evidence": [],
+                "relation_evidence": [],
+                "role": "soup_eating_utensil",
+                "role_resolution": "DIRECT_FUNCTION_MATCH",
+                "semantic_status": "TRUE"
+              },
+              "water_source:object_0006": {
+                "grounding_mode": "FUNCTION_AND_RELATION",
+                "observed_instance": "object_0006",
+                "operation_evidence": [
+                  {
+                    "capability": "TRANSFER_CONTENT_TO_CONTAINER",
+                    "source_operation_id": "prepare_coffee__primitive_2"
+                  }
+                ],
+                "relation_evidence": [],
+                "role": "water_source",
+                "role_resolution": "DIRECT_FUNCTION_MATCH",
+                "semantic_status": "TRUE"
+              }
+            },
+            "individual_candidates_sufficient": true,
+            "joint_assignment_prefixes_examined": 6,
+            "operation_binding_complete": true,
+            "role_plausibility": {
+              "coffee_container": {
+                "minimum_count": 2,
+                "plausible": 2,
+                "sufficient": true,
+                "true": 1,
+                "unknown": 1
+              },
+              "coffee_source": {
+                "minimum_count": 1,
+                "plausible": 2,
+                "sufficient": true,
+                "true": 1,
+                "unknown": 1
+              },
+              "coffee_stirrer": {
+                "minimum_count": 1,
+                "plausible": 3,
+                "sufficient": true,
+                "true": 3,
+                "unknown": 0
+              },
+              "soup_container": {
+                "minimum_count": 2,
+                "plausible": 2,
+                "sufficient": true,
+                "true": 2,
+                "unknown": 0
+              },
+              "soup_eating_utensil": {
+                "minimum_count": 2,
+                "plausible": 3,
+                "sufficient": true,
+                "true": 3,
+                "unknown": 0
+              },
+              "water_source": {
+                "minimum_count": 1,
+                "plausible": 1,
+                "sufficient": true,
+                "true": 1,
+                "unknown": 0
+              }
+            },
+            "valid_assignment_count": 1
+          },
+          "failure_kind": null,
+          "missing_requirements": [],
+          "missing_roles": [],
+          "operation_bindings": {
+            "coffee_stirring": [
+              {
+                "capability_id": "STIR_COFFEE",
+                "context": {},
+                "planner_operation": "STIR_COFFEE",
+                "relation_evidence": [
+                  {
+                    "object_id": "object_0008",
+                    "predicate": "INSERTABLE_IN",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  },
+                  {
+                    "object_id": "object_0008",
+                    "predicate": "REACHES_BOTTOM",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  }
+                ],
+                "source_operation_id": "coffee_stirring",
+                "target_id": "object_0008",
+                "tool_id": "object_0003"
+              },
+              {
+                "capability_id": "STIR_COFFEE",
+                "context": {},
+                "planner_operation": "STIR_COFFEE",
+                "relation_evidence": [
+                  {
+                    "object_id": "object_0001",
+                    "predicate": "INSERTABLE_IN",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  },
+                  {
+                    "object_id": "object_0001",
+                    "predicate": "REACHES_BOTTOM",
+                    "status": "TRUE",
+                    "subject_id": "object_0003"
+                  }
+                ],
+                "source_operation_id": "coffee_stirring",
+                "target_id": "object_0001",
+                "tool_id": "object_0003"
+              }
+            ],
+            "material_transfer": [
+              {
+                "capability_id": "TRANSFER_CONTENT_TO_CONTAINER",
+                "context": {},
+                "planner_operation": "POUR",
+                "relation_evidence": [],
+                "source_operation_id": "material_transfer",
+                "target_id": "object_0008",
+                "tool_id": "object_0007"
+              },
+              {
+                "capability_id": "TRANSFER_CONTENT_TO_CONTAINER",
+                "context": {},
+                "planner_operation": "POUR",
+                "relation_evidence": [],
+                "source_operation_id": "material_transfer",
+                "target_id": "object_0001",
+                "tool_id": "object_0007"
+              }
+            ],
+            "prepare_coffee__primitive_2": [
+              {
+                "capability_id": "TRANSFER_CONTENT_TO_CONTAINER",
+                "context": {},
+                "planner_operation": "POUR",
+                "relation_evidence": [],
+                "source_operation_id": "prepare_coffee__primitive_2",
+                "target_id": "object_0008",
+                "tool_id": "object_0006"
+              },
+              {
+                "capability_id": "TRANSFER_CONTENT_TO_CONTAINER",
+                "context": {},
+                "planner_operation": "POUR",
+                "relation_evidence": [],
+                "source_operation_id": "prepare_coffee__primitive_2",
+                "target_id": "object_0001",
+                "tool_id": "object_0006"
+              }
+            ]
+          },
+          "resolved_graph": null,
+          "resolved_role_types": {},
+          "satisfied": true,
+          "status": "COMPLETE",
+          "unresolved_constraints": [],
+          "unsatisfied_relations": []
+        },
+        "inspected_regions": [
+          "C2",
+          "D2",
+          "C1",
+          "D1",
+          "B1"
+        ],
+        "search_state": "SATISFIED",
+        "stage": "final"
+      }
+    ],
+    "individual_candidates_sufficient": true,
+    "joint_assignment_prefixes_examined": 6,
+    "operation_binding_complete": true,
+    "role_plausibility": {
+      "coffee_container": {
+        "minimum_count": 2,
+        "plausible": 2,
+        "sufficient": true,
+        "true": 1,
+        "unknown": 1
+      },
+      "coffee_source": {
+        "minimum_count": 1,
+        "plausible": 2,
+        "sufficient": true,
+        "true": 1,
+        "unknown": 1
+      },
+      "coffee_stirrer": {
+        "minimum_count": 1,
+        "plausible": 3,
+        "sufficient": true,
+        "true": 3,
+        "unknown": 0
+      },
+      "soup_container": {
+        "minimum_count": 2,
+        "plausible": 2,
+        "sufficient": true,
+        "true": 2,
+        "unknown": 0
+      },
+      "soup_eating_utensil": {
+        "minimum_count": 2,
+        "plausible": 3,
+        "sufficient": true,
+        "true": 3,
+        "unknown": 0
+      },
+      "water_source": {
+        "minimum_count": 1,
+        "plausible": 1,
+        "sufficient": true,
+        "true": 1,
+        "unknown": 0
+      }
+    },
+    "search_state": "SATISFIED",
+    "valid_assignment_count": 1
+  },
+  "failure_kind": null,
+  "missing_requirements": [],
+  "missing_roles": [],
+  "operation_bindings": {
+    "coffee_stirring": [
+      {
+        "capability_id": "STIR_COFFEE",
+        "context": {},
+        "planner_operation": "STIR_COFFEE",
+        "relation_evidence": [
+          {
+            "object_id": "object_0008",
+            "predicate": "INSERTABLE_IN",
+            "status": "TRUE",
+            "subject_id": "object_0003"
+          },
+          {
+            "object_id": "object_0008",
+            "predicate": "REACHES_BOTTOM",
+            "status": "TRUE",
+            "subject_id": "object_0003"
+          }
+        ],
+        "source_operation_id": "coffee_stirring",
+        "target_id": "object_0008",
+        "tool_id": "object_0003"
+      },
+      {
+        "capability_id": "STIR_COFFEE",
+        "context": {},
+        "planner_operation": "STIR_COFFEE",
+        "relation_evidence": [
+          {
+            "object_id": "object_0001",
+            "predicate": "INSERTABLE_IN",
+            "status": "TRUE",
+            "subject_id": "object_0003"
+          },
+          {
+            "object_id": "object_0001",
+            "predicate": "REACHES_BOTTOM",
+            "status": "TRUE",
+            "subject_id": "object_0003"
+          }
+        ],
+        "source_operation_id": "coffee_stirring",
+        "target_id": "object_0001",
+        "tool_id": "object_0003"
+      }
+    ],
+    "material_transfer": [
+      {
+        "capability_id": "TRANSFER_CONTENT_TO_CONTAINER",
+        "context": {},
+        "planner_operation": "POUR",
+        "relation_evidence": [],
+        "source_operation_id": "material_transfer",
+        "target_id": "object_0008",
+        "tool_id": "object_0007"
+      },
+      {
+        "capability_id": "TRANSFER_CONTENT_TO_CONTAINER",
+        "context": {},
+        "planner_operation": "POUR",
+        "relation_evidence": [],
+        "source_operation_id": "material_transfer",
+        "target_id": "object_0001",
+        "tool_id": "object_0007"
+      }
+    ],
+    "prepare_coffee__primitive_2": [
+      {
+        "capability_id": "TRANSFER_CONTENT_TO_CONTAINER",
+        "context": {},
+        "planner_operation": "POUR",
+        "relation_evidence": [],
+        "source_operation_id": "prepare_coffee__primitive_2",
+        "target_id": "object_0008",
+        "tool_id": "object_0006"
+      },
+      {
+        "capability_id": "TRANSFER_CONTENT_TO_CONTAINER",
+        "context": {},
+        "planner_operation": "POUR",
+        "relation_evidence": [],
+        "source_operation_id": "prepare_coffee__primitive_2",
+        "target_id": "object_0001",
+        "tool_id": "object_0006"
+      }
+    ]
+  },
+  "resolved_graph": null,
+  "resolved_role_types": {},
+  "satisfied": true,
+  "status": "COMPLETE",
+  "unresolved_constraints": [],
+  "unsatisfied_relations": []
+}

@@ -1,0 +1,95 @@
+{
+  "artifacts": {
+    "final_plan": "action_sequence/plan.json",
+    "functional_graph": "functional_requirement_graph.json",
+    "functional_specification": "functional_specification.json",
+    "grounding": "graph_grounding_result.json",
+    "observed_graph": "observed_scene_graph.json",
+    "plan": "action_sequence/plan.json",
+    "plan_grounding_audit": "plan_grounding_audit.json",
+    "replay_validation": "action_sequence/replay_validation.json",
+    "result": "result.json"
+  },
+  "astar_invocations": 1,
+  "candidate_plan": [
+    {
+      "action_index": 1,
+      "arguments": [
+        "object_0003"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 2,
+      "arguments": [
+        "object_0003",
+        "region_0002"
+      ],
+      "operator": "PLACE"
+    }
+  ],
+  "candidate_search_statistics": {
+    "algorithm": "deterministic_astar_symbolic_state_search",
+    "expanded_states": 3,
+    "frontier_peak": 1,
+    "generated_states": 2,
+    "is_partial": false,
+    "plan_cost": 2,
+    "plan_length": 2,
+    "satisfied_goals": 1,
+    "search_time_ms": 0.014927936717867851,
+    "total_goals": 1,
+    "visited_states": 3
+  },
+  "canonicalization_succeeded": true,
+  "domain": "living_room",
+  "execution_state": "planning_only",
+  "exploration_actuation": "not_applicable",
+  "failure_category": null,
+  "failure_reason": null,
+  "finished_at_utc": "2026-09-13T19:26:33.259459+00:00",
+  "fm_schema_version": 3,
+  "functional_spec_complete": false,
+  "git_commit": "a977544d3a5de787a65929b711e427e62c0a116c",
+  "git_dirty": true,
+  "high_level_replans": 0,
+  "inference_config": {},
+  "internal_variant": "F1_LEFT_SAUCER_PREPLACED",
+  "observer_errors": [],
+  "pipeline_runtime_seconds": 12.0992,
+  "prompt_schema_hash": "9960dbf1022da5138ac8f41432f4ce2cbfc5ee4460664d049793f706fdad0e25",
+  "provider_model": null,
+  "provider_region_ranking": [],
+  "region_order_used": [],
+  "robot_capability_registry_hash": "98055ba6579345151cd1b7a9ccea32fc2ad47dd0f51f51cf40e3eb9cdb01aef7",
+  "runtime_semantic_ontology_hash": "4fee971c3f494023adadc94fa350d3d9e27d81dbe41c001c2b8fc1d20bf49d41",
+  "schema_version": 1,
+  "search_contract": {
+    "canonical_region_ids": [],
+    "domain": "living_room",
+    "no_search_required": true,
+    "policy_version": "phase3_p3h_1_v1",
+    "proposal_trace": [],
+    "region_proposal_trace": [],
+    "search_policy_trace": [],
+    "search_seed": null,
+    "source": "SYSTEM_DECLARED_NO_SEARCH"
+  },
+  "search_order_source_effective": "not_applicable",
+  "search_order_source_requested": "auto",
+  "search_policy_version": "phase3_p3h_1_v1",
+  "search_seed_effective": null,
+  "search_seed_requested": null,
+  "semantic_vlm_requests": 0,
+  "spec_acquisition": "archived_raw_provider_response",
+  "spec_mode": "vlm",
+  "spec_provider_source": "VLM_CANONICAL_G_F",
+  "specification_input": "/home/naren/RA_iiith/benchmark_reports/full320_s02/repeat_02/attempt_01/living_room/L2/vlm/fm_diagnostics/fm_call_001.json",
+  "specification_sha256": "20dfd4f56cf8885e3014a0d300647e4871c5898d4b9b87d0cabecba93fb26dc2",
+  "started_at_utc": "2026-09-13T19:26:21.160298+00:00",
+  "terminal_status": "PARTIAL_ACTION_SEQUENCE_READY",
+  "transport_retries": 0,
+  "variant": "L2",
+  "visualization_requested": false,
+  "vlm_request_count": 0
+}

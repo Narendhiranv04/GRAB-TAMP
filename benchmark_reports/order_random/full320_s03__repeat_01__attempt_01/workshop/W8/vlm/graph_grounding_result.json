@@ -1,0 +1,789 @@
+{
+  "assignment": {
+    "driver": "object_0002",
+    "fastener": "object_0001",
+    "repair_target": "repair_target"
+  },
+  "complete": true,
+  "evidence": {
+    "causal_search_recovery": true,
+    "fine_search_state": "GROUNDING_COMPLETE",
+    "grounding": {
+      "assignment": {
+        "driver": "object_0002",
+        "fastener": "object_0001",
+        "repair_target": "repair_target"
+      },
+      "complete": true,
+      "evidence": {
+        "binding_provenance": {
+          "driver:object_0002": {
+            "grounding_mode": "FUNCTION_AND_RELATION",
+            "observed_instance": "object_0002",
+            "operation_evidence": [
+              {
+                "capability": "FASTEN_JOINT",
+                "source_operation_id": "drive_fastener_group"
+              }
+            ],
+            "relation_evidence": [
+              {
+                "object_id": "object_0001",
+                "predicate": "COMPATIBLE_WITH",
+                "status": "TRUE",
+                "subject_id": "object_0002"
+              },
+              {
+                "object_id": "repair_target",
+                "predicate": "REACHES_TARGET",
+                "status": "TRUE",
+                "subject_id": "object_0002"
+              }
+            ],
+            "role": "driver",
+            "role_resolution": "DIRECT_FUNCTION_MATCH",
+            "semantic_status": "TRUE"
+          },
+          "fastener:object_0001": {
+            "grounding_mode": "FUNCTION_AND_RELATION",
+            "observed_instance": "object_0001",
+            "operation_evidence": [
+              {
+                "capability": "FASTEN_JOINT",
+                "source_operation_id": "drive_fastener_group"
+              }
+            ],
+            "relation_evidence": [
+              {
+                "object_id": "object_0001",
+                "predicate": "COMPATIBLE_WITH",
+                "status": "TRUE",
+                "subject_id": "object_0002"
+              },
+              {
+                "object_id": "repair_target",
+                "predicate": "COMPATIBLE_WITH_TARGET",
+                "status": "TRUE",
+                "subject_id": "object_0001"
+              },
+              {
+                "object_id": "repair_target",
+                "predicate": "COMPATIBLE_WITH_TARGET",
+                "provenance": "EXPLICIT_REQUIREMENT",
+                "status": "TRUE",
+                "subject_id": "object_0001"
+              }
+            ],
+            "role": "fastener",
+            "role_resolution": "JOINT_SEMANTIC_RESOLUTION",
+            "semantic_status": "TRUE"
+          },
+          "repair_target:repair_target": {
+            "grounding_mode": "FUNCTION_AND_RELATION",
+            "observed_instance": "repair_target",
+            "operation_evidence": [
+              {
+                "capability": "FASTEN_JOINT",
+                "source_operation_id": "drive_fastener_group"
+              }
+            ],
+            "relation_evidence": [
+              {
+                "object_id": "repair_target",
+                "predicate": "REACHES_TARGET",
+                "status": "TRUE",
+                "subject_id": "object_0002"
+              },
+              {
+                "object_id": "repair_target",
+                "predicate": "COMPATIBLE_WITH_TARGET",
+                "status": "TRUE",
+                "subject_id": "object_0001"
+              },
+              {
+                "object_id": "repair_target",
+                "predicate": "COMPATIBLE_WITH_TARGET",
+                "provenance": "EXPLICIT_REQUIREMENT",
+                "status": "TRUE",
+                "subject_id": "object_0001"
+              }
+            ],
+            "role": "repair_target",
+            "role_resolution": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS",
+            "semantic_status": "TRUE"
+          }
+        },
+        "individual_candidates_sufficient": true,
+        "joint_assignment_prefixes_examined": 3,
+        "operation_binding_complete": true,
+        "role_plausibility": {
+          "driver": {
+            "minimum_count": 1,
+            "plausible": 1,
+            "sufficient": true,
+            "true": 1,
+            "unknown": 0
+          },
+          "fastener": {
+            "minimum_count": 1,
+            "plausible": 1,
+            "sufficient": true,
+            "true": 1,
+            "unknown": 0
+          },
+          "repair_target": {
+            "minimum_count": 1,
+            "plausible": 1,
+            "sufficient": true,
+            "true": 1,
+            "unknown": 0
+          }
+        },
+        "valid_assignment_count": 1
+      },
+      "failure_kind": null,
+      "missing_requirements": [],
+      "missing_roles": [],
+      "operation_bindings": {
+        "drive_fastener_group": [
+          {
+            "capability_id": "FASTEN_JOINT",
+            "context": {
+              "repair_target": "repair_target"
+            },
+            "planner_operation": "DRIVE_FASTENER_INTO_TARGET",
+            "relation_evidence": [
+              {
+                "object_id": "object_0001",
+                "predicate": "COMPATIBLE_WITH",
+                "status": "TRUE",
+                "subject_id": "object_0002"
+              },
+              {
+                "object_id": "repair_target",
+                "predicate": "REACHES_TARGET",
+                "status": "TRUE",
+                "subject_id": "object_0002"
+              },
+              {
+                "object_id": "repair_target",
+                "predicate": "COMPATIBLE_WITH_TARGET",
+                "status": "TRUE",
+                "subject_id": "object_0001"
+              }
+            ],
+            "source_operation_id": "drive_fastener_group",
+            "target_id": "object_0001",
+            "tool_id": "object_0002"
+          }
+        ]
+      },
+      "resolved_graph": null,
+      "resolved_role_types": {},
+      "satisfied": true,
+      "status": "COMPLETE",
+      "unresolved_constraints": [],
+      "unsatisfied_relations": []
+    },
+    "grounding_snapshots": [
+      {
+        "fine_search_state": "NO_CANDIDATE_SEARCHABLE",
+        "grounding": {
+          "assignment": null,
+          "complete": false,
+          "evidence": {
+            "grounding_evidence": {
+              "candidate_evaluations": {
+                "driver:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "driver"
+                },
+                "driver:repair_target": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "FIXED_TARGET",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "driver"
+                },
+                "fastener:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "fastener"
+                },
+                "fastener:repair_target": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "FIXED_TARGET",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "fastener"
+                },
+                "repair_target:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "repair_target"
+                },
+                "repair_target:repair_target": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "repair_target",
+                        "workshop_frame_joint",
+                        "recess"
+                      ],
+                      "matched": "repair_target",
+                      "status": "TRUE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "repair_target"
+                }
+              },
+              "individual_candidates_sufficient": false,
+              "role_plausibility": {
+                "driver": {
+                  "minimum_count": 1,
+                  "plausible": 0,
+                  "sufficient": false,
+                  "true": 0,
+                  "unknown": 0
+                },
+                "fastener": {
+                  "minimum_count": 1,
+                  "plausible": 0,
+                  "sufficient": false,
+                  "true": 0,
+                  "unknown": 0
+                },
+                "repair_target": {
+                  "minimum_count": 1,
+                  "plausible": 1,
+                  "sufficient": true,
+                  "true": 1,
+                  "unknown": 0
+                }
+              }
+            },
+            "grounding_status": "INCOMPLETE",
+            "observed_object_count": 0,
+            "reason": "INSUFFICIENT_EVIDENCE",
+            "stage": 0
+          },
+          "failure_kind": null,
+          "missing_requirements": [
+            "driver",
+            "fastener",
+            "driver",
+            "fastener"
+          ],
+          "missing_roles": [
+            "driver",
+            "fastener"
+          ],
+          "operation_bindings": {},
+          "resolved_graph": null,
+          "resolved_role_types": {},
+          "satisfied": false,
+          "status": "INCOMPLETE",
+          "unresolved_constraints": [
+            "driver",
+            "fastener"
+          ],
+          "unsatisfied_relations": []
+        },
+        "inspected_regions": [],
+        "search_state": "SEARCH_RECOVERABLE",
+        "stage": "initial"
+      },
+      {
+        "fine_search_state": "NO_CANDIDATE_SEARCHABLE",
+        "grounding": {
+          "assignment": null,
+          "complete": false,
+          "evidence": {
+            "grounding_evidence": {
+              "candidate_evaluations": {
+                "driver:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "driver"
+                },
+                "driver:object_0001": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "screwdriver",
+                        "power_driver",
+                        "power_drill",
+                        "Phillips screwdriver",
+                        "cordless power drill"
+                      ],
+                      "matched": null,
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "object_0001",
+                  "role_name": "driver"
+                },
+                "driver:repair_target": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "FIXED_TARGET",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "driver"
+                },
+                "fastener:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "fastener"
+                },
+                "fastener:object_0001": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "screw",
+                        "Phillips screw",
+                        "Phillips head screw"
+                      ],
+                      "matched": "screw",
+                      "status": "TRUE"
+                    }
+                  },
+                  "instance_id": "object_0001",
+                  "role_name": "fastener"
+                },
+                "fastener:repair_target": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "FIXED_TARGET",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "fastener"
+                },
+                "repair_target:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "repair_target"
+                },
+                "repair_target:object_0001": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "OBJECT",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "object_0001",
+                  "role_name": "repair_target"
+                },
+                "repair_target:repair_target": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "repair_target",
+                        "workshop_frame_joint",
+                        "recess"
+                      ],
+                      "matched": "repair_target",
+                      "status": "TRUE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "repair_target"
+                }
+              },
+              "individual_candidates_sufficient": false,
+              "role_plausibility": {
+                "driver": {
+                  "minimum_count": 1,
+                  "plausible": 0,
+                  "sufficient": false,
+                  "true": 0,
+                  "unknown": 0
+                },
+                "fastener": {
+                  "minimum_count": 1,
+                  "plausible": 1,
+                  "sufficient": true,
+                  "true": 1,
+                  "unknown": 0
+                },
+                "repair_target": {
+                  "minimum_count": 1,
+                  "plausible": 1,
+                  "sufficient": true,
+                  "true": 1,
+                  "unknown": 0
+                }
+              }
+            },
+            "grounding_status": "INCOMPLETE",
+            "observed_object_count": 1,
+            "reason": "NO_COMPATIBLE_DRIVER",
+            "stage": 1
+          },
+          "failure_kind": null,
+          "missing_requirements": [
+            "driver",
+            "driver"
+          ],
+          "missing_roles": [
+            "driver"
+          ],
+          "operation_bindings": {},
+          "resolved_graph": null,
+          "resolved_role_types": {},
+          "satisfied": false,
+          "status": "INCOMPLETE",
+          "unresolved_constraints": [
+            "driver"
+          ],
+          "unsatisfied_relations": []
+        },
+        "inspected_regions": [
+          "RIGHT_DRAWER"
+        ],
+        "region": "RIGHT_DRAWER",
+        "search_state": "SEARCH_RECOVERABLE",
+        "stage": "after_RIGHT_DRAWER"
+      },
+      {
+        "fine_search_state": "GROUNDING_COMPLETE",
+        "grounding": {
+          "assignment": {
+            "driver": "object_0002",
+            "fastener": "object_0001",
+            "repair_target": "repair_target"
+          },
+          "complete": true,
+          "evidence": {
+            "grounding": {
+              "assignment": {
+                "driver": "object_0002",
+                "fastener": "object_0001",
+                "repair_target": "repair_target"
+              },
+              "complete": true,
+              "evidence": {
+                "binding_provenance": {
+                  "driver:object_0002": {
+                    "grounding_mode": "FUNCTION_AND_RELATION",
+                    "observed_instance": "object_0002",
+                    "operation_evidence": [
+                      {
+                        "capability": "FASTEN_JOINT",
+                        "source_operation_id": "drive_fastener_group"
+                      }
+                    ],
+                    "relation_evidence": [
+                      {
+                        "object_id": "object_0001",
+                        "predicate": "COMPATIBLE_WITH",
+                        "status": "TRUE",
+                        "subject_id": "object_0002"
+                      },
+                      {
+                        "object_id": "repair_target",
+                        "predicate": "REACHES_TARGET",
+                        "status": "TRUE",
+                        "subject_id": "object_0002"
+                      }
+                    ],
+                    "role": "driver",
+                    "role_resolution": "DIRECT_FUNCTION_MATCH",
+                    "semantic_status": "TRUE"
+                  },
+                  "fastener:object_0001": {
+                    "grounding_mode": "FUNCTION_AND_RELATION",
+                    "observed_instance": "object_0001",
+                    "operation_evidence": [
+                      {
+                        "capability": "FASTEN_JOINT",
+                        "source_operation_id": "drive_fastener_group"
+                      }
+                    ],
+                    "relation_evidence": [
+                      {
+                        "object_id": "object_0001",
+                        "predicate": "COMPATIBLE_WITH",
+                        "status": "TRUE",
+                        "subject_id": "object_0002"
+                      },
+                      {
+                        "object_id": "repair_target",
+                        "predicate": "COMPATIBLE_WITH_TARGET",
+                        "status": "TRUE",
+                        "subject_id": "object_0001"
+                      },
+                      {
+                        "object_id": "repair_target",
+                        "predicate": "COMPATIBLE_WITH_TARGET",
+                        "provenance": "EXPLICIT_REQUIREMENT",
+                        "status": "TRUE",
+                        "subject_id": "object_0001"
+                      }
+                    ],
+                    "role": "fastener",
+                    "role_resolution": "JOINT_SEMANTIC_RESOLUTION",
+                    "semantic_status": "TRUE"
+                  },
+                  "repair_target:repair_target": {
+                    "grounding_mode": "FUNCTION_AND_RELATION",
+                    "observed_instance": "repair_target",
+                    "operation_evidence": [
+                      {
+                        "capability": "FASTEN_JOINT",
+                        "source_operation_id": "drive_fastener_group"
+                      }
+                    ],
+                    "relation_evidence": [
+                      {
+                        "object_id": "repair_target",
+                        "predicate": "REACHES_TARGET",
+                        "status": "TRUE",
+                        "subject_id": "object_0002"
+                      },
+                      {
+                        "object_id": "repair_target",
+                        "predicate": "COMPATIBLE_WITH_TARGET",
+                        "status": "TRUE",
+                        "subject_id": "object_0001"
+                      },
+                      {
+                        "object_id": "repair_target",
+                        "predicate": "COMPATIBLE_WITH_TARGET",
+                        "provenance": "EXPLICIT_REQUIREMENT",
+                        "status": "TRUE",
+                        "subject_id": "object_0001"
+                      }
+                    ],
+                    "role": "repair_target",
+                    "role_resolution": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS",
+                    "semantic_status": "TRUE"
+                  }
+                },
+                "individual_candidates_sufficient": true,
+                "joint_assignment_prefixes_examined": 3,
+                "operation_binding_complete": true,
+                "role_plausibility": {
+                  "driver": {
+                    "minimum_count": 1,
+                    "plausible": 1,
+                    "sufficient": true,
+                    "true": 1,
+                    "unknown": 0
+                  },
+                  "fastener": {
+                    "minimum_count": 1,
+                    "plausible": 1,
+                    "sufficient": true,
+                    "true": 1,
+                    "unknown": 0
+                  },
+                  "repair_target": {
+                    "minimum_count": 1,
+                    "plausible": 1,
+                    "sufficient": true,
+                    "true": 1,
+                    "unknown": 0
+                  }
+                },
+                "valid_assignment_count": 1
+              },
+              "failure_kind": null,
+              "missing_requirements": [],
+              "missing_roles": [],
+              "operation_bindings": {
+                "drive_fastener_group": [
+                  {
+                    "capability_id": "FASTEN_JOINT",
+                    "context": {
+                      "repair_target": "repair_target"
+                    },
+                    "planner_operation": "DRIVE_FASTENER_INTO_TARGET",
+                    "relation_evidence": [
+                      {
+                        "object_id": "object_0001",
+                        "predicate": "COMPATIBLE_WITH",
+                        "status": "TRUE",
+                        "subject_id": "object_0002"
+                      },
+                      {
+                        "object_id": "repair_target",
+                        "predicate": "REACHES_TARGET",
+                        "status": "TRUE",
+                        "subject_id": "object_0002"
+                      },
+                      {
+                        "object_id": "repair_target",
+                        "predicate": "COMPATIBLE_WITH_TARGET",
+                        "status": "TRUE",
+                        "subject_id": "object_0001"
+                      }
+                    ],
+                    "source_operation_id": "drive_fastener_group",
+                    "target_id": "object_0001",
+                    "tool_id": "object_0002"
+                  }
+                ]
+              },
+              "resolved_graph": null,
+              "resolved_role_types": {},
+              "satisfied": true,
+              "status": "COMPLETE",
+              "unresolved_constraints": [],
+              "unsatisfied_relations": []
+            },
+            "stage": 2
+          },
+          "failure_kind": null,
+          "missing_requirements": [],
+          "missing_roles": [],
+          "operation_bindings": {
+            "drive_fastener_group": [
+              {
+                "capability_id": "FASTEN_JOINT",
+                "context": {
+                  "repair_target": "repair_target"
+                },
+                "planner_operation": "DRIVE_FASTENER_INTO_TARGET",
+                "relation_evidence": [
+                  {
+                    "object_id": "object_0001",
+                    "predicate": "COMPATIBLE_WITH",
+                    "status": "TRUE",
+                    "subject_id": "object_0002"
+                  },
+                  {
+                    "object_id": "repair_target",
+                    "predicate": "REACHES_TARGET",
+                    "status": "TRUE",
+                    "subject_id": "object_0002"
+                  },
+                  {
+                    "object_id": "repair_target",
+                    "predicate": "COMPATIBLE_WITH_TARGET",
+                    "status": "TRUE",
+                    "subject_id": "object_0001"
+                  }
+                ],
+                "source_operation_id": "drive_fastener_group",
+                "target_id": "object_0001",
+                "tool_id": "object_0002"
+              }
+            ]
+          },
+          "resolved_graph": null,
+          "resolved_role_types": {},
+          "satisfied": true,
+          "status": "COMPLETE",
+          "unresolved_constraints": [],
+          "unsatisfied_relations": []
+        },
+        "inspected_regions": [
+          "RIGHT_DRAWER",
+          "TOOL_CABINET"
+        ],
+        "region": "TOOL_CABINET",
+        "search_state": "SATISFIED",
+        "stage": "after_TOOL_CABINET"
+      }
+    ],
+    "search_state": "SATISFIED",
+    "stage": 2
+  },
+  "failure_kind": null,
+  "missing_requirements": [],
+  "missing_roles": [],
+  "operation_bindings": {
+    "drive_fastener_group": [
+      {
+        "capability_id": "FASTEN_JOINT",
+        "context": {
+          "repair_target": "repair_target"
+        },
+        "planner_operation": "DRIVE_FASTENER_INTO_TARGET",
+        "relation_evidence": [
+          {
+            "object_id": "object_0001",
+            "predicate": "COMPATIBLE_WITH",
+            "status": "TRUE",
+            "subject_id": "object_0002"
+          },
+          {
+            "object_id": "repair_target",
+            "predicate": "REACHES_TARGET",
+            "status": "TRUE",
+            "subject_id": "object_0002"
+          },
+          {
+            "object_id": "repair_target",
+            "predicate": "COMPATIBLE_WITH_TARGET",
+            "status": "TRUE",
+            "subject_id": "object_0001"
+          }
+        ],
+        "source_operation_id": "drive_fastener_group",
+        "target_id": "object_0001",
+        "tool_id": "object_0002"
+      }
+    ]
+  },
+  "resolved_graph": null,
+  "resolved_role_types": {},
+  "satisfied": true,
+  "status": "COMPLETE",
+  "unresolved_constraints": [],
+  "unsatisfied_relations": []
+}

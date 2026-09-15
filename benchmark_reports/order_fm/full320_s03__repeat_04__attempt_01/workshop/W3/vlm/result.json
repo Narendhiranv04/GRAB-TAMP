@@ -1,0 +1,67 @@
+{
+  "assignment": {
+    "driver": "object_0002",
+    "fastener": "object_0001"
+  },
+  "candidate_plan": [
+    {
+      "action_index": 1,
+      "action_instance_id": "fact_001_pick",
+      "arguments": [
+        "object_0002",
+        "TOOL_CABINET"
+      ],
+      "operator": "PICK"
+    },
+    {
+      "action_index": 2,
+      "action_instance_id": "fact_002_place",
+      "arguments": [
+        "object_0002",
+        "MAIN_WORKBENCH_ZONE"
+      ],
+      "operator": "PLACE"
+    }
+  ],
+  "candidate_search_statistics": {
+    "algorithm": "deterministic_astar_symbolic_state_search",
+    "expanded_states": 5,
+    "frontier_peak": 2,
+    "generated_states": 4,
+    "is_partial": true,
+    "plan_cost": 2,
+    "plan_length": 2,
+    "satisfied_goals": 2,
+    "search_time_ms": 0.019998056814074516,
+    "total_goals": 3,
+    "visited_states": 5
+  },
+  "canonicalization_succeeded": true,
+  "domain": "workshop",
+  "failure_category": null,
+  "failure_reason": null,
+  "functional_spec_complete": false,
+  "inspected_regions": [
+    "TOOL_CABINET",
+    "LEFT_DRAWER",
+    "RIGHT_DRAWER"
+  ],
+  "mode": "vlm",
+  "outcome_category": "FUNCTIONAL_ASSIGNMENT_FAILURE",
+  "plan": [],
+  "search_statistics": {
+    "algorithm": "deterministic_astar_symbolic_state_search",
+    "expanded_states": 5,
+    "frontier_peak": 2,
+    "generated_states": 4,
+    "is_partial": true,
+    "plan_cost": 2,
+    "plan_length": 2,
+    "satisfied_goals": 2,
+    "search_time_ms": 0.019998056814074516,
+    "total_goals": 3,
+    "visited_states": 5
+  },
+  "status": "EXHAUSTED_NO_VALID_GROUNDING",
+  "variant": "W3"
+}

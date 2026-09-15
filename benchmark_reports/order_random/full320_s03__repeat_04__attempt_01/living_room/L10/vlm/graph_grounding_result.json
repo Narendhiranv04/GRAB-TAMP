@@ -1,0 +1,119 @@
+{
+  "assignment": {
+    "REMOTE": "tv_remote",
+    "SEATING_PAIR": "SEATING_PAIR"
+  },
+  "complete": false,
+  "evidence": {
+    "binding_provenance": {
+      "REMOTE:tv_remote": {
+        "grounding_mode": "FUNCTION_AND_RELATION",
+        "observed_instance": "tv_remote",
+        "operation_evidence": [],
+        "relation_evidence": [],
+        "role": "REMOTE",
+        "role_resolution": "DIRECT_FUNCTION_MATCH",
+        "semantic_status": "TRUE"
+      },
+      "SEATING_PAIR:SEATING_PAIR": {
+        "grounding_mode": "FUNCTION_AND_RELATION",
+        "observed_instance": "SEATING_PAIR",
+        "operation_evidence": [],
+        "relation_evidence": [],
+        "role": "SEATING_PAIR",
+        "role_resolution": "OPERATION_INDUCED_ABSTRACT_ROLE_REQUIREMENT",
+        "semantic_status": "TRUE"
+      }
+    },
+    "candidate_roles": [
+      "REMOTE",
+      "SEATING_PAIR"
+    ],
+    "individual_candidates_sufficient": false,
+    "joint_assignment_prefixes_examined": 2,
+    "operation_binding_complete": true,
+    "original_grounding_status": "INFEASIBLE",
+    "projected_role_plausibility": {
+      "REMOTE": {
+        "minimum_count": 1,
+        "plausible": 1,
+        "sufficient": true,
+        "true": 1,
+        "unknown": 0
+      },
+      "SEATING_PAIR": {
+        "minimum_count": 1,
+        "plausible": 1,
+        "sufficient": true,
+        "true": 1,
+        "unknown": 0
+      }
+    },
+    "role_plausibility": {
+      "CUP_SAUCER_SET": {
+        "minimum_count": 2,
+        "plausible": 0,
+        "sufficient": false,
+        "true": 0,
+        "unknown": 0
+      },
+      "PERSONAL_CUP_SAUCER_REGION": {
+        "minimum_count": 2,
+        "plausible": 0,
+        "sufficient": false,
+        "true": 0,
+        "unknown": 0
+      },
+      "REMOTE": {
+        "minimum_count": 1,
+        "plausible": 1,
+        "sufficient": true,
+        "true": 1,
+        "unknown": 0
+      },
+      "SEATING_PAIR": {
+        "minimum_count": 1,
+        "plausible": 1,
+        "sufficient": true,
+        "true": 1,
+        "unknown": 0
+      },
+      "SEATING_POSITION": {
+        "minimum_count": 2,
+        "plausible": 0,
+        "sufficient": false,
+        "true": 0,
+        "unknown": 0
+      },
+      "SHARED_REMOTE_REGION": {
+        "minimum_count": 1,
+        "plausible": 0,
+        "sufficient": false,
+        "true": 0,
+        "unknown": 0
+      }
+    },
+    "search_exhausted": true,
+    "valid_assignment_count": 1
+  },
+  "failure_kind": "OBJECT_DISCOVERY_FAILURE",
+  "missing_requirements": [
+    "CUP_SAUCER_SET",
+    "PERSONAL_CUP_SAUCER_REGION",
+    "SEATING_POSITION",
+    "SHARED_REMOTE_REGION"
+  ],
+  "missing_roles": [
+    "CUP_SAUCER_SET",
+    "PERSONAL_CUP_SAUCER_REGION",
+    "SEATING_POSITION",
+    "SHARED_REMOTE_REGION"
+  ],
+  "operation_bindings": {},
+  "resolved_graph": null,
+  "resolved_role_types": {},
+  "satisfied": false,
+  "status": "PARTIAL_VERIFIED_GROUNDING",
+  "unresolved_constraints": [],
+  "unsatisfied_relations": []
+}

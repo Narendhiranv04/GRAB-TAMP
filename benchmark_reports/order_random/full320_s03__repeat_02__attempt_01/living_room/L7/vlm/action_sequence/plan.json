@@ -1,0 +1,51 @@
+{
+  "actions": [
+    {
+      "arguments": {
+        "object": "object_0001"
+      },
+      "cost": 1,
+      "operator": "PICK",
+      "step": 0
+    },
+    {
+      "arguments": {
+        "object": "object_0001",
+        "region": "region_0001"
+      },
+      "cost": 1,
+      "operator": "PLACE",
+      "step": 1
+    },
+    {
+      "arguments": {
+        "object": "object_0002"
+      },
+      "cost": 1,
+      "operator": "PICK",
+      "step": 2
+    },
+    {
+      "arguments": {
+        "object": "object_0002",
+        "region": "region_0001"
+      },
+      "cost": 1,
+      "operator": "PLACE",
+      "step": 3
+    }
+  ],
+  "search_statistics": {
+    "algorithm": "deterministic_astar_symbolic_state_search",
+    "expanded_states": 8,
+    "frontier_peak": 2,
+    "generated_states": 8,
+    "is_partial": false,
+    "plan_cost": 4,
+    "plan_length": 4,
+    "satisfied_goals": 2,
+    "search_time_ms": 0.024265027604997158,
+    "total_goals": 2,
+    "visited_states": 8
+  }
+}

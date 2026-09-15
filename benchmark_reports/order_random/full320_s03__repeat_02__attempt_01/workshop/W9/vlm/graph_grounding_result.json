@@ -1,0 +1,108 @@
+{
+  "assignment": {
+    "driver": "object_0001",
+    "fastener": "object_0003"
+  },
+  "complete": false,
+  "evidence": {
+    "binding_provenance": {
+      "driver:object_0001": {
+        "grounding_mode": "FUNCTION_AND_RELATION",
+        "observed_instance": "object_0001",
+        "operation_evidence": [],
+        "relation_evidence": [
+          {
+            "object_id": "object_0003",
+            "predicate": "COMPATIBLE_WITH",
+            "provenance": "EXPLICIT_REQUIREMENT",
+            "status": "TRUE",
+            "subject_id": "object_0001"
+          }
+        ],
+        "role": "driver",
+        "role_resolution": "DIRECT_FUNCTION_MATCH",
+        "semantic_status": "TRUE"
+      },
+      "fastener:object_0003": {
+        "grounding_mode": "FUNCTION_AND_RELATION",
+        "observed_instance": "object_0003",
+        "operation_evidence": [],
+        "relation_evidence": [
+          {
+            "object_id": "object_0003",
+            "predicate": "COMPATIBLE_WITH",
+            "provenance": "EXPLICIT_REQUIREMENT",
+            "status": "TRUE",
+            "subject_id": "object_0001"
+          }
+        ],
+        "role": "fastener",
+        "role_resolution": "DIRECT_FUNCTION_MATCH",
+        "semantic_status": "TRUE"
+      }
+    },
+    "candidate_roles": [
+      "driver",
+      "fastener"
+    ],
+    "individual_candidates_sufficient": true,
+    "joint_assignment_prefixes_examined": 2,
+    "operation_binding_complete": true,
+    "original_grounding_status": "INFEASIBLE",
+    "projected_role_plausibility": {
+      "driver": {
+        "minimum_count": 1,
+        "plausible": 2,
+        "sufficient": true,
+        "true": 2,
+        "unknown": 0
+      },
+      "fastener": {
+        "minimum_count": 1,
+        "plausible": 1,
+        "sufficient": true,
+        "true": 1,
+        "unknown": 0
+      }
+    },
+    "role_plausibility": {
+      "driver": {
+        "minimum_count": 1,
+        "plausible": 2,
+        "sufficient": true,
+        "true": 2,
+        "unknown": 0
+      },
+      "fastener": {
+        "minimum_count": 1,
+        "plausible": 1,
+        "sufficient": true,
+        "true": 1,
+        "unknown": 0
+      },
+      "repair_target": {
+        "minimum_count": 1,
+        "plausible": 1,
+        "sufficient": true,
+        "true": 1,
+        "unknown": 0
+      }
+    },
+    "search_exhausted": true,
+    "valid_assignment_count": 1
+  },
+  "failure_kind": "FUNCTIONAL_ASSIGNMENT_FAILURE",
+  "missing_requirements": [
+    "repair_target"
+  ],
+  "missing_roles": [
+    "repair_target"
+  ],
+  "operation_bindings": {},
+  "resolved_graph": null,
+  "resolved_role_types": {},
+  "satisfied": false,
+  "status": "PARTIAL_VERIFIED_GROUNDING",
+  "unresolved_constraints": [],
+  "unsatisfied_relations": []
+}

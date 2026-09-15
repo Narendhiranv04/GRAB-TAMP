@@ -1,0 +1,225 @@
+{
+  "initial_atoms": [
+    [
+      "at",
+      "object_0001",
+      "RIGHT_DRAWER"
+    ],
+    [
+      "at",
+      "object_0003",
+      "TOOL_CABINET"
+    ],
+    [
+      "hand_empty"
+    ],
+    [
+      "open",
+      "LEFT_DRAWER"
+    ],
+    [
+      "open",
+      "RIGHT_DRAWER"
+    ],
+    [
+      "open",
+      "TOOL_CABINET"
+    ]
+  ],
+  "goal_atoms": [
+    [
+      "at",
+      "object_0003",
+      "MAIN_WORKBENCH_ZONE"
+    ],
+    [
+      "hand_empty"
+    ],
+    [
+      "repaired",
+      "workshop_frame_joint"
+    ]
+  ],
+  "actions": [
+    {
+      "name": "PICK",
+      "arguments": [
+        "object_0001",
+        "RIGHT_DRAWER"
+      ],
+      "positive_preconditions": [
+        [
+          "at",
+          "object_0001",
+          "RIGHT_DRAWER"
+        ],
+        [
+          "hand_empty"
+        ],
+        [
+          "open",
+          "RIGHT_DRAWER"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "holding",
+          "object_0001"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "at",
+          "object_0001",
+          "RIGHT_DRAWER"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PLACE",
+      "arguments": [
+        "object_0001",
+        "workshop_frame_joint"
+      ],
+      "positive_preconditions": [
+        [
+          "holding",
+          "object_0001"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "at",
+          "object_0001",
+          "workshop_frame_joint"
+        ],
+        [
+          "hand_empty"
+        ],
+        [
+          "inserted",
+          "object_0001",
+          "workshop_frame_joint"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0001"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PICK",
+      "arguments": [
+        "object_0003",
+        "TOOL_CABINET"
+      ],
+      "positive_preconditions": [
+        [
+          "at",
+          "object_0003",
+          "TOOL_CABINET"
+        ],
+        [
+          "hand_empty"
+        ],
+        [
+          "open",
+          "TOOL_CABINET"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "holding",
+          "object_0003"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "at",
+          "object_0003",
+          "TOOL_CABINET"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PLACE",
+      "arguments": [
+        "object_0003",
+        "MAIN_WORKBENCH_ZONE"
+      ],
+      "positive_preconditions": [
+        [
+          "holding",
+          "object_0003"
+        ],
+        [
+          "repaired",
+          "workshop_frame_joint"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "at",
+          "object_0003",
+          "MAIN_WORKBENCH_ZONE"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0003"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PLACE",
+      "arguments": [
+        "object_0003",
+        "MAIN_WORKBENCH_ZONE"
+      ],
+      "positive_preconditions": [
+        [
+          "holding",
+          "object_0003"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "at",
+          "object_0003",
+          "MAIN_WORKBENCH_ZONE"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0003"
+        ]
+      ],
+      "cost": 1
+    }
+  ]
+}

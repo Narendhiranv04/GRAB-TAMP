@@ -1,0 +1,1717 @@
+{
+  "assignment": null,
+  "complete": false,
+  "evidence": {
+    "causal_search_recovery": false,
+    "fine_search_state": "SEARCH_EXHAUSTED",
+    "grounding_evidence": {
+      "candidate_evaluations": {
+        "driver:LEFT_DRAWER": {
+          "checks": {
+            "entity_kind": {
+              "actual": "REGION",
+              "expected": "OBJECT",
+              "status": "FALSE"
+            }
+          },
+          "instance_id": "LEFT_DRAWER",
+          "role_name": "driver"
+        },
+        "driver:RIGHT_DRAWER": {
+          "checks": {
+            "entity_kind": {
+              "actual": "REGION",
+              "expected": "OBJECT",
+              "status": "FALSE"
+            }
+          },
+          "instance_id": "RIGHT_DRAWER",
+          "role_name": "driver"
+        },
+        "driver:TOOL_CABINET": {
+          "checks": {
+            "entity_kind": {
+              "actual": "REGION",
+              "expected": "OBJECT",
+              "status": "FALSE"
+            }
+          },
+          "instance_id": "TOOL_CABINET",
+          "role_name": "driver"
+        },
+        "driver:object_0001": {
+          "checks": {
+            "semantic_categories": {
+              "expected": [
+                "screwdriver",
+                "power_driver",
+                "power_drill",
+                "Phillips screwdriver",
+                "cordless power drill"
+              ],
+              "matched": "screwdriver",
+              "status": "TRUE"
+            }
+          },
+          "instance_id": "object_0001",
+          "role_name": "driver"
+        },
+        "driver:object_0002": {
+          "checks": {
+            "semantic_categories": {
+              "expected": [
+                "screwdriver",
+                "power_driver",
+                "power_drill",
+                "Phillips screwdriver",
+                "cordless power drill"
+              ],
+              "matched": "power_driver",
+              "status": "TRUE"
+            }
+          },
+          "instance_id": "object_0002",
+          "role_name": "driver"
+        },
+        "driver:object_0003": {
+          "checks": {
+            "semantic_categories": {
+              "expected": [
+                "screwdriver",
+                "power_driver",
+                "power_drill",
+                "Phillips screwdriver",
+                "cordless power drill"
+              ],
+              "matched": "screwdriver",
+              "status": "TRUE"
+            }
+          },
+          "instance_id": "object_0003",
+          "role_name": "driver"
+        },
+        "driver:repair_target": {
+          "checks": {
+            "entity_kind": {
+              "actual": "FIXED_TARGET",
+              "expected": "OBJECT",
+              "status": "FALSE"
+            }
+          },
+          "instance_id": "repair_target",
+          "role_name": "driver"
+        },
+        "fastener:LEFT_DRAWER": {
+          "checks": {
+            "entity_kind": {
+              "actual": "REGION",
+              "expected": "OBJECT",
+              "status": "FALSE"
+            }
+          },
+          "instance_id": "LEFT_DRAWER",
+          "role_name": "fastener"
+        },
+        "fastener:RIGHT_DRAWER": {
+          "checks": {
+            "entity_kind": {
+              "actual": "REGION",
+              "expected": "OBJECT",
+              "status": "FALSE"
+            }
+          },
+          "instance_id": "RIGHT_DRAWER",
+          "role_name": "fastener"
+        },
+        "fastener:TOOL_CABINET": {
+          "checks": {
+            "entity_kind": {
+              "actual": "REGION",
+              "expected": "OBJECT",
+              "status": "FALSE"
+            }
+          },
+          "instance_id": "TOOL_CABINET",
+          "role_name": "fastener"
+        },
+        "fastener:object_0001": {
+          "checks": {
+            "semantic_categories": {
+              "expected": [
+                "screw",
+                "Phillips screw",
+                "Phillips head screw"
+              ],
+              "matched": null,
+              "status": "FALSE"
+            }
+          },
+          "instance_id": "object_0001",
+          "role_name": "fastener"
+        },
+        "fastener:object_0002": {
+          "checks": {
+            "semantic_categories": {
+              "expected": [
+                "screw",
+                "Phillips screw",
+                "Phillips head screw"
+              ],
+              "matched": null,
+              "status": "FALSE"
+            }
+          },
+          "instance_id": "object_0002",
+          "role_name": "fastener"
+        },
+        "fastener:object_0003": {
+          "checks": {
+            "semantic_categories": {
+              "expected": [
+                "screw",
+                "Phillips screw",
+                "Phillips head screw"
+              ],
+              "matched": null,
+              "status": "FALSE"
+            }
+          },
+          "instance_id": "object_0003",
+          "role_name": "fastener"
+        },
+        "fastener:repair_target": {
+          "checks": {
+            "entity_kind": {
+              "actual": "FIXED_TARGET",
+              "expected": "OBJECT",
+              "status": "FALSE"
+            }
+          },
+          "instance_id": "repair_target",
+          "role_name": "fastener"
+        },
+        "repair_target:LEFT_DRAWER": {
+          "checks": {
+            "entity_kind": {
+              "actual": "REGION",
+              "expected": "FIXED_TARGET",
+              "status": "FALSE"
+            }
+          },
+          "instance_id": "LEFT_DRAWER",
+          "role_name": "repair_target"
+        },
+        "repair_target:RIGHT_DRAWER": {
+          "checks": {
+            "entity_kind": {
+              "actual": "REGION",
+              "expected": "FIXED_TARGET",
+              "status": "FALSE"
+            }
+          },
+          "instance_id": "RIGHT_DRAWER",
+          "role_name": "repair_target"
+        },
+        "repair_target:TOOL_CABINET": {
+          "checks": {
+            "entity_kind": {
+              "actual": "REGION",
+              "expected": "FIXED_TARGET",
+              "status": "FALSE"
+            }
+          },
+          "instance_id": "TOOL_CABINET",
+          "role_name": "repair_target"
+        },
+        "repair_target:object_0001": {
+          "checks": {
+            "entity_kind": {
+              "actual": "OBJECT",
+              "expected": "FIXED_TARGET",
+              "status": "FALSE"
+            }
+          },
+          "instance_id": "object_0001",
+          "role_name": "repair_target"
+        },
+        "repair_target:object_0002": {
+          "checks": {
+            "entity_kind": {
+              "actual": "OBJECT",
+              "expected": "FIXED_TARGET",
+              "status": "FALSE"
+            }
+          },
+          "instance_id": "object_0002",
+          "role_name": "repair_target"
+        },
+        "repair_target:object_0003": {
+          "checks": {
+            "entity_kind": {
+              "actual": "OBJECT",
+              "expected": "FIXED_TARGET",
+              "status": "FALSE"
+            }
+          },
+          "instance_id": "object_0003",
+          "role_name": "repair_target"
+        },
+        "repair_target:repair_target": {
+          "checks": {
+            "semantic_categories": {
+              "expected": [
+                "repair_target",
+                "workshop_frame_joint",
+                "recess"
+              ],
+              "matched": "repair_target",
+              "status": "TRUE"
+            }
+          },
+          "instance_id": "repair_target",
+          "role_name": "repair_target"
+        }
+      },
+      "individual_candidates_sufficient": false,
+      "role_plausibility": {
+        "driver": {
+          "minimum_count": 1,
+          "plausible": 3,
+          "sufficient": true,
+          "true": 3,
+          "unknown": 0
+        },
+        "fastener": {
+          "minimum_count": 1,
+          "plausible": 0,
+          "sufficient": false,
+          "true": 0,
+          "unknown": 0
+        },
+        "repair_target": {
+          "minimum_count": 1,
+          "plausible": 1,
+          "sufficient": true,
+          "true": 1,
+          "unknown": 0
+        }
+      }
+    },
+    "grounding_snapshots": [
+      {
+        "fine_search_state": "NO_CANDIDATE_SEARCHABLE",
+        "grounding": {
+          "assignment": null,
+          "complete": false,
+          "evidence": {
+            "grounding_evidence": {
+              "candidate_evaluations": {
+                "driver:LEFT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "LEFT_DRAWER",
+                  "role_name": "driver"
+                },
+                "driver:RIGHT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "RIGHT_DRAWER",
+                  "role_name": "driver"
+                },
+                "driver:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "driver"
+                },
+                "driver:repair_target": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "FIXED_TARGET",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "driver"
+                },
+                "fastener:LEFT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "LEFT_DRAWER",
+                  "role_name": "fastener"
+                },
+                "fastener:RIGHT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "RIGHT_DRAWER",
+                  "role_name": "fastener"
+                },
+                "fastener:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "fastener"
+                },
+                "fastener:repair_target": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "FIXED_TARGET",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "fastener"
+                },
+                "repair_target:LEFT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "LEFT_DRAWER",
+                  "role_name": "repair_target"
+                },
+                "repair_target:RIGHT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "RIGHT_DRAWER",
+                  "role_name": "repair_target"
+                },
+                "repair_target:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "repair_target"
+                },
+                "repair_target:repair_target": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "repair_target",
+                        "workshop_frame_joint",
+                        "recess"
+                      ],
+                      "matched": "repair_target",
+                      "status": "TRUE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "repair_target"
+                }
+              },
+              "individual_candidates_sufficient": false,
+              "role_plausibility": {
+                "driver": {
+                  "minimum_count": 1,
+                  "plausible": 0,
+                  "sufficient": false,
+                  "true": 0,
+                  "unknown": 0
+                },
+                "fastener": {
+                  "minimum_count": 1,
+                  "plausible": 0,
+                  "sufficient": false,
+                  "true": 0,
+                  "unknown": 0
+                },
+                "repair_target": {
+                  "minimum_count": 1,
+                  "plausible": 1,
+                  "sufficient": true,
+                  "true": 1,
+                  "unknown": 0
+                }
+              }
+            },
+            "grounding_status": "INCOMPLETE",
+            "observed_object_count": 0,
+            "reason": "INSUFFICIENT_EVIDENCE",
+            "stage": 0
+          },
+          "failure_kind": null,
+          "missing_requirements": [
+            "fastener",
+            "driver",
+            "fastener",
+            "driver"
+          ],
+          "missing_roles": [
+            "fastener",
+            "driver"
+          ],
+          "operation_bindings": {},
+          "resolved_graph": null,
+          "resolved_role_types": {},
+          "satisfied": false,
+          "status": "INCOMPLETE",
+          "unresolved_constraints": [
+            "fastener",
+            "driver"
+          ],
+          "unsatisfied_relations": []
+        },
+        "inspected_regions": [],
+        "search_state": "SEARCH_RECOVERABLE",
+        "stage": "initial"
+      },
+      {
+        "fine_search_state": "NO_CANDIDATE_SEARCHABLE",
+        "grounding": {
+          "assignment": null,
+          "complete": false,
+          "evidence": {
+            "grounding_evidence": {
+              "candidate_evaluations": {
+                "driver:LEFT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "LEFT_DRAWER",
+                  "role_name": "driver"
+                },
+                "driver:RIGHT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "RIGHT_DRAWER",
+                  "role_name": "driver"
+                },
+                "driver:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "driver"
+                },
+                "driver:object_0001": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "screwdriver",
+                        "power_driver",
+                        "power_drill",
+                        "Phillips screwdriver",
+                        "cordless power drill"
+                      ],
+                      "matched": "screwdriver",
+                      "status": "TRUE"
+                    }
+                  },
+                  "instance_id": "object_0001",
+                  "role_name": "driver"
+                },
+                "driver:repair_target": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "FIXED_TARGET",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "driver"
+                },
+                "fastener:LEFT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "LEFT_DRAWER",
+                  "role_name": "fastener"
+                },
+                "fastener:RIGHT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "RIGHT_DRAWER",
+                  "role_name": "fastener"
+                },
+                "fastener:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "fastener"
+                },
+                "fastener:object_0001": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "screw",
+                        "Phillips screw",
+                        "Phillips head screw"
+                      ],
+                      "matched": null,
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "object_0001",
+                  "role_name": "fastener"
+                },
+                "fastener:repair_target": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "FIXED_TARGET",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "fastener"
+                },
+                "repair_target:LEFT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "LEFT_DRAWER",
+                  "role_name": "repair_target"
+                },
+                "repair_target:RIGHT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "RIGHT_DRAWER",
+                  "role_name": "repair_target"
+                },
+                "repair_target:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "repair_target"
+                },
+                "repair_target:object_0001": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "OBJECT",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "object_0001",
+                  "role_name": "repair_target"
+                },
+                "repair_target:repair_target": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "repair_target",
+                        "workshop_frame_joint",
+                        "recess"
+                      ],
+                      "matched": "repair_target",
+                      "status": "TRUE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "repair_target"
+                }
+              },
+              "individual_candidates_sufficient": false,
+              "role_plausibility": {
+                "driver": {
+                  "minimum_count": 1,
+                  "plausible": 1,
+                  "sufficient": true,
+                  "true": 1,
+                  "unknown": 0
+                },
+                "fastener": {
+                  "minimum_count": 1,
+                  "plausible": 0,
+                  "sufficient": false,
+                  "true": 0,
+                  "unknown": 0
+                },
+                "repair_target": {
+                  "minimum_count": 1,
+                  "plausible": 1,
+                  "sufficient": true,
+                  "true": 1,
+                  "unknown": 0
+                }
+              }
+            },
+            "grounding_status": "INCOMPLETE",
+            "observed_object_count": 1,
+            "reason": "NO_COMPATIBLE_SCREW",
+            "stage": 1
+          },
+          "failure_kind": null,
+          "missing_requirements": [
+            "fastener",
+            "fastener"
+          ],
+          "missing_roles": [
+            "fastener"
+          ],
+          "operation_bindings": {},
+          "resolved_graph": null,
+          "resolved_role_types": {},
+          "satisfied": false,
+          "status": "INCOMPLETE",
+          "unresolved_constraints": [
+            "fastener"
+          ],
+          "unsatisfied_relations": []
+        },
+        "inspected_regions": [
+          "LEFT_DRAWER"
+        ],
+        "region": "LEFT_DRAWER",
+        "search_state": "SEARCH_RECOVERABLE",
+        "stage": "after_LEFT_DRAWER"
+      },
+      {
+        "fine_search_state": "NO_CANDIDATE_SEARCHABLE",
+        "grounding": {
+          "assignment": null,
+          "complete": false,
+          "evidence": {
+            "grounding_evidence": {
+              "candidate_evaluations": {
+                "driver:LEFT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "LEFT_DRAWER",
+                  "role_name": "driver"
+                },
+                "driver:RIGHT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "RIGHT_DRAWER",
+                  "role_name": "driver"
+                },
+                "driver:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "driver"
+                },
+                "driver:object_0001": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "screwdriver",
+                        "power_driver",
+                        "power_drill",
+                        "Phillips screwdriver",
+                        "cordless power drill"
+                      ],
+                      "matched": "screwdriver",
+                      "status": "TRUE"
+                    }
+                  },
+                  "instance_id": "object_0001",
+                  "role_name": "driver"
+                },
+                "driver:object_0002": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "screwdriver",
+                        "power_driver",
+                        "power_drill",
+                        "Phillips screwdriver",
+                        "cordless power drill"
+                      ],
+                      "matched": "power_driver",
+                      "status": "TRUE"
+                    }
+                  },
+                  "instance_id": "object_0002",
+                  "role_name": "driver"
+                },
+                "driver:repair_target": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "FIXED_TARGET",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "driver"
+                },
+                "fastener:LEFT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "LEFT_DRAWER",
+                  "role_name": "fastener"
+                },
+                "fastener:RIGHT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "RIGHT_DRAWER",
+                  "role_name": "fastener"
+                },
+                "fastener:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "fastener"
+                },
+                "fastener:object_0001": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "screw",
+                        "Phillips screw",
+                        "Phillips head screw"
+                      ],
+                      "matched": null,
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "object_0001",
+                  "role_name": "fastener"
+                },
+                "fastener:object_0002": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "screw",
+                        "Phillips screw",
+                        "Phillips head screw"
+                      ],
+                      "matched": null,
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "object_0002",
+                  "role_name": "fastener"
+                },
+                "fastener:repair_target": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "FIXED_TARGET",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "fastener"
+                },
+                "repair_target:LEFT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "LEFT_DRAWER",
+                  "role_name": "repair_target"
+                },
+                "repair_target:RIGHT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "RIGHT_DRAWER",
+                  "role_name": "repair_target"
+                },
+                "repair_target:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "repair_target"
+                },
+                "repair_target:object_0001": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "OBJECT",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "object_0001",
+                  "role_name": "repair_target"
+                },
+                "repair_target:object_0002": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "OBJECT",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "object_0002",
+                  "role_name": "repair_target"
+                },
+                "repair_target:repair_target": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "repair_target",
+                        "workshop_frame_joint",
+                        "recess"
+                      ],
+                      "matched": "repair_target",
+                      "status": "TRUE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "repair_target"
+                }
+              },
+              "individual_candidates_sufficient": false,
+              "role_plausibility": {
+                "driver": {
+                  "minimum_count": 1,
+                  "plausible": 2,
+                  "sufficient": true,
+                  "true": 2,
+                  "unknown": 0
+                },
+                "fastener": {
+                  "minimum_count": 1,
+                  "plausible": 0,
+                  "sufficient": false,
+                  "true": 0,
+                  "unknown": 0
+                },
+                "repair_target": {
+                  "minimum_count": 1,
+                  "plausible": 1,
+                  "sufficient": true,
+                  "true": 1,
+                  "unknown": 0
+                }
+              }
+            },
+            "grounding_status": "INCOMPLETE",
+            "observed_object_count": 2,
+            "reason": "NO_COMPATIBLE_SCREW",
+            "stage": 2
+          },
+          "failure_kind": null,
+          "missing_requirements": [
+            "fastener",
+            "fastener"
+          ],
+          "missing_roles": [
+            "fastener"
+          ],
+          "operation_bindings": {},
+          "resolved_graph": null,
+          "resolved_role_types": {},
+          "satisfied": false,
+          "status": "INCOMPLETE",
+          "unresolved_constraints": [
+            "fastener"
+          ],
+          "unsatisfied_relations": []
+        },
+        "inspected_regions": [
+          "LEFT_DRAWER",
+          "RIGHT_DRAWER"
+        ],
+        "region": "RIGHT_DRAWER",
+        "search_state": "SEARCH_RECOVERABLE",
+        "stage": "after_RIGHT_DRAWER"
+      },
+      {
+        "fine_search_state": "SEARCH_EXHAUSTED",
+        "grounding": {
+          "assignment": null,
+          "complete": false,
+          "evidence": {
+            "grounding_evidence": {
+              "candidate_evaluations": {
+                "driver:LEFT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "LEFT_DRAWER",
+                  "role_name": "driver"
+                },
+                "driver:RIGHT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "RIGHT_DRAWER",
+                  "role_name": "driver"
+                },
+                "driver:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "driver"
+                },
+                "driver:object_0001": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "screwdriver",
+                        "power_driver",
+                        "power_drill",
+                        "Phillips screwdriver",
+                        "cordless power drill"
+                      ],
+                      "matched": "screwdriver",
+                      "status": "TRUE"
+                    }
+                  },
+                  "instance_id": "object_0001",
+                  "role_name": "driver"
+                },
+                "driver:object_0002": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "screwdriver",
+                        "power_driver",
+                        "power_drill",
+                        "Phillips screwdriver",
+                        "cordless power drill"
+                      ],
+                      "matched": "power_driver",
+                      "status": "TRUE"
+                    }
+                  },
+                  "instance_id": "object_0002",
+                  "role_name": "driver"
+                },
+                "driver:object_0003": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "screwdriver",
+                        "power_driver",
+                        "power_drill",
+                        "Phillips screwdriver",
+                        "cordless power drill"
+                      ],
+                      "matched": "screwdriver",
+                      "status": "TRUE"
+                    }
+                  },
+                  "instance_id": "object_0003",
+                  "role_name": "driver"
+                },
+                "driver:repair_target": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "FIXED_TARGET",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "driver"
+                },
+                "fastener:LEFT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "LEFT_DRAWER",
+                  "role_name": "fastener"
+                },
+                "fastener:RIGHT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "RIGHT_DRAWER",
+                  "role_name": "fastener"
+                },
+                "fastener:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "fastener"
+                },
+                "fastener:object_0001": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "screw",
+                        "Phillips screw",
+                        "Phillips head screw"
+                      ],
+                      "matched": null,
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "object_0001",
+                  "role_name": "fastener"
+                },
+                "fastener:object_0002": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "screw",
+                        "Phillips screw",
+                        "Phillips head screw"
+                      ],
+                      "matched": null,
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "object_0002",
+                  "role_name": "fastener"
+                },
+                "fastener:object_0003": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "screw",
+                        "Phillips screw",
+                        "Phillips head screw"
+                      ],
+                      "matched": null,
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "object_0003",
+                  "role_name": "fastener"
+                },
+                "fastener:repair_target": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "FIXED_TARGET",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "fastener"
+                },
+                "repair_target:LEFT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "LEFT_DRAWER",
+                  "role_name": "repair_target"
+                },
+                "repair_target:RIGHT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "RIGHT_DRAWER",
+                  "role_name": "repair_target"
+                },
+                "repair_target:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "repair_target"
+                },
+                "repair_target:object_0001": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "OBJECT",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "object_0001",
+                  "role_name": "repair_target"
+                },
+                "repair_target:object_0002": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "OBJECT",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "object_0002",
+                  "role_name": "repair_target"
+                },
+                "repair_target:object_0003": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "OBJECT",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "object_0003",
+                  "role_name": "repair_target"
+                },
+                "repair_target:repair_target": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "repair_target",
+                        "workshop_frame_joint",
+                        "recess"
+                      ],
+                      "matched": "repair_target",
+                      "status": "TRUE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "repair_target"
+                }
+              },
+              "individual_candidates_sufficient": false,
+              "role_plausibility": {
+                "driver": {
+                  "minimum_count": 1,
+                  "plausible": 3,
+                  "sufficient": true,
+                  "true": 3,
+                  "unknown": 0
+                },
+                "fastener": {
+                  "minimum_count": 1,
+                  "plausible": 0,
+                  "sufficient": false,
+                  "true": 0,
+                  "unknown": 0
+                },
+                "repair_target": {
+                  "minimum_count": 1,
+                  "plausible": 1,
+                  "sufficient": true,
+                  "true": 1,
+                  "unknown": 0
+                }
+              }
+            },
+            "grounding_status": "INCOMPLETE",
+            "observed_object_count": 3,
+            "reason": "NO_COMPATIBLE_SCREW",
+            "stage": 3
+          },
+          "failure_kind": null,
+          "missing_requirements": [
+            "fastener",
+            "fastener"
+          ],
+          "missing_roles": [
+            "fastener"
+          ],
+          "operation_bindings": {},
+          "resolved_graph": null,
+          "resolved_role_types": {},
+          "satisfied": false,
+          "status": "INCOMPLETE",
+          "unresolved_constraints": [
+            "fastener"
+          ],
+          "unsatisfied_relations": []
+        },
+        "inspected_regions": [
+          "LEFT_DRAWER",
+          "RIGHT_DRAWER",
+          "TOOL_CABINET"
+        ],
+        "region": "TOOL_CABINET",
+        "search_state": "SEARCH_EXHAUSTED",
+        "stage": "after_TOOL_CABINET"
+      },
+      {
+        "fine_search_state": "SEARCH_EXHAUSTED",
+        "grounding": {
+          "assignment": null,
+          "complete": false,
+          "evidence": {
+            "grounding_evidence": {
+              "candidate_evaluations": {
+                "driver:LEFT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "LEFT_DRAWER",
+                  "role_name": "driver"
+                },
+                "driver:RIGHT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "RIGHT_DRAWER",
+                  "role_name": "driver"
+                },
+                "driver:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "driver"
+                },
+                "driver:object_0001": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "screwdriver",
+                        "power_driver",
+                        "power_drill",
+                        "Phillips screwdriver",
+                        "cordless power drill"
+                      ],
+                      "matched": "screwdriver",
+                      "status": "TRUE"
+                    }
+                  },
+                  "instance_id": "object_0001",
+                  "role_name": "driver"
+                },
+                "driver:object_0002": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "screwdriver",
+                        "power_driver",
+                        "power_drill",
+                        "Phillips screwdriver",
+                        "cordless power drill"
+                      ],
+                      "matched": "power_driver",
+                      "status": "TRUE"
+                    }
+                  },
+                  "instance_id": "object_0002",
+                  "role_name": "driver"
+                },
+                "driver:object_0003": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "screwdriver",
+                        "power_driver",
+                        "power_drill",
+                        "Phillips screwdriver",
+                        "cordless power drill"
+                      ],
+                      "matched": "screwdriver",
+                      "status": "TRUE"
+                    }
+                  },
+                  "instance_id": "object_0003",
+                  "role_name": "driver"
+                },
+                "driver:repair_target": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "FIXED_TARGET",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "driver"
+                },
+                "fastener:LEFT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "LEFT_DRAWER",
+                  "role_name": "fastener"
+                },
+                "fastener:RIGHT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "RIGHT_DRAWER",
+                  "role_name": "fastener"
+                },
+                "fastener:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "fastener"
+                },
+                "fastener:object_0001": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "screw",
+                        "Phillips screw",
+                        "Phillips head screw"
+                      ],
+                      "matched": null,
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "object_0001",
+                  "role_name": "fastener"
+                },
+                "fastener:object_0002": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "screw",
+                        "Phillips screw",
+                        "Phillips head screw"
+                      ],
+                      "matched": null,
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "object_0002",
+                  "role_name": "fastener"
+                },
+                "fastener:object_0003": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "screw",
+                        "Phillips screw",
+                        "Phillips head screw"
+                      ],
+                      "matched": null,
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "object_0003",
+                  "role_name": "fastener"
+                },
+                "fastener:repair_target": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "FIXED_TARGET",
+                      "expected": "OBJECT",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "fastener"
+                },
+                "repair_target:LEFT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "LEFT_DRAWER",
+                  "role_name": "repair_target"
+                },
+                "repair_target:RIGHT_DRAWER": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "RIGHT_DRAWER",
+                  "role_name": "repair_target"
+                },
+                "repair_target:TOOL_CABINET": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "REGION",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "TOOL_CABINET",
+                  "role_name": "repair_target"
+                },
+                "repair_target:object_0001": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "OBJECT",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "object_0001",
+                  "role_name": "repair_target"
+                },
+                "repair_target:object_0002": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "OBJECT",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "object_0002",
+                  "role_name": "repair_target"
+                },
+                "repair_target:object_0003": {
+                  "checks": {
+                    "entity_kind": {
+                      "actual": "OBJECT",
+                      "expected": "FIXED_TARGET",
+                      "status": "FALSE"
+                    }
+                  },
+                  "instance_id": "object_0003",
+                  "role_name": "repair_target"
+                },
+                "repair_target:repair_target": {
+                  "checks": {
+                    "semantic_categories": {
+                      "expected": [
+                        "repair_target",
+                        "workshop_frame_joint",
+                        "recess"
+                      ],
+                      "matched": "repair_target",
+                      "status": "TRUE"
+                    }
+                  },
+                  "instance_id": "repair_target",
+                  "role_name": "repair_target"
+                }
+              },
+              "individual_candidates_sufficient": false,
+              "role_plausibility": {
+                "driver": {
+                  "minimum_count": 1,
+                  "plausible": 3,
+                  "sufficient": true,
+                  "true": 3,
+                  "unknown": 0
+                },
+                "fastener": {
+                  "minimum_count": 1,
+                  "plausible": 0,
+                  "sufficient": false,
+                  "true": 0,
+                  "unknown": 0
+                },
+                "repair_target": {
+                  "minimum_count": 1,
+                  "plausible": 1,
+                  "sufficient": true,
+                  "true": 1,
+                  "unknown": 0
+                }
+              }
+            },
+            "grounding_status": "INFEASIBLE",
+            "observed_object_count": 3,
+            "reason": "NO_COMPATIBLE_SCREW",
+            "stage": 3
+          },
+          "failure_kind": null,
+          "missing_requirements": [
+            "fastener",
+            "fastener"
+          ],
+          "missing_roles": [
+            "fastener"
+          ],
+          "operation_bindings": {},
+          "resolved_graph": null,
+          "resolved_role_types": {},
+          "satisfied": false,
+          "status": "INFEASIBLE",
+          "unresolved_constraints": [
+            "fastener"
+          ],
+          "unsatisfied_relations": []
+        },
+        "inspected_regions": [
+          "LEFT_DRAWER",
+          "RIGHT_DRAWER",
+          "TOOL_CABINET"
+        ],
+        "search_state": "SEARCH_EXHAUSTED",
+        "stage": "final"
+      }
+    ],
+    "grounding_status": "INFEASIBLE",
+    "observed_object_count": 3,
+    "reason": "NO_COMPATIBLE_SCREW",
+    "search_state": "SEARCH_EXHAUSTED",
+    "stage": 3
+  },
+  "failure_kind": null,
+  "missing_requirements": [
+    "fastener",
+    "fastener"
+  ],
+  "missing_roles": [
+    "fastener"
+  ],
+  "operation_bindings": {},
+  "resolved_graph": null,
+  "resolved_role_types": {},
+  "satisfied": false,
+  "status": "INFEASIBLE",
+  "unresolved_constraints": [
+    "fastener"
+  ],
+  "unsatisfied_relations": []
+}

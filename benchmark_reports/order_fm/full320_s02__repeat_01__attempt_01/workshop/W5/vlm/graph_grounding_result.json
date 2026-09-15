@@ -1,0 +1,76 @@
+{
+  "assignment": {
+    "repair_target": "repair_target"
+  },
+  "complete": false,
+  "evidence": {
+    "binding_provenance": {
+      "repair_target:repair_target": {
+        "grounding_mode": "FUNCTION_AND_RELATION",
+        "observed_instance": "repair_target",
+        "operation_evidence": [],
+        "relation_evidence": [],
+        "role": "repair_target",
+        "role_resolution": "STRUCTURAL_OVERRIDE_OF_WEAK_FUNCTION_ALIAS",
+        "semantic_status": "TRUE"
+      }
+    },
+    "candidate_roles": [
+      "repair_target"
+    ],
+    "individual_candidates_sufficient": false,
+    "joint_assignment_prefixes_examined": 1,
+    "operation_binding_complete": true,
+    "original_grounding_status": "INFEASIBLE",
+    "projected_role_plausibility": {
+      "repair_target": {
+        "minimum_count": 1,
+        "plausible": 1,
+        "sufficient": true,
+        "true": 1,
+        "unknown": 0
+      }
+    },
+    "role_plausibility": {
+      "driver": {
+        "minimum_count": 1,
+        "plausible": 0,
+        "sufficient": false,
+        "true": 0,
+        "unknown": 0
+      },
+      "fastener": {
+        "minimum_count": 1,
+        "plausible": 0,
+        "sufficient": false,
+        "true": 0,
+        "unknown": 0
+      },
+      "repair_target": {
+        "minimum_count": 1,
+        "plausible": 1,
+        "sufficient": true,
+        "true": 1,
+        "unknown": 0
+      }
+    },
+    "search_exhausted": true,
+    "valid_assignment_count": 1
+  },
+  "failure_kind": "OBJECT_DISCOVERY_FAILURE",
+  "missing_requirements": [
+    "driver",
+    "fastener"
+  ],
+  "missing_roles": [
+    "driver",
+    "fastener"
+  ],
+  "operation_bindings": {},
+  "resolved_graph": null,
+  "resolved_role_types": {},
+  "satisfied": false,
+  "status": "PARTIAL_VERIFIED_GROUNDING",
+  "unresolved_constraints": [],
+  "unsatisfied_relations": []
+}

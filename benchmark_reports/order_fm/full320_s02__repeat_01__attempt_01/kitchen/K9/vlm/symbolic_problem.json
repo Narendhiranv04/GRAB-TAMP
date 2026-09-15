@@ -1,0 +1,592 @@
+{
+  "initial_atoms": [
+    [
+      "at",
+      "object_0002",
+      "countertop"
+    ],
+    [
+      "at",
+      "object_0003",
+      "countertop"
+    ],
+    [
+      "at",
+      "object_0004",
+      "countertop"
+    ],
+    [
+      "at",
+      "object_0005",
+      "B1"
+    ],
+    [
+      "at",
+      "object_0006",
+      "D1"
+    ],
+    [
+      "contains",
+      "object_0002",
+      "soup"
+    ],
+    [
+      "contains",
+      "object_0005",
+      "soup"
+    ],
+    [
+      "hand_empty"
+    ]
+  ],
+  "goal_atoms": [
+    [
+      "at",
+      "object_0002",
+      "dining_table"
+    ],
+    [
+      "at",
+      "object_0005",
+      "dining_table"
+    ],
+    [
+      "hand_empty"
+    ]
+  ],
+  "actions": [
+    {
+      "name": "PICK",
+      "arguments": [
+        "object_0002"
+      ],
+      "positive_preconditions": [
+        [
+          "at",
+          "object_0002",
+          "countertop"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "holding",
+          "object_0002"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "at",
+          "object_0002",
+          "countertop"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PICK",
+      "arguments": [
+        "object_0002"
+      ],
+      "positive_preconditions": [
+        [
+          "at",
+          "object_0002",
+          "dining_table"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "holding",
+          "object_0002"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "at",
+          "object_0002",
+          "dining_table"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PICK",
+      "arguments": [
+        "object_0003"
+      ],
+      "positive_preconditions": [
+        [
+          "at",
+          "object_0003",
+          "countertop"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "holding",
+          "object_0003"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "at",
+          "object_0003",
+          "countertop"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PICK",
+      "arguments": [
+        "object_0004"
+      ],
+      "positive_preconditions": [
+        [
+          "at",
+          "object_0004",
+          "countertop"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "holding",
+          "object_0004"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "at",
+          "object_0004",
+          "countertop"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PICK",
+      "arguments": [
+        "object_0005"
+      ],
+      "positive_preconditions": [
+        [
+          "at",
+          "object_0005",
+          "B1"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "holding",
+          "object_0005"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "at",
+          "object_0005",
+          "B1"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PICK",
+      "arguments": [
+        "object_0005"
+      ],
+      "positive_preconditions": [
+        [
+          "at",
+          "object_0005",
+          "countertop"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "holding",
+          "object_0005"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "at",
+          "object_0005",
+          "countertop"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PICK",
+      "arguments": [
+        "object_0005"
+      ],
+      "positive_preconditions": [
+        [
+          "at",
+          "object_0005",
+          "dining_table"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "holding",
+          "object_0005"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "at",
+          "object_0005",
+          "dining_table"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PICK",
+      "arguments": [
+        "object_0006"
+      ],
+      "positive_preconditions": [
+        [
+          "at",
+          "object_0006",
+          "D1"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "holding",
+          "object_0006"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "at",
+          "object_0006",
+          "D1"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PICK",
+      "arguments": [
+        "object_0006"
+      ],
+      "positive_preconditions": [
+        [
+          "at",
+          "object_0006",
+          "countertop"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "holding",
+          "object_0006"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "at",
+          "object_0006",
+          "countertop"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PLACE",
+      "arguments": [
+        "object_0002",
+        "countertop"
+      ],
+      "positive_preconditions": [
+        [
+          "holding",
+          "object_0002"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "at",
+          "object_0002",
+          "countertop"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0002"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PLACE",
+      "arguments": [
+        "object_0002",
+        "dining_table"
+      ],
+      "positive_preconditions": [
+        [
+          "contains",
+          "object_0002",
+          "soup"
+        ],
+        [
+          "holding",
+          "object_0002"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "at",
+          "object_0002",
+          "dining_table"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0002"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PLACE",
+      "arguments": [
+        "object_0003",
+        "countertop"
+      ],
+      "positive_preconditions": [
+        [
+          "holding",
+          "object_0003"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "at",
+          "object_0003",
+          "countertop"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0003"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PLACE",
+      "arguments": [
+        "object_0004",
+        "countertop"
+      ],
+      "positive_preconditions": [
+        [
+          "holding",
+          "object_0004"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "at",
+          "object_0004",
+          "countertop"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0004"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PLACE",
+      "arguments": [
+        "object_0005",
+        "countertop"
+      ],
+      "positive_preconditions": [
+        [
+          "holding",
+          "object_0005"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "at",
+          "object_0005",
+          "countertop"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0005"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PLACE",
+      "arguments": [
+        "object_0005",
+        "dining_table"
+      ],
+      "positive_preconditions": [
+        [
+          "contains",
+          "object_0005",
+          "soup"
+        ],
+        [
+          "holding",
+          "object_0005"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "at",
+          "object_0005",
+          "dining_table"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0005"
+        ]
+      ],
+      "cost": 1
+    },
+    {
+      "name": "PLACE",
+      "arguments": [
+        "object_0006",
+        "countertop"
+      ],
+      "positive_preconditions": [
+        [
+          "holding",
+          "object_0006"
+        ]
+      ],
+      "negative_preconditions": [],
+      "add_effects": [
+        [
+          "at",
+          "object_0006",
+          "countertop"
+        ],
+        [
+          "hand_empty"
+        ]
+      ],
+      "delete_effects": [
+        [
+          "holding",
+          "object_0006"
+        ]
+      ],
+      "cost": 1
+    }
+  ]
+}
