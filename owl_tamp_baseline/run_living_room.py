@@ -44,6 +44,7 @@ from .planner import (
 )
 from .prompt import PROMPT_VERSION
 from .receding_horizon import OWLTAMPRecedingHorizon
+from .replanning import OWLTAMPReplanning
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -60,8 +61,17 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--image-height", type=int, default=540)
     parser.add_argument(
         "--protocol",
-        choices=("native", "single_call", "receding_horizon"),
+        choices=("native", "single_call", "receding_horizon", "replanning"),
         default="native",
+    )
+    parser.add_argument(
+        "--max-model-calls",
+        type=int,
+        default=15,
+        help=(
+            "Total VLM requests one `replanning` episode may issue, across all "
+            "planning cycles.  The binding budget for that protocol."
+        ),
     )
     parser.add_argument(
         "--physical-execution",
@@ -135,7 +145,9 @@ def main() -> None:
         config,
         max_tokens=protocol_max_tokens(
             args.max_tokens,
-            "native" if args.protocol == "receding_horizon" else args.protocol,
+            "native"
+            if args.protocol in {"receding_horizon", "replanning"}
+            else args.protocol,
         ),
         seed=args.seed,
         **({"base_url": args.base_url} if args.base_url else {}),
@@ -156,7 +168,22 @@ def main() -> None:
                 os.environ.get("OWL_TAMP_PROFILE", "qwen35-9b"), True
             ),
         )
-    planner = OWLTAMPPlanner(config)
+    # Only Appendix A.1.1's backtracking is enabled for this scene, and only
+    # under `replanning`.  The other two replanning-protocol relaxations are
+    # deliberately withheld here:
+    #
+    # * `prune_gap_actions` assumes the oracle is a deterministic shape test,
+    #   which it is in Kitchen and the Workshop.  This scene's oracle is
+    #   `geometry.certify(..., trial=trial, ...)` -- a *sampler*, whose verdict
+    #   depends on the draw.  Asking it once at trial 0 and treating a refusal
+    #   as permanent would prune actions that a later sample would have
+    #   accepted, which is exactly the continuous search the paper relies on.
+    # * `drop_unobserved_goals` exists because the Workshop and Kitchen hide
+    #   objects behind closed storage, so a cycle-one goal literal may name
+    #   something not yet nameable.  The Living Room hides nothing, so a
+    #   literal naming an unobserved ID is a genuine model error and must stay
+    #   fatal rather than being silently discarded from the goal.
+    planner = OWLTAMPPlanner(config, backtrack=args.protocol == "replanning")
     geometry = LivingRoomGeometryOracle(runtime.inventory, runtime.region_registry)
     observation, images = runtime.observe()
 
@@ -196,16 +223,33 @@ def main() -> None:
             if args.physical_execution
             else LivingRoomSymbolicExecutor(runtime)
         )
-        if args.protocol == "receding_horizon":
+        def observe():
+            nonlocal observation, images
+            observation, images = runtime.observe()
+            return observation, images
 
-            def observe():
-                nonlocal observation, images
-                observation, images = runtime.observe()
-                return observation, images
+        def execute(action: Action):
+            return executor.execute(to_shared_action(action))
 
-            def execute(action: Action):
-                return executor.execute(to_shared_action(action))
-
+        if args.protocol == "replanning":
+            horizon = OWLTAMPReplanning(
+                planner,
+                observe,
+                execute,
+                runtime.goal_verifier,
+                oracle,
+                max_model_calls=args.max_model_calls,
+                max_total_actions=args.max_total_actions,
+            ).run(goal)
+            planned_actions = tuple(
+                Action.parse(row["action"]) for row in horizon.action_history
+            )
+            result_payload = horizon.as_dict()
+            planning_rounds = horizon.planning_cycles
+            replans = horizon.replans
+            raw_vlm_requests = horizon.model_calls
+            write_json(output / "replanning_trace.json", result_payload)
+        elif args.protocol == "receding_horizon":
             horizon = OWLTAMPRecedingHorizon(
                 planner,
                 observe,

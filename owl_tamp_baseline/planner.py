@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import random
 import time
 from dataclasses import dataclass, field
 from typing import Any, Mapping, Protocol, Sequence
@@ -107,11 +108,29 @@ class OWLTAMPPlanner:
         config: OWLTAMPPlannerConfig,
         *,
         transport: CompletionTransport | None = None,
+        # Appendix A.1.1's skeleton backtracking.  Off by default so the
+        # single-shot `native` protocol keeps the refinement semantics the
+        # reported grid was produced under; the replanning protocol asks for it.
+        backtrack: bool = False,
+        # Whether a goal literal naming an ID the robot has not observed ends
+        # the cycle (single-shot) or is dropped for that cycle (multi-cycle).
+        # See `refinement._goal_facts` for why the two protocols must differ.
+        drop_unobserved_goals: bool = False,
+        # Whether the skeleton search may invent gap-filling actions the
+        # refiner can never accept.  See `refinement.search_then_sample`.
+        prune_gap_actions: bool = False,
     ):
         self.config = config
         self.transport = OpenAITransport(config) if transport is None else transport
         self.trace: dict[str, Any] = {}
         self.response_trace: list[Mapping[str, object]] = []
+        self.backtrack = backtrack
+        self.drop_unobserved_goals = drop_unobserved_goals
+        self.prune_gap_actions = prune_gap_actions
+        # The appendix's modification picks the blocking object and its new
+        # region at random.  Seeding it from the episode seed keeps an episode
+        # reproducible; it is a planner-side sampler and never touches a prompt.
+        self._skeleton_rng = random.Random(config.seed)
 
     def plan(
         self,
@@ -142,13 +161,20 @@ class OWLTAMPPlanner:
             for region in observation.regions
             if region.state == "closed"
         )
+        movable = (
+            set(observation.object_ids)
+            if movable_object_ids is None
+            else set(movable_object_ids)
+        )
         grounded = relaxed_ground(
             observation.scene,
-            observation.object_ids
-            if movable_object_ids is None
-            else movable_object_ids,
+            movable,
             observation.region_ids,
             inspectable,
+            # Everything observed but not movable is a fixture: referable as an
+            # insertion/fastening target and as a placement destination, never
+            # pickable.  Empty whenever the caller passes no movable subset.
+            fixed_object_ids=set(observation.object_ids) - movable,
         )
         started = time.perf_counter()
         sketch_prompt = discrete_prompt(
@@ -299,7 +325,17 @@ class OWLTAMPPlanner:
                     "model_responses": self.response_trace,
                 }
                 return result
-        result = search_then_sample(observation, grounded, sketch, constraints, oracle)
+        result = search_then_sample(
+            observation,
+            grounded,
+            sketch,
+            constraints,
+            oracle,
+            backtrack=self.backtrack,
+            rng=self._skeleton_rng,
+            drop_unobserved_goals=self.drop_unobserved_goals,
+            prune_gap_actions=self.prune_gap_actions,
+        )
         self.trace = {
             "latency_ms": round((time.perf_counter() - started) * 1000.0, 3),
             "grounded_action_count": len(grounded),

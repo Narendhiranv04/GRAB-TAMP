@@ -42,11 +42,69 @@ goal satisfaction; the plan-to-GT sequence agreement is produced alongside it,
 in `episode_result.json`, and the two must not be conflated. Kitchen and
 Workshop remain planning-only.
 
+### What the paper's own recovery actually is
+
+Checked against arXiv:2411.08253v4 directly, because an earlier version of this
+file got it wrong. OWL-TAMP's published recovery is entirely solver-side and
+failure-triggered:
+
+- **Appendix A.1.1** backtracks over plan skeletons when "the sampling budget is
+  exhausted for the first time and a new task plan is required", using "a set of
+  manually-engineered strategies to modify the task plan based on the
+  most-recent failed operator". The one worked example given is: a failed detach
+  onto an occupied surface causes an attach--detach pair to be appended that
+  relocates a blocking object. Section 6 bounds this at five skeletons.
+- **The VLM is never re-queried.** The paper states the implementation "cannot
+  recover from errors in the generated constraints themselves".
+- **Section 6.2 executes plans open-loop on hardware.** There is no closed-loop
+  replanning anywhere in the paper.
+
+An earlier version of this file claimed the "real-robot appendix describes a
+policy that repeatedly observes, plans, and executes". That claim is retired: it
+is not in the paper. Appendix A.1.1's backtracking is implemented faithfully in
+`refinement.appendix_plan_modification`, off by default and enabled only by the
+`replanning` protocol below.
+
+Note that this backtracking cannot change the Workshop result on its own. It
+fires only when continuous sampling is exhausted, and in Workshop nothing is
+ever exhausted: every single-shot episode that plans at all produces the same
+three-action `INSPECT/INSPECT/INSPECT` plan and executes it without one failed
+action. Verified over the 100-episode cell -- 58 of 58 planned episodes, zero
+failed actions.
+
+### Replanning condition (`--protocol replanning`)
+
+A separately named **extension beyond the paper**, for the Workshop scene, where
+all storage starts closed and a single-shot planner therefore cannot name the
+fastener or driver the goal is about. It keeps the paper's per-cycle planner and
+its open-loop execution of a plan, and adds one thing the paper does not have:
+after a plan has been executed and the goal is not satisfied, the world is
+observed afresh and a new cycle is planned.
+
+```bash
+--protocol replanning --max-model-calls 15
+```
+
+Three properties keep it honest and must survive any edit:
+
+- **No failure-feedback prompt.** A cycle receives only the fresh observable
+  state and the original goal -- never the previous plan, the failed action, a
+  failure code, or privileged state. Feedback-conditioned reprompting is
+  VLM-TAMP's mechanism; borrowing it would stop measuring OWL-TAMP.
+- **One whole-episode model-call budget**, not a per-cycle one, so the column
+  costs what the replan-budgeted baselines cost. 15 matches their replan budget.
+- **Unobserved goal literals are dropped for the cycle, not fatal.** At Workshop
+  cycle one the model is asked for goal literals about objects still shut in a
+  drawer and can only answer with names it does not have (in practice the
+  schema's placeholders, `fastened(tool,fastener,target)`). Under the
+  single-shot protocols that stays an error. Here it is dropped, recorded in
+  `dropped_goal_literals`, and restated by a later cycle that can see the
+  objects. Without this the episode aborts before performing the very
+  inspection that would make its goal expressible.
+
 ### Receding-horizon condition
 
-The paper analyzes OWL-TAMP as a single-shot planner in simulation, but its
-real-robot appendix describes a policy that repeatedly observes, plans, and
-executes. The runners additionally support that separately named condition:
+A stricter, earlier variant that applies exactly one action per cycle:
 
 ```bash
 --protocol receding_horizon --max-replans 8 --max-total-actions 48

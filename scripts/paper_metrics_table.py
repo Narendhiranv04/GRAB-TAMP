@@ -152,7 +152,16 @@ def _episodes(roots):
             scene, method = row.get("scene"), LABEL.get(row.get("method"))
             if scene not in SCENES or method is None:
                 continue
-            key = (scene, method, row.get("variant"), row.get("seed"), row.get("camera_count"))
+            # The protocol is part of the identity of a trial, not a detail of
+            # it.  Without it, a root holding OWL-TAMP under `replanning` and
+            # one holding it under `native` collide on every key, and the
+            # newer mtime silently wins -- producing one column that is half
+            # one condition and half another.  They are different conditions
+            # and must never be de-duplicated against each other.
+            key = (
+                scene, method, row.get("protocol"),
+                row.get("variant"), row.get("seed"), row.get("camera_count"),
+            )
             stamp = path.stat().st_mtime
             if key not in best or stamp > best[key][0]:
                 best[key] = (stamp, row, path.parent)

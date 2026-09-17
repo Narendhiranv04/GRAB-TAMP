@@ -23,6 +23,7 @@ from .models import Action, Constraint
 from .planner import registry_sampling, OWLTAMPPlanner, OWLTAMPPlannerConfig, protocol_max_tokens
 from .prompt import PROMPT_VERSION
 from .receding_horizon import OWLTAMPRecedingHorizon
+from .replanning import OWLTAMPReplanning
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -40,8 +41,17 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--image-height", type=int, default=480)
     parser.add_argument(
         "--protocol",
-        choices=("native", "single_call", "receding_horizon"),
+        choices=("native", "single_call", "receding_horizon", "replanning"),
         default="native",
+    )
+    parser.add_argument(
+        "--max-model-calls",
+        type=int,
+        default=15,
+        help=(
+            "Total VLM requests one `replanning` episode may issue, across all "
+            "planning cycles.  The binding budget for that protocol."
+        ),
     )
     parser.add_argument(
         "--decoding",
@@ -113,7 +123,9 @@ def main() -> None:
         config,
         max_tokens=protocol_max_tokens(
             args.max_tokens,
-            "native" if args.protocol == "receding_horizon" else args.protocol,
+            "native"
+            if args.protocol in {"receding_horizon", "replanning"}
+            else args.protocol,
         ),
         seed=args.seed,
         **({"base_url": args.base_url} if args.base_url else {}),
@@ -134,7 +146,17 @@ def main() -> None:
                 os.environ.get("OWL_TAMP_PROFILE", "qwen35-9b"), True
             ),
         )
-    planner = OWLTAMPPlanner(config)
+    # Appendix A.1.1's skeleton backtracking, the unobserved-goal-literal
+    # relaxation and gap-action pruning all belong to the replanning condition
+    # only; the reported single-shot grid was produced without them.  Kitchen's
+    # oracle is a deterministic shape test, like Workshop's, so pruning is
+    # sound here for the same reason.
+    planner = OWLTAMPPlanner(
+        config,
+        backtrack=args.protocol == "replanning",
+        drop_unobserved_goals=args.protocol == "replanning",
+        prune_gap_actions=args.protocol == "replanning",
+    )
     observation, images = runtime.observe()
     inventory = {
         str(row["generic_object_id"]): row
@@ -194,32 +216,51 @@ def main() -> None:
         )
         horizon = None
         planning_state = None
-        if args.protocol == "receding_horizon":
-            if not args.physical_execution:
-                planning_state = KitchenPlanningState(runtime)
+        multi_cycle = args.protocol in {"receding_horizon", "replanning"}
+        if multi_cycle and not args.physical_execution:
+            planning_state = KitchenPlanningState(runtime)
 
-            def observe():
-                nonlocal observation, images
-                nonlocal inventory
-                if args.physical_execution:
-                    observation, images = runtime.observe()
-                else:
-                    assert planning_state is not None
-                    observation, images = planning_state.observe()
-                inventory = {
-                    str(row["generic_object_id"]): row
-                    for row in runtime.bundle.inventory.get("objects", ())
-                    if str(row["generic_object_id"]) in observation.object_ids
-                }
-                return observation, images
-
-            def execute(action: Action):
-                shared = to_shared_action(action)
-                if physical_executor is not None:
-                    return physical_executor.execute(shared)
+        def observe():
+            nonlocal observation, images
+            nonlocal inventory
+            if args.physical_execution:
+                observation, images = runtime.observe()
+            else:
                 assert planning_state is not None
-                return planning_state.execute(shared)
+                observation, images = planning_state.observe()
+            inventory = {
+                str(row["generic_object_id"]): row
+                for row in runtime.bundle.inventory.get("objects", ())
+                if str(row["generic_object_id"]) in observation.object_ids
+            }
+            return observation, images
 
+        def execute(action: Action):
+            shared = to_shared_action(action)
+            if physical_executor is not None:
+                return physical_executor.execute(shared)
+            assert planning_state is not None
+            return planning_state.execute(shared)
+
+        if args.protocol == "replanning":
+            horizon = OWLTAMPReplanning(
+                planner,
+                observe,
+                execute,
+                runtime.goal_verifier,
+                oracle,
+                max_model_calls=args.max_model_calls,
+                max_total_actions=args.max_total_actions,
+            ).run(goal)
+            planned_actions = tuple(
+                Action.parse(row["action"]) for row in horizon.action_history
+            )
+            result_payload = horizon.as_dict()
+            planning_rounds = horizon.planning_cycles
+            replans = horizon.replans
+            raw_vlm_requests = horizon.model_calls
+            write_json(output / "replanning_trace.json", result_payload)
+        elif args.protocol == "receding_horizon":
             horizon = OWLTAMPRecedingHorizon(
                 planner,
                 observe,

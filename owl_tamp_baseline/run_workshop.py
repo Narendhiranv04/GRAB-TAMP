@@ -33,6 +33,7 @@ from .models import Action, Constraint
 from .planner import registry_sampling, OWLTAMPPlanner, OWLTAMPPlannerConfig, protocol_max_tokens
 from .prompt import PROMPT_VERSION
 from .receding_horizon import OWLTAMPRecedingHorizon
+from .replanning import OWLTAMPReplanning
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -49,8 +50,18 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--image-height", type=int, default=540)
     parser.add_argument(
         "--protocol",
-        choices=("native", "single_call", "receding_horizon"),
+        choices=("native", "single_call", "receding_horizon", "replanning"),
         default="native",
+    )
+    parser.add_argument(
+        "--max-model-calls",
+        type=int,
+        default=15,
+        help=(
+            "Total VLM requests one `replanning` episode may issue, across all "
+            "planning cycles.  This is the binding budget for that protocol; "
+            "15 matches the replan budget the feedback-driven baselines get."
+        ),
     )
     parser.add_argument(
         "--decoding",
@@ -117,7 +128,9 @@ def main() -> None:
         config,
         max_tokens=protocol_max_tokens(
             args.max_tokens,
-            "native" if args.protocol == "receding_horizon" else args.protocol,
+            "native"
+            if args.protocol in {"receding_horizon", "replanning"}
+            else args.protocol,
         ),
         seed=args.seed,
         **({"base_url": args.base_url} if args.base_url else {}),
@@ -138,7 +151,14 @@ def main() -> None:
                 os.environ.get("OWL_TAMP_PROFILE", "qwen35-9b"), True
             ),
         )
-    planner = OWLTAMPPlanner(config)
+    # Appendix A.1.1's skeleton backtracking belongs to the replanning
+    # condition only; the reported single-shot grid was produced without it.
+    planner = OWLTAMPPlanner(
+        config,
+        backtrack=args.protocol == "replanning",
+        drop_unobserved_goals=args.protocol == "replanning",
+        prune_gap_actions=args.protocol == "replanning",
+    )
     observation, images = runtime.observe()
 
     def oracle(action: Action, _constraints: Sequence[Constraint], _trial: int) -> bool:
@@ -175,12 +195,40 @@ def main() -> None:
         )
         episode_started = time.monotonic()
         horizon = None
-        if args.protocol == "receding_horizon":
-            def observe():
-                nonlocal observation, images
-                observation, images = runtime.observe()
-                return observation, images
 
+        def observe():
+            nonlocal observation, images
+            observation, images = runtime.observe()
+            return observation, images
+
+        if args.protocol == "replanning":
+            horizon = OWLTAMPReplanning(
+                planner,
+                observe,
+                lambda action: executor.execute(_shared_action(action)),
+                lambda _observation: runtime.goal_verifier(),
+                oracle,
+                movable_objects=lambda row: tuple(
+                    object_id
+                    for object_id in row.object_ids
+                    if object_id != runtime.target_object_id
+                ),
+                max_model_calls=args.max_model_calls,
+                max_total_actions=args.max_total_actions,
+            ).run(args.goal or runtime.goal)
+            history = [
+                {
+                    **row,
+                    "action": _shared_action(Action.parse(row["action"])).as_dict(),
+                }
+                for row in horizon.action_history
+            ]
+            result_payload = horizon.as_dict()
+            raw_vlm_requests = horizon.model_calls
+            planning_rounds = horizon.planning_cycles
+            replans = horizon.replans
+            write_json(output / "replanning_trace.json", result_payload)
+        elif args.protocol == "receding_horizon":
             horizon = OWLTAMPRecedingHorizon(
                 planner,
                 observe,
@@ -284,7 +332,10 @@ def main() -> None:
             "planner_input_contract": "ALIAS_ANNOTATED_RGB_PLUS_OBSERVABLE_ALIAS_ID_MAP",
             "hidden_storage_contents_visible_to_model": False, "gt_visible_to_model": False,
         })
-        if args.protocol != "receding_horizon":
+        # Multi-cycle protocols keep every cycle's model trace in their own
+        # trace file; `planner.trace` holds only the last cycle and would read
+        # as the whole episode.
+        if args.protocol not in {"receding_horizon", "replanning"}:
             write_json(output / "model_trace.json", planner.trace)
         write_json(output / "episode_result.json", payload)
         if args.execute:
@@ -304,7 +355,15 @@ def main() -> None:
                 planning_latency_s=0.0,
                 elapsed_seconds=time.monotonic() - episode_started,
                 terminal_status=(
-                    GOAL_COMPLETE_STATUS if goal_reached else "GOAL_NOT_REACHED"
+                    GOAL_COMPLETE_STATUS
+                    if goal_reached
+                    # A multi-cycle protocol knows *why* it stopped -- budget
+                    # spent, no plan, no progress -- and collapsing all of
+                    # those to GOAL_NOT_REACHED would hide a budget
+                    # termination behind what reads as a capability failure.
+                    else horizon.status
+                    if horizon is not None
+                    else "GOAL_NOT_REACHED"
                 ),
                 expected_outcome=expected["intended_outcome"],
                 predicted_outcome=predicted_outcome,

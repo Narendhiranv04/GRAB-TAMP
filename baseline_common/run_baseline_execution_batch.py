@@ -60,7 +60,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--variants", type=_csv)
     parser.add_argument("--camera-counts", type=_csv, default=("5",))
     parser.add_argument("--seeds", type=_csv, default=("0",))
-    parser.add_argument("--protocol", choices=("native", "single_call", "receding_horizon"), default="native")
+    parser.add_argument(
+        "--protocol",
+        choices=("native", "single_call", "receding_horizon", "replanning"),
+        default="native",
+    )
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--goal")
     parser.add_argument("--base-url", required=True)
@@ -197,6 +201,14 @@ def _command(
             *(["--replan-on-no-plan"] if args.replan_on_no_plan else []),
             "--max-total-actions", str(args.max_actions),
             "--max-sketch-actions", str(args.max_sketch_actions),
+            # The replanning protocol is bounded by one whole-episode request
+            # budget rather than by --max-replans, so it is the only protocol
+            # for which this flag does anything on this method.
+            *(
+                ["--max-model-calls", str(args.max_model_calls)]
+                if args.protocol == "replanning"
+                else []
+            ),
             "--decoding", args.decoding,
         ]
     if method == "vilain_tamp":
@@ -308,8 +320,8 @@ def _validate(
     allowed = set(ENVIRONMENT_METHODS.get(args.environment, METHODS))
     if not set(methods) <= allowed:
         raise ValueError(f"--methods supports only {', '.join(sorted(allowed))}")
-    if args.protocol == "receding_horizon" and "vlm_tamp" in methods:
-        raise ValueError("receding_horizon is currently available only for owl_tamp")
+    if args.protocol in {"receding_horizon", "replanning"} and set(methods) != {"owl_tamp"}:
+        raise ValueError(f"{args.protocol} is currently available only for owl_tamp")
     allowed_variants = VARIANTS[args.environment]
     variants = tuple(args.variants) if args.variants else allowed_variants
     if not variants or any(value not in allowed_variants for value in variants):

@@ -122,6 +122,11 @@ class PlanningResult:
     skeletons_tested: int
     samples_tested: int
     failure: str = ""
+    # Goal literals naming an ID the robot has not observed yet.  Empty under
+    # the single-shot protocols, where such a literal is an error that ends the
+    # cycle; populated only by the multi-cycle replanning protocol, which drops
+    # them for the cycle and expects a later observation to make them nameable.
+    dropped_goal_literals: tuple[str, ...] = ()
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -132,4 +137,5 @@ class PlanningResult:
             "skeletons_tested": self.skeletons_tested,
             "samples_tested": self.samples_tested,
             "failure": self.failure,
+            "dropped_goal_literals": list(self.dropped_goal_literals),
         }

@@ -247,8 +247,15 @@ Preserved algorithmically:
    provenance, and `skeletons_explored` is reported as 1 accordingly. Do not
    describe the search as exploring up to five skeletons here.
 6. The paper's simulation condition is single-shot; it does not inherit
-   VLM-TAMP's reprompt loop. The paper's real-robot appendix separately
-   describes a receding-horizon observe--plan--execute policy.
+   VLM-TAMP's reprompt loop. Its only published recovery is solver-side and
+   failure-triggered: Appendix A.1.1 backtracks over plan skeletons using
+   "manually-engineered strategies to modify the task plan based on the
+   most-recent failed operator", bounded at five skeletons, and the VLM is
+   never re-queried -- the paper states the implementation "cannot recover from
+   errors in the generated constraints themselves". Section 6.2 executes plans
+   **open-loop** on hardware. An earlier version of this document said the
+   real-robot appendix describes a receding-horizon observe--plan--execute
+   policy; that was wrong and is retired. Verified against arXiv:2411.08253v4.
 
 Domain adaptations and reporting restrictions:
 
@@ -270,6 +277,46 @@ Domain adaptations and reporting restrictions:
   end in `REPLAN_BUDGET_EXHAUSTED` under a budget smaller than the expected
   action count are budget-terminated and must not be reported as the method
   failing the task.
+- **The replanning protocol is reportable for the Workshop only, and the reason
+  is a budget, not a wiring gap.** It is implemented for all three scenes
+  (`run_workshop.py`, `run_kitchen.py`, `run_living_room.py`), but one native
+  OWL-TAMP cycle costs one sketch request plus one constraint request per
+  sketch action, and sketch length differs sharply by scene:
+
+  | Scene | mean sketch | cost of one cycle | cycles within the 15-call budget |
+  |---|---|---|---|
+  | Workshop | 3 | 4 calls | ~3.6 |
+  | Living Room | ~10 | ~11 calls | ~1.3 |
+  | Kitchen | 13.0 | 14.0 calls | **1.0** |
+
+  A Kitchen episode therefore spends its entire budget inside its first cycle
+  and never replans -- verified live: `planning_cycles=1`, `replans=0`,
+  `model_calls=15`. At this budget the Kitchen condition *is* single-shot, and
+  the Living Room is within rounding of it, so neither was run: the numbers
+  would restate the `native` column while implying a protocol that never
+  engaged. Do not report a Kitchen or Living Room replanning row without first
+  raising the budget, and say which budget was used if one ever is.
+
+  Note also that a "15" budget already means different things per method. The
+  same nominal cap yields 26.62 actual model calls for Kitchen VLM-TAMP and
+  24.88 for Workshop VLM-TAMP, against OWL-TAMP's 11.93 and 3.16, because the
+  cap bounds different quantities in each. Capping OWL-TAMP's raw requests at
+  15 is the stricter reading and is what was run.
+
+- `--protocol replanning` is a **separately named extension beyond the paper**,
+  not a reproduction of it, and any table carrying it must say so. It keeps the
+  paper's per-cycle planner and its open-loop execution of a plan, enables
+  Appendix A.1.1's skeleton backtracking, and adds re-observation between
+  cycles -- which the paper does not do. It exists because Workshop's storage
+  starts closed, so a single-shot planner cannot name the fastener or driver
+  the goal is about; the single-shot column's 0.0 is that observability limit,
+  not a planning-capability result. It issues no failure-feedback prompt (a
+  cycle sees only the fresh observable state and the original goal), and it is
+  bounded by one whole-episode budget of 15 model calls so the column costs
+  what the replan-budgeted baselines cost. The single-shot `native` protocol is
+  unchanged: backtracking and unobserved-goal-literal dropping are both off
+  unless `replanning` asks for them, so the reported grid keeps the semantics
+  it was produced under.
 - Kitchen closed-storage contents are not provided. Hidden-object variants
   expose the single-shot baseline's partial-observability limitation; automatic
   inspection/replanning would be a separately named condition.

@@ -134,6 +134,30 @@ def planned(episode: Path, method: str) -> set[tuple] | None:
             if fact:
                 facts.add(fact)
 
+    # OWL-TAMP's multi-cycle protocols write one trace per episode instead of a
+    # single `model_trace.json`, because `planner.trace` holds only the last
+    # cycle and would read as the whole episode.  What the method planned is
+    # then the union of every cycle's sketch: a plan built across cycles is
+    # still a plan it proposed, and scoring only the final cycle would discard
+    # the inspection cycle that made the rest expressible.
+    for name in ("replanning_trace.json", "receding_horizon_trace.json"):
+        multi = episode / name
+        if not multi.is_file():
+            continue
+        try:
+            cycles = json.loads(multi.read_text()).get("planning_trace") or []
+        except (OSError, json.JSONDecodeError):
+            continue
+        for cycle in cycles:
+            sketch = ((cycle.get("result") or {}).get("sketch")) or {}
+            for action in sketch.get("actions") or []:
+                found = True
+                fact = _norm_action(
+                    action.get("operator", ""), action.get("arguments")
+                )
+                if fact:
+                    facts.add(fact)
+
     events = episode / "discovery_replanning_events.jsonl"
     if events.is_file():  # ROBUST-TAMP accepts a full flat plan per replan
         for line in events.read_text().splitlines():
