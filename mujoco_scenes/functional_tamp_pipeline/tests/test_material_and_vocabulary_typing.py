@@ -11,7 +11,7 @@ the coffee it supplies disappeared from the task.
 The other half is materials.  A role described only as a substance had no
 family evidence at all, so every canonical role stayed a candidate: neither a
 reading nor an honest refusal, and the cross-product of those candidates was
-the pipeline's worst runtime.  Naming a material is naming a supply -- and
+the pipeline's fixed runtime.  Naming a material is naming a supply -- and
 whether this domain *has* a source for that material is a separate question,
 answered separately.
 

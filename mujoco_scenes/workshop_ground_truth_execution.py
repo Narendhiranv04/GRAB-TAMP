@@ -753,17 +753,17 @@ class WorkshopExecutionDispatcher:
             if contact_stalled >= 50:
                 break
         else:
-            worst_index = int(np.argmax(np.abs(
+            fixed_index = int(np.argmax(np.abs(
                 self.scene.data.qpos[qpos_addresses] - target
             )))
             actuator_name = mujoco.mj_id2name(
                 self.scene.model, mujoco.mjtObj.mjOBJ_ACTUATOR,
-                int(actuator_ids[worst_index]),
+                int(actuator_ids[fixed_index]),
             )
             raise RuntimeError(
                 "ACTUATOR_STALL: motion failed to settle: "
-                f"actuator={actuator_name}, desired={target[worst_index]:.6f}, "
-                f"achieved={self.scene.data.qpos[qpos_addresses[worst_index]]:.6f}, "
+                f"actuator={actuator_name}, desired={target[fixed_index]:.6f}, "
+                f"achieved={self.scene.data.qpos[qpos_addresses[fixed_index]]:.6f}, "
                 f"error={error:.4f}, speed={speed:.4f}"
             )
         self._hold(0.25)

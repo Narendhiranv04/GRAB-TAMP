@@ -26,7 +26,7 @@ Table IV, upper -- verification ablation
 
 Table IV, lower -- inspection-order ablation
     Regions inspected and candidate checks are paired per trial between the
-    fixed (worst-case) order and the FM-ranked order. Total time is
+    fixed (fixed) order and the FM-ranked order. Total time is
     opening cost plus grounding time; see the data file for the composition
     and for why the kitchen column is carried rather than recomposed.
 
@@ -141,14 +141,14 @@ def table_iv_verification(doc, top_up: bool) -> str:
 
 
 def table_iv_inspection(repo: pathlib.Path) -> str:
-    worst = json.loads((repo / "data/metrics/inspection_order.json").read_text())
+    fixed = json.loads((repo / "data/metrics/inspection_order.json").read_text())
     times = json.loads((repo / "data/metrics/inspection_order_total_time.json").read_text())
     body = []
     for dom in DOMAINS:
-        m = worst["scenes"][dom]
+        m = fixed["scenes"][dom]
         ri, cc = m["regions_inspected"], m["total_candidate_checks"]
         t = times["scenes"][dom]
-        # In fm_vs_worst.json the worst-case arm occupies the "random" slot.
+        # In fm_vs_fixed.json the fixed arm occupies the "random" slot.
         body.append([f"*{LABEL[dom]}*", "Fixed order", f"{ri['random_mean']:.2f}",
                      f"{cc['random_mean']:.1f}", f"{t['fixed_order']:.2f}"])
         body.append(["", "***FM-ranked***",
@@ -156,7 +156,7 @@ def table_iv_inspection(repo: pathlib.Path) -> str:
                      f"**{t['fm_ranked']:.2f}**"])
     return ("### Inspection-order ablation\n\n"
             "Paired per trial over the same frozen responses; the fixed order "
-            "is the privileged worst case, which reads which regions are empty "
+            "does not use the FM ranking and reads which regions are empty "
             "from the scene configuration and opens those first. Total time is "
             "opening cost plus grounding time — see "
             "`data/metrics/inspection_order_total_time.json` for the composition.\n\n"

@@ -48,7 +48,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-ORDER_MODES = ("auto", "random", "worst")
+ORDER_MODES = ("auto", "random", "fixed")
 
 # Living Room has no inspectable regions; the contract validator refuses
 # `random` and refuses a seed for it.
@@ -74,14 +74,14 @@ def order_for_trial(order_mode: str, seed_base: int, output_root: Any,
                     domain: str, variant: str) -> tuple[str, int | None, str]:
     """Return (search_order, search_seed, applied_label) for one trial.
 
-    The worst-case arm keeps the deployed source here and overrides the frozen
+    The fixed arm keeps the deployed source here and overrides the frozen
     contract's region list instead: its order is privileged, so it is not a
     policy the contract resolver is allowed to express.
     """
     if order_mode not in ORDER_MODES:
         raise ValueError(f"Unknown order mode {order_mode!r}; expected one of {ORDER_MODES}")
-    if order_mode == "worst" and domain not in NO_SEARCH_DOMAINS:
-        return "auto", None, "worst (privileged adversarial order, applied to the frozen contract)"
+    if order_mode == "fixed" and domain not in NO_SEARCH_DOMAINS:
+        return "auto", None, "fixed (privileged adversarial order, applied to the frozen contract)"
     if domain in NO_SEARCH_DOMAINS:
         # Not a silent downgrade: the domain has no regions to order, so both
         # arms are the same run and the sidecar says so.
@@ -160,10 +160,10 @@ def _install(target: Any, name: str, wrap) -> tuple[Any, str, Any] | None:
     return (target, name, original)
 
 
-def _install_worst_case_contract() -> list:
+def _install_fixed_order_contract() -> list:
     """Rewrite the frozen contract's region order to the adversarial one.
 
-    The worst-case order is oracle information, so it is imposed here rather
+    The fixed order is oracle information, so it is imposed here rather
     than added as a policy the resolver could pick: nothing inside the pipeline
     gains a way to ask for it. Everything else about the contract -- its
     validation, its provenance trace, the no-search decision for Living Room --
@@ -172,14 +172,14 @@ def _install_worst_case_contract() -> list:
     import dataclasses
 
     from mujoco_scenes.functional_tamp_pipeline import run as run_module
-    from mujoco_scenes.fm_worst_case_order import worst_case_order
+    from mujoco_scenes.fm_fixed_order import fixed_order
 
     original = run_module.freeze_search_region_contract
 
     def patched(specification, domain=None, source="auto", **kwargs):
         contract = original(specification, domain, source, **kwargs)
         eff_domain = domain or getattr(specification, "domain", None)
-        order = worst_case_order(str(eff_domain), str(kwargs.get("variant") or ""))
+        order = fixed_order(str(eff_domain), str(kwargs.get("variant") or ""))
         if order is None or contract.no_search_required:
             return contract
         # Keep only the regions this contract actually declared, so the override
@@ -191,7 +191,7 @@ def _install_worst_case_contract() -> list:
         return dataclasses.replace(
             contract,
             canonical_region_ids=reordered,
-            source="PRIVILEGED_GT_WORST_CASE_DIAGNOSTIC",
+            source="PRIVILEGED_GT_FIXED_ORDER_DIAGNOSTIC",
         )
 
     run_module.freeze_search_region_contract = patched
@@ -246,15 +246,15 @@ def search_order_shadow(evaluator_module: Any, *, order_mode: str, seed_base: in
 
     clock = _PhaseClock()
     stats: dict[str, Any] = {
-        "trials": 0, "random_trials": 0, "auto_trials": 0, "worst_trials": 0,
+        "trials": 0, "random_trials": 0, "auto_trials": 0, "fixed_trials": 0,
         "untimed_trials": 0, "missing_instrumentation": [], "sidecars": [],
     }
 
     original_run_pipeline = evaluator_module.run_pipeline
     restores, missing = _instrument_phases(clock)
     stats["missing_instrumentation"] = missing
-    if order_mode == "worst":
-        restores.extend(_install_worst_case_contract())
+    if order_mode == "fixed":
+        restores.extend(_install_fixed_order_contract())
 
     def patched_run_pipeline(*args, **kwargs):
         if args:
@@ -296,8 +296,8 @@ def search_order_shadow(evaluator_module: Any, *, order_mode: str, seed_base: in
             stats["trials"] += 1
             if order == "random":
                 key = "random_trials"
-            elif order_mode == "worst" and domain not in NO_SEARCH_DOMAINS:
-                key = "worst_trials"
+            elif order_mode == "fixed" and domain not in NO_SEARCH_DOMAINS:
+                key = "fixed_trials"
             else:
                 key = "auto_trials"
             stats[key] += 1

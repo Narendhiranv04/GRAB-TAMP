@@ -23,7 +23,7 @@ cost that exists to be measured.
 
 Usage:
     python3 scripts/score_inspection_open_cost.py \
-        --arms order_fm order_random order_worst \
+        --arms order_fm order_random order_fixed \
         --out results/open_cost.json
 """
 from __future__ import annotations

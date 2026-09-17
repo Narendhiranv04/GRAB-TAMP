@@ -90,7 +90,7 @@ def _model_revision(record: dict) -> str:
 FROZEN_DISTRIBUTION = "v3_qwen_distribution_3x32"
 SAMPLER = {
     # 28000, not the archive's 24000.  The hard limit is 28247: the model's
-    # context is 32768 and the worst observed prompt is 4521 tokens.
+    # context is 32768 and the fixed observed prompt is 4521 tokens.
     #
     # This does NOT fix truncation.  All five unparseable archived calls spent
     # their entire 24000 budget on reasoning and emitted no content, and

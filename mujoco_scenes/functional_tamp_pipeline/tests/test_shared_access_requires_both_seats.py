@@ -59,7 +59,7 @@ def test_every_seat_is_checked_however_many_there_are():
     assert far["status"] == "FALSE", "adding an unreachable seat must break it"
 
 
-def test_the_reported_margin_is_the_worst_seat_not_the_best():
+def test_the_reported_margin_is_the_fixed_seat_not_the_best():
     verdict = evaluate_control_accessibility(
         _region(0.0), [_seat(-0.1), _seat(0.9)], maximum_distance_m=REACH)
     margins = [row["signed_margin_m"] for row in verdict["seat_relations"]]

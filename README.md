@@ -4,7 +4,7 @@
 
 **Search, Ground, Plan: Functional Sufficiency for Task and Motion Planning under Incomplete Scene Knowledge**
 
-[Setup](#setup) • [Quick start](#quick-start) • [Results](#results) • [Reproducing](#reproducing-the-paper) • [Ground truth](#ground-truth-executions)
+[Ground truth](#ground-truth-executions) • [Setup](#setup) • [Quick start](#quick-start) • [Results](#results) • [Layout](#layout)
 
 ![Paper](https://img.shields.io/badge/paper-under_review-8b5cf6.svg?style=flat-square)
 ![Python](https://img.shields.io/badge/python-3.13-3776ab.svg?style=flat-square&logo=python&logoColor=white)
@@ -13,7 +13,7 @@
 ![Trials](https://img.shields.io/badge/trials-320-0ea5e9.svg?style=flat-square)
 ![Replay](https://img.shields.io/badge/replay-no_GPU_required-16a34a.svg?style=flat-square)
 
-![GRAB-TAMP pipeline](docs/img/pipeline.png)
+![GRAB-TAMP pipeline](docs/img/overview.gif)
 
 </div>
 
@@ -22,6 +22,7 @@
 ### Table of Contents
 
 - [Overview](#overview)
+- [Ground-truth executions](#ground-truth-executions)
 - [Setup](#setup)
 - [Quick start](#quick-start)
 - [Domains and variants](#domains-and-variants)
@@ -30,12 +31,11 @@
 - [Relation alias resolution](#relation-alias-resolution)
 - [Notation → files](#notation--files)
 - [Layout](#layout)
-- [Ground-truth executions](#ground-truth-executions)
 - [Citation](#citation)
 
 # Overview
 
-![Problem setting](docs/img/overview.png)
+![Problem setting](docs/img/problem.gif)
 
 Incomplete scene knowledge leaves a gap between understanding *what a task
 requires* and knowing *whether the physical scene can realize it*. A suitable
@@ -59,6 +59,36 @@ Assignments need not be one-to-one — objects may be reused, regions shared, an
 several candidates may satisfy the same role — so roles are grounded *together*
 rather than independently. The FM is never called again, which is why GRAB-TAMP
 reports no replans in Table III.
+
+# Ground-truth executions
+
+Recorded robot executions of the reference plans, the action-sequence reference
+for scoring. Full sequences in `ground_truth/execution_reference.json`.
+
+| variant | actions | exec. (s) | | variant | actions | exec. (s) |
+|---|---:|---:|---|---|---:|---:|
+| kitchen/K1 | 24 | 526.7 | | living_room/L4 | 19 | 263.5 |
+| kitchen/K2 | 27 | 618.9 | | living_room/L5 | 16 | 234.0 |
+| kitchen/K3 | 25 | 657.1 | | living_room/L6 | 20 | 279.7 |
+| kitchen/K4 | 28 | 708.1 | | workshop/W1 | 6 | 390.3 |
+| kitchen/K5 | 26 | 542.7 | | workshop/W2 | 6 | 380.3 |
+| living_room/L1 | 20 | 278.0 | | workshop/W3 | 7 | 545.6 |
+| living_room/L2 | 16 | 225.3 | | workshop/W4 | 7 | 499.3 |
+| living_room/L3 | 20 | 272.1 | | | | |
+
+<details>
+<summary>Example — <code>workshop/W1</code></summary>
+
+```
+OPEN(LEFT_DRAWER)
+PICK(workshop_medium_phillips_screw, LEFT_DRAWER)
+PLACE(workshop_medium_phillips_screw, workshop_frame_joint)
+PICK(workshop_long_phillips_driver, LEFT_DRAWER)
+SCREW(workshop_long_phillips_driver, workshop_medium_phillips_screw, workshop_frame_joint)
+PLACE(workshop_long_phillips_driver, MAIN_WORKBENCH_ZONE)
+```
+
+</details>
 
 # Setup
 
@@ -105,7 +135,6 @@ neither is in the requirements; see `mujoco_scenes/THIRD_PARTY_NOTICES.md`.
 ./run_demo.sh                          # kitchen K3
 ./run_demo.sh workshop W2
 ./run_demo.sh living_room L1
-./run_demo.sh workshop W2 --physical   # robot-actuated container opening
 ```
 
 ```
@@ -118,12 +147,6 @@ action sequence:
    2. PLACE_SERVING_UTENSIL(object_0005, object_0003)
    ...
   20. PLACE(object_0002, dining_table)
-```
-
-```bash
-./run_benchmark.sh               # regenerate Tables III and IV (seconds)
-./run_benchmark.sh --replay      # re-run all 32 variants from archived responses
-./run_benchmark.sh --live        # fresh FM calls
 ```
 
 # Domains and variants
@@ -225,7 +248,7 @@ unchanged. Total time is region-opening cost plus grounding time.
 
 The fixed order is a per-variant sequence that does not use the FM ranking and
 visits regions in ascending order of how much they hold, so regions holding
-nothing are opened first (`mujoco_scenes/fm_worst_case_order.py`). It is a
+nothing are opened first (`mujoco_scenes/fm_fixed_order.py`). It is a
 reference order, not something the method can produce: deriving it needs the
 region contents, which the pipeline is never given.
 
@@ -236,26 +259,24 @@ timing drift.
 A **seeded random** order is also implemented, reseeded per trial from a hash of
 `(seed_base, output_root, domain, variant)` so it is unpredictable across trials
 and reproducible within one. Run any arm with
-`scripts/run_search_order_replay_timing.py --order-mode {auto,random,worst}` and
+`scripts/run_search_order_replay_timing.py --order-mode {auto,random,fixed}` and
 score it with `scripts/score_inspection_order_ablation.py`, which reports paired
 per-scene means with confidence intervals and a Wilcoxon signed-rank test, and
 checks that the arms agree on every trial's terminal status.
 
 # Reproducing the paper
 
-| paper item | command |
+| item | entry point |
 |---|---|
-| Tables III and IV | `./run_benchmark.sh` |
 | a single trial's action sequence | `./run_demo.sh <domain> <variant>` |
-| all 32 variants, recompiled from the archived FM responses | `./run_benchmark.sh --replay` |
-| fresh FM calls, 10 repeats | `./run_benchmark.sh --live` |
-| inspection-order arms | `scripts/run_search_order_replay_timing.py`, then `scripts/score_inspection_order_ablation.py` and `scripts/score_inspection_open_cost.py` |
 | verification ablation | `scripts/run_fm_evidence_ablation.py` |
+| inspection-order arms | `scripts/run_search_order_replay_timing.py`, then `scripts/score_inspection_order_ablation.py` |
 | relation alias resolution (Sec. VI) | `experiments/alias_resolution_study/` |
 | ground-truth isolation | `scripts/audit_no_gt_leakage.py` |
 
-Replay is deterministic: the archived FM response is recompiled, so the only
-stochastic component in the pipeline is removed.
+Each trial declares an action sequence from the archived foundation-model
+response; compilation is deterministic, so the only stochastic component in the
+pipeline is removed.
 
 > [!NOTE]
 > Ground truth is read only by the offline scoring scripts, never at runtime.
@@ -299,36 +320,6 @@ data/reference_run/                       32 archived FM responses and outcomes
 data/metrics/                             the aggregates the tables are built from
 experiments/alias_resolution_study/       zero-shot relation-alias study
 ```
-
-# Ground-truth executions
-
-Recorded robot executions of the reference plans, the action-sequence reference
-for scoring. Full sequences in `ground_truth/execution_reference.json`.
-
-| variant | actions | exec. (s) | | variant | actions | exec. (s) |
-|---|---:|---:|---|---|---:|---:|
-| kitchen/K1 | 24 | 526.7 | | living_room/L4 | 19 | 263.5 |
-| kitchen/K2 | 27 | 618.9 | | living_room/L5 | 16 | 234.0 |
-| kitchen/K3 | 25 | 657.1 | | living_room/L6 | 20 | 279.7 |
-| kitchen/K4 | 28 | 708.1 | | workshop/W1 | 6 | 390.3 |
-| kitchen/K5 | 26 | 542.7 | | workshop/W2 | 6 | 380.3 |
-| living_room/L1 | 20 | 278.0 | | workshop/W3 | 7 | 545.6 |
-| living_room/L2 | 16 | 225.3 | | workshop/W4 | 7 | 499.3 |
-| living_room/L3 | 20 | 272.1 | | | | |
-
-<details>
-<summary>Example — <code>workshop/W1</code></summary>
-
-```
-OPEN(LEFT_DRAWER)
-PICK(workshop_medium_phillips_screw, LEFT_DRAWER)
-PLACE(workshop_medium_phillips_screw, workshop_frame_joint)
-PICK(workshop_long_phillips_driver, LEFT_DRAWER)
-SCREW(workshop_long_phillips_driver, workshop_medium_phillips_screw, workshop_frame_joint)
-PLACE(workshop_long_phillips_driver, MAIN_WORKBENCH_ZONE)
-```
-
-</details>
 
 # Citation
 
