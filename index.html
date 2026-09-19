@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>GRAB-TAMP</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  html, body { margin: 0; padding: 0; background: #ffffff; }
+  a { color: #990000; text-decoration: none; }
+  a:hover { color: #6f0000; text-decoration: underline; }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="timeline.js"></script>
+<script src="timeline-overview.js"></script>
+</helmet>
+
+<div style="font-family: 'Open Sans', system-ui, sans-serif; color: #1f1f1d; background: #ffffff; padding: 0 0 80px;">
+
+  <div style="max-width: 1180px; margin: 0 auto; padding: 64px 28px 0; display: flex; flex-direction: column; gap: 22px; align-items: center; text-align: center;">
+    <div style="font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0.22em; color: #86867f;">GRAB-TAMP</div>
+    <h1 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 44px; font-weight: 700; line-height: 1.16; letter-spacing: -0.02em; max-width: 960px; text-wrap: pretty;">Search, Ground, Plan: Functional Sufficiency for Task and Motion Planning under Incomplete Scene Knowledge</h1>
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 6px 22px; font-size: 19px; color: #1f1f1d;">
+      <span>Narendhiran Vijayakumar<sup style="font-size: 13px; color: #990000;">1,&#42;</sup></span>
+      <span>Nav Singhal<sup style="font-size: 13px; color: #990000;">1</sup></span>
+      <span>Girish Varma<sup style="font-size: 13px; color: #990000;">2</sup></span>
+      <span>Antony Thomas<sup style="font-size: 13px; color: #990000;">1</sup></span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 3px; font-size: 16px; color: #4a4a46;">
+      <div><sup style="font-size: 12px; color: #990000;">1</sup> Robotics Research Centre, IIIT Hyderabad</div>
+      <div><sup style="font-size: 12px; color: #990000;">2</sup> Center for Security, Theory &amp; Algorithmic Research, IIIT Hyderabad</div>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; padding-top: 6px;">
+      <a href="https://arxiv.org/submit/8101086/view" style="display: inline-flex; align-items: center; gap: 8px; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 700; color: #ffffff; background: #1f1f1d; padding: 11px 22px; border-radius: 999px;" style-hover="background: #990000; color: #ffffff; text-decoration: none;">Paper</a>
+      <a href="https://github.com/Narendhiranv04/icra-we-ball/" style="display: inline-flex; align-items: center; gap: 8px; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 700; color: #ffffff; background: #1f1f1d; padding: 11px 22px; border-radius: 999px;" style-hover="background: #990000; color: #ffffff; text-decoration: none;">Code</a>
+      <a href="#bibtex" style="display: inline-flex; align-items: center; gap: 8px; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 700; color: #1f1f1d; background: #ffffff; border: 2px solid #1f1f1d; padding: 9px 20px; border-radius: 999px;" style-hover="background: #1f1f1d; color: #ffffff; text-decoration: none;">BibTeX</a>
+    </div>
+    <div style="display: flex; align-items: center; justify-content: center; gap: 40px; padding-top: 14px;">
+      <a href="https://robotics.iiit.ac.in/"><img src="https://robotics.iiit.ac.in/images/logopic/rrc_logo.png" alt="Robotics Research Centre, IIIT Hyderabad" style="height: 62px; width: auto; display: block;"></a>
+      <a href="https://www.iiit.ac.in/"><img src="https://robotics.iiit.ac.in/images/logopic/Logo_IIIT.png" alt="IIIT Hyderabad" style="height: 62px; width: auto; display: block;"></a>
+    </div>
+  </div>
+
+  <div style="max-width: 900px; margin: 0 auto; padding: 52px 28px 0; display: flex; flex-direction: column; gap: 16px; text-align: left;">
+    <p style="margin: 0; font-size: 18px; line-height: 1.62; text-wrap: pretty;">Incomplete scene knowledge leaves a gap between understanding <em>what a task requires</em> and knowing <em>whether the physical scene can realize it</em>. A suitable object may be occluded, inside an articulated region, or out of view, and its absence from the current observation does not make the task infeasible. A newly observed object may also be irrelevant, or semantically right but geometrically wrong.</p>
+    <p style="margin: 0; font-size: 18px; line-height: 1.62; text-wrap: pretty;"><strong>GRAB-TAMP searches for the entities a task needs, grounds functional roles to valid physical objects, and plans only once a complete joint assignment establishes functional sufficiency.</strong></p>
+    <p style="margin: 0; font-size: 18px; line-height: 1.62; text-wrap: pretty;">One foundation-model call turns the instruction and initial RGB observation into a task specification: functional roles, relations, assignment constraints, a perception vocabulary and a region inspection ranking. The scene is then inspected incrementally while requirements remain unresolved; candidates are verified semantically, unary-geometrically and relationally; and the joint object&ndash;role assignment is frozen before the symbolic planner runs. Assignments need not be one-to-one, so roles are grounded together rather than independently. The foundation model is never called again.</p>
+  </div>
+
+  <div style="max-width: 1180px; margin: 0 auto; padding: 64px 28px 0; display: flex; flex-direction: column; gap: 14px;">
+    <div style="display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; border-bottom: 3px solid #1f1f1d; padding-bottom: 10px;">
+      <h2 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.01em;">The problem</h2>
+      <div style="font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 500; font-size: 18px; color: #86867f;">task requirements, initial observation, functional grounding</div>
+      <button onClick="{{ replay1 }}" style="margin-left: auto; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #1f1f1d; background: #ffffff; border: 2px solid #1f1f1d; border-radius: 999px; padding: 7px 16px; cursor: pointer;" style-hover="background: #1f1f1d; color: #ffffff;">REPLAY</button>
+    </div>
+    <div style="height: 620px; border: 1px solid #e3e3de; padding: 18px; box-sizing: border-box;">
+      <x-import component-from-global-scope="diagram-stage" from="./diagram-stage.js" data-src="assets/diagram.xml" data-timeline="DIAGRAM_TIMELINE" data-autoplay="false" data-step="0.85" data-region-gap="0.45" data-block-gap="0.85" data-fade="0.5" hint-size="100%,100%" style="display: block; width: 100%; height: 100%; overflow: hidden;"></x-import>
+    </div>
+    <div style="font-size: 15px; color: #86867f;">An instruction fixes functional roles, not object identities. A valid object must be semantically right for its role and geometrically compatible with it, and the object a role needs may not be visible yet.</div>
+  </div>
+
+  <div style="max-width: 1180px; margin: 0 auto; padding: 64px 28px 0; display: flex; flex-direction: column; gap: 14px;">
+    <div style="display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; border-bottom: 3px solid #1f1f1d; padding-bottom: 10px;">
+      <h2 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.01em;">The framework</h2>
+      <div style="font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 500; font-size: 18px; color: #86867f;">search, ground, then plan</div>
+      <button onClick="{{ replay2 }}" style="margin-left: auto; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #1f1f1d; background: #ffffff; border: 2px solid #1f1f1d; border-radius: 999px; padding: 7px 16px; cursor: pointer;" style-hover="background: #1f1f1d; color: #ffffff;">REPLAY</button>
+    </div>
+    <div style="height: 620px; border: 1px solid #e3e3de; padding: 18px; box-sizing: border-box;">
+      <x-import component-from-global-scope="diagram-stage" from="./diagram-stage.js" data-src="assets/overview.xml" data-timeline="OVERVIEW_TIMELINE" data-autoplay="false" data-step="0.85" data-region-gap="0.45" data-block-gap="0.85" data-fade="0.5" hint-size="100%,100%" style="display: block; width: 100%; height: 100%; overflow: hidden;"></x-import>
+    </div>
+    <div style="font-size: 15px; color: #86867f;">Goal instruction and RGB in, functional requirements out; ranked region inspection grows the observed graph; verification freezes one jointly valid assignment; the symbolic planner returns the action sequence.</div>
+  </div>
+
+  <div style="max-width: 1180px; margin: 0 auto; padding: 64px 28px 0; display: flex; flex-direction: column; gap: 18px;">
+    <div style="display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; border-bottom: 3px solid #1f1f1d; padding-bottom: 10px;">
+      <h2 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.01em;">Scene domains</h2>
+      <div style="font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 500; font-size: 18px; color: #86867f;">32 variants, 10 trials each &mdash; 320 trials</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; align-items: start;">
+
+      <div style="display: flex; flex-direction: column; gap: 12px; min-width: 0;">
+        <div style="font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 700;">Living room <span style="font-style: italic; font-weight: 500; font-size: 17px; color: #86867f;">(shared property)</span></div>
+        <div style="position: relative; aspect-ratio: 16 / 9; background: #000000; border: 1px solid #e3e3de;">
+          <video data-src="videos/living_room_L5_gt_35s.mp4" preload="none" muted="muted" playsinline="playsinline" loop="loop" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"></video>
+          <div style="position: absolute; left: 10px; top: 10px; font-size: 14px; font-weight: 700; background: #1f1f1d; color: #ffffff; padding: 3px 8px;">7&times;</div>
+        </div>
+        <div style="font-size: 16px; line-height: 1.5; color: #4a4a46;">Two people share one table, so the support role is shared rather than duplicated. All objects are visible from the first view.</div>
+        <div style="font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.1em; color: #86867f;">ROLES</div>
+        <div style="display: flex; flex-direction: column; font-size: 16px;">
+          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Personal support</div><div style="color: #006600; font-weight: 700;">Left Saucer</div></div>
+          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Shared region</div><div style="color: #006600; font-weight: 700;">Shared Table</div></div>
+          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Refreshment payload</div><div style="color: #006600; font-weight: 700;">Drinks, Snacks</div></div>
+          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Remote payload</div><div style="color: #006600; font-weight: 700;">Remote</div></div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 10px; border-top: 2px solid #1f1f1d; padding-top: 8px; font-size: 15px; color: #86867f;"><span style="font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.06em;">PLAN</span> 8 actions, 0 regions inspected</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px; min-width: 0;">
+        <div style="font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 700;">Workshop <span style="font-style: italic; font-weight: 500; font-size: 17px; color: #86867f;">(alternatives)</span></div>
+        <div style="position: relative; aspect-ratio: 16 / 9; background: #000000; border: 1px solid #e3e3de;">
+          <video data-src="videos/workshop_W3_gt_35s.mp4" preload="none" muted="muted" playsinline="playsinline" loop="loop" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"></video>
+          <div style="position: absolute; left: 10px; top: 10px; font-size: 14px; font-weight: 700; background: #1f1f1d; color: #ffffff; padding: 3px 8px;">16&times;</div>
+        </div>
+        <div style="font-size: 16px; line-height: 1.5; color: #4a4a46;">The screw sits in one closed drawer and a compatible driver in another. Roles bind as inspection proceeds.</div>
+        <div style="font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.1em; color: #86867f;">ROLES</div>
+        <div style="display: flex; flex-direction: column; font-size: 16px;">
+          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Repair target</div><div style="color: #006600; font-weight: 700;">Frame Joint</div></div>
+          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Fastener</div><div style="color: #006600; font-weight: 700;">Phillips Screw</div></div>
+          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Driver</div><div style="color: #006600; font-weight: 700;">Phillips Driver</div></div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 10px; border-top: 2px solid #1f1f1d; padding-top: 8px; font-size: 15px; color: #86867f;"><span style="font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.06em;">PLAN</span> 7 actions, 2 regions inspected</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px; min-width: 0;">
+        <div style="font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 700;">Kitchen <span style="font-style: italic; font-weight: 500; font-size: 17px; color: #86867f;">(cardinality)</span></div>
+        <div style="position: relative; aspect-ratio: 16 / 9; background: #000000; border: 1px solid #e3e3de;">
+          <video data-src="videos/k2_final_35s.mp4" preload="none" muted="muted" playsinline="playsinline" loop="loop" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"></video>
+          <div style="position: absolute; left: 10px; top: 10px; font-size: 14px; font-weight: 700; background: #1f1f1d; color: #ffffff; padding: 3px 8px;">17&times;</div>
+        </div>
+        <div style="font-size: 16px; line-height: 1.5; color: #4a4a46;">Objects are hidden across five storage regions, and one narrow spoon fits both bowls while a large spoon fits only the wide one.</div>
+        <div style="font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.1em; color: #86867f;">ROLES</div>
+        <div style="display: flex; flex-direction: column; font-size: 16px;">
+          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Coffee container</div><div style="color: #006600; font-weight: 700;">Coffee Mug</div></div>
+          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Water source</div><div style="color: #006600; font-weight: 700;">Kettle</div></div>
+          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Coffee source</div><div style="color: #006600; font-weight: 700;">Coffee Powder</div></div>
+          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Coffee stirrer</div><div style="color: #006600; font-weight: 700;">Narrow Spoon</div></div>
+          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Soup container</div><div style="color: #006600; font-weight: 700;">Soup Bowl</div></div>
+          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Soup utensil</div><div style="color: #006600; font-weight: 700;">Spoon</div></div>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 10px; border-top: 2px solid #1f1f1d; padding-top: 8px; font-size: 15px; color: #86867f;"><span style="font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.06em;">PLAN</span> 27 actions, 5 regions inspected</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="max-width: 1180px; margin: 0 auto; padding: 64px 28px 0; display: flex; flex-direction: column; gap: 18px;">
+    <div style="display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; border-bottom: 3px solid #1f1f1d; padding-bottom: 10px;">
+      <h2 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.01em;">Method comparison</h2>
+      <div style="font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 500; font-size: 18px; color: #86867f;">GRAB-TAMP against three baselines, on two success episodes and one failure episode</div>
+    </div>
+
+    <sc-for list="{{ rows }}" as="row" hint-placeholder-count="3">
+      <div style="display: flex; flex-direction: column; gap: 14px; padding: 18px 0 26px; border-top: 2px solid #e3e3de;">
+        <div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+          <div style="{{ row.tagStyle }}">{{ row.tag }}</div>
+          <div style="font-size: 16px; color: #86867f;">{{ row.note }}</div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; align-items: start;">
+          <sc-for list="{{ row.tiles }}" as="tile" hint-placeholder-count="4">
+            <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0;">
+              <div style="display: flex; align-items: baseline; gap: 8px;">
+                <div style="{{ tile.nameStyle }}">{{ tile.name }}</div>
+                <div style="{{ tile.e2eStyle }}">{{ tile.e2e }}</div>
+                <div style="{{ tile.counterStyle }}">{{ tile.counter }}</div>
+              </div>
+              <div style="position: relative; aspect-ratio: 16 / 9; background: #000000; border: 1px solid #e3e3de;">
+                <video data-src="{{ tile.src }}" preload="none" muted="muted" playsinline="playsinline" loop="loop" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"></video>
+              </div>
+              <div style="font-size: 15px; line-height: 1.45; color: #4a4a46; text-wrap: pretty;">{{ tile.remark }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="max-width: 1180px; margin: 0 auto; padding: 48px 28px 0; display: flex; flex-direction: column; gap: 18px;">
+    <div style="display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; border-bottom: 3px solid #1f1f1d; padding-bottom: 10px;">
+      <h2 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.01em;">Results</h2>
+      <div style="font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 500; font-size: 18px; color: #86867f;">per-scene comparison, verification ablation, inspection-order ablation</div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px; overflow-x: auto;">
+      <div style="font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 700;">End to end, per scene</div>
+      <table style="width: 100%; min-width: 660px; border-collapse: collapse; font-size: 16px; font-variant-numeric: tabular-nums;">
+        <thead>
+          <tr>
+            <th style="padding: 0 8px 2px 0;"></th>
+            <th colspan="3" style="padding: 0 8px 3px; font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 700; border-bottom: 1px solid #1f1f1d;">Feasible</th>
+            <th style="padding: 0 8px 3px; font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 700; border-bottom: 1px solid #1f1f1d;">All trials</th>
+            <th colspan="2" style="padding: 0 8px 3px; font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 700; border-bottom: 1px solid #1f1f1d;">Infeasible</th>
+          </tr>
+          <tr style="font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 700;">
+            <th style="padding: 5px 8px 5px 0; text-align: left; border-bottom: 2px solid #1f1f1d;">Method</th>
+            <th style="padding: 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">N<sub>F</sub></th>
+            <th style="padding: 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">PGC</th>
+            <th style="padding: 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">E2E succ.</th>
+            <th style="padding: 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">Avg. replans</th>
+            <th style="padding: 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">N<sub>I</sub></th>
+            <th style="padding: 5px 0 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">NC</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 9px 8px 5px 0; font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 700;">Kitchen</td>
+            <td colspan="6" style="padding: 9px 0 5px 8px; text-align: right; font-style: italic; color: #86867f;">hidden across five storage regions</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 8px 5px 0;">VLM-TAMP [9]</td>
+            <td style="padding: 5px 8px; text-align: right;">60</td>
+            <td style="padding: 5px 8px; text-align: right;">67.5</td>
+            <td style="padding: 5px 8px; text-align: right;">0.0</td>
+            <td style="padding: 5px 8px; text-align: right;">12.6</td>
+            <td style="padding: 5px 8px; text-align: right;">60</td>
+            <td style="padding: 5px 0 5px 8px; text-align: right;">0.0</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 8px 5px 0;">OWL-TAMP [12]</td>
+            <td style="padding: 5px 8px; text-align: right;">60</td>
+            <td style="padding: 5px 8px; text-align: right;">45.5</td>
+            <td style="padding: 5px 8px; text-align: right;">0.0</td>
+            <td style="padding: 5px 8px; text-align: right;">0.0</td>
+            <td style="padding: 5px 8px; text-align: right;">60</td>
+            <td style="padding: 5px 0 5px 8px; text-align: right;">13.3</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 8px 5px 0;">ROBUST-TAMP [10]</td>
+            <td style="padding: 5px 8px; text-align: right;">60</td>
+            <td style="padding: 5px 8px; text-align: right;">49.2</td>
+            <td style="padding: 5px 8px; text-align: right;">0.0</td>
+            <td style="padding: 5px 8px; text-align: right;">11.9</td>
+            <td style="padding: 5px 8px; text-align: right;">60</td>
+            <td style="padding: 5px 0 5px 8px; text-align: right;">25.0</td>
+          </tr>
+          <tr style="font-weight: 700;">
+            <td style="padding: 5px 8px 5px 0;">GRAB-TAMP</td>
+            <td style="padding: 5px 8px; text-align: right; font-weight: 400;">60</td>
+            <td style="padding: 5px 8px; text-align: right;">82.8</td>
+            <td style="padding: 5px 8px; text-align: right;">65.0</td>
+            <td style="padding: 5px 8px; text-align: right;">&#8211;</td>
+            <td style="padding: 5px 8px; text-align: right; font-weight: 400;">60</td>
+            <td style="padding: 5px 0 5px 8px; text-align: right;">50.0</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px 8px 5px 0; border-top: 1px solid #c9c9c1; font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 700;">Living Room</td>
+            <td colspan="6" style="padding: 12px 0 5px 8px; border-top: 1px solid #c9c9c1; text-align: right; font-style: italic; color: #86867f;">all objects initially visible</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 8px 5px 0;">VLM-TAMP [9]</td>
+            <td style="padding: 5px 8px; text-align: right;">60</td>
+            <td style="padding: 5px 8px; text-align: right; font-weight: 700;">100.0</td>
+            <td style="padding: 5px 8px; text-align: right;">80.0</td>
+            <td style="padding: 5px 8px; text-align: right;">7.5</td>
+            <td style="padding: 5px 8px; text-align: right;">40</td>
+            <td style="padding: 5px 0 5px 8px; text-align: right;">0.0</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 8px 5px 0;">OWL-TAMP [12]</td>
+            <td style="padding: 5px 8px; text-align: right;">60</td>
+            <td style="padding: 5px 8px; text-align: right; font-weight: 700;">100.0</td>
+            <td style="padding: 5px 8px; text-align: right;">60.0</td>
+            <td style="padding: 5px 8px; text-align: right;">0.0</td>
+            <td style="padding: 5px 8px; text-align: right;">40</td>
+            <td style="padding: 5px 0 5px 8px; text-align: right;">5.0</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 8px 5px 0;">ROBUST-TAMP [10]</td>
+            <td style="padding: 5px 8px; text-align: right;">60</td>
+            <td style="padding: 5px 8px; text-align: right; font-weight: 700;">100.0</td>
+            <td style="padding: 5px 8px; text-align: right; font-weight: 700;">88.3</td>
+            <td style="padding: 5px 8px; text-align: right;">6.2</td>
+            <td style="padding: 5px 8px; text-align: right;">40</td>
+            <td style="padding: 5px 0 5px 8px; text-align: right;">0.0</td>
+          </tr>
+          <tr style="font-weight: 700;">
+            <td style="padding: 5px 8px 5px 0;">GRAB-TAMP</td>
+            <td style="padding: 5px 8px; text-align: right; font-weight: 400;">60</td>
+            <td style="padding: 5px 8px; text-align: right; font-weight: 400;">48.7</td>
+            <td style="padding: 5px 8px; text-align: right; font-weight: 400;">31.7</td>
+            <td style="padding: 5px 8px; text-align: right;">&#8211;</td>
+            <td style="padding: 5px 8px; text-align: right; font-weight: 400;">40</td>
+            <td style="padding: 5px 0 5px 8px; text-align: right;">70.0</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px 8px 5px 0; border-top: 1px solid #c9c9c1; font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 700;">Workshop</td>
+            <td colspan="6" style="padding: 12px 0 5px 8px; border-top: 1px solid #c9c9c1; text-align: right; font-style: italic; color: #86867f;">hidden alternative candidates</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 8px 5px 0;">VLM-TAMP [9]</td>
+            <td style="padding: 5px 8px; text-align: right;">80</td>
+            <td style="padding: 5px 8px; text-align: right;">99.6</td>
+            <td style="padding: 5px 8px; text-align: right;">26.2</td>
+            <td style="padding: 5px 8px; text-align: right;">11.9</td>
+            <td style="padding: 5px 8px; text-align: right;">20</td>
+            <td style="padding: 5px 0 5px 8px; text-align: right;">0.0</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 8px 5px 0;">OWL-TAMP [12]</td>
+            <td style="padding: 5px 8px; text-align: right;">80</td>
+            <td style="padding: 5px 8px; text-align: right; font-weight: 700;">100.0</td>
+            <td style="padding: 5px 8px; text-align: right;">15.0</td>
+            <td style="padding: 5px 8px; text-align: right;">2.62</td>
+            <td style="padding: 5px 8px; text-align: right;">20</td>
+            <td style="padding: 5px 0 5px 8px; text-align: right;">0.0</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 8px 5px 0;">ROBUST-TAMP [10]</td>
+            <td style="padding: 5px 8px; text-align: right;">80</td>
+            <td style="padding: 5px 8px; text-align: right;">17.5</td>
+            <td style="padding: 5px 8px; text-align: right;">0.0</td>
+            <td style="padding: 5px 8px; text-align: right;">7.5</td>
+            <td style="padding: 5px 8px; text-align: right;">20</td>
+            <td style="padding: 5px 0 5px 8px; text-align: right; font-weight: 700;">70.0</td>
+          </tr>
+          <tr style="font-weight: 700;">
+            <td style="padding: 5px 8px 5px 0;">GRAB-TAMP</td>
+            <td style="padding: 5px 8px; text-align: right; font-weight: 400;">80</td>
+            <td style="padding: 5px 8px; text-align: right; font-weight: 400;">69.6</td>
+            <td style="padding: 5px 8px; text-align: right;">62.5</td>
+            <td style="padding: 5px 8px; text-align: right;">&#8211;</td>
+            <td style="padding: 5px 8px; text-align: right; font-weight: 400;">20</td>
+            <td style="padding: 5px 0 5px 8px; text-align: right; font-weight: 400;">20.0</td>
+          </tr>
+          <tr style="font-weight: 700;">
+            <td style="padding: 9px 8px 0 0; border-top: 2px solid #1f1f1d; font-family: 'Montserrat', sans-serif;">GRAB-TAMP (Overall)</td>
+            <td style="padding: 9px 8px 0; text-align: right; border-top: 2px solid #1f1f1d;">200</td>
+            <td style="padding: 9px 8px 0; text-align: right; border-top: 2px solid #1f1f1d;">67.3</td>
+            <td style="padding: 9px 8px 0; text-align: right; border-top: 2px solid #1f1f1d;">54.0</td>
+            <td style="padding: 9px 8px 0; text-align: right; border-top: 2px solid #1f1f1d;">&#8211;</td>
+            <td style="padding: 9px 8px 0; text-align: right; border-top: 2px solid #1f1f1d;">120</td>
+            <td style="padding: 9px 0 0 8px; text-align: right; border-top: 2px solid #1f1f1d;">51.7</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="border-top: 1px solid #1f1f1d; padding-top: 8px; font-size: 15px; line-height: 1.4; color: #4a4a46; text-wrap: pretty;"><span style="font-style: italic;">Note:</span> <strong>PGC</strong>, <strong>E2E success</strong> and <strong>NC</strong> are reported in %. <strong>Avg. replans</strong> is the mean number of planning re-invocations after the first, over all N<sub>F</sub>&thinsp;+&thinsp;N<sub>I</sub> trials of a scene.</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 40px; align-items: start; padding-top: 22px;">
+
+      <div style="display: flex; flex-direction: column; gap: 10px; min-width: 0; overflow-x: auto;">
+        <div style="font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 700;">Verification ablation</div>
+        <table style="width: 100%; min-width: 420px; border-collapse: collapse; font-size: 15px; font-variant-numeric: tabular-nums;">
+          <thead>
+            <tr style="font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700;">
+              <th style="padding: 4px 8px 5px 0; text-align: left; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Scene</th>
+              <th style="padding: 4px 8px 5px; text-align: left; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Verification</th>
+              <th style="padding: 4px 8px 5px; text-align: right; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Trials</th>
+              <th style="padding: 4px 8px 5px; text-align: right; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Matching G<sub>O</sub> (%)</th>
+              <th style="padding: 4px 8px 5px; text-align: right; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Mismatching G<sub>O</sub> (%)</th>
+              <th style="padding: 4px 0 5px 8px; text-align: right; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Missing G<sub>O</sub> (%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="3" style="padding: 5px 8px 5px 0; font-style: italic;">Kitchen</td>
+              <td style="padding: 5px 8px; white-space: nowrap;">Semantic only</td>
+              <td style="padding: 5px 8px; text-align: right;">60</td>
+              <td style="padding: 5px 8px; text-align: right;">96 (12.3)</td>
+              <td style="padding: 5px 8px; text-align: right;">19 (2.4)</td>
+              <td style="padding: 5px 0 5px 8px; text-align: right;">665 (85.3)</td>
+            </tr>
+            <tr>
+              <td style="padding: 5px 8px;">+ Unary</td>
+              <td style="padding: 5px 8px; text-align: right;">60</td>
+              <td style="padding: 5px 8px; text-align: right;">103 (13.2)</td>
+              <td style="padding: 5px 8px; text-align: right;">21 (2.7)</td>
+              <td style="padding: 5px 0 5px 8px; text-align: right;">656 (84.1)</td>
+            </tr>
+            <tr style="font-weight: 700;">
+              <td style="padding: 5px 8px;">+ Binary</td>
+              <td style="padding: 5px 8px; text-align: right; font-weight: 400;">60</td>
+              <td style="padding: 5px 8px; text-align: right;">514 (65.9)</td>
+              <td style="padding: 5px 8px; text-align: right; font-weight: 400;">63 (8.1)</td>
+              <td style="padding: 5px 0 5px 8px; text-align: right;">203 (26.0)</td>
+            </tr>
+            <tr>
+              <td rowspan="3" style="padding: 5px 8px 5px 0; border-top: 1px solid #e3e3de; font-style: italic;">Living Room</td>
+              <td style="padding: 5px 8px; border-top: 1px solid #e3e3de; white-space: nowrap;">Semantic only</td>
+              <td style="padding: 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">60</td>
+              <td style="padding: 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">141 (18.1)</td>
+              <td style="padding: 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">1 (0.1)</td>
+              <td style="padding: 5px 0 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">638 (81.8)</td>
+            </tr>
+            <tr>
+              <td style="padding: 5px 8px;">+ Unary</td>
+              <td style="padding: 5px 8px; text-align: right;">60</td>
+              <td style="padding: 5px 8px; text-align: right;">96 (12.3)</td>
+              <td style="padding: 5px 8px; text-align: right;">3 (0.4)</td>
+              <td style="padding: 5px 0 5px 8px; text-align: right;">681 (87.3)</td>
+            </tr>
+            <tr style="font-weight: 700;">
+              <td style="padding: 5px 8px;">+ Binary</td>
+              <td style="padding: 5px 8px; text-align: right; font-weight: 400;">60</td>
+              <td style="padding: 5px 8px; text-align: right;">439 (56.3)</td>
+              <td style="padding: 5px 8px; text-align: right; font-weight: 400;">20 (2.6)</td>
+              <td style="padding: 5px 0 5px 8px; text-align: right;">321 (41.2)</td>
+            </tr>
+            <tr>
+              <td rowspan="3" style="padding: 5px 8px 5px 0; border-top: 1px solid #e3e3de; font-style: italic;">Workshop</td>
+              <td style="padding: 5px 8px; border-top: 1px solid #e3e3de; white-space: nowrap;">Semantic only</td>
+              <td style="padding: 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">80</td>
+              <td style="padding: 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">86 (17.9)</td>
+              <td style="padding: 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">13 (2.7)</td>
+              <td style="padding: 5px 0 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">381 (79.4)</td>
+            </tr>
+            <tr>
+              <td style="padding: 5px 8px;">+ Unary</td>
+              <td style="padding: 5px 8px; text-align: right;">80</td>
+              <td style="padding: 5px 8px; text-align: right;">47 (9.8)</td>
+              <td style="padding: 5px 8px; text-align: right;">8 (1.7)</td>
+              <td style="padding: 5px 0 5px 8px; text-align: right;">425 (88.5)</td>
+            </tr>
+            <tr style="font-weight: 700;">
+              <td style="padding: 5px 8px;">+ Binary</td>
+              <td style="padding: 5px 8px; text-align: right; font-weight: 400;">80</td>
+              <td style="padding: 5px 8px; text-align: right;">239 (49.8)</td>
+              <td style="padding: 5px 8px; text-align: right; font-weight: 400;">55 (11.5)</td>
+              <td style="padding: 5px 0 5px 8px; text-align: right;">186 (38.8)</td>
+            </tr>
+            <tr>
+              <td rowspan="3" style="padding: 5px 8px 5px 0; border-top: 2px solid #1f1f1d; font-family: 'Montserrat', sans-serif; font-weight: 700;">Overall</td>
+              <td style="padding: 5px 8px; border-top: 2px solid #1f1f1d; white-space: nowrap;">Semantic only</td>
+              <td style="padding: 5px 8px; text-align: right; border-top: 2px solid #1f1f1d;">200</td>
+              <td style="padding: 5px 8px; text-align: right; border-top: 2px solid #1f1f1d;">323 (15.8)</td>
+              <td style="padding: 5px 8px; text-align: right; border-top: 2px solid #1f1f1d;">33 (1.6)</td>
+              <td style="padding: 5px 0 5px 8px; text-align: right; border-top: 2px solid #1f1f1d;">1684 (82.5)</td>
+            </tr>
+            <tr>
+              <td style="padding: 5px 8px;">+ Unary</td>
+              <td style="padding: 5px 8px; text-align: right;">200</td>
+              <td style="padding: 5px 8px; text-align: right;">246 (12.1)</td>
+              <td style="padding: 5px 8px; text-align: right;">32 (1.6)</td>
+              <td style="padding: 5px 0 5px 8px; text-align: right;">1762 (86.4)</td>
+            </tr>
+            <tr style="font-weight: 700;">
+              <td style="padding: 5px 8px; border-bottom: 2px solid #1f1f1d;">+ Binary</td>
+              <td style="padding: 5px 8px; text-align: right; font-weight: 400; border-bottom: 2px solid #1f1f1d;">200</td>
+              <td style="padding: 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">1192 (58.4)</td>
+              <td style="padding: 5px 8px; text-align: right; font-weight: 400; border-bottom: 2px solid #1f1f1d;">138 (6.8)</td>
+              <td style="padding: 5px 0 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">710 (34.8)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px; min-width: 0; overflow-x: auto;">
+        <div style="font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 700;">Inspection-order ablation</div>
+        <table style="width: 100%; min-width: 380px; border-collapse: collapse; font-size: 15px; font-variant-numeric: tabular-nums;">
+          <thead>
+            <tr style="font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700;">
+              <th style="padding: 4px 8px 5px 0; text-align: left; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Scene</th>
+              <th style="padding: 4px 8px 5px; text-align: left; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Order</th>
+              <th style="padding: 4px 8px 5px; text-align: right; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Regions</th>
+              <th style="padding: 4px 8px 5px; text-align: right; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Checks</th>
+              <th style="padding: 4px 0 5px 8px; text-align: right; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Time (s)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="2" style="padding: 5px 8px 5px 0; font-style: italic;">Kitchen</td>
+              <td style="padding: 5px 8px;">Fixed order</td>
+              <td style="padding: 5px 8px; text-align: right;">4.33</td>
+              <td style="padding: 5px 8px; text-align: right;">134.6</td>
+              <td style="padding: 5px 0 5px 8px; text-align: right;">82.94</td>
+            </tr>
+            <tr style="font-weight: 700;">
+              <td style="padding: 5px 8px; font-style: italic;">FM-ranked</td>
+              <td style="padding: 5px 8px; text-align: right;">3.91</td>
+              <td style="padding: 5px 8px; text-align: right; font-weight: 400;">134.6</td>
+              <td style="padding: 5px 0 5px 8px; text-align: right;">76.22</td>
+            </tr>
+            <tr>
+              <td rowspan="2" style="padding: 5px 8px 5px 0; border-top: 1px solid #e3e3de; font-style: italic;">Living Room</td>
+              <td style="padding: 5px 8px; border-top: 1px solid #e3e3de;">Fixed order</td>
+              <td style="padding: 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">0.00</td>
+              <td style="padding: 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">23.2</td>
+              <td style="padding: 5px 0 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">6.77</td>
+            </tr>
+            <tr>
+              <td style="padding: 5px 8px; font-style: italic; font-weight: 700;">FM-ranked</td>
+              <td style="padding: 5px 8px; text-align: right;">0.00</td>
+              <td style="padding: 5px 8px; text-align: right;">23.2</td>
+              <td style="padding: 5px 0 5px 8px; text-align: right;">6.77</td>
+            </tr>
+            <tr>
+              <td rowspan="2" style="padding: 5px 8px 5px 0; border-top: 1px solid #e3e3de; font-style: italic;">Workshop</td>
+              <td style="padding: 5px 8px; border-top: 1px solid #e3e3de;">Fixed order</td>
+              <td style="padding: 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">2.58</td>
+              <td style="padding: 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">14.2</td>
+              <td style="padding: 5px 0 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">287.64</td>
+            </tr>
+            <tr style="font-weight: 700;">
+              <td style="padding: 5px 8px; font-style: italic; border-bottom: 2px solid #1f1f1d;">FM-ranked</td>
+              <td style="padding: 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">2.32</td>
+              <td style="padding: 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">13.4</td>
+              <td style="padding: 5px 0 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">268.20</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="font-size: 15px; line-height: 1.45; color: #4a4a46; text-wrap: pretty;">Living Room is unchanged because it declares no inspectable regions, which also makes it a control for timing drift.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="bibtex" style="max-width: 860px; margin: 0 auto; padding: 64px 28px 0; display: flex; flex-direction: column; gap: 14px;">
+    <h2 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.01em; border-bottom: 3px solid #1f1f1d; padding-bottom: 10px;">BibTeX</h2>
+    <pre style="margin: 0; background: #f6f6f3; border: 1px solid #e3e3de; padding: 18px 20px; overflow-x: auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 14px; line-height: 1.55; color: #1f1f1d;">@inproceedings{grabtamp,
+  title     = {Search, Ground, Plan: Functional Sufficiency for Task and Motion
+               Planning under Incomplete Scene Knowledge},
+  booktitle = {Under review},
+  year      = {2026}
+}</pre>
+    <div style="font-size: 15px; color: #86867f;">Code, archived foundation-model responses for all 320 trials, and the table-regeneration scripts are on <a href="https://github.com/Narendhiranv04/GRAB-TAMP">GitHub</a>. Reproducing the tables needs no GPU and no model access.</div>
+  </div>
+
+</div>
+
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect width="120" height="120" fill="#1f1f1d"></rect><rect x="30" y="38" width="60" height="40" fill="#ffffff"></rect><path d="M52 50 L72 58 L52 66 Z" fill="#990000"></path></svg></template>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const ROWS = [
+  {
+    tag: 'SUCCESS', color: '#006600',
+    note: 'Workshop W3: screw in the left drawer, manual driver in the right',
+    tiles: [
+      { name: 'GRAB-TAMP (ours)', ours: true, src: 'videos/workshop_W3_grab_tamp.mp4', cov: [3, 3], e2e: true,
+        remark: 'Opens two drawers, seats the screw and drives it home on the first pass: 7 actions, no retries.' },
+      { name: 'VLM-TAMP', src: 'videos/workshop_W3_vlm_tamp.mp4', cov: [1, 3], e2e: false,
+        remark: 'Commits after opening one drawer, then lifts and re-sets the same driver three times; never finds the screw.' },
+      { name: 'OWL-TAMP', src: 'videos/workshop_W3_owl_tamp.mp4', cov: [1, 3], e2e: false,
+        remark: 'Inspects all three regions and seats the screw correctly, but exhausts its 15-call budget before fastening.' },
+      { name: 'ROBUST-TAMP', src: 'videos/workshop_W3_robust_tamp.mp4', cov: [0, 3], e2e: false,
+        remark: 'Opens one cabinet and stops; the model reply is truncated at the token ceiling before any plan exists.' }
+    ]
+  },
+  {
+    tag: 'SUCCESS', color: '#006600',
+    note: 'Kitchen K3: soup bowl hidden in a closed box',
+    tiles: [
+      { name: 'GRAB-TAMP (ours)', ours: true, src: 'videos/k2_final_35s.mp4', cov: [12, 12], e2e: true,
+        remark: 'Opens the hidden box, makes both coffees and serves both soup settings: 24 actions, no failures.' },
+      { name: 'VLM-TAMP', src: 'videos/vlm-tamp-kitchen.mp4', cov: [5, 12], e2e: false,
+        remark: 'Pours and stirs both drinks correctly, then stops proposing subgoals; nothing ever reaches the table and no serving utensil is placed.' },
+      { name: 'OWL-TAMP', src: 'videos/OWL_TAMP_K3_seed7.mp4', cov: [2, 12], e2e: false,
+        remark: 'Pours coffee and water into one mug, then the stir collides and the episode ends in PLAN: 8 actions, 7 succeeded.' },
+      { name: 'ROBUST-TAMP', src: 'videos/ROBUST_TAMP_K3_seed9.mp4', cov: [4, 12], e2e: false,
+        remark: 'Makes one drink, then repeats the same failed grasp of the coffee jar three times until the episode ends.' }
+    ]
+  },
+  {
+    tag: 'FAILURE', color: '#990000',
+    note: 'Living Room L6: one cup-saucer pair starts on the shared table (OWL-TAMP: L1)',
+    tiles: [
+      { name: 'GRAB-TAMP (ours)', ours: true, src: 'videos/living_room_L6_grab_tamp.mp4', cov: [2, 5], e2e: false,
+        remark: 'Never grounds the remote role, so it reads the occupied coffee table as a second personal table; both pairs land there and the remote is left on the desk.' },
+      { name: 'VLM-TAMP', src: 'videos/living_room_L6_vlm_tamp.mp4', cov: [5, 5], e2e: true,
+        remark: 'Reaches the correct layout after four failed grasps and five replans.' },
+      { name: 'OWL-TAMP', src: 'videos/living_room_L1_owl_tamp.mp4', cov: [5, 5], e2e: true,
+        remark: 'Solves it at 11 model calls.' },
+      { name: 'ROBUST-TAMP', src: 'videos/living_room_L6_robust_tamp.mp4', cov: [5, 5], e2e: true,
+        remark: 'Solves it in 1 model call with no failed actions.' }
+    ]
+  }
+];
+const TARGET_SECONDS = 35;
+const MAX_RATE = 4;
+
+class Component extends DCLogic {
+  componentDidMount() {
+    this.sweep = setInterval(() => this.tick(), 400);
+    this.tick();
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.sweep);
+  }
+
+  /* IntersectionObserver never fires inside the embedded preview, so visibility
+     is measured directly against the viewport on a timer */
+  near(el, pad) {
+    const r = el.getBoundingClientRect();
+    if (!r.height) return false;
+    const h = window.innerHeight || document.documentElement.clientHeight;
+    return r.top < h + (pad || 0) && r.bottom > -(pad || 0);
+  }
+
+  tick() {
+    this.paceVideos();
+    this.paceStages();
+  }
+
+  /* only the clips on screen load, and at most two download at once: the
+     connection pool is six deep and twelve 1080p files racing each other
+     leave every tile black */
+  paceVideos() {
+    const all = Array.prototype.slice.call(document.querySelectorAll('video[data-src]'));
+    let loading = all.filter((v) => v.getAttribute('src') && v.readyState < 2).length;
+    all.forEach((v) => {
+      const on = this.near(v, 200);
+      if (!on) { if (!v.paused) v.pause(); return; }
+      if (!v.getAttribute('src')) {
+        if (loading >= 2) return;
+        loading++;
+        v.preload = 'auto';
+        v.setAttribute('src', v.dataset.src);
+        v.load();
+        return;
+      }
+      if (v.duration) {
+        const rate = Math.min(MAX_RATE, Math.max(1, v.duration / TARGET_SECONDS));
+        if (Math.abs(v.playbackRate - rate) > 0.05) v.playbackRate = rate;
+      }
+      if (v.paused && v.readyState >= 2) v.play().catch(() => {});
+    });
+  }
+
+  /* each diagram plays the first time it scrolls into view */
+  paceStages() {
+    const stages = Array.prototype.slice.call(document.querySelectorAll('diagram-stage'));
+    if (stages.length) this.stages = stages;
+    stages.forEach((s) => {
+      if (s.dataset.played || !s.graph || !this.near(s, -80)) return;
+      s.dataset.played = '1';
+      this.start(s, 0);
+    });
+  }
+
+  start(stage, tries) {
+    if (!stage.graph) {
+      if (tries < 60) setTimeout(() => this.start(stage, tries + 1), 300);
+      return;
+    }
+    if (stage.reset) stage.reset();
+    stage.play();
+  }
+
+  replay(i) {
+    const stage = (this.stages || [])[i];
+    if (stage) this.start(stage, 0);
+  }
+
+  renderVals() {
+    return {
+      replay1: () => this.replay(0),
+      replay2: () => this.replay(1),
+      rows: ROWS.map((r) => ({
+        tag: r.tag,
+        note: r.note,
+        tagStyle: "font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 0.1em; color: " + r.color + ';',
+        tiles: r.tiles.map((t) => {
+          const met = t.cov[0], total = t.cov[1];
+          return {
+            src: t.src,
+            name: t.name,
+            nameStyle: "font-family: 'Montserrat', sans-serif; font-size: 17px; font-weight: 700; color: " + (t.ours ? '#1f1f1d' : '#4a4a46') + ';',
+            e2e: t.e2e ? 'E2E \u2713' : 'E2E \u2715',
+            e2eStyle: 'font-size: 13px; font-weight: 700; color: #ffffff; padding: 2px 7px; background: ' + (t.e2e ? '#006600' : '#990000') + ';',
+            counter: met + '/' + total,
+            counterStyle: 'font-size: 14px; font-weight: 700; color: ' + (met === total ? '#006600' : '#990000') + ';',
+            remark: t.remark
+          };
+        })
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>
