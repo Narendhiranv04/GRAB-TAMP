@@ -13,7 +13,7 @@
 ![Trials](https://img.shields.io/badge/trials-320-0ea5e9.svg?style=flat-square)
 ![Replay](https://img.shields.io/badge/replay-no_GPU_required-16a34a.svg?style=flat-square)
 
-![GRAB-TAMP pipeline](docs/img/overview.gif)
+![GRAB-TAMP pipeline](docs/img/overview.png)
 
 </div>
 
@@ -35,7 +35,7 @@
 
 # Overview
 
-![Problem setting](docs/img/problem.gif)
+![Problem setting](docs/img/problem.png)
 
 Incomplete scene knowledge leaves a gap between understanding *what a task
 requires* and knowing *whether the physical scene can realize it*. A suitable
