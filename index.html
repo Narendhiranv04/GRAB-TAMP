@@ -10,515 +10,345 @@
 <x-dc>
 <helmet>
 <style>
-  html, body { margin: 0; padding: 0; background: #ffffff; }
-  a { color: #990000; text-decoration: none; }
-  a:hover { color: #6f0000; text-decoration: underline; }
+  html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+  html, body { margin: 0; padding: 0; background: #ffffff; -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
+  a { color: #17181a; text-decoration: underline; text-underline-offset: 2px; text-decoration-color: #c9c9c4; }
+  a:hover { color: #17181a; text-decoration-color: currentColor; }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;1,500;1,700&amp;family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
 <script src="timeline.js"></script>
 <script src="timeline-overview.js"></script>
 </helmet>
 
-<div style="font-family: 'Open Sans', system-ui, sans-serif; color: #1f1f1d; background: #ffffff; padding: 0 0 80px;">
+<div id="top" style="font-family: 'Open Sans', -apple-system, 'Segoe UI', sans-serif; font-size: 17px; line-height: 1.62; color: #17181a; background: #ffffff;">
 
-  <div style="max-width: 1180px; margin: 0 auto; padding: 64px 28px 0; display: flex; flex-direction: column; gap: 22px; align-items: center; text-align: center;">
-    <div style="font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0.22em; color: #86867f;">GRAB-TAMP</div>
-    <h1 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 44px; font-weight: 700; line-height: 1.16; letter-spacing: -0.02em; max-width: 960px; text-wrap: pretty;">Search, Ground, Plan: Functional Sufficiency for Task and Motion Planning under Incomplete Scene Knowledge</h1>
-    <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 6px 22px; font-size: 19px; color: #1f1f1d;">
-      <span>Narendhiran Vijayakumar<sup style="font-size: 13px; color: #990000;">1,&#42;</sup></span>
-      <span>Nav Singhal<sup style="font-size: 13px; color: #990000;">1</sup></span>
-      <span>Girish Varma<sup style="font-size: 13px; color: #990000;">2</sup></span>
-      <span>Antony Thomas<sup style="font-size: 13px; color: #990000;">1</sup></span>
+  <nav style="position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.94); backdrop-filter: blur(8px); border-bottom: 1px solid #e4e4e1;">
+    <div style="max-width: 1120px; margin: 0 auto; padding: 0 28px; height: 56px; display: flex; align-items: center; gap: 22px; overflow-x: auto;">
+      <a href="#top" style="font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.2em; color: #17181a; text-decoration: none; margin-right: auto; white-space: nowrap;">GRAB-TAMP</a>
+      <a href="#problem" style="color: #72757b; font-size: 14px; text-decoration: none; white-space: nowrap;" style-hover="color: #17181a;">Problem</a>
+      <a href="#framework" style="color: #72757b; font-size: 14px; text-decoration: none; white-space: nowrap;" style-hover="color: #17181a;">Framework</a>
+      <a href="#domains" style="color: #72757b; font-size: 14px; text-decoration: none; white-space: nowrap;" style-hover="color: #17181a;">Domains</a>
+      <a href="#comparison" style="color: #72757b; font-size: 14px; text-decoration: none; white-space: nowrap;" style-hover="color: #17181a;">Comparison</a>
+      <a href="#results" style="color: #72757b; font-size: 14px; text-decoration: none; white-space: nowrap;" style-hover="color: #17181a;">Results</a>
+      <a href="#bibtex" style="color: #72757b; font-size: 14px; text-decoration: none; white-space: nowrap;" style-hover="color: #17181a;">BibTeX</a>
     </div>
-    <div style="display: flex; flex-direction: column; gap: 3px; font-size: 16px; color: #4a4a46;">
-      <div><sup style="font-size: 12px; color: #990000;">1</sup> Robotics Research Centre, IIIT Hyderabad</div>
-      <div><sup style="font-size: 12px; color: #990000;">2</sup> Center for Security, Theory &amp; Algorithmic Research, IIIT Hyderabad</div>
-    </div>
-    <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; padding-top: 6px;">
-      <a href="https://arxiv.org/submit/8101086/view" style="display: inline-flex; align-items: center; gap: 8px; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 700; color: #ffffff; background: #1f1f1d; padding: 11px 22px; border-radius: 999px;" style-hover="background: #990000; color: #ffffff; text-decoration: none;">Paper</a>
-      <a href="https://github.com/Narendhiranv04/icra-we-ball/" style="display: inline-flex; align-items: center; gap: 8px; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 700; color: #ffffff; background: #1f1f1d; padding: 11px 22px; border-radius: 999px;" style-hover="background: #990000; color: #ffffff; text-decoration: none;">Code</a>
-      <a href="#bibtex" style="display: inline-flex; align-items: center; gap: 8px; font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 700; color: #1f1f1d; background: #ffffff; border: 2px solid #1f1f1d; padding: 9px 20px; border-radius: 999px;" style-hover="background: #1f1f1d; color: #ffffff; text-decoration: none;">BibTeX</a>
-    </div>
-    <div style="display: flex; align-items: center; justify-content: center; gap: 40px; padding-top: 14px;">
-      <a href="https://robotics.iiit.ac.in/"><img src="https://robotics.iiit.ac.in/images/logopic/rrc_logo.png" alt="Robotics Research Centre, IIIT Hyderabad" style="height: 62px; width: auto; display: block;"></a>
-      <a href="https://www.iiit.ac.in/"><img src="https://robotics.iiit.ac.in/images/logopic/Logo_IIIT.png" alt="IIIT Hyderabad" style="height: 62px; width: auto; display: block;"></a>
-    </div>
-  </div>
+  </nav>
 
-  <div style="max-width: 900px; margin: 0 auto; padding: 52px 28px 0; display: flex; flex-direction: column; gap: 16px; text-align: left;">
-    <p style="margin: 0; font-size: 18px; line-height: 1.62; text-wrap: pretty;">Incomplete scene knowledge leaves a gap between understanding <em>what a task requires</em> and knowing <em>whether the physical scene can realize it</em>. A suitable object may be occluded, inside an articulated region, or out of view, and its absence from the current observation does not make the task infeasible. A newly observed object may also be irrelevant, or semantically right but geometrically wrong.</p>
-    <p style="margin: 0; font-size: 18px; line-height: 1.62; text-wrap: pretty;"><strong>GRAB-TAMP searches for the entities a task needs, grounds functional roles to valid physical objects, and plans only once a complete joint assignment establishes functional sufficiency.</strong></p>
-    <p style="margin: 0; font-size: 18px; line-height: 1.62; text-wrap: pretty;">One foundation-model call turns the instruction and initial RGB observation into a task specification: functional roles, relations, assignment constraints, a perception vocabulary and a region inspection ranking. The scene is then inspected incrementally while requirements remain unresolved; candidates are verified semantically, unary-geometrically and relationally; and the joint object&ndash;role assignment is frozen before the symbolic planner runs. Assignments need not be one-to-one, so roles are grounded together rather than independently. The foundation model is never called again.</p>
-  </div>
-
-  <div style="max-width: 1180px; margin: 0 auto; padding: 64px 28px 0; display: flex; flex-direction: column; gap: 14px;">
-    <div style="display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; border-bottom: 3px solid #1f1f1d; padding-bottom: 10px;">
-      <h2 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.01em;">The problem</h2>
-      <div style="font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 500; font-size: 18px; color: #86867f;">task requirements, initial observation, functional grounding</div>
-      <button onClick="{{ replay1 }}" style="margin-left: auto; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #1f1f1d; background: #ffffff; border: 2px solid #1f1f1d; border-radius: 999px; padding: 7px 16px; cursor: pointer;" style-hover="background: #1f1f1d; color: #ffffff;">REPLAY</button>
-    </div>
-    <div style="height: 620px; border: 1px solid #e3e3de; padding: 18px; box-sizing: border-box;">
-      <x-import component-from-global-scope="diagram-stage" from="./diagram-stage.js" data-src="assets/diagram.xml" data-timeline="DIAGRAM_TIMELINE" data-autoplay="false" data-step="0.85" data-region-gap="0.45" data-block-gap="0.85" data-fade="0.5" hint-size="100%,100%" style="display: block; width: 100%; height: 100%; overflow: hidden;"></x-import>
-    </div>
-    <div style="font-size: 15px; color: #86867f;">An instruction fixes functional roles, not object identities. A valid object must be semantically right for its role and geometrically compatible with it, and the object a role needs may not be visible yet.</div>
-  </div>
-
-  <div style="max-width: 1180px; margin: 0 auto; padding: 64px 28px 0; display: flex; flex-direction: column; gap: 14px;">
-    <div style="display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; border-bottom: 3px solid #1f1f1d; padding-bottom: 10px;">
-      <h2 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.01em;">The framework</h2>
-      <div style="font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 500; font-size: 18px; color: #86867f;">search, ground, then plan</div>
-      <button onClick="{{ replay2 }}" style="margin-left: auto; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.08em; color: #1f1f1d; background: #ffffff; border: 2px solid #1f1f1d; border-radius: 999px; padding: 7px 16px; cursor: pointer;" style-hover="background: #1f1f1d; color: #ffffff;">REPLAY</button>
-    </div>
-    <div style="height: 620px; border: 1px solid #e3e3de; padding: 18px; box-sizing: border-box;">
-      <x-import component-from-global-scope="diagram-stage" from="./diagram-stage.js" data-src="assets/overview.xml" data-timeline="OVERVIEW_TIMELINE" data-autoplay="false" data-step="0.85" data-region-gap="0.45" data-block-gap="0.85" data-fade="0.5" hint-size="100%,100%" style="display: block; width: 100%; height: 100%; overflow: hidden;"></x-import>
-    </div>
-    <div style="font-size: 15px; color: #86867f;">Goal instruction and RGB in, functional requirements out; ranked region inspection grows the observed graph; verification freezes one jointly valid assignment; the symbolic planner returns the action sequence.</div>
-  </div>
-
-  <div style="max-width: 1180px; margin: 0 auto; padding: 64px 28px 0; display: flex; flex-direction: column; gap: 18px;">
-    <div style="display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; border-bottom: 3px solid #1f1f1d; padding-bottom: 10px;">
-      <h2 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.01em;">Scene domains</h2>
-      <div style="font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 500; font-size: 18px; color: #86867f;">32 variants, 10 trials each &mdash; 320 trials</div>
-    </div>
-
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; align-items: start;">
-
-      <div style="display: flex; flex-direction: column; gap: 12px; min-width: 0;">
-        <div style="font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 700;">Living room <span style="font-style: italic; font-weight: 500; font-size: 17px; color: #86867f;">(shared property)</span></div>
-        <div style="position: relative; aspect-ratio: 16 / 9; background: #000000; border: 1px solid #e3e3de;">
-          <video data-src="videos/living_room_L5_gt_35s.mp4" preload="none" muted="muted" playsinline="playsinline" loop="loop" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"></video>
-          <div style="position: absolute; left: 10px; top: 10px; font-size: 14px; font-weight: 700; background: #1f1f1d; color: #ffffff; padding: 3px 8px;">7&times;</div>
-        </div>
-        <div style="font-size: 16px; line-height: 1.5; color: #4a4a46;">Two people share one table, so the support role is shared rather than duplicated. All objects are visible from the first view.</div>
-        <div style="font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.1em; color: #86867f;">ROLES</div>
-        <div style="display: flex; flex-direction: column; font-size: 16px;">
-          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Personal support</div><div style="color: #006600; font-weight: 700;">Left Saucer</div></div>
-          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Shared region</div><div style="color: #006600; font-weight: 700;">Shared Table</div></div>
-          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Refreshment payload</div><div style="color: #006600; font-weight: 700;">Drinks, Snacks</div></div>
-          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Remote payload</div><div style="color: #006600; font-weight: 700;">Remote</div></div>
-        </div>
-        <div style="display: flex; align-items: baseline; gap: 10px; border-top: 2px solid #1f1f1d; padding-top: 8px; font-size: 15px; color: #86867f;"><span style="font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.06em;">PLAN</span> 8 actions, 0 regions inspected</div>
+  <header style="padding: 70px 0 30px; text-align: center;">
+    <div style="max-width: 1120px; margin: 0 auto; padding: 0 28px; display: flex; flex-direction: column; align-items: center;">
+      <div style="font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0.24em; color: #86867f;">GRAB-TAMP</div>
+      <h1 style="font-family: 'Montserrat', sans-serif; font-size: clamp(30px, 4.2vw, 48px); font-weight: 700; line-height: 1.14; letter-spacing: -0.02em; margin: 16px auto 22px; max-width: 980px; text-wrap: balance;"><span style="color: #cf5f2a;">Search</span>, <span style="color: #2b7a99;">Ground</span>, <span style="color: #8b4a85;">Plan</span>: Functional Sufficiency for Task and Motion Planning under Incomplete Scene Knowledge</h1>
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 4px 24px; font-size: 18px; color: #35373b;">
+        <span>Narendhiran Vijayakumar<sup style="font-size: 12px; color: #2e7d9a; font-weight: 700;">1,&#42;</sup></span>
+        <span>Nav Singhal<sup style="font-size: 12px; color: #2e7d9a; font-weight: 700;">1</sup></span>
+        <span>Girish Varma<sup style="font-size: 12px; color: #2e7d9a; font-weight: 700;">2</sup></span>
+        <span>Antony Thomas<sup style="font-size: 12px; color: #2e7d9a; font-weight: 700;">1</sup></span>
       </div>
-
-      <div style="display: flex; flex-direction: column; gap: 12px; min-width: 0;">
-        <div style="font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 700;">Workshop <span style="font-style: italic; font-weight: 500; font-size: 17px; color: #86867f;">(alternatives)</span></div>
-        <div style="position: relative; aspect-ratio: 16 / 9; background: #000000; border: 1px solid #e3e3de;">
-          <video data-src="videos/workshop_W3_gt_35s.mp4" preload="none" muted="muted" playsinline="playsinline" loop="loop" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"></video>
-          <div style="position: absolute; left: 10px; top: 10px; font-size: 14px; font-weight: 700; background: #1f1f1d; color: #ffffff; padding: 3px 8px;">16&times;</div>
-        </div>
-        <div style="font-size: 16px; line-height: 1.5; color: #4a4a46;">The screw sits in one closed drawer and a compatible driver in another. Roles bind as inspection proceeds.</div>
-        <div style="font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.1em; color: #86867f;">ROLES</div>
-        <div style="display: flex; flex-direction: column; font-size: 16px;">
-          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Repair target</div><div style="color: #006600; font-weight: 700;">Frame Joint</div></div>
-          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Fastener</div><div style="color: #006600; font-weight: 700;">Phillips Screw</div></div>
-          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Driver</div><div style="color: #006600; font-weight: 700;">Phillips Driver</div></div>
-        </div>
-        <div style="display: flex; align-items: baseline; gap: 10px; border-top: 2px solid #1f1f1d; padding-top: 8px; font-size: 15px; color: #86867f;"><span style="font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.06em;">PLAN</span> 7 actions, 2 regions inspected</div>
+      <div style="display: flex; flex-direction: column; gap: 2px; font-size: 14.5px; color: #72757b; margin-top: 8px;">
+        <div><sup style="font-size: 11px; color: #2e7d9a; font-weight: 700;">1</sup> Robotics Research Centre, IIIT Hyderabad</div>
+        <div><sup style="font-size: 11px; color: #2e7d9a; font-weight: 700;">2</sup> Center for Security, Theory &amp; Algorithmic Research, IIIT Hyderabad</div>
       </div>
-
-      <div style="display: flex; flex-direction: column; gap: 12px; min-width: 0;">
-        <div style="font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 700;">Kitchen <span style="font-style: italic; font-weight: 500; font-size: 17px; color: #86867f;">(cardinality)</span></div>
-        <div style="position: relative; aspect-ratio: 16 / 9; background: #000000; border: 1px solid #e3e3de;">
-          <video data-src="videos/k2_final_35s.mp4" preload="none" muted="muted" playsinline="playsinline" loop="loop" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"></video>
-          <div style="position: absolute; left: 10px; top: 10px; font-size: 14px; font-weight: 700; background: #1f1f1d; color: #ffffff; padding: 3px 8px;">17&times;</div>
-        </div>
-        <div style="font-size: 16px; line-height: 1.5; color: #4a4a46;">Objects are hidden across five storage regions, and one narrow spoon fits both bowls while a large spoon fits only the wide one.</div>
-        <div style="font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.1em; color: #86867f;">ROLES</div>
-        <div style="display: flex; flex-direction: column; font-size: 16px;">
-          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Coffee container</div><div style="color: #006600; font-weight: 700;">Coffee Mug</div></div>
-          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Water source</div><div style="color: #006600; font-weight: 700;">Kettle</div></div>
-          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Coffee source</div><div style="color: #006600; font-weight: 700;">Coffee Powder</div></div>
-          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Coffee stirrer</div><div style="color: #006600; font-weight: 700;">Narrow Spoon</div></div>
-          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Soup container</div><div style="color: #006600; font-weight: 700;">Soup Bowl</div></div>
-          <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0ec;"><div style="flex: 1;">Soup utensil</div><div style="color: #006600; font-weight: 700;">Spoon</div></div>
-        </div>
-        <div style="display: flex; align-items: baseline; gap: 10px; border-top: 2px solid #1f1f1d; padding-top: 8px; font-size: 15px; color: #86867f;"><span style="font-family: 'Montserrat', sans-serif; font-weight: 700; letter-spacing: 0.06em;">PLAN</span> 27 actions, 5 regions inspected</div>
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 26px;">
+        <a href="https://arxiv.org/submit/8101086/view" style="display: inline-flex; align-items: center; gap: 9px; font-family: 'Montserrat', sans-serif; font-size: 15.5px; font-weight: 700; color: #ffffff; background: #17181a; border: 2px solid #17181a; padding: 11px 22px; border-radius: 999px; text-decoration: none; transition: background .15s, transform .15s;" style-hover="background: #2e7d9a; border-color: #2e7d9a; color: #ffffff; transform: translateY(-1px);"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>Paper</a>
+        <a href="https://github.com/Narendhiranv04/icra-we-ball/" style="display: inline-flex; align-items: center; gap: 9px; font-family: 'Montserrat', sans-serif; font-size: 15.5px; font-weight: 700; color: #ffffff; background: #17181a; border: 2px solid #17181a; padding: 11px 22px; border-radius: 999px; text-decoration: none; transition: background .15s, transform .15s;" style-hover="background: #2e7d9a; border-color: #2e7d9a; color: #ffffff; transform: translateY(-1px);"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"></path></svg>Code</a>
+        <a href="#comparison" style="display: inline-flex; align-items: center; gap: 9px; font-family: 'Montserrat', sans-serif; font-size: 15.5px; font-weight: 700; color: #17181a; background: #ffffff; border: 2px solid #17181a; padding: 11px 22px; border-radius: 999px; text-decoration: none; transition: background .15s;" style-hover="background: #17181a; color: #ffffff;"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>Videos</a>
+        <a href="#bibtex" style="display: inline-flex; align-items: center; gap: 9px; font-family: 'Montserrat', sans-serif; font-size: 15.5px; font-weight: 700; color: #17181a; background: #ffffff; border: 2px solid #17181a; padding: 11px 22px; border-radius: 999px; text-decoration: none; transition: background .15s;" style-hover="background: #17181a; color: #ffffff;">BibTeX</a>
       </div>
-
+      <div style="display: flex; align-items: center; justify-content: center; gap: 0; margin-top: 40px; border-top: 1px solid #e4e4e1; border-bottom: 1px solid #e4e4e1; width: 100%; max-width: 560px;">
+        <a href="https://robotics.iiit.ac.in/" style="flex: 1; display: flex; justify-content: center; padding: 18px 12px;"><img src="https://robotics.iiit.ac.in/images/logopic/rrc_logo.png" alt="Robotics Research Centre, IIIT Hyderabad" style="height: 58px; width: auto; display: block;"></a>
+        <a href="https://www.iiit.ac.in/" style="flex: 1; display: flex; justify-content: center; padding: 18px 12px; border-left: 1px solid #e4e4e1;"><img src="https://robotics.iiit.ac.in/images/logopic/Logo_IIIT.png" alt="IIIT Hyderabad" style="height: 58px; width: auto; display: block;"></a>
+      </div>
     </div>
-  </div>
+  </header>
 
-  <div style="max-width: 1180px; margin: 0 auto; padding: 64px 28px 0; display: flex; flex-direction: column; gap: 18px;">
-    <div style="display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; border-bottom: 3px solid #1f1f1d; padding-bottom: 10px;">
-      <h2 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.01em;">Method comparison</h2>
-      <div style="font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 500; font-size: 18px; color: #86867f;">GRAB-TAMP against three baselines, on two success episodes and one failure episode</div>
-    </div>
+  <main style="max-width: 1120px; margin: 0 auto; padding: 0 28px;">
 
-    <sc-for list="{{ rows }}" as="row" hint-placeholder-count="3">
-      <div style="display: flex; flex-direction: column; gap: 14px; padding: 18px 0 26px; border-top: 2px solid #e3e3de;">
-        <div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;">
-          <div style="{{ row.tagStyle }}">{{ row.tag }}</div>
-          <div style="font-size: 16px; color: #86867f;">{{ row.note }}</div>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; align-items: start;">
-          <sc-for list="{{ row.tiles }}" as="tile" hint-placeholder-count="4">
-            <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0;">
-              <div style="display: flex; align-items: baseline; gap: 8px;">
-                <div style="{{ tile.nameStyle }}">{{ tile.name }}</div>
-                <div style="{{ tile.e2eStyle }}">{{ tile.e2e }}</div>
-                <div style="{{ tile.counterStyle }}">{{ tile.counter }}</div>
-              </div>
-              <div style="position: relative; aspect-ratio: 16 / 9; background: #000000; border: 1px solid #e3e3de;">
-                <video data-src="{{ tile.src }}" preload="none" muted="muted" playsinline="playsinline" loop="loop" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"></video>
-              </div>
-              <div style="font-size: 15px; line-height: 1.45; color: #4a4a46; text-wrap: pretty;">{{ tile.remark }}</div>
+    <section id="abstract" style="padding-top: 46px;">
+      <div style="display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 16px; border-bottom: 3px solid #17181a; padding-bottom: 10px; margin-bottom: 26px;">
+        <h2 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 30px; font-weight: 700; letter-spacing: -0.01em;">Overview</h2>
+      </div>
+      <div style="max-width: 760px; display: flex; flex-direction: column; gap: 14px;">
+        <p style="margin: 0; font-size: 19px; line-height: 1.6; text-wrap: pretty;">Incomplete scene knowledge leaves a gap between understanding <em>what a task requires</em> and knowing <em>whether the physical scene can realize it</em>. A suitable object may be occluded, inside an articulated region, or out of view, and its absence from the current observation does not make the task infeasible. A newly observed object may also be irrelevant, or semantically right but geometrically wrong.</p>
+        <p style="margin: 0; font-size: 17px; line-height: 1.62; text-wrap: pretty; padding: 14px 18px; background: #eef6f9; border-radius: 10px;"><strong>GRAB-TAMP searches for the entities a task needs, grounds functional roles to valid physical objects, and plans only once a complete joint assignment establishes functional sufficiency.</strong></p>
+        <p style="margin: 0; font-size: 17px; line-height: 1.62; text-wrap: pretty;">One foundation-model call turns the instruction and initial RGB observation into a task specification: functional roles, relations, assignment constraints, a perception vocabulary and a region inspection ranking. The scene is then inspected incrementally while requirements remain unresolved; candidates are verified semantically, unary-geometrically and relationally; and the joint object&ndash;role assignment is frozen before the symbolic planner runs. Assignments need not be one-to-one, so roles are grounded together rather than independently. The foundation model is never called again.</p>
+      </div>
+    </section>
+
+    <section id="problem" style="padding-top: 76px;">
+      <div style="display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 16px; border-bottom: 3px solid #17181a; padding-bottom: 10px; margin-bottom: 26px;">
+        <h2 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 30px; font-weight: 700; letter-spacing: -0.01em;">The problem</h2>
+        <div style="font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 500; font-size: 18px; color: #86867f;">task requirements, initial observation, functional grounding</div>
+        <div style="margin-left: auto;"><button onClick="{{ replay1 }}" style="font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: #17181a; background: #ffffff; border: 2px solid #17181a; border-radius: 999px; padding: 6px 15px; cursor: pointer; transition: background .15s, color .15s;" style-hover="background: #17181a; color: #ffffff;">REPLAY</button></div>
+      </div>
+      <div style="height: 620px; border: 1px solid #e4e4e1; border-radius: 12px; background: #ffffff; padding: 18px; overflow: hidden;">
+        <x-import component-from-global-scope="diagram-stage" from="./diagram-stage.js" data-src="assets/diagram.xml" data-timeline="DIAGRAM_TIMELINE" data-autoplay="false" data-step="0.85" data-region-gap="0.45" data-block-gap="0.85" data-fade="0.5" hint-size="100%,100%" style="display: block; width: 100%; height: 100%; overflow: hidden;"></x-import>
+      </div>
+      <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.5; color: #72757b; max-width: 860px;">An instruction fixes functional roles, not object identities. A valid object must be semantically right for its role and geometrically compatible with it, and the object a role needs may not be visible yet.</p>
+    </section>
+
+    <section id="framework" style="padding-top: 76px;">
+      <div style="display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 16px; border-bottom: 3px solid #17181a; padding-bottom: 10px; margin-bottom: 26px;">
+        <h2 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 30px; font-weight: 700; letter-spacing: -0.01em;">The framework</h2>
+        <div style="font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 500; font-size: 18px; color: #86867f;">search, ground, then plan</div>
+        <div style="margin-left: auto;"><button onClick="{{ replay2 }}" style="font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: #17181a; background: #ffffff; border: 2px solid #17181a; border-radius: 999px; padding: 6px 15px; cursor: pointer; transition: background .15s, color .15s;" style-hover="background: #17181a; color: #ffffff;">REPLAY</button></div>
+      </div>
+      <div style="height: 620px; border: 1px solid #e4e4e1; border-radius: 12px; background: #ffffff; padding: 18px; overflow: hidden;">
+        <x-import component-from-global-scope="diagram-stage" from="./diagram-stage.js" data-src="assets/overview.xml" data-timeline="OVERVIEW_TIMELINE" data-autoplay="false" data-step="0.85" data-region-gap="0.45" data-block-gap="0.85" data-fade="0.5" hint-size="100%,100%" style="display: block; width: 100%; height: 100%; overflow: hidden;"></x-import>
+      </div>
+      <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.5; color: #72757b; max-width: 860px;">Goal instruction and RGB in, functional requirements out; ranked region inspection grows the observed graph; verification freezes one jointly valid assignment; the symbolic planner returns the action sequence.</p>
+    </section>
+
+    <section id="domains" style="padding-top: 76px;">
+      <div style="display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 16px; border-bottom: 3px solid #17181a; padding-bottom: 10px; margin-bottom: 26px;">
+        <h2 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 30px; font-weight: 700; letter-spacing: -0.01em;">Scene domains</h2>
+        <div style="font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 500; font-size: 18px; color: #86867f;">32 variants, 10 trials each &mdash; 320 trials</div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; align-items: stretch;">
+
+        <div style="display: flex; flex-direction: column; min-width: 0; border: 1px solid #e4e4e1; border-radius: 12px; overflow: hidden; background: #ffffff; transition: transform .2s, box-shadow .2s;" style-hover="transform: translateY(-3px); box-shadow: 0 10px 26px rgba(0,0,0,0.1);">
+          <div style="position: relative; aspect-ratio: 16 / 9; background: #202328;">
+            <video data-src="videos/living_room_L5_gt_35s.mp4" preload="none" muted="muted" playsinline="playsinline" loop="loop" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"></video>
+            <span style="position: absolute; left: 12px; top: 12px; font-family: 'Montserrat', sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: 0.06em; color: #ffffff; background: rgba(20,20,20,0.72); padding: 4px 10px; border-radius: 6px;">LIVING ROOM</span>
+            <span style="position: absolute; right: 12px; top: 12px; font-size: 12.5px; font-weight: 600; color: #ffffff; background: rgba(20,20,20,0.72); padding: 3px 9px; border-radius: 6px;">7&times;</span>
+          </div>
+          <div style="padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 10px; flex: 1;">
+            <div style="display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;"><span style="font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 700;">Living room</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #72757b;">shared property</span></div>
+            <div style="font-size: 14.5px; line-height: 1.5; color: #35373b;">Two people share one table, so the support role is shared rather than duplicated. All objects are visible from the first view.</div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: #72757b; margin-top: 4px;">ROLES</div>
+            <div style="display: flex; flex-direction: column; font-size: 14.5px;">
+              <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #e4e4e1;"><div style="flex: 1; color: #35373b;">Personal support</div><div style="color: #1f7a35; font-weight: 700;">Left Saucer</div></div>
+              <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #e4e4e1;"><div style="flex: 1; color: #35373b;">Shared region</div><div style="color: #1f7a35; font-weight: 700;">Shared Table</div></div>
+              <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #e4e4e1;"><div style="flex: 1; color: #35373b;">Refreshment payload</div><div style="color: #1f7a35; font-weight: 700;">Drinks, Snacks</div></div>
+              <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #e4e4e1;"><div style="flex: 1; color: #35373b;">Remote payload</div><div style="color: #1f7a35; font-weight: 700;">Remote</div></div>
             </div>
-          </sc-for>
+            <div style="margin-top: auto; display: flex; align-items: center; gap: 10px; padding-top: 8px; font-size: 14px; color: #35373b;"><span style="font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #ffffff; background: #17181a; padding: 2px 8px; border-radius: 5px;">PLAN</span>8 actions, 0 regions inspected</div>
+          </div>
         </div>
+
+        <div style="display: flex; flex-direction: column; min-width: 0; border: 1px solid #e4e4e1; border-radius: 12px; overflow: hidden; background: #ffffff; transition: transform .2s, box-shadow .2s;" style-hover="transform: translateY(-3px); box-shadow: 0 10px 26px rgba(0,0,0,0.1);">
+          <div style="position: relative; aspect-ratio: 16 / 9; background: #202328;">
+            <video data-src="videos/workshop_W3_gt_35s.mp4" preload="none" muted="muted" playsinline="playsinline" loop="loop" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"></video>
+            <span style="position: absolute; left: 12px; top: 12px; font-family: 'Montserrat', sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: 0.06em; color: #ffffff; background: rgba(20,20,20,0.72); padding: 4px 10px; border-radius: 6px;">WORKSHOP</span>
+            <span style="position: absolute; right: 12px; top: 12px; font-size: 12.5px; font-weight: 600; color: #ffffff; background: rgba(20,20,20,0.72); padding: 3px 9px; border-radius: 6px;">16&times;</span>
+          </div>
+          <div style="padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 10px; flex: 1;">
+            <div style="display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;"><span style="font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 700;">Workshop</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #72757b;">alternatives</span></div>
+            <div style="font-size: 14.5px; line-height: 1.5; color: #35373b;">The screw sits in one closed drawer and a compatible driver in another. Roles bind as inspection proceeds.</div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: #72757b; margin-top: 4px;">ROLES</div>
+            <div style="display: flex; flex-direction: column; font-size: 14.5px;">
+              <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #e4e4e1;"><div style="flex: 1; color: #35373b;">Repair target</div><div style="color: #1f7a35; font-weight: 700;">Frame Joint</div></div>
+              <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #e4e4e1;"><div style="flex: 1; color: #35373b;">Fastener</div><div style="color: #1f7a35; font-weight: 700;">Phillips Screw</div></div>
+              <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #e4e4e1;"><div style="flex: 1; color: #35373b;">Driver</div><div style="color: #1f7a35; font-weight: 700;">Phillips Driver</div></div>
+            </div>
+            <div style="margin-top: auto; display: flex; align-items: center; gap: 10px; padding-top: 8px; font-size: 14px; color: #35373b;"><span style="font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #ffffff; background: #17181a; padding: 2px 8px; border-radius: 5px;">PLAN</span>7 actions, 2 regions inspected</div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; min-width: 0; border: 1px solid #e4e4e1; border-radius: 12px; overflow: hidden; background: #ffffff; transition: transform .2s, box-shadow .2s;" style-hover="transform: translateY(-3px); box-shadow: 0 10px 26px rgba(0,0,0,0.1);">
+          <div style="position: relative; aspect-ratio: 16 / 9; background: #202328;">
+            <video data-src="videos/k2_final_35s.mp4" preload="none" muted="muted" playsinline="playsinline" loop="loop" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"></video>
+            <span style="position: absolute; left: 12px; top: 12px; font-family: 'Montserrat', sans-serif; font-size: 12.5px; font-weight: 700; letter-spacing: 0.06em; color: #ffffff; background: rgba(20,20,20,0.72); padding: 4px 10px; border-radius: 6px;">KITCHEN</span>
+            <span style="position: absolute; right: 12px; top: 12px; font-size: 12.5px; font-weight: 600; color: #ffffff; background: rgba(20,20,20,0.72); padding: 3px 9px; border-radius: 6px;">17&times;</span>
+          </div>
+          <div style="padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 10px; flex: 1;">
+            <div style="display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;"><span style="font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 700;">Kitchen</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #72757b;">cardinality</span></div>
+            <div style="font-size: 14.5px; line-height: 1.5; color: #35373b;">Objects are hidden across five storage regions, and one narrow spoon fits both bowls while a large spoon fits only the wide one.</div>
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.12em; color: #72757b; margin-top: 4px;">ROLES</div>
+            <div style="display: flex; flex-direction: column; font-size: 14.5px;">
+              <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #e4e4e1;"><div style="flex: 1; color: #35373b;">Coffee container</div><div style="color: #1f7a35; font-weight: 700;">Coffee Mug</div></div>
+              <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #e4e4e1;"><div style="flex: 1; color: #35373b;">Water source</div><div style="color: #1f7a35; font-weight: 700;">Kettle</div></div>
+              <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #e4e4e1;"><div style="flex: 1; color: #35373b;">Coffee source</div><div style="color: #1f7a35; font-weight: 700;">Coffee Powder</div></div>
+              <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #e4e4e1;"><div style="flex: 1; color: #35373b;">Coffee stirrer</div><div style="color: #1f7a35; font-weight: 700;">Narrow Spoon</div></div>
+              <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #e4e4e1;"><div style="flex: 1; color: #35373b;">Soup container</div><div style="color: #1f7a35; font-weight: 700;">Soup Bowl</div></div>
+              <div style="display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #e4e4e1;"><div style="flex: 1; color: #35373b;">Soup utensil</div><div style="color: #1f7a35; font-weight: 700;">Spoon</div></div>
+            </div>
+            <div style="margin-top: auto; display: flex; align-items: center; gap: 10px; padding-top: 8px; font-size: 14px; color: #35373b;"><span style="font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #ffffff; background: #17181a; padding: 2px 8px; border-radius: 5px;">PLAN</span>27 actions, 5 regions inspected</div>
+          </div>
+        </div>
+
       </div>
-    </sc-for>
-  </div>
+    </section>
 
-  <div style="max-width: 1180px; margin: 0 auto; padding: 48px 28px 0; display: flex; flex-direction: column; gap: 18px;">
-    <div style="display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; border-bottom: 3px solid #1f1f1d; padding-bottom: 10px;">
-      <h2 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.01em;">Results</h2>
-      <div style="font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 500; font-size: 18px; color: #86867f;">per-scene comparison, verification ablation, inspection-order ablation</div>
-    </div>
+    <section id="comparison" style="padding-top: 76px;">
+      <div style="display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 16px; border-bottom: 3px solid #17181a; padding-bottom: 10px; margin-bottom: 18px;">
+        <h2 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 30px; font-weight: 700; letter-spacing: -0.01em;">Method comparison</h2>
+        <div style="font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 500; font-size: 18px; color: #86867f;">GRAB-TAMP against three baselines, on two success episodes and one failure episode</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <sc-for list="{{ rows }}" as="row" hint-placeholder-count="3">
+          <div style="display: flex; flex-direction: column; gap: 14px; padding: 16px 0 24px;">
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+              <span style="{{ row.tagStyle }}">{{ row.tag }}</span>
+              <span style="font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 600; color: #35373b;">{{ row.note }}</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; align-items: start;">
+              <sc-for list="{{ row.tiles }}" as="tile" hint-placeholder-count="4">
+                <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0;">
+                  <div style="display: flex; align-items: center; gap: 9px;">
+                    <i style="{{ tile.swatchStyle }}"></i>
+                    <span style="{{ tile.nameStyle }}">{{ tile.name }}</span>
+                    <span style="{{ tile.counterStyle }}">{{ tile.counter }}</span>
+                  </div>
+                  <div style="{{ tile.screenStyle }}">
+                    <video data-src="{{ tile.src }}" preload="none" muted="muted" playsinline="playsinline" loop="loop" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;"></video>
+                    <span style="{{ tile.e2eStyle }}">{{ tile.e2e }}</span>
+                  </div>
+                  <div style="font-size: 14.5px; line-height: 1.45; color: #35373b; text-wrap: pretty;">{{ tile.remark }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
 
-    <div style="display: flex; flex-direction: column; gap: 10px; overflow-x: auto;">
-      <div style="font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 700;">End to end, per scene</div>
-      <table style="width: 100%; min-width: 660px; border-collapse: collapse; font-size: 16px; font-variant-numeric: tabular-nums;">
-        <thead>
-          <tr>
-            <th style="padding: 0 8px 2px 0;"></th>
-            <th colspan="3" style="padding: 0 8px 3px; font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 700; border-bottom: 1px solid #1f1f1d;">Feasible</th>
-            <th style="padding: 0 8px 3px; font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 700; border-bottom: 1px solid #1f1f1d;">All trials</th>
-            <th colspan="2" style="padding: 0 8px 3px; font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 700; border-bottom: 1px solid #1f1f1d;">Infeasible</th>
-          </tr>
-          <tr style="font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 700;">
-            <th style="padding: 5px 8px 5px 0; text-align: left; border-bottom: 2px solid #1f1f1d;">Method</th>
-            <th style="padding: 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">N<sub>F</sub></th>
-            <th style="padding: 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">PGC</th>
-            <th style="padding: 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">E2E succ.</th>
-            <th style="padding: 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">Avg. replans</th>
-            <th style="padding: 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">N<sub>I</sub></th>
-            <th style="padding: 5px 0 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">NC</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="padding: 9px 8px 5px 0; font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 700;">Kitchen</td>
-            <td colspan="6" style="padding: 9px 0 5px 8px; text-align: right; font-style: italic; color: #86867f;">hidden across five storage regions</td>
-          </tr>
-          <tr>
-            <td style="padding: 5px 8px 5px 0;">VLM-TAMP [9]</td>
-            <td style="padding: 5px 8px; text-align: right;">60</td>
-            <td style="padding: 5px 8px; text-align: right;">67.5</td>
-            <td style="padding: 5px 8px; text-align: right;">0.0</td>
-            <td style="padding: 5px 8px; text-align: right;">12.6</td>
-            <td style="padding: 5px 8px; text-align: right;">60</td>
-            <td style="padding: 5px 0 5px 8px; text-align: right;">0.0</td>
-          </tr>
-          <tr>
-            <td style="padding: 5px 8px 5px 0;">OWL-TAMP [12]</td>
-            <td style="padding: 5px 8px; text-align: right;">60</td>
-            <td style="padding: 5px 8px; text-align: right;">45.5</td>
-            <td style="padding: 5px 8px; text-align: right;">0.0</td>
-            <td style="padding: 5px 8px; text-align: right;">0.0</td>
-            <td style="padding: 5px 8px; text-align: right;">60</td>
-            <td style="padding: 5px 0 5px 8px; text-align: right;">13.3</td>
-          </tr>
-          <tr>
-            <td style="padding: 5px 8px 5px 0;">ROBUST-TAMP [10]</td>
-            <td style="padding: 5px 8px; text-align: right;">60</td>
-            <td style="padding: 5px 8px; text-align: right;">49.2</td>
-            <td style="padding: 5px 8px; text-align: right;">0.0</td>
-            <td style="padding: 5px 8px; text-align: right;">11.9</td>
-            <td style="padding: 5px 8px; text-align: right;">60</td>
-            <td style="padding: 5px 0 5px 8px; text-align: right;">25.0</td>
-          </tr>
-          <tr style="font-weight: 700;">
-            <td style="padding: 5px 8px 5px 0;">GRAB-TAMP</td>
-            <td style="padding: 5px 8px; text-align: right; font-weight: 400;">60</td>
-            <td style="padding: 5px 8px; text-align: right;">82.8</td>
-            <td style="padding: 5px 8px; text-align: right;">65.0</td>
-            <td style="padding: 5px 8px; text-align: right;">&#8211;</td>
-            <td style="padding: 5px 8px; text-align: right; font-weight: 400;">60</td>
-            <td style="padding: 5px 0 5px 8px; text-align: right;">50.0</td>
-          </tr>
-          <tr>
-            <td style="padding: 12px 8px 5px 0; border-top: 1px solid #c9c9c1; font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 700;">Living Room</td>
-            <td colspan="6" style="padding: 12px 0 5px 8px; border-top: 1px solid #c9c9c1; text-align: right; font-style: italic; color: #86867f;">all objects initially visible</td>
-          </tr>
-          <tr>
-            <td style="padding: 5px 8px 5px 0;">VLM-TAMP [9]</td>
-            <td style="padding: 5px 8px; text-align: right;">60</td>
-            <td style="padding: 5px 8px; text-align: right; font-weight: 700;">100.0</td>
-            <td style="padding: 5px 8px; text-align: right;">80.0</td>
-            <td style="padding: 5px 8px; text-align: right;">7.5</td>
-            <td style="padding: 5px 8px; text-align: right;">40</td>
-            <td style="padding: 5px 0 5px 8px; text-align: right;">0.0</td>
-          </tr>
-          <tr>
-            <td style="padding: 5px 8px 5px 0;">OWL-TAMP [12]</td>
-            <td style="padding: 5px 8px; text-align: right;">60</td>
-            <td style="padding: 5px 8px; text-align: right; font-weight: 700;">100.0</td>
-            <td style="padding: 5px 8px; text-align: right;">60.0</td>
-            <td style="padding: 5px 8px; text-align: right;">0.0</td>
-            <td style="padding: 5px 8px; text-align: right;">40</td>
-            <td style="padding: 5px 0 5px 8px; text-align: right;">5.0</td>
-          </tr>
-          <tr>
-            <td style="padding: 5px 8px 5px 0;">ROBUST-TAMP [10]</td>
-            <td style="padding: 5px 8px; text-align: right;">60</td>
-            <td style="padding: 5px 8px; text-align: right; font-weight: 700;">100.0</td>
-            <td style="padding: 5px 8px; text-align: right; font-weight: 700;">88.3</td>
-            <td style="padding: 5px 8px; text-align: right;">6.2</td>
-            <td style="padding: 5px 8px; text-align: right;">40</td>
-            <td style="padding: 5px 0 5px 8px; text-align: right;">0.0</td>
-          </tr>
-          <tr style="font-weight: 700;">
-            <td style="padding: 5px 8px 5px 0;">GRAB-TAMP</td>
-            <td style="padding: 5px 8px; text-align: right; font-weight: 400;">60</td>
-            <td style="padding: 5px 8px; text-align: right; font-weight: 400;">48.7</td>
-            <td style="padding: 5px 8px; text-align: right; font-weight: 400;">31.7</td>
-            <td style="padding: 5px 8px; text-align: right;">&#8211;</td>
-            <td style="padding: 5px 8px; text-align: right; font-weight: 400;">40</td>
-            <td style="padding: 5px 0 5px 8px; text-align: right;">70.0</td>
-          </tr>
-          <tr>
-            <td style="padding: 12px 8px 5px 0; border-top: 1px solid #c9c9c1; font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 700;">Workshop</td>
-            <td colspan="6" style="padding: 12px 0 5px 8px; border-top: 1px solid #c9c9c1; text-align: right; font-style: italic; color: #86867f;">hidden alternative candidates</td>
-          </tr>
-          <tr>
-            <td style="padding: 5px 8px 5px 0;">VLM-TAMP [9]</td>
-            <td style="padding: 5px 8px; text-align: right;">80</td>
-            <td style="padding: 5px 8px; text-align: right;">99.6</td>
-            <td style="padding: 5px 8px; text-align: right;">26.2</td>
-            <td style="padding: 5px 8px; text-align: right;">11.9</td>
-            <td style="padding: 5px 8px; text-align: right;">20</td>
-            <td style="padding: 5px 0 5px 8px; text-align: right;">0.0</td>
-          </tr>
-          <tr>
-            <td style="padding: 5px 8px 5px 0;">OWL-TAMP [12]</td>
-            <td style="padding: 5px 8px; text-align: right;">80</td>
-            <td style="padding: 5px 8px; text-align: right; font-weight: 700;">100.0</td>
-            <td style="padding: 5px 8px; text-align: right;">15.0</td>
-            <td style="padding: 5px 8px; text-align: right;">2.62</td>
-            <td style="padding: 5px 8px; text-align: right;">20</td>
-            <td style="padding: 5px 0 5px 8px; text-align: right;">0.0</td>
-          </tr>
-          <tr>
-            <td style="padding: 5px 8px 5px 0;">ROBUST-TAMP [10]</td>
-            <td style="padding: 5px 8px; text-align: right;">80</td>
-            <td style="padding: 5px 8px; text-align: right;">17.5</td>
-            <td style="padding: 5px 8px; text-align: right;">0.0</td>
-            <td style="padding: 5px 8px; text-align: right;">7.5</td>
-            <td style="padding: 5px 8px; text-align: right;">20</td>
-            <td style="padding: 5px 0 5px 8px; text-align: right; font-weight: 700;">70.0</td>
-          </tr>
-          <tr style="font-weight: 700;">
-            <td style="padding: 5px 8px 5px 0;">GRAB-TAMP</td>
-            <td style="padding: 5px 8px; text-align: right; font-weight: 400;">80</td>
-            <td style="padding: 5px 8px; text-align: right; font-weight: 400;">69.6</td>
-            <td style="padding: 5px 8px; text-align: right;">62.5</td>
-            <td style="padding: 5px 8px; text-align: right;">&#8211;</td>
-            <td style="padding: 5px 8px; text-align: right; font-weight: 400;">20</td>
-            <td style="padding: 5px 0 5px 8px; text-align: right; font-weight: 400;">20.0</td>
-          </tr>
-          <tr style="font-weight: 700;">
-            <td style="padding: 9px 8px 0 0; border-top: 2px solid #1f1f1d; font-family: 'Montserrat', sans-serif;">GRAB-TAMP (Overall)</td>
-            <td style="padding: 9px 8px 0; text-align: right; border-top: 2px solid #1f1f1d;">200</td>
-            <td style="padding: 9px 8px 0; text-align: right; border-top: 2px solid #1f1f1d;">67.3</td>
-            <td style="padding: 9px 8px 0; text-align: right; border-top: 2px solid #1f1f1d;">54.0</td>
-            <td style="padding: 9px 8px 0; text-align: right; border-top: 2px solid #1f1f1d;">&#8211;</td>
-            <td style="padding: 9px 8px 0; text-align: right; border-top: 2px solid #1f1f1d;">120</td>
-            <td style="padding: 9px 0 0 8px; text-align: right; border-top: 2px solid #1f1f1d;">51.7</td>
-          </tr>
-        </tbody>
-      </table>
-      <div style="border-top: 1px solid #1f1f1d; padding-top: 8px; font-size: 15px; line-height: 1.4; color: #4a4a46; text-wrap: pretty;"><span style="font-style: italic;">Note:</span> <strong>PGC</strong>, <strong>E2E success</strong> and <strong>NC</strong> are reported in %. <strong>Avg. replans</strong> is the mean number of planning re-invocations after the first, over all N<sub>F</sub>&thinsp;+&thinsp;N<sub>I</sub> trials of a scene.</div>
-    </div>
+    <section id="results" style="padding-top: 60px;">
+      <div style="display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 16px; border-bottom: 3px solid #17181a; padding-bottom: 10px; margin-bottom: 26px;">
+        <h2 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 30px; font-weight: 700; letter-spacing: -0.01em;">Results</h2>
+        <div style="font-family: 'Montserrat', sans-serif; font-style: italic; font-weight: 500; font-size: 18px; color: #86867f;">per-scene comparison, verification ablation, inspection-order ablation</div>
+      </div>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 40px; align-items: start; padding-top: 22px;">
-
-      <div style="display: flex; flex-direction: column; gap: 10px; min-width: 0; overflow-x: auto;">
-        <div style="font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 700;">Verification ablation</div>
-        <table style="width: 100%; min-width: 420px; border-collapse: collapse; font-size: 15px; font-variant-numeric: tabular-nums;">
+      <h3 style="font-family: 'Montserrat', sans-serif; font-size: 21px; font-weight: 700; margin: 6px 0 12px;">End to end, per scene</h3>
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; min-width: 660px; border-collapse: collapse; font-size: 14.5px; font-variant-numeric: tabular-nums;">
           <thead>
-            <tr style="font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700;">
-              <th style="padding: 4px 8px 5px 0; text-align: left; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Scene</th>
-              <th style="padding: 4px 8px 5px; text-align: left; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Verification</th>
-              <th style="padding: 4px 8px 5px; text-align: right; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Trials</th>
-              <th style="padding: 4px 8px 5px; text-align: right; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Matching G<sub>O</sub> (%)</th>
-              <th style="padding: 4px 8px 5px; text-align: right; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Mismatching G<sub>O</sub> (%)</th>
-              <th style="padding: 4px 0 5px 8px; text-align: right; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Missing G<sub>O</sub> (%)</th>
+            <tr>
+              <th style="padding: 0 9px 4px 0;"></th>
+              <th colspan="3" style="padding: 0 9px 5px; text-align: center; border-bottom: 1px solid #c9c9c4; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #72757b; font-weight: 500;">Feasible</th>
+              <th style="padding: 0 9px 5px; text-align: center; border-bottom: 1px solid #c9c9c4; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #72757b; font-weight: 500;">All trials</th>
+              <th colspan="2" style="padding: 0 9px 5px; text-align: center; border-bottom: 1px solid #c9c9c4; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #72757b; font-weight: 500;">Infeasible</th>
+            </tr>
+            <tr style="font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; color: #35373b;">
+              <th style="padding: 7px 9px 7px 0; text-align: left; border-bottom: 2px solid #17181a;">Method</th>
+              <th style="padding: 7px 9px; text-align: right; border-bottom: 2px solid #17181a;">N<sub>F</sub></th>
+              <th style="padding: 7px 9px; text-align: right; border-bottom: 2px solid #17181a;">PGC</th>
+              <th style="padding: 7px 9px; text-align: right; border-bottom: 2px solid #17181a;">E2E succ.</th>
+              <th style="padding: 7px 9px; text-align: right; border-bottom: 2px solid #17181a;">Avg. replans</th>
+              <th style="padding: 7px 9px; text-align: right; border-bottom: 2px solid #17181a;">N<sub>I</sub></th>
+              <th style="padding: 7px 9px; text-align: right; border-bottom: 2px solid #17181a;">NC</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td rowspan="3" style="padding: 5px 8px 5px 0; font-style: italic;">Kitchen</td>
-              <td style="padding: 5px 8px; white-space: nowrap;">Semantic only</td>
-              <td style="padding: 5px 8px; text-align: right;">60</td>
-              <td style="padding: 5px 8px; text-align: right;">96 (12.3)</td>
-              <td style="padding: 5px 8px; text-align: right;">19 (2.4)</td>
-              <td style="padding: 5px 0 5px 8px; text-align: right;">665 (85.3)</td>
-            </tr>
-            <tr>
-              <td style="padding: 5px 8px;">+ Unary</td>
-              <td style="padding: 5px 8px; text-align: right;">60</td>
-              <td style="padding: 5px 8px; text-align: right;">103 (13.2)</td>
-              <td style="padding: 5px 8px; text-align: right;">21 (2.7)</td>
-              <td style="padding: 5px 0 5px 8px; text-align: right;">656 (84.1)</td>
-            </tr>
-            <tr style="font-weight: 700;">
-              <td style="padding: 5px 8px;">+ Binary</td>
-              <td style="padding: 5px 8px; text-align: right; font-weight: 400;">60</td>
-              <td style="padding: 5px 8px; text-align: right;">514 (65.9)</td>
-              <td style="padding: 5px 8px; text-align: right; font-weight: 400;">63 (8.1)</td>
-              <td style="padding: 5px 0 5px 8px; text-align: right;">203 (26.0)</td>
-            </tr>
-            <tr>
-              <td rowspan="3" style="padding: 5px 8px 5px 0; border-top: 1px solid #e3e3de; font-style: italic;">Living Room</td>
-              <td style="padding: 5px 8px; border-top: 1px solid #e3e3de; white-space: nowrap;">Semantic only</td>
-              <td style="padding: 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">60</td>
-              <td style="padding: 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">141 (18.1)</td>
-              <td style="padding: 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">1 (0.1)</td>
-              <td style="padding: 5px 0 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">638 (81.8)</td>
-            </tr>
-            <tr>
-              <td style="padding: 5px 8px;">+ Unary</td>
-              <td style="padding: 5px 8px; text-align: right;">60</td>
-              <td style="padding: 5px 8px; text-align: right;">96 (12.3)</td>
-              <td style="padding: 5px 8px; text-align: right;">3 (0.4)</td>
-              <td style="padding: 5px 0 5px 8px; text-align: right;">681 (87.3)</td>
-            </tr>
-            <tr style="font-weight: 700;">
-              <td style="padding: 5px 8px;">+ Binary</td>
-              <td style="padding: 5px 8px; text-align: right; font-weight: 400;">60</td>
-              <td style="padding: 5px 8px; text-align: right;">439 (56.3)</td>
-              <td style="padding: 5px 8px; text-align: right; font-weight: 400;">20 (2.6)</td>
-              <td style="padding: 5px 0 5px 8px; text-align: right;">321 (41.2)</td>
-            </tr>
-            <tr>
-              <td rowspan="3" style="padding: 5px 8px 5px 0; border-top: 1px solid #e3e3de; font-style: italic;">Workshop</td>
-              <td style="padding: 5px 8px; border-top: 1px solid #e3e3de; white-space: nowrap;">Semantic only</td>
-              <td style="padding: 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">80</td>
-              <td style="padding: 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">86 (17.9)</td>
-              <td style="padding: 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">13 (2.7)</td>
-              <td style="padding: 5px 0 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">381 (79.4)</td>
-            </tr>
-            <tr>
-              <td style="padding: 5px 8px;">+ Unary</td>
-              <td style="padding: 5px 8px; text-align: right;">80</td>
-              <td style="padding: 5px 8px; text-align: right;">47 (9.8)</td>
-              <td style="padding: 5px 8px; text-align: right;">8 (1.7)</td>
-              <td style="padding: 5px 0 5px 8px; text-align: right;">425 (88.5)</td>
-            </tr>
-            <tr style="font-weight: 700;">
-              <td style="padding: 5px 8px;">+ Binary</td>
-              <td style="padding: 5px 8px; text-align: right; font-weight: 400;">80</td>
-              <td style="padding: 5px 8px; text-align: right;">239 (49.8)</td>
-              <td style="padding: 5px 8px; text-align: right; font-weight: 400;">55 (11.5)</td>
-              <td style="padding: 5px 0 5px 8px; text-align: right;">186 (38.8)</td>
-            </tr>
-            <tr>
-              <td rowspan="3" style="padding: 5px 8px 5px 0; border-top: 2px solid #1f1f1d; font-family: 'Montserrat', sans-serif; font-weight: 700;">Overall</td>
-              <td style="padding: 5px 8px; border-top: 2px solid #1f1f1d; white-space: nowrap;">Semantic only</td>
-              <td style="padding: 5px 8px; text-align: right; border-top: 2px solid #1f1f1d;">200</td>
-              <td style="padding: 5px 8px; text-align: right; border-top: 2px solid #1f1f1d;">323 (15.8)</td>
-              <td style="padding: 5px 8px; text-align: right; border-top: 2px solid #1f1f1d;">33 (1.6)</td>
-              <td style="padding: 5px 0 5px 8px; text-align: right; border-top: 2px solid #1f1f1d;">1684 (82.5)</td>
-            </tr>
-            <tr>
-              <td style="padding: 5px 8px;">+ Unary</td>
-              <td style="padding: 5px 8px; text-align: right;">200</td>
-              <td style="padding: 5px 8px; text-align: right;">246 (12.1)</td>
-              <td style="padding: 5px 8px; text-align: right;">32 (1.6)</td>
-              <td style="padding: 5px 0 5px 8px; text-align: right;">1762 (86.4)</td>
-            </tr>
-            <tr style="font-weight: 700;">
-              <td style="padding: 5px 8px; border-bottom: 2px solid #1f1f1d;">+ Binary</td>
-              <td style="padding: 5px 8px; text-align: right; font-weight: 400; border-bottom: 2px solid #1f1f1d;">200</td>
-              <td style="padding: 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">1192 (58.4)</td>
-              <td style="padding: 5px 8px; text-align: right; font-weight: 400; border-bottom: 2px solid #1f1f1d;">138 (6.8)</td>
-              <td style="padding: 5px 0 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">710 (34.8)</td>
-            </tr>
+            <tr><td colspan="7" style="padding: 14px 9px 7px 0; border-bottom: 1px solid #c9c9c4; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #72757b;">Kitchen <span style="text-transform: none; letter-spacing: 0; font-family: 'Open Sans', sans-serif; font-style: italic; font-size: 13px; margin-left: 8px;">hidden across five storage regions</span></td></tr>
+            <tr><td style="padding: 7px 9px 7px 0; border-bottom: 1px solid #e4e4e1;">VLM-TAMP [9]</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">60</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">67.5</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">0.0</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">12.6</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">60</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">0.0</td></tr>
+            <tr><td style="padding: 7px 9px 7px 0; border-bottom: 1px solid #e4e4e1;">OWL-TAMP [12]</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">60</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">45.5</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">0.0</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">0.0</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">60</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">13.3</td></tr>
+            <tr><td style="padding: 7px 9px 7px 0; border-bottom: 1px solid #e4e4e1;">ROBUST-TAMP [10]</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">60</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">49.2</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">0.0</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">11.9</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">60</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">25.0</td></tr>
+            <tr style="background: #eef6f9; font-weight: 700;"><td style="padding: 7px 9px; border-bottom: 1px solid #e4e4e1;">GRAB-TAMP</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1; font-weight: 400;">60</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">82.8</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">65.0</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">&#8211;</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1; font-weight: 400;">60</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">50.0</td></tr>
+
+            <tr><td colspan="7" style="padding: 14px 9px 7px 0; border-bottom: 1px solid #c9c9c4; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #72757b;">Living Room <span style="text-transform: none; letter-spacing: 0; font-family: 'Open Sans', sans-serif; font-style: italic; font-size: 13px; margin-left: 8px;">all objects initially visible</span></td></tr>
+            <tr><td style="padding: 7px 9px 7px 0; border-bottom: 1px solid #e4e4e1;">VLM-TAMP [9]</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">60</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1; font-weight: 800;">100.0</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">80.0</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">7.5</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">40</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">0.0</td></tr>
+            <tr><td style="padding: 7px 9px 7px 0; border-bottom: 1px solid #e4e4e1;">OWL-TAMP [12]</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">60</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1; font-weight: 800;">100.0</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">60.0</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">0.0</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">40</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">5.0</td></tr>
+            <tr><td style="padding: 7px 9px 7px 0; border-bottom: 1px solid #e4e4e1;">ROBUST-TAMP [10]</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">60</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1; font-weight: 800;">100.0</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1; font-weight: 800;">88.3</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">6.2</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">40</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">0.0</td></tr>
+            <tr style="background: #eef6f9; font-weight: 700;"><td style="padding: 7px 9px; border-bottom: 1px solid #e4e4e1;">GRAB-TAMP</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1; font-weight: 400;">60</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1; font-weight: 400;">48.7</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1; font-weight: 400;">31.7</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">&#8211;</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1; font-weight: 400;">40</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">70.0</td></tr>
+
+            <tr><td colspan="7" style="padding: 14px 9px 7px 0; border-bottom: 1px solid #c9c9c4; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #72757b;">Workshop <span style="text-transform: none; letter-spacing: 0; font-family: 'Open Sans', sans-serif; font-style: italic; font-size: 13px; margin-left: 8px;">hidden alternative candidates</span></td></tr>
+            <tr><td style="padding: 7px 9px 7px 0; border-bottom: 1px solid #e4e4e1;">VLM-TAMP [9]</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">80</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">99.6</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">26.2</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">11.9</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">20</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">0.0</td></tr>
+            <tr><td style="padding: 7px 9px 7px 0; border-bottom: 1px solid #e4e4e1;">OWL-TAMP [12]</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">80</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1; font-weight: 800;">100.0</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">15.0</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">2.62</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">20</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">0.0</td></tr>
+            <tr><td style="padding: 7px 9px 7px 0; border-bottom: 1px solid #e4e4e1;">ROBUST-TAMP [10]</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">80</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">17.5</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">0.0</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">7.5</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">20</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1; font-weight: 800;">70.0</td></tr>
+            <tr style="background: #eef6f9; font-weight: 700;"><td style="padding: 7px 9px; border-bottom: 1px solid #e4e4e1;">GRAB-TAMP</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1; font-weight: 400;">80</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1; font-weight: 400;">69.6</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">62.5</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1;">&#8211;</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1; font-weight: 400;">20</td><td style="padding: 7px 9px; text-align: right; border-bottom: 1px solid #e4e4e1; font-weight: 400;">20.0</td></tr>
+
+            <tr style="background: #eef6f9; font-weight: 700;"><td style="padding: 9px 9px; border-top: 2px solid #17181a; font-family: 'Montserrat', sans-serif;">GRAB-TAMP (Overall)</td><td style="padding: 9px 9px; text-align: right; border-top: 2px solid #17181a;">200</td><td style="padding: 9px 9px; text-align: right; border-top: 2px solid #17181a;">67.3</td><td style="padding: 9px 9px; text-align: right; border-top: 2px solid #17181a;">54.0</td><td style="padding: 9px 9px; text-align: right; border-top: 2px solid #17181a;">&#8211;</td><td style="padding: 9px 9px; text-align: right; border-top: 2px solid #17181a;">120</td><td style="padding: 9px 9px; text-align: right; border-top: 2px solid #17181a;">51.7</td></tr>
           </tbody>
         </table>
       </div>
+      <p style="font-size: 13px; color: #72757b; margin: 8px 0 0; line-height: 1.5; text-wrap: pretty;"><span style="font-style: italic;">Note:</span> <strong>PGC</strong>, <strong>E2E success</strong> and <strong>NC</strong> are reported in %. <strong>Avg. replans</strong> is the mean number of planning re-invocations after the first, over all N<sub>F</sub>&thinsp;+&thinsp;N<sub>I</sub> trials of a scene.</p>
 
-      <div style="display: flex; flex-direction: column; gap: 10px; min-width: 0; overflow-x: auto;">
-        <div style="font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 700;">Inspection-order ablation</div>
-        <table style="width: 100%; min-width: 380px; border-collapse: collapse; font-size: 15px; font-variant-numeric: tabular-nums;">
-          <thead>
-            <tr style="font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700;">
-              <th style="padding: 4px 8px 5px 0; text-align: left; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Scene</th>
-              <th style="padding: 4px 8px 5px; text-align: left; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Order</th>
-              <th style="padding: 4px 8px 5px; text-align: right; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Regions</th>
-              <th style="padding: 4px 8px 5px; text-align: right; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Checks</th>
-              <th style="padding: 4px 0 5px 8px; text-align: right; border-top: 2px solid #1f1f1d; border-bottom: 2px solid #1f1f1d;">Time (s)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td rowspan="2" style="padding: 5px 8px 5px 0; font-style: italic;">Kitchen</td>
-              <td style="padding: 5px 8px;">Fixed order</td>
-              <td style="padding: 5px 8px; text-align: right;">4.33</td>
-              <td style="padding: 5px 8px; text-align: right;">134.6</td>
-              <td style="padding: 5px 0 5px 8px; text-align: right;">82.94</td>
-            </tr>
-            <tr style="font-weight: 700;">
-              <td style="padding: 5px 8px; font-style: italic;">FM-ranked</td>
-              <td style="padding: 5px 8px; text-align: right;">3.91</td>
-              <td style="padding: 5px 8px; text-align: right; font-weight: 400;">134.6</td>
-              <td style="padding: 5px 0 5px 8px; text-align: right;">76.22</td>
-            </tr>
-            <tr>
-              <td rowspan="2" style="padding: 5px 8px 5px 0; border-top: 1px solid #e3e3de; font-style: italic;">Living Room</td>
-              <td style="padding: 5px 8px; border-top: 1px solid #e3e3de;">Fixed order</td>
-              <td style="padding: 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">0.00</td>
-              <td style="padding: 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">23.2</td>
-              <td style="padding: 5px 0 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">6.77</td>
-            </tr>
-            <tr>
-              <td style="padding: 5px 8px; font-style: italic; font-weight: 700;">FM-ranked</td>
-              <td style="padding: 5px 8px; text-align: right;">0.00</td>
-              <td style="padding: 5px 8px; text-align: right;">23.2</td>
-              <td style="padding: 5px 0 5px 8px; text-align: right;">6.77</td>
-            </tr>
-            <tr>
-              <td rowspan="2" style="padding: 5px 8px 5px 0; border-top: 1px solid #e3e3de; font-style: italic;">Workshop</td>
-              <td style="padding: 5px 8px; border-top: 1px solid #e3e3de;">Fixed order</td>
-              <td style="padding: 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">2.58</td>
-              <td style="padding: 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">14.2</td>
-              <td style="padding: 5px 0 5px 8px; text-align: right; border-top: 1px solid #e3e3de;">287.64</td>
-            </tr>
-            <tr style="font-weight: 700;">
-              <td style="padding: 5px 8px; font-style: italic; border-bottom: 2px solid #1f1f1d;">FM-ranked</td>
-              <td style="padding: 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">2.32</td>
-              <td style="padding: 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">13.4</td>
-              <td style="padding: 5px 0 5px 8px; text-align: right; border-bottom: 2px solid #1f1f1d;">268.20</td>
-            </tr>
-          </tbody>
-        </table>
-        <div style="font-size: 15px; line-height: 1.45; color: #4a4a46; text-wrap: pretty;">Living Room is unchanged because it declares no inspectable regions, which also makes it a control for timing drift.</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 40px; align-items: start; margin-top: 40px;">
+
+        <div style="display: flex; flex-direction: column; min-width: 0;">
+          <h3 style="font-family: 'Montserrat', sans-serif; font-size: 21px; font-weight: 700; margin: 0 0 12px;">Verification ablation</h3>
+          <div style="overflow-x: auto;">
+          <table style="width: 100%; min-width: 420px; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums;">
+            <thead>
+              <tr style="font-family: 'Montserrat', sans-serif; font-size: 12.5px; font-weight: 600; color: #35373b;">
+                <th style="padding: 7px 8px 7px 0; text-align: left; border-bottom: 2px solid #17181a;">Scene</th>
+                <th style="padding: 7px 8px; text-align: left; border-bottom: 2px solid #17181a;">Verification</th>
+                <th style="padding: 7px 8px; text-align: right; border-bottom: 2px solid #17181a;">Trials</th>
+                <th style="padding: 7px 8px; text-align: right; border-bottom: 2px solid #17181a;">Matching G<sub>O</sub> (%)</th>
+                <th style="padding: 7px 8px; text-align: right; border-bottom: 2px solid #17181a;">Mismatching G<sub>O</sub> (%)</th>
+                <th style="padding: 7px 0 7px 8px; text-align: right; border-bottom: 2px solid #17181a;">Missing G<sub>O</sub> (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td rowspan="3" style="padding: 7px 8px 7px 0; vertical-align: top; font-style: italic; border-bottom: 1px solid #c9c9c4;">Kitchen</td><td style="padding: 7px 8px; white-space: nowrap; border-bottom: 1px solid #e4e4e1;">Semantic only</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">60</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">96 (12.3)</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">19 (2.4)</td><td style="padding: 7px 0 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">665 (85.3)</td></tr>
+              <tr><td style="padding: 7px 8px; border-bottom: 1px solid #e4e4e1;">+ Unary</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">60</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">103 (13.2)</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">21 (2.7)</td><td style="padding: 7px 0 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">656 (84.1)</td></tr>
+              <tr style="font-weight: 700; background: #eef6f9;"><td style="padding: 7px 8px; border-bottom: 1px solid #c9c9c4;">+ Binary</td><td style="padding: 7px 8px; text-align: right; font-weight: 400; border-bottom: 1px solid #c9c9c4;">60</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #c9c9c4;">514 (65.9)</td><td style="padding: 7px 8px; text-align: right; font-weight: 400; border-bottom: 1px solid #c9c9c4;">63 (8.1)</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #c9c9c4;">203 (26.0)</td></tr>
+              <tr><td rowspan="3" style="padding: 7px 8px 7px 0; vertical-align: top; font-style: italic; border-bottom: 1px solid #c9c9c4;">Living Room</td><td style="padding: 7px 8px; white-space: nowrap; border-bottom: 1px solid #e4e4e1;">Semantic only</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">60</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">141 (18.1)</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">1 (0.1)</td><td style="padding: 7px 0 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">638 (81.8)</td></tr>
+              <tr><td style="padding: 7px 8px; border-bottom: 1px solid #e4e4e1;">+ Unary</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">60</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">96 (12.3)</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">3 (0.4)</td><td style="padding: 7px 0 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">681 (87.3)</td></tr>
+              <tr style="font-weight: 700; background: #eef6f9;"><td style="padding: 7px 8px; border-bottom: 1px solid #c9c9c4;">+ Binary</td><td style="padding: 7px 8px; text-align: right; font-weight: 400; border-bottom: 1px solid #c9c9c4;">60</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #c9c9c4;">439 (56.3)</td><td style="padding: 7px 8px; text-align: right; font-weight: 400; border-bottom: 1px solid #c9c9c4;">20 (2.6)</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #c9c9c4;">321 (41.2)</td></tr>
+              <tr><td rowspan="3" style="padding: 7px 8px 7px 0; vertical-align: top; font-style: italic;">Workshop</td><td style="padding: 7px 8px; white-space: nowrap; border-bottom: 1px solid #e4e4e1;">Semantic only</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">80</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">86 (17.9)</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">13 (2.7)</td><td style="padding: 7px 0 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">381 (79.4)</td></tr>
+              <tr><td style="padding: 7px 8px; border-bottom: 1px solid #e4e4e1;">+ Unary</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">80</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">47 (9.8)</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">8 (1.7)</td><td style="padding: 7px 0 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">425 (88.5)</td></tr>
+              <tr style="font-weight: 700; background: #eef6f9;"><td style="padding: 7px 8px;">+ Binary</td><td style="padding: 7px 8px; text-align: right; font-weight: 400;">80</td><td style="padding: 7px 8px; text-align: right;">239 (49.8)</td><td style="padding: 7px 8px; text-align: right; font-weight: 400;">55 (11.5)</td><td style="padding: 7px 8px; text-align: right;">186 (38.8)</td></tr>
+              <tr><td rowspan="3" style="padding: 7px 8px 7px 0; vertical-align: top; border-top: 2px solid #17181a; border-bottom: 2px solid #17181a; font-family: 'Montserrat', sans-serif; font-weight: 700;">Overall</td><td style="padding: 7px 8px; white-space: nowrap; border-top: 2px solid #17181a; border-bottom: 1px solid #e4e4e1;">Semantic only</td><td style="padding: 7px 8px; text-align: right; border-top: 2px solid #17181a; border-bottom: 1px solid #e4e4e1;">200</td><td style="padding: 7px 8px; text-align: right; border-top: 2px solid #17181a; border-bottom: 1px solid #e4e4e1;">323 (15.8)</td><td style="padding: 7px 8px; text-align: right; border-top: 2px solid #17181a; border-bottom: 1px solid #e4e4e1;">33 (1.6)</td><td style="padding: 7px 0 7px 8px; text-align: right; border-top: 2px solid #17181a; border-bottom: 1px solid #e4e4e1;">1684 (82.5)</td></tr>
+              <tr><td style="padding: 7px 8px; border-bottom: 1px solid #e4e4e1;">+ Unary</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">200</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">246 (12.1)</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">32 (1.6)</td><td style="padding: 7px 0 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">1762 (86.4)</td></tr>
+              <tr style="font-weight: 700; background: #eef6f9;"><td style="padding: 7px 8px; border-bottom: 2px solid #17181a;">+ Binary</td><td style="padding: 7px 8px; text-align: right; font-weight: 400; border-bottom: 2px solid #17181a;">200</td><td style="padding: 7px 8px; text-align: right; border-bottom: 2px solid #17181a;">1192 (58.4)</td><td style="padding: 7px 8px; text-align: right; font-weight: 400; border-bottom: 2px solid #17181a;">138 (6.8)</td><td style="padding: 7px 0 7px 8px; text-align: right; border-bottom: 2px solid #17181a;">710 (34.8)</td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; min-width: 0;">
+          <h3 style="font-family: 'Montserrat', sans-serif; font-size: 21px; font-weight: 700; margin: 0 0 12px;">Inspection-order ablation</h3>
+          <div style="overflow-x: auto;">
+          <table style="width: 100%; min-width: 380px; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums;">
+            <thead>
+              <tr style="font-family: 'Montserrat', sans-serif; font-size: 12.5px; font-weight: 600; color: #35373b;">
+                <th style="padding: 7px 8px 7px 0; text-align: left; border-bottom: 2px solid #17181a;">Scene</th>
+                <th style="padding: 7px 8px; text-align: left; border-bottom: 2px solid #17181a;">Order</th>
+                <th style="padding: 7px 8px; text-align: right; border-bottom: 2px solid #17181a;">Regions</th>
+                <th style="padding: 7px 8px; text-align: right; border-bottom: 2px solid #17181a;">Checks</th>
+                <th style="padding: 7px 0 7px 8px; text-align: right; border-bottom: 2px solid #17181a;">Time (s)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td rowspan="2" style="padding: 7px 8px 7px 0; vertical-align: top; font-style: italic; border-bottom: 1px solid #c9c9c4;">Kitchen</td><td style="padding: 7px 8px; border-bottom: 1px solid #e4e4e1;">Fixed order</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">4.33</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">134.6</td><td style="padding: 7px 0 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">82.94</td></tr>
+              <tr style="font-weight: 700; background: #eef6f9;"><td style="padding: 7px 8px; font-style: italic; border-bottom: 1px solid #c9c9c4;">FM-ranked</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #c9c9c4;">3.91</td><td style="padding: 7px 8px; text-align: right; font-weight: 400; border-bottom: 1px solid #c9c9c4;">134.6</td><td style="padding: 7px 0 7px 8px; text-align: right; border-bottom: 1px solid #c9c9c4;">76.22</td></tr>
+              <tr><td rowspan="2" style="padding: 7px 8px 7px 0; vertical-align: top; font-style: italic; border-bottom: 1px solid #c9c9c4;">Living Room</td><td style="padding: 7px 8px; border-bottom: 1px solid #e4e4e1;">Fixed order</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">0.00</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">23.2</td><td style="padding: 7px 0 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">6.77</td></tr>
+              <tr style="background: #eef6f9;"><td style="padding: 7px 8px; font-style: italic; font-weight: 700; border-bottom: 1px solid #c9c9c4;">FM-ranked</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #c9c9c4;">0.00</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #c9c9c4;">23.2</td><td style="padding: 7px 0 7px 8px; text-align: right; border-bottom: 1px solid #c9c9c4;">6.77</td></tr>
+              <tr><td rowspan="2" style="padding: 7px 8px 7px 0; vertical-align: top; font-style: italic; border-bottom: 2px solid #17181a;">Workshop</td><td style="padding: 7px 8px; border-bottom: 1px solid #e4e4e1;">Fixed order</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">2.58</td><td style="padding: 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">14.2</td><td style="padding: 7px 0 7px 8px; text-align: right; border-bottom: 1px solid #e4e4e1;">287.64</td></tr>
+              <tr style="font-weight: 700; background: #eef6f9;"><td style="padding: 7px 8px; font-style: italic; border-bottom: 2px solid #17181a;">FM-ranked</td><td style="padding: 7px 8px; text-align: right; border-bottom: 2px solid #17181a;">2.32</td><td style="padding: 7px 8px; text-align: right; border-bottom: 2px solid #17181a;">13.4</td><td style="padding: 7px 0 7px 8px; text-align: right; border-bottom: 2px solid #17181a;">268.20</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p style="font-size: 13px; color: #72757b; margin: 8px 0 0; line-height: 1.5; text-wrap: pretty;">Living Room is unchanged because it declares no inspectable regions, which also makes it a control for timing drift.</p>
+        </div>
+
       </div>
+    </section>
 
-    </div>
-  </div>
-
-  <div id="bibtex" style="max-width: 860px; margin: 0 auto; padding: 64px 28px 0; display: flex; flex-direction: column; gap: 14px;">
-    <h2 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.01em; border-bottom: 3px solid #1f1f1d; padding-bottom: 10px;">BibTeX</h2>
-    <pre style="margin: 0; background: #f6f6f3; border: 1px solid #e3e3de; padding: 18px 20px; overflow-x: auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 14px; line-height: 1.55; color: #1f1f1d;">@inproceedings{grabtamp,
+    <section id="bibtex" style="padding-top: 76px;">
+      <div style="display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 16px; border-bottom: 3px solid #17181a; padding-bottom: 10px; margin-bottom: 26px;">
+        <h2 style="margin: 0; font-family: 'Montserrat', sans-serif; font-size: 30px; font-weight: 700; letter-spacing: -0.01em;">BibTeX</h2>
+      </div>
+      <div style="position: relative;">
+        <pre style="margin: 0; background: #f7f7f5; border: 1px solid #e4e4e1; border-radius: 10px; padding: 18px 20px; overflow-x: auto; font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; font-size: 13.5px; line-height: 1.55; color: #17181a;">@inproceedings{grabtamp,
   title     = {Search, Ground, Plan: Functional Sufficiency for Task and Motion
                Planning under Incomplete Scene Knowledge},
   booktitle = {Under review},
   year      = {2026}
 }</pre>
-    <div style="font-size: 15px; color: #86867f;">Code, archived foundation-model responses for all 320 trials, and the table-regeneration scripts are on <a href="https://github.com/Narendhiranv04/GRAB-TAMP">GitHub</a>. Reproducing the tables needs no GPU and no model access.</div>
-  </div>
+        <button onClick="{{ copyBib }}" style="position: absolute; right: 12px; top: 12px; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: #17181a; background: #ffffff; border: 2px solid #17181a; border-radius: 999px; padding: 6px 15px; cursor: pointer; transition: background .15s, color .15s;" style-hover="background: #17181a; color: #ffffff;">{{ copyLabel }}</button>
+      </div>
+      <p style="font-size: 14px; color: #72757b; margin: 12px 0 0; line-height: 1.5;">Code, archived foundation-model responses for all 320 trials, and the table-regeneration scripts are on <a href="https://github.com/Narendhiranv04/GRAB-TAMP">GitHub</a>. Reproducing the tables needs no GPU and no model access.</p>
+    </section>
+
+  </main>
+
+  <footer style="margin-top: 90px; border-top: 1px solid #e4e4e1; padding: 26px 28px 50px; font-size: 13.5px; color: #72757b; text-align: center;">
+    <div style="display: flex; justify-content: center; gap: 22px; flex-wrap: wrap;"><a href="https://robotics.iiit.ac.in/" style="color: #72757b;">Robotics Research Centre</a><a href="https://www.iiit.ac.in/" style="color: #72757b;">IIIT Hyderabad</a><a href="https://github.com/Narendhiranv04/GRAB-TAMP" style="color: #72757b;">GitHub</a></div>
+  </footer>
 
 </div>
 
-<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect width="120" height="120" fill="#1f1f1d"></rect><rect x="30" y="38" width="60" height="40" fill="#ffffff"></rect><path d="M52 50 L72 58 L52 66 Z" fill="#990000"></path></svg></template>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect width="120" height="120" fill="#17181a"></rect><rect x="30" y="38" width="60" height="40" rx="6" fill="#ffffff"></rect><path d="M52 50 L72 58 L52 66 Z" fill="#2e7d9a"></path></svg></template>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{}">
+<script type="text/x-dc" data-dc-script>
 const ROWS = [
   {
-    tag: 'SUCCESS', color: '#006600',
+    tag: 'SUCCESS', color: '#1f7a35', bg: '#e6f4e9',
     note: 'Workshop W3: screw in the left drawer, manual driver in the right',
     tiles: [
       { name: 'GRAB-TAMP (ours)', ours: true, src: 'videos/workshop_W3_grab_tamp.mp4', cov: [3, 3], e2e: true,
@@ -532,7 +362,7 @@ const ROWS = [
     ]
   },
   {
-    tag: 'SUCCESS', color: '#006600',
+    tag: 'SUCCESS', color: '#1f7a35', bg: '#e6f4e9',
     note: 'Kitchen K3: soup bowl hidden in a closed box',
     tiles: [
       { name: 'GRAB-TAMP (ours)', ours: true, src: 'videos/k2_final_35s.mp4', cov: [12, 12], e2e: true,
@@ -546,7 +376,7 @@ const ROWS = [
     ]
   },
   {
-    tag: 'FAILURE', color: '#990000',
+    tag: 'FAILURE', color: '#c62828', bg: '#fdeceb',
     note: 'Living Room L6: one cup-saucer pair starts on the shared table (OWL-TAMP: L1)',
     tiles: [
       { name: 'GRAB-TAMP (ours)', ours: true, src: 'videos/living_room_L6_grab_tamp.mp4', cov: [2, 5], e2e: false,
@@ -560,10 +390,14 @@ const ROWS = [
     ]
   }
 ];
+const SWATCH = { 'VLM-TAMP': '#9a9992', 'OWL-TAMP': '#c2a46b', 'ROBUST-TAMP': '#8b4a85' };
+const BIB = '@inproceedings{grabtamp,\n  title     = {Search, Ground, Plan: Functional Sufficiency for Task and Motion\n               Planning under Incomplete Scene Knowledge},\n  booktitle = {Under review},\n  year      = {2026}\n}';
 const TARGET_SECONDS = 35;
 const MAX_RATE = 4;
 
 class Component extends DCLogic {
+  state = { copied: false };
+
   componentDidMount() {
     this.sweep = setInterval(() => this.tick(), 400);
     this.tick();
@@ -573,8 +407,6 @@ class Component extends DCLogic {
     clearInterval(this.sweep);
   }
 
-  /* IntersectionObserver never fires inside the embedded preview, so visibility
-     is measured directly against the viewport on a timer */
   near(el, pad) {
     const r = el.getBoundingClientRect();
     if (!r.height) return false;
@@ -587,9 +419,6 @@ class Component extends DCLogic {
     this.paceStages();
   }
 
-  /* only the clips on screen load, and at most two download at once: the
-     connection pool is six deep and twelve 1080p files racing each other
-     leave every tile black */
   paceVideos() {
     const all = Array.prototype.slice.call(document.querySelectorAll('video[data-src]'));
     let loading = all.filter((v) => v.getAttribute('src') && v.readyState < 2).length;
@@ -612,7 +441,6 @@ class Component extends DCLogic {
     });
   }
 
-  /* each diagram plays the first time it scrolls into view */
   paceStages() {
     const stages = Array.prototype.slice.call(document.querySelectorAll('diagram-stage'));
     if (stages.length) this.stages = stages;
@@ -637,24 +465,34 @@ class Component extends DCLogic {
     if (stage) this.start(stage, 0);
   }
 
+  copyBib() {
+    const done = () => { this.setState({ copied: true }); setTimeout(() => this.setState({ copied: false }), 1600); };
+    if (navigator.clipboard) navigator.clipboard.writeText(BIB).then(done, done); else done();
+  }
+
   renderVals() {
     return {
       replay1: () => this.replay(0),
       replay2: () => this.replay(1),
+      copyBib: () => this.copyBib(),
+      copyLabel: this.state.copied ? 'COPIED' : 'COPY',
       rows: ROWS.map((r) => ({
         tag: r.tag,
         note: r.note,
-        tagStyle: "font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 0.1em; color: " + r.color + ';',
+        tagStyle: "font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.12em; color: " + r.color + '; background: ' + r.bg + '; padding: 3px 10px; border-radius: 5px; box-shadow: inset 0 0 0 1.5px ' + r.color + '55;',
         tiles: r.tiles.map((t) => {
           const met = t.cov[0], total = t.cov[1];
+          const ring = t.e2e ? 'rgba(31,122,53,0.6)' : 'rgba(198,40,40,0.45)';
           return {
             src: t.src,
             name: t.name,
-            nameStyle: "font-family: 'Montserrat', sans-serif; font-size: 17px; font-weight: 700; color: " + (t.ours ? '#1f1f1d' : '#4a4a46') + ';',
-            e2e: t.e2e ? 'E2E \u2713' : 'E2E \u2715',
-            e2eStyle: 'font-size: 13px; font-weight: 700; color: #ffffff; padding: 2px 7px; background: ' + (t.e2e ? '#006600' : '#990000') + ';',
+            swatchStyle: 'width: 13px; height: 13px; border-radius: 3px; display: block; flex: none; background: ' + (t.ours ? '#2e7d9a' : (SWATCH[t.name] || '#c9c9c4')) + ';',
+            nameStyle: "font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: " + (t.ours ? 800 : 700) + '; color: ' + (t.ours ? '#17181a' : '#35373b') + ';',
             counter: met + '/' + total,
-            counterStyle: 'font-size: 14px; font-weight: 700; color: ' + (met === total ? '#006600' : '#990000') + ';',
+            counterStyle: "margin-left: auto; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; color: " + (met === total ? '#1f7a35' : '#c62828') + ';',
+            screenStyle: 'position: relative; aspect-ratio: 16 / 9; border-radius: 9px; overflow: hidden; background: #202328; box-shadow: 0 0 0 ' + (t.e2e ? 3 : 2) + 'px ' + ring + ';',
+            e2e: t.e2e ? 'E2E \u2713' : 'E2E \u2715',
+            e2eStyle: "position: absolute; left: 10px; bottom: 10px; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 700; color: #ffffff; padding: 3px 10px; border-radius: 6px; background: " + (t.e2e ? '#1f7a35' : '#c62828') + ';',
             remark: t.remark
           };
         })
